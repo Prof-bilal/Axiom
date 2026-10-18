@@ -1,0 +1,10 @@
+# ContextGit local run state (machine-local SQLite database and WAL/SHM files).
+# .contextgit/context.md is tracked; the database is not.
+.contextgit/*.db
+.contextgit/*.db-shm
+.contextgit/*.db-wal
+
+# Editor and OS noise
+.DS_Store
+*.swp
+*~
