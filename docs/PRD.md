@@ -19,3 +19,7 @@ Nonfunctional requirements: per-user data isolation; bounded request/time/output
 The prototype is a validation product, not a daily-driver support promise. Hardware support initially targets the VM matrix; GPUs, suspend, Wi-Fi, Bluetooth and battery require physical evidence before claims. Accessibility, localization and distribution license inventory are release gates, not decorative polish.
 
 Changes to requirements must update MVP/phase gates and capability/security contracts together. Trace requirement IDs into future tests and release evidence. [Testing](engineering/TESTING.md) defines the test layers; [MVP](MVP.md) resolves scope.
+
+## R10: Flow responsiveness under contention
+
+The existing performance requirement R08 includes [Flow](system/FLOW.md): show logical workload usage/pressure, manually apply and restore an enrolled Efficient preset, and demonstrate whether foreground latency/stalls improve under matched load. Acceptance uses the [Flow benchmark matrix](engineering/BENCHMARKS.md), includes background progress and service overhead, and never substitutes a free-RAM number for responsiveness. Unsaved work, media/build/network activity, override and unsupported-controller cases must remain safe. No production automatic app sleep, container pause or new daemon is required for this first proof. Shield/Sentinel retain their separate protection/testing responsibilities; future worker budgets do not require implementing those products here.

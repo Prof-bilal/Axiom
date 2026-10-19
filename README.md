@@ -30,7 +30,7 @@ Skills target `.agents/skills/`. This session's environment mounts `.agents` rea
 | Desktop | [UX](docs/desktop/DESKTOP_UX.md), [tokens](docs/desktop/DESIGN_SYSTEM.md), [Wayland](docs/desktop/WAYLAND.md) |
 | AI | [runtime](docs/ai/AI_ARCHITECTURE.md), [capability contract](docs/ai/SYSTEM_AGENT_API.md), [routing](docs/ai/MODEL_ROUTER.md) |
 | Security | [invariants](docs/security/SECURITY.md), [threat model](docs/security/THREAT_MODEL.md), [permissions](docs/security/PERMISSIONS.md), [sandboxing](docs/security/SANDBOXING.md) |
-| System | [packaging](docs/system/PACKAGING.md), [recovery](docs/system/BTRFS_ROLLBACK.md), [services](docs/system/SYSTEMD.md), [performance](docs/system/PERFORMANCE.md) |
+| System | [packaging](docs/system/PACKAGING.md), [recovery](docs/system/BTRFS_ROLLBACK.md), [services](docs/system/SYSTEMD.md), [performance](docs/system/PERFORMANCE.md), [Flow](docs/system/FLOW.md) |
 | Delivery | [ISO](docs/engineering/ISO_BUILD.md), [installer](docs/engineering/INSTALLER.md), [release](docs/engineering/RELEASE.md) |
 | Future | [connectivity](docs/connect/CONNECT.md), [routines](docs/ai/ROUTINES.md), [MCP](docs/ai/MCP.md) |
 

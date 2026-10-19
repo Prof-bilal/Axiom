@@ -164,6 +164,32 @@ Accepted direction means the project chooses a technology subject to integration
 
 **Revisit When:** Measured unmet requirement justifies scoped replacement.
 
+## ADR-010: Axiom Flow resource orchestration
+
+**Status:** Accepted direction, design only (2026-10-18); resource defaults, automation and flowd persistence remain experimental.
+
+**Context:** ADR-009's existing-controls direction needs a named owner and measurable policy for foreground responsiveness under mixed developer/agent load. The old speculative performanced proposal has no implemented lifecycle to migrate.
+
+**Options:** A: deterministic Flow orchestration over systemd/cgroups/PSI; B: uncoordinated tweaks or a new scheduler/AI scheduling daemon. Compare on-demand collection/manual control with one per-user flowd; persistence is not presumed.
+
+**Decision:** A; one canonical FLOW.md, existing performance/profile/benchmark documents updated in place. Logical workloads, soft controls, explicit budgets and user overrides. No LLM hot path, global RAM-cleaner objective, normal app-kill loop or combined Flow/Shield/Sentinel daemon. Replace the speculative performanced name with a conditional flowd candidate, not an additional service.
+
+**Reasons:** Addresses responsiveness, attribution and controllable background work while preserving mature Linux primitives and tool-neutral contracts. [Research Q8–Q9](RESEARCH.md) and [FLOW.md](system/FLOW.md) provide evidence and constraints.
+
+**Tradeoffs:** Accurate app identity, activity vetoes, effective hierarchical controls and cleanup are harder than PID-level tweaks. Manual/observe-first MVP defers convenient but unsafe automation.
+
+**Security / compatibility impact:** Explicit own-user bounded weight enrollment fits NORMAL grants; reclaim/memory protection/freezer/service actions stay SENSITIVE per-request V1, root/system policy CRITICAL. No general resource API is exposed to models. Shield authority and Sentinel execution stay separate. Missing controllers/delegation or app hints disable affected policies; no privileged fallback. No actual Shield/Sentinel implementation is assumed in this checkout.
+
+**Migration cost:** Documentation and future interfaces only; no implementation exists. One future controller owns its settings and must coexist with existing power/system managers.
+
+**Performance impact:** NOT YET MEASURED. Validate offered/completed workload, latency, stalls, energy and Flow overhead; lower RAM alone does not validate the decision.
+
+**Rollback strategy:** Disable Flow, restore only still-owned runtime controls, thaw only identified Flow-owned units through a proven independent recovery path. Configuration experiments revert via planned test reboot when needed. No promise to undo external timeout, discarded working sets, OOM kills or unsaved-work loss.
+
+**Risks:** Grouping error, starvation, protection-induced OOM, reclaim thrash, freeze orphaning, oomd collateral kills, privacy and overhead. Tests/gates precede automation.
+
+**Revisit When:** E13–E20 show no net responsiveness benefit or unacceptable overhead/compatibility; new persistent process or broader authority requires documented alternatives and independent review. DAMON/MGLRU tuning/CRIU/eBPF are later experiments, not automatic additions.
+
 ## Change proposal requirements
 
 Explain why current architecture is insufficient; alternatives and primary evidence; replacement; migration cost; compatibility; security; measured or proposed performance impact; rollback strategy; owner and affected contracts. Independent review is required for trust-boundary changes. [Research](RESEARCH.md) records experiments; [phases](PHASES.md) records gates.

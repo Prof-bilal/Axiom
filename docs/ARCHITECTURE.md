@@ -2,6 +2,27 @@
 
 Status: design baseline, not implemented. V1 is a prototype scope label; LATER is intentionally deferred; RESEARCH means no dependency may assume support. See [ADRs](DECISIONS.md), [API contract](ai/SYSTEM_AGENT_API.md) and [security](security/SECURITY.md).
 
+## Platform responsibilities
+
+Axiom comprises Desktop, AI Runtime, Shield (protect machine/user), Sentinel (test developer-built applications) and Flow (resource orchestration/responsiveness). These are separate subsystems, not one daemon. Shield/Sentinel have no dedicated specifications in this checkout; their labels below express conceptual boundaries only. Flow does not authorize agent actions or run tests. [FLOW.md](system/FLOW.md) owns its detailed design; [PERFORMANCE.md](system/PERFORMANCE.md) retains the single profile/target system.
+
+```mermaid
+flowchart LR
+  AX[Axiom] --> D[Desktop — V1]
+  AX --> AI[AI Runtime — V1]
+  AX --> SH[Shield — conceptual security boundary]
+  AX --> SE[Sentinel — future test integration]
+  AX --> FL[Flow — V1 proof / service RESEARCH]
+  SE -. explicit worker budgets .-> FL
+  AI -. explicit agent budgets .-> FL
+  D --> FL
+  SH -. authority constraints .-> FL
+  FL --> PR[PSI / cgroups / systemd]
+  FL -. integration experiments .-> RR[zram / scheduler controls / oomd]
+```
+
+## Process architecture
+
 ```mermaid
 flowchart TD
   User[User] --> UI[Plasma / QML agent UI — V1 user session]
@@ -23,6 +44,13 @@ flowchart TD
   A -.-> RT[Deterministic routine engine — LATER module]
   UI -.-> CD[Cross-device layer — LATER]
   UI -.-> MM[Structured activity memory — LATER]
+  UI --> FT[Flow telemetry and manual policy — V1]
+  FT --> FM[systemd user manager / app cgroups — V1 proof]
+  FM --> FK[Kernel resource controllers / PSI]
+  FW[Enrolled agents / future Sentinel workers] --> FM
+  FT --> FH[Bounded intervention history]
+  FH --> UI
+  FT -. SHOULD experiment .-> FO[systemd-oomd / freeze compatibility]
 ```
 
 ## Processes and privilege boundaries
@@ -34,6 +62,8 @@ Plasma/KWin provides the compositor and existing desktop integration. Shell cust
 `system-agentd` is a proposed minimal system broker, preferably activatable, for operations existing services cannot safely expose directly to the caller. Split user actions from privileged handlers; do not make every capability transit a root executor. Every privileged handler authenticates D-Bus sender identity, validates target and authorizes independently of the assistant's claims. Reuse existing service APIs/Polkit when they already provide the required scope. Determine per-handler process isolation in a threat review, rather than requiring the entire broker to be root permanently.
 
 The policy engine performs deterministic classification and request-bound authorization. A trusted confirmation UI shows canonical target, side effects and recovery limitations, separate from model-authored text. Warden remains an evaluated enforcement adapter only: identify repository, revision, Linux behavior and gaps before integration. Linux mechanisms supply defense in depth, not a competing orchestration architecture.
+
+Flow telemetry, deterministic resource policy and Resource Guard form one subsystem outside the AI runtime. Begin on demand; `flowd` persistence is conditional on event/recovery needs and measured overhead. Existing systemd user scopes/services own app lifecycle; do not rewrite their cgroup tree. Session resource presets stay within enrolled same-user groups, effective parent ceilings and [permission classifications](security/PERMISSIONS.md). System swap/oomd policy and rootful containers require separately authorized narrow system integration. Soft weights precede hard boundaries; Flow never runs a normal app-kill loop. Freeze is not memory release. Shield constrains authority and Sentinel declares budgets; neither merges into Flow. No production resource thresholds have been chosen.
 
 ## IPC and contracts
 
@@ -54,7 +84,7 @@ Package/config changes use serialized jobs with preflight, authorization, eligib
 | `apps/{control-center,launcher,settings,welcome,agent-ui}` | V1 incrementally | Session UI; shared design tokens |
 | `shell/{panel,dock,notifications,workspace}` | V1 incrementally | Plasma extensions; KWin remains compositor |
 | `services/{assistantd,system-agentd}` | V1 | Session orchestration and narrow privileged execution |
-| `services/performanced` | RESEARCH | Only if existing resource tools fail requirements |
+| `services/flowd` | RESEARCH service; V1 on-demand proof | One candidate per-user Rust Flow controller; replaces speculative performanced, no parallel duplicate |
 | `services/{connectd,memoryd}` | LATER, process need unproven | Device / activity modules first |
 | `security/{policies,warden}` | V1 policies / RESEARCH Warden | Reviewed enforcement configuration |
 | `packages`, `iso`, `installer`, `branding`, `tests` | V1 as phases authorize | Packaging, image, installation, identity and evidence |

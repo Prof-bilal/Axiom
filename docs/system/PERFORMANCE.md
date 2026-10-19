@@ -1,30 +1,53 @@
-# Performance policy
+# Performance policy and Axiom Flow
 
-Status: V1 measurement plan; no tuning has been validated. Last researched: 2026-10-18.
+Status: Phase 0 design and measurement plan; no tuning or Flow behavior validated. Last researched: 2026-10-18. **All measurements: NOT YET MEASURED.** [FLOW.md](FLOW.md) owns the detailed resource-orchestration design; this document owns shared profiles, success criteria and targets.
 
-The default profile is Balanced. Eco and Performance map to hardware-supported power-profiles-daemon profiles where available; Development and Gaming are LATER workload policies, not invented firmware modes. Query supported profiles rather than assuming availability. Do not run competing power managers.
+## Responsiveness policy
 
-| Signal | Proposed use | Safety requirement |
-|---|---|---|
-| CPU, memory, I/O PSI | Explain stalls and correlate workloads | Pressure is evidence of contention, not proof of its cause |
-| cgroups v2 | Attribute agent/container costs; bound background jobs | Never starve compositor, input, or authorization UI |
-| zram | Compare compressed swap under memory pressure | Measure CPU cost, OOM behavior and interaction with disk swap |
-| systemd controls | Evaluate CPUWeight, IOWeight, MemoryHigh | Test degraded operation and restore defaults |
-| battery/thermal sensors | Explain sustained drain or throttling | State missing sensors and observation interval |
+Optimize foreground response and useful background progress, not the lowest RAM number. High allocation can be healthy; excessive stalls, latency and contention need evidence. Flow orchestrates existing Linux/systemd controls without replacing scheduling or requiring an LLM. The performance doctor uses timestamped deterministic facts; optional AI explanation never sits in the control loop.
 
-Start with on-demand read-only telemetry inside existing services; performanced is LATER until sampling, persistence or scheduling justifies a daemon. Diagnostics must show timestamps, sources and uncertainty; model explanations cannot invent causal findings. Process command lines may contain secrets and are excluded by default.
+Use logical application groups from systemd scopes/services and cgroup v2, preserving Plasma's session/application/background boundaries. Avoid disconnected PID rankings and double counting. Unknown mappings/controller support are visible limitations. Classify foreground, visible background, background/heavy, critical, pinned, agent, development, media and game workloads using activity/overrides; details and precedence live in [Flow](FLOW.md).
 
-Proposed reference test environment: x86_64, 4 vCPU/8 GiB VM for repeatable functional comparison; separately one documented integrated-GPU laptop for battery and GPU testing. VM results cannot establish real battery improvement.
+| Signal | Flow policy use | Constraint |
+| --- | --- | --- |
+| Host/group CPU, memory and I/O PSI | Detect sustained stalls and validate pressure-state transitions | Stalls are not a RAM percentage or proof of a specific culprit |
+| Per-workload CPU/memory/swap/I/O | Attribute budget use and compare interventions | Shared resources and device accounting can be incomplete |
+| Focus/visibility/media/task hints | Bounded responsiveness preference; veto unsafe sleep | No content inspection; missing evidence disables risky actions |
+| Unit properties/events | Manual Efficient weights, tested soft budget/reclaim | Inspect effective ancestors; support/write success is not measured efficacy |
+| Battery/thermal/compression | Avoid moving pressure into CPU/energy/storage cost | Physical battery evidence required; no conflicting power managers |
 
-| Metric | Initial TARGET (proposal) | MEASURED |
-|---|---|---|
-| Boot and login-to-interactive | No >5% median regression against pinned baseline | NOT YET MEASURED |
-| Idle RAM / CPU | No >5% regression against branded Plasma baseline | NOT YET MEASURED |
-| Launcher / app startup | No >5% p95 regression | NOT YET MEASURED |
-| Memory-pressure responsiveness | Complete defined interactive scenario without lost input | NOT YET MEASURED |
-| Battery impact | No >5% energy increase in fixed workload | NOT YET MEASURED |
-| Agent idle/execution overhead | Record incremental RSS, wakeups, CPU time and latency | NOT YET MEASURED |
+Proposed states NORMAL → PRESSURED → CONSTRAINED → CRITICAL escalate from observation and soft weights to separately authorized reclaim, compatible sleep proofs and emergency response. Thresholds, dwell/cooldown and retry limits are experimental. CPU-only stalls must not trigger memory reclaim. Freeze stops execution; memory recovery is a separate mechanism, with resume costs. Flow never kills applications as normal optimization; oomd integration is an independent, carefully scoped last-resort experiment.
 
-Use [benchmark methodology](../engineering/BENCHMARKS.md); targets are review thresholds, not product claims. Tune one variable at a time and retain an immediate revert path.
+Start on demand. One lightweight per-user `flowd` is a candidate only if event/lifecycle needs and measured overhead justify persistence; replaces the speculative `performanced` name, not a second daemon. Resource Guard is a module protecting essential interactive progress through reviewed existing controls. No broad memory.min, real-time scheduling or privileged resource-control passthrough. See [systemd integration](SYSTEMD.md).
 
-Sources: [kernel PSI](https://docs.kernel.org/accounting/psi.html), [zram](https://docs.kernel.org/admin-guide/blockdev/zram.html), [systemd resource controls](https://www.freedesktop.org/software/systemd/man/latest/systemd.resource-control.html), [power-profiles-daemon reference](https://upower.pages.freedesktop.org/power-profiles-daemon/).
+## One performance-profile system
+
+Balanced remains the proposed default. Query supported power-profiles-daemon profiles. Eco maps to advertised power-saver where available; Performance to advertised performance. Do not invent hardware modes or compete with another power manager. Development/Gaming are later workload presets layered on a supported hardware profile. Flow weights/budgets do not override safety/user rules. [Upstream power profiles](https://upower.pages.freedesktop.org/power-profiles-daemon/).
+
+| Existing profile | Proposed Flow participation, unvalidated |
+| --- | --- |
+| Eco | Prefer explicitly enrolled Efficient background policy, fewer admitted/concurrent agents; no default automatic sleep |
+| Balanced | Bounded foreground preference proof and conservative background progress; compatible sleep remains optional/later |
+| Performance | Retain responsiveness/fairness and configured job budgets; no unlimited CPU/memory or forced performance when unavailable |
+| Development — LATER | Protect IDE interaction and active compiler progress; keep selected containers/services active; chat may be Efficient |
+| Gaming — LATER | Prioritize enrolled game within bounds; lower background agents; cooperatively defer optional indexing/Sentinel only under explicit policy |
+
+User overrides win over Flow heuristics while machine/security ceilings remain authoritative. Per-app Adaptive, Efficient, Never Restrict, High Priority and temporary Keep Active controls must report effective support. Sleep When Inactive ships only after compatibility and recovery gates. No opaque preference learning in V1.
+
+## Targets and measurement
+
+Success requires reduced stalls and foreground latency under the declared contention scenario, fewer whole-desktop hangs/emergency kills, predictable background progress and acceptable thaw/energy costs. Saving a fixed number of MB alone is not success. Existing 5% regression review gates remain proposals, never evidence of achievement. Device-specific absolute floors require baselines first.
+
+| Metric | TARGET — unvalidated proposal | MEASURED |
+| --- | --- | --- |
+| Boot / login-to-interactive | No >5% median regression beyond noise; startup experiments must improve desktop-ready without losing optional work | NOT YET MEASURED |
+| Idle RAM/CPU | No >5% regression against branded Plasma baseline; separately report Flow incremental PSS/CPU/wakeups | NOT YET MEASURED |
+| Launcher / app startup | No >5% p95 regression beyond noise with adequate samples | NOT YET MEASURED |
+| Foreground input/switch/frame response under pressure | Improve paired latency/stall distributions beyond noise without starvation; absolute target pending baseline | NOT YET MEASURED |
+| Stall exposure / hangs / OOM | Reduce sustained stalls and emergency events under equal offered load; no hidden work loss or Flow kill-as-optimization | NOT YET MEASURED |
+| Resume and app compatibility | First usable frame and intact work/connections; budget calibrated per class; fail closed on incompatibility | NOT YET MEASURED |
+| Battery / thermals / swap | No >5% energy regression beyond noise in fixed hardware workload; report compression CPU and disk writes | NOT YET MEASURED |
+| Agent / Sentinel work | Preserve predeclared minimum throughput and explicit budgets while maintaining foreground latency | NOT YET MEASURED |
+| Flow service overhead | Bounded idle/pressure overhead materially below benefit; numeric budget fixed after POC baseline, before promotion | NOT YET MEASURED |
+
+Follow the existing [benchmark protocol and Flow scenarios](../engineering/BENCHMARKS.md), [test strategy](../engineering/TESTING.md) and [research experiments](../RESEARCH.md). Functional VM checks do not establish hardware GPU/input/battery behavior. Measure 4/8/16/32 GiB systems for zram candidates; choose no universal size, algorithm, pressure threshold or memory protection before data. Keep tuning individually revertible; snapshots cannot undo lost application/network state.

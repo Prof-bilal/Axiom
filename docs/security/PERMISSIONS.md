@@ -22,3 +22,16 @@ Cancel or UI dismissal means deny. No remembered CRITICAL approval. No permissio
 Attempt forged UIDs, concurrent token consumption, token replay across capability/UID/session, expired grants, lock during prompt, swapped paths, package plan drift, Polkit cancellation, missing policy, malicious display strings and unavailable audit storage. Every failure denies without mutation. Test ordinary desktop administration still works independently of the agent.
 
 Sources: [Polkit authority](https://polkit.pages.freedesktop.org/polkit/eggdbus-interface-org.freedesktop.PolicyKit1.Authority.html), [D-Bus authentication and bus credentials](https://dbus.freedesktop.org/doc/dbus-specification.html). See [API](../ai/SYSTEM_AGENT_API.md).
+
+## Flow resource-control classification
+
+Flow has no generic authority to control arbitrary units. [FLOW.md](../system/FLOW.md) defines design scope; this section defines its permission boundary. No model-facing capability is added by this documentation.
+
+| Flow operation | Minimum handling |
+| --- | --- |
+| Local redacted own-user resource observation | OBSERVE session enrollment; no content/other-user inspection |
+| Bounded reversible own-user CPU/I/O weight preset | NORMAL only for explicitly enrolled app groups and approved preset bounds; session grant includes target set, policy generation, allowed changes, expiry and revocation |
+| MemoryHigh/Low changes, targeted reclaim, freeze/thaw proof or service/container pause | SENSITIVE per-request in V1; resolved target/plan and side effects shown; recovery actions may only restore a previously authorized still-matching Flow-owned change |
+| Root/system slice, swap, oomd, security ceilings or rootful runtime configuration | CRITICAL, separate explicit administrator authorization; no general manage-units grant |
+
+A session enrollment is consent scope, not a reusable execution token: each weight adjustment still gets a one-use request-bound executor grant within that scope, with bounded frequency and revocation. Foreground hints cannot enlarge the enrolled target set or escape a parent budget. User overrides revoke conflicting Flow plans; cancellation stops pending interventions. Do not treat a Normal preset as authorization for sleep, reclaim, kill, service stop or package actions. Persistent/automatic disruptive policies require a later reviewed permission model, not a remembered V1 approval. Same-UID unit access is not a sandbox against a compromised unsandboxed app; Shield's enforcement boundary remains necessary. Recoverable settings do not imply recoverable app/network state, and Flow cannot exempt work from kernel OOM.

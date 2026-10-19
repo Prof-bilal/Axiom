@@ -10,7 +10,7 @@ if you must touch a file owned by another run, say so before editing.
 
 Build an AI-native Linux desktop for developers with safe structured automation, privacy, recovery and measured performance. The repository is project memory; no tool or chat is authoritative over maintained project contracts.
 
-**Current phase: Phase 0, foundation and validation.** This task creates documentation/workflows only. No distro implementation is authorized yet. Phase changes require the exit evidence in [PHASES](docs/PHASES.md).
+**Current phase: Phase 0, foundation and validation.** Current work covers documentation/workflows and isolated concept-validation harnesses. No distro implementation is authorized yet. Phase changes require the exit evidence in [PHASES](docs/PHASES.md).
 
 ## Architecture and map
 
@@ -25,6 +25,8 @@ Approved direction: Arch x86-64; upstream `linux` plus `linux-lts`; systemd and 
 ## Non-negotiable rules
 
 AI never gets unrestricted root or arbitrary sudo/shell passthrough. UI never runs as root. Privileged APIs are narrow and independently authorize caller, operation and target. Sensitive actions require authorization; critical actions never execute silently. Deny missing/invalid authority. Keep secrets out of repository and logs. Preserve Wayland boundaries. Attribute actions, verify changes and test recovery where practical; never promise universal undo. Core desktop works without cloud AI. Deterministic routines avoid unnecessary model calls. Every daemon and new privileged component requires justification. Reuse mature Linux primitives. Performance claims require measurements.
+
+Axiom Flow owns resource orchestration: reuse Linux/systemd primitives, keep LLMs out of its control loop and base pressure decisions on real telemetry rather than arbitrary RAM percentages. Never silently kill apps with unsaved work as normal optimization; benchmark resource-policy changes. Update existing docs instead of creating duplicate versions. Read [Flow](docs/system/FLOW.md) and [performance](docs/system/PERFORMANCE.md).
 
 ## Work and completion
 

@@ -1,6 +1,6 @@
 # Implementation phases
 
-Current phase: **0**. These are execution gates, not dates or permission to start implementation now. Phase 0 foundation is authored; upstream/runtime experiments remain open. Advancing requires recorded evidence and an explicit phase-status update. Security applies from Phase 0; Phase 7 integrates enforcement. No mutation becomes available before its authorization and audit gate.
+Current phase: **0**. These are execution gates, not dates or permission to start implementation now. Phase 0 foundation is authored; upstream/runtime experiments remain open. Advancing requires recorded evidence and an explicit phase-status update. Security applies from Phase 0; Phase 7 integrates enforcement. The 2026-10-19 request authorizes concept validation and isolated synthetic test harnesses; it does not advance this phase or authorize distro construction. Follow the dependency-ordered validation waves in [TESTING.md](engineering/TESTING.md). No mutation becomes available before its authorization and audit gate.
 
 ## Phase 0: Research and architecture validation
 
@@ -8,9 +8,9 @@ Current phase: **0**. These are execution gates, not dates or permission to star
 
 **Dependencies:** None.
 
-**Implementation tasks:** Review primary sources and tool formats; identify exact Warden upstream; define trust boundaries, API and recovery experiments.
+**Implementation tasks:** Review primary sources and tool formats; identify exact Warden upstream; define trust boundaries, API and recovery experiments. Flow research covers cgroups/PSI, systemd launch/delegation/controls, reclaim/freezer, zram/zswap, oomd and benchmark design; record E13–E20 with no production thresholds.
 
-**Deliverables:** Reviewed docs, ADR baseline, skills and evidence register.
+**Deliverables:** Reviewed docs, ADR baseline, skills and evidence register; canonical Flow design with source/version limitations and separate Shield/Sentinel integration boundaries.
 
 **Tests:** Run repository validation; adversarial desk review of permission/recovery scenarios.
 
@@ -52,7 +52,7 @@ Current phase: **0**. These are execution gates, not dates or permission to star
 
 **Dependencies:** Phase 1.
 
-**Implementation tasks:** Add Plasma Wayland packages and original branding; configure UEFI boot and LTS fallback; wire existing networking/audio services.
+**Implementation tasks:** Add Plasma Wayland packages and original branding; configure UEFI boot and LTS fallback; wire existing networking/audio services. Capture Flow OFF desktop/pressure baseline and inspect actual Plasma app grouping/controllers; this adds no automatic resource policy.
 
 **Deliverables:** Bootable branded image and versioned package list.
 
@@ -74,7 +74,7 @@ Current phase: **0**. These are execution gates, not dates or permission to star
 
 **Dependencies:** Phase 2.
 
-**Implementation tasks:** Implement shared tokens then launcher/panel/controls incrementally using Plasma extensions; add overlay surface without model authority.
+**Implementation tasks:** Implement shared tokens then launcher/panel/controls incrementally using Plasma extensions; add overlay surface without model authority. Define Control Center Performance states, grouped workload visibility, rule/restore controls and stale/unsupported telemetry UX using the Flow contract.
 
 **Deliverables:** Coherent QML components and keyboard interaction.
 
@@ -96,7 +96,7 @@ Current phase: **0**. These are execution gates, not dates or permission to star
 
 **Dependencies:** Phase 2; UI contract from Phase 3.
 
-**Implementation tasks:** Create minimal Rust workspace; version D-Bus interfaces; add per-user lifecycle and broker skeleton; bounded errors/cancellation; harden units.
+**Implementation tasks:** Create minimal Rust workspace; version D-Bus interfaces; add per-user lifecycle and broker skeleton; bounded errors/cancellation; harden units. Design Flow observation and same-user target identity contracts; all mutating Flow integration remains gated until Phase 7 and an authorized Phase 9 POC.
 
 **Deliverables:** Small service foundation and contract fixtures.
 
@@ -168,7 +168,7 @@ Current phase: **0**. These are execution gates, not dates or permission to star
 
 **Tests:** Denied/expired/replayed approvals, malicious MCP, concurrent caller and audit failure tests.
 
-**Security review:** Independent adversarial review of every enabled mutation and sandbox assumption.
+**Security review:** Independent adversarial review of every enabled mutation and sandbox assumption; include Flow target enrollment, approved weight bounds, disruptive-action consent and recovery authority before its Phase 9 controller can be enabled.
 
 **Demo:** Deny action, authorize scoped action, inspect attributed result.
 
@@ -202,25 +202,25 @@ Current phase: **0**. These are execution gates, not dates or permission to star
 
 ## Phase 9: Performance subsystem and benchmarks
 
-**Objective:** Performance subsystem and benchmarks.
+**Objective:** Flow POC → small Flow V1 candidate within the existing performance phase; protect foreground responsiveness using measured Linux-native controls.
 
-**Dependencies:** Phase 2 baseline, Phases 7–8 integrated candidate.
+**Dependencies:** Phase 2 Flow OFF baseline and mainline/LTS grouping probes; Phase 3 UX/Phase 4 interfaces; Phases 7–8 integrated candidate and authorization/audit/recovery gates. No implementation is authorized by this documentation update.
 
-**Implementation tasks:** Measure declared machine/config; evaluate zram/PSI/cgroup controls and existing power profiles one change at a time; justify daemon only if required.
+**Implementation tasks:** First run an on-demand POC with logical app scopes, bounded telemetry/PSI and manual CPUWeight/IOWeight Efficient/restore on expendable enrolled workloads. Then add a Control Center resource view, foreground/background evidence, zram baseline and isolated MemoryHigh/reclaim experiment. Calibrate a shadow pressure-state machine and bounded foreground/Resource Guard proofs; evaluate one flowd only if lifecycle/recovery needs and measured overhead justify persistence. Freeze/thaw and oomd integration are SHOULD proofs, not mandatory production defaults.
 
-**Deliverables:** Baseline/candidate reports and retained raw samples.
+**Deliverables:** Group/support matrix; manual policy proof with original/effective/restored settings; bounded local interventions; Flow OFF/ON reports/raw samples; explicit unsupported features and no chosen production thresholds without evidence.
 
-**Tests:** Boot/login/idle/launcher/pressure/agent metrics; physical battery tests.
+**Tests:** E13–E20; five Flow contention scenarios in the existing benchmark protocol; background throughput, stalls/latency, overhead, override/crash recovery, media/build/service safety; separate zram 4/8/16/32 GiB matrix and physical energy tests.
 
-**Security review:** Review telemetry privacy and resource-control abuse.
+**Security review:** Independent review of identity/delegation, own-user target bounds, disruptive/root-operation consent, malicious hints, resource starvation and independent thaw path; never broaden Polkit or grant Docker socket access to simplify orchestration.
 
-**Demo:** Explain a slowdown from observed telemetry.
+**Demo:** Explain real pressure without a model; manually place an enrolled background app in Efficient mode, show effective controls and restore them; compare matched-load foreground response and background work. Reclaim proof uses disposable target and records actual outcome.
 
-**Exit criteria:** Predeclared metrics/variance/thresholds recorded; regressions handled; no fabricated wins.
+**Exit criteria:** Flow MUST scope in MVP passes; benchmark evidence includes uncertainty and regressions; essential interaction and useful background progress survive the tested workload; user override/restore works; no Flow app-kill optimizer; overhead/degradation documented. Each SHOULD feature has a separate compatibility/permission/recovery gate and may remain disabled. Auto-sleep/auto-pause are not required for phase exit.
 
-**Risks:** VM artifacts, thermal noise and power conflicts.
+**Risks:** False app grouping, missing controllers, ineffective I/O weights, priority inversion, reclaim thrash, compression CPU/battery cost, oomd collateral damage, measurement noise and controller persistence overhead.
 
-**Out of scope:** Unmeasured tuning and AI scheduling service by default.
+**Out of scope:** Production automatic app sleep, container auto-pause, learned policies, advanced memory prediction, checkpointing, generic GPU/network budgeting, LLM hot path and unmeasured tuning defaults.
 
 ## Phase 10: Installer, update and release pipeline
 
@@ -272,11 +272,11 @@ Current phase: **0**. These are execution gates, not dates or permission to star
 
 **Dependencies:** Phase 10 plus reviewed later scope; connectivity optional.
 
-**Implementation tasks:** Compile reviewed routines to deterministic capability graphs; bind triggers/grants; opt-in structured event memory; workspace intent export.
+**Implementation tasks:** Compile reviewed routines to deterministic capability graphs; bind triggers/grants; opt-in structured event memory; workspace intent export. Flow advanced work is a separately authorized track here: compatibility-tested automatic sleep, runtime-specific container idle management, visible reversible adaptive preferences and startup orchestration; reuse Flow/permission/profile contracts instead of a new resource system.
 
 **Deliverables:** Deterministic routine proof and privacy controls.
 
-**Tests:** Trigger spoofing, stale grant, partial failure, retention/deletion and cross-user isolation.
+**Tests:** Trigger spoofing, stale grant, partial failure, retention/deletion and cross-user isolation; Flow advanced work adds sleep/idle false positives, service continuity, revocation and crash/thaw recovery plus benchmark regression gates.
 
 **Security review:** Review malicious routines, model regeneration and secret-bearing activity.
 

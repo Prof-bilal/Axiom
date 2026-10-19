@@ -19,8 +19,14 @@ These are selected directions, not a tested integration matrix. Consult [researc
 | Tooling | MCP with explicit mediation | V1 optional integration; protocol is not authorization |
 | Enforcement | Polkit, systemd hardening, Linux primitives, portals | V1 policy design; support/ABI probe on chosen kernel |
 | Warden | Exact upstream selection and implementation inspection | RESEARCH; not a release dependency yet |
-| Performance | PSI, cgroups v2, zram, power-profiles-daemon | Evaluate V1; no unmeasured tuning defaults |
+| Flow / performance | Rust, D-Bus, systemd user scopes/services/slices, cgroup v2 accounting/controls, PSI | V1 bounded telemetry/manual policy proof; no scheduler replacement or LLM control loop |
+| Flow memory / power | zram baseline, existing power-profiles-daemon | V1 experiments, no chosen zram default; reuse the single performance-profile system |
+| Flow optional controls | MemoryHigh/targeted reclaim; freezer / systemd FreezeUnit-ThawUnit; systemd-oomd | Isolated reclaim MUST experiment; freeze/oomd SHOULD proofs; probe version, permissions and recovery |
+| Flow service | One proposed per-user flowd, replacing speculative performanced | RESEARCH until lifecycle need and measured overhead justify persistence |
+| Future memory / observability | DAMON, MGLRU tuning, CRIU, eBPF | LATER/RESEARCH only; no custom kernel or mandatory privileged tracing in V1 |
 | Test/delivery | QEMU/KVM, GitHub Actions | V1; KVM availability must be checked; hosted runner fallback is not equivalent performance evidence |
 | Connectivity | KDE Connect, ADB/scrcpy, mDNS/Avahi, BLE, PipeWire, WebRTC, QUIC/TLS | LATER/RESEARCH; minimize transports and permissions |
 
 No custom kernel, compositor, package manager, init, terminal emulator, server database or RPC framework in V1. Dependencies require maintenance, license, security and resource rationale. Avoid a permanent daemon when an existing upstream service, library or short-lived job solves the need.
+
+Flow implementation and support constraints live in [FLOW.md](system/FLOW.md); [research](RESEARCH.md) records upstream versions and future-tech separation. GPU/VRAM and network shaping are not generic cgroup budgets assumed available in V1.

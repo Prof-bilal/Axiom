@@ -56,11 +56,11 @@ Read: [ai/AI_ARCHITECTURE.md](ai/AI_ARCHITECTURE.md), [ai/MODEL_ROUTER.md](ai/MO
 
 ## performance
 
-Boot, RAM/CPU, PSI, zram, cgroups, battery, app launch, agent overhead and benchmark methodology. Reject claims without measurements.
+Axiom Flow resource orchestration, foreground responsiveness, cgroups v2 and effective hierarchy, PSI, zram/zswap evaluation, oomd eligibility, safe app sleep/recovery, boot/startup contention, CPU/I/O/memory budgets, battery, app launch, agent/Sentinel overhead and benchmark methodology. Keep Flow separate from Shield authority and Sentinel test execution; reject claims without measurements or free-RAM-only success criteria.
 
 Expected output: Environment, baseline/candidate raw results, variance, regression thresholds and justified conclusion.
 
-Read: [engineering/BENCHMARKS.md](engineering/BENCHMARKS.md), [system/PERFORMANCE.md](system/PERFORMANCE.md).
+Read: [engineering/BENCHMARKS.md](engineering/BENCHMARKS.md), [system/PERFORMANCE.md](system/PERFORMANCE.md), [system/FLOW.md](system/FLOW.md).
 
 ## connect
 
