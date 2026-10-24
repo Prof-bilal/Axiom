@@ -1,6 +1,6 @@
 # Sandboxing and enforcement
 
-Status: Linux primitives selected for evaluation; exact profiles require VM tests. Warden is RESEARCH, not a dependency. Last verified: 2026-10-18.
+Status: Linux primitives selected for evaluation; exact profiles require VM tests. Warden is RESEARCH, not a dependency. Last verified: 2026-10-24.
 
 | Primitive | Intended role | Limitation / validation |
 |---|---|---|
@@ -17,7 +17,11 @@ Untrusted tools receive no network, secret, broad home mount, agent socket, host
 
 ## Warden evaluation gate
 
-The supplied name is ambiguous. Upstream searches found distinct projects, including [thesimonho/warden](https://github.com/thesimonho/warden), [dsvxmedia/warden](https://github.com/dsvxmedia/warden), and [warden.blog](https://warden.blog/). Their existence does not identify the intended dependency or establish security properties. Do not select one based on its name or README claims.
+**Identified upstream (2026-10-24):** [Prof-bilal/Warden](https://github.com/Prof-bilal/Warden) — the MCP-sandbox runtime at [warden.blog](https://warden.blog/) (npm `warden-sandbox-cli`). License **MIT**; language **Go**; default branch `main`. Reference revision `cd5e8bf2717bd0003194aba8beecd01f33704af9` (2026-10-17, unsigned); latest published release **v0.1.17** (2026-09-14; `SHA256SUMS` plus per-platform binaries). The name is ambiguous in general (unrelated projects include [thesimonho/warden](https://github.com/thesimonho/warden) and [dsvxmedia/warden](https://github.com/dsvxmedia/warden)); only this repository is the intended dependency, and its identity does not by itself establish security properties.
+
+**Inspected statically (not runtime):** the Linux backend applies bubblewrap namespaces (user/net/pid/ipc) with an egress allowlist proxy whose hostname check runs before DNS resolution; deny-by-default bind-mount visibility (ungranted paths return `ENOENT`, not `EACCES`); an explicit environment allowlist; and wall-clock/memory limits with process-tree kill. Fail-closed: with no usable backend it refuses to run rather than execute unsandboxed. Upstream self-reports an 8/8 proof harness and 7/7 attack containment on Linux (Arch x86-64), re-measured in CI; these are upstream claims, not our measurements.
+
+**Unresolved / not verified:** the bypass matrix in [Experiments](#experiments) is **NOT RUN** — no namespace, seccomp, Landlock, network-egress, descriptor-leak or cancellation test has been executed on mainline or LTS kernels here. Upstream's own threat model documents limits (symlinks within granted paths, HTTP/HTTPS-only proxy interception, no CPU throttling, not hardened against a determined local attacker). Single-maintainer, young project (created 2026-09-05) with low adoption; supply-chain and update ownership must be recorded in an ADR before any dependency. Do not treat the identified name, README claims or CI badges as security properties.
 
 Before adoption: identify exact repository, license, maintainer and immutable commit; inspect Linux implementation, packaging, policy parsing and defaults; map supported filesystem, process, network, credential and audit controls to tests; verify native/container backends, supported architectures and kernel requirements; exercise bypasses and missing-prerequisite behavior. Record limitations and supply-chain/update ownership in an ADR. Determine whether it can mediate the selected capability executor or only external MCP/tool workers. Never assume a tool sandbox can safely authorize host package or boot changes. If unsuitable, record evidence and reuse systemd/Linux controls without building a competing general-purpose sandbox.
 

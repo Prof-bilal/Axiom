@@ -1,6 +1,6 @@
 # Research and experiment register
 
-Last research pass: **2026-10-18**. Evidence is official documentation/upstream source where accessible. “Verified” means the cited text was inspected, not that Axiom integration works. ArchWiki/GitLab and some KDE/Calamares pages presented access challenges; blocked pages are not treated as read evidence. Implementation, hardware support and tool discovery remain untested. Source links are retained near the owning contracts rather than copied manuals.
+Last research pass: **2026-10-18** (**2026-10-24**: Warden upstream identified; see [sandboxing](security/SANDBOXING.md)). Evidence is official documentation/upstream source where accessible. “Verified” means the cited text was inspected, not that Axiom integration works. ArchWiki/GitLab and some KDE/Calamares pages presented access challenges; blocked pages are not treated as read evidence. Implementation, hardware support and tool discovery remain untested. Source links are retained near the owning contracts rather than copied manuals.
 
 ## Q1: Is Arch an appropriate base?
 
@@ -45,7 +45,7 @@ Last research pass: **2026-10-18**. Evidence is official documentation/upstream 
 | Performance | Measure policy/audit overhead | Fast dispatch offers no acceptable safety tradeoff |
 | Maintenance | Narrow contracts and regression suites | Unbounded commands and hidden effects |
 
-**Recommendation:** A mandatory. Warden stays RESEARCH: multiple unrelated projects share the name; exact repository/revision/license and Linux behavior are unresolved. Do not claim Warden support from a name or README. **Confidence:** high architecture; no Warden confidence yet. **Unresolved:** enforceable sandbox ABI matrix, broker identity races, one-shot grant lifecycle. **Experiment:** E04–E06. **Sources:** above and [sandboxing](security/SANDBOXING.md), [threat model](security/THREAT_MODEL.md). **Last verified:** 2026-10-18.
+**Recommendation:** A mandatory. Warden stays RESEARCH: the intended upstream is now identified ([Prof-bilal/Warden](https://github.com/Prof-bilal/Warden), MIT), but its Linux enforcement behavior is not yet validated by our own bypass tests. Do not claim Warden support from a name, README or CI badge. **Confidence:** high architecture; no Warden confidence yet. **Unresolved:** enforceable sandbox ABI matrix, broker identity races, one-shot grant lifecycle, Warden Linux bypass results on mainline/LTS. **Experiment:** E04–E06. **Sources:** above and [sandboxing](security/SANDBOXING.md), [threat model](security/THREAT_MODEL.md). **Last verified:** 2026-10-24.
 
 ## Q4: What does snapshot recovery actually cover?
 
@@ -125,7 +125,7 @@ Last research pass: **2026-10-18**. Evidence is official documentation/upstream 
 
 ## Experiment register
 
-All experiments are **NOT RUN**. Owners are specialist roles in [SUBAGENTS](SUBAGENTS.md). Save future raw artifacts with build/input manifests, versions, command lines, timestamps, exit status, expected/observed results and redacted logs. A failed experiment updates the ADR and phase gate; it is not silently worked around.
+All experiments are **NOT RUN** except where a status is noted; E05 identification is recorded (2026-10-24) while its runtime bypass tests remain NOT RUN. Owners are specialist roles in [SUBAGENTS](SUBAGENTS.md). Save future raw artifacts with build/input manifests, versions, command lines, timestamps, exit status, expected/observed results and redacted logs. A failed experiment updates the ADR and phase gate; it is not silently worked around.
 
 | ID / owner / phase | Experiment and pass condition |
 | --- | --- |
@@ -133,7 +133,7 @@ All experiments are **NOT RUN**. Owners are specialist roles in [SUBAGENTS](SUBA
 | E02 linux-base + QA / 1, 8 | UEFI/Btrfs/root+package database+ESP recovery layout; recovered state boots coherently or clear unsupported coverage blocks commit |
 | E03 desktop + QA / 3 | Plasma/QML packaging across pinned versions, keyboard/a11y/multi-DPI; portals deny unsolicited input/capture |
 | E04 security + systems-rust / 4, 7 | D-Bus authenticated peer, UID/session/disconnect, grant replay/expiry/target swap and Polkit confusion; no unauthorized mutation |
-| E05 security + researcher / 0, 7 | Identify Warden repo/revision/license; inspect implementation; namespace/seccomp/Landlock/network bypass tests on main/LTS; reject unsupported assumptions |
+| E05 security + researcher / 0, 7 | Identify Warden repo/revision/license; inspect implementation; namespace/seccomp/Landlock/network bypass tests on main/LTS; reject unsupported assumptions. **IDENTIFIED 2026-10-24**: [Prof-bilal/Warden](https://github.com/Prof-bilal/Warden) MIT `cd5e8bf2…` v0.1.17, implementation inspected statically (see [sandboxing](security/SANDBOXING.md)); bypass tests **NOT RUN** |
 | E06 security + QA / 7 | Fail audit persistence, broker crash and disk-full; no unrecorded privileged mutation, explicit uncertain outcomes reconciled |
 | E07 QA + linux-base / 8 | Hook failure, power-loss simulation, exhausted snapshot space, failed boot and rollback bypass; test surviving audit and manual recovery |
 | E08 ai-runtime + QA / 5 | One cloud and Ollama conform to neutral streaming/error/cancel types; no cloud required for core desktop; no implicit content forwarding |

@@ -120,6 +120,8 @@ Accepted direction means the project chooses a technology subject to integration
 
 **Decision:** No Warden dependency until repo/revision/license/Linux tests established.
 
+**Progress (2026-10-24):** Repository, license and revision identified ([Prof-bilal/Warden](https://github.com/Prof-bilal/Warden), MIT, `cd5e8bf2717bd0003194aba8beecd01f33704af9`, release v0.1.17) and its Linux backend inspected statically; see [sandboxing](security/SANDBOXING.md). Our own namespace/seccomp/Landlock/network bypass tests on mainline and LTS remain **NOT RUN**, so the dependency gate is unchanged.
+
 **Reasons:** Prevents invented security properties; avoids duplicate sandbox architecture.
 
 **Tradeoffs:** Evaluation can delay enforcement integration.
