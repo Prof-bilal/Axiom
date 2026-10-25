@@ -127,3 +127,10 @@ xdg-utils
 xfsprogs
 xl2tpd
 zsh
+
+# --- Axiom Phase 2: Plasma 6 Wayland desktop ---
+plasma-meta
+konsole
+dolphin
+kate
+xorg-xwayland

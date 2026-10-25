@@ -1,9 +1,8 @@
 # Reviewed Axiom archiso profile
 
-This is the reviewed project profile for the Phase 1 minimal Axiom image. It is a
-vendored copy of the upstream `releng` profile with the small, explicit differences
-listed below. It is **not** a complete desktop; branding, Plasma, custom packages and
-the installer are out of scope until later phases.
+This is the reviewed project profile for the Axiom image. Phase 1 built the minimal
+releng-based image; Phase 2 adds the Plasma 6 Wayland desktop. It is **not** yet a
+branded or custom desktop, and the installer stays out of scope until its phase.
 
 ## Provenance
 
@@ -22,10 +21,16 @@ re-apply the differences; do not hand-edit files that upstream owns.
 | `profiledef.sh` | `iso_name="axiom"`, `iso_label="AXIOM_<YYYYMM>"`, `iso_publisher="Axiom"`, `iso_application="Axiom Live/Rescue Medium"`, `install_dir="axiom"` | Project identity + non-colliding install dir. All other keys (bootmodes, squashfs tool options, `bootstrap_tarball_compression`, `file_permissions`) are unchanged from releng. |
 | `efiboot/loader/entries/01-archiso-linux.conf` | append `console=ttyS0,115200` to kernel `options` | Headless QEMU boot assertion (serial capture). |
 | `efiboot/loader/entries/02-archiso-speech-linux.conf` | append `console=ttyS0,115200` to kernel `options` | Same, for the speech entry. |
+| `packages.x86_64` | **Phase 2:** appended `plasma-meta`, `konsole`, `dolphin`, `kate`, `xorg-xwayland` | Bootable Plasma 6 Wayland desktop. releng's base list is otherwise unchanged. |
 
-`packages.x86_64` is unchanged from releng for Phase 1 and recorded as the declared
-input manifest. `pacman.conf` keeps `SigLevel = Required DatabaseOptional` (signatures
-are never disabled).
+`pacman.conf` keeps `SigLevel = Required DatabaseOptional` (signatures are never
+disabled). The declared list is the input manifest.
+
+**Open item (Phase 2, discovered 2026-10-25):** Plasma 6.8's `plasma-meta` depends on
+`plasma-login-manager` (KDE's own login manager) and pulls only `sddm-kcm`, not SDDM.
+The live-session login/autologin mechanism must be determined from that component's own
+documentation and verified in a build — no session config is written here, and SDDM is
+deliberately not assumed.
 
 ## Inspect
 
