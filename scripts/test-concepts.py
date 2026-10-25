@@ -33,9 +33,11 @@ class Foundation(unittest.TestCase):
         self.root = Path(self.temp.name)
 
     def fixture(self):
-        for folder in ('docs', 'portable-skills', '.opencode', '.commandcode'):
+        for folder in ('docs', 'portable-skills', '.opencode', '.commandcode',
+                       'scripts', 'iso', 'tests', '.github'):
             if (ROOT / folder).exists():
-                shutil.copytree(ROOT / folder, self.root / folder)
+                shutil.copytree(ROOT / folder, self.root / folder,
+                                symlinks=True, ignore_dangling_symlinks=True)
         for file in ('README.md', 'AGENTS.md'):
             shutil.copyfile(ROOT / file, self.root / file)
 

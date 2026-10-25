@@ -2,6 +2,7 @@
 """Dependency-free foundation checks; does not claim runtime/ISO validation."""
 from pathlib import Path
 import re
+import runpy
 import sys
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -68,6 +69,18 @@ def validate(root):
         for path in adapters:
             if 'docs/SUBAGENTS.md' not in path.read_text():
                 errors.append(f'Adapter lacks canonical role reference: {path}')
+    phase1 = ('iso/profile/profiledef.sh', 'scripts/build-iso.sh',
+              'scripts/check-iso-profile.py', 'tests/qemu-boot.sh',
+              '.github/workflows/validate.yml',
+              'docs/engineering/PHASE0_EVIDENCE.json',
+              'docs/engineering/PHASE1_EVIDENCE.md')
+    for item in phase1:
+        if not (root / item).is_file():
+            errors.append(f'Missing Phase 1 artifact: {item}')
+    if (root / 'iso/profile').is_dir():
+        module = runpy.run_path(str(root / 'scripts' / 'check-iso-profile.py'),
+                                run_name='iso_profile_check')
+        errors += module['validate'](root)
     return errors
 
 if __name__ == '__main__':

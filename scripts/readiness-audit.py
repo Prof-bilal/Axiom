@@ -2,7 +2,10 @@
 """Audit whether Axiom has evidence to begin Phase 1 development.
 
 This is a read-only gate. It does not install packages, alter host state, or
-turn skipped concept checks into passes.
+turn skipped concept checks into passes. Experiment evidence is phase-scoped:
+items a later phase produces (E01/E02/E03/E09/E12 ...) are recorded as DEFERRED
+with a target phase and do not block Phase 1 entry; Phase-0-scoped items must
+carry a real status, and COMPLETE requires an artifact that exists.
 """
 from __future__ import annotations
 
@@ -16,6 +19,7 @@ import tempfile
 
 ROOT = Path(__file__).resolve().parents[1]
 REQUIRED_TOOLS = ("qemu-system-x86_64", "qemu-img", "mkarchiso")
+EXPERIMENTS = tuple(f"E{n:02d}" for n in range(1, 21))
 
 
 def command_ok(command: list[str]) -> bool:
@@ -75,12 +79,34 @@ def main() -> int:
     if not canonical_skills:
         blockers.append("canonical .agents/skills are not installed")
 
-    evidence_file = ROOT / "docs/engineering/CONCEPT_CHECKS_2026-10-19.json"
+    evidence_file = ROOT / "docs/engineering/PHASE0_EVIDENCE.json"
     recorded = json.loads(evidence_file.read_text()) if evidence_file.exists() else {}
-    experiments = recorded.get("runtime_experiments_E01_E20")
-    evidence["recorded_runtime_experiments"] = experiments
-    if experiments != "COMPLETE":
-        blockers.append("runtime experiments E01-E20 are not recorded complete")
+    experiments = recorded.get("experiments", {})
+    missing = [name for name in EXPERIMENTS if name not in experiments]
+    phase0_blocked: list[str] = []
+    phase0_status: dict[str, object] = {}
+    deferred: dict[str, object] = {}
+    for name in EXPERIMENTS:
+        entry = experiments.get(name) or {}
+        status = entry.get("status")
+        if entry.get("scope") == "phase0":
+            if status in (None, "DEFERRED"):
+                phase0_blocked.append(f"{name} ({status or 'unrecorded'})")
+            elif status == "COMPLETE":
+                artifact = ROOT / str(entry.get("evidence", ""))
+                if not entry.get("evidence") or not artifact.exists():
+                    phase0_blocked.append(f"{name} COMPLETE without an existing artifact")
+            phase0_status[name] = status
+        else:
+            deferred[name] = f"phase {entry.get('target', '?')}"
+    evidence["phase0_experiments"] = phase0_status
+    evidence["experiments_pending_phase"] = deferred
+    if not evidence_file.exists():
+        blockers.append("docs/engineering/PHASE0_EVIDENCE.json is missing")
+    if missing:
+        blockers.append("experiments missing from evidence: " + ", ".join(missing))
+    if phase0_blocked:
+        blockers.append("phase0 experiments not evidenced: " + ", ".join(phase0_blocked))
 
     print("Axiom Phase 1 readiness: READY" if not blockers else "Axiom Phase 1 readiness: BLOCKED")
     for blocker in blockers:

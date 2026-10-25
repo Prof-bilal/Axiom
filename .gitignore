@@ -8,3 +8,17 @@
 .DS_Store
 *.swp
 *~
+
+# Phase 1 ISO build artifacts (regenerated; never commit)
+iso/work/
+iso/out/
+*.iso
+*.iso.sha256
+*.qcow2
+serial.log
+OVMF_VARS*.fd
+vm-vars.fd
+
+# Python bytecode
+__pycache__/
+*.pyc

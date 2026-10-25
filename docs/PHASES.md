@@ -1,8 +1,20 @@
 # Implementation phases
 
-Current phase: **0**. These are execution gates, not dates or permission to start implementation now. Phase 0 foundation is authored; upstream/runtime experiments remain open. Advancing requires recorded evidence and an explicit phase-status update. Security applies from Phase 0; Phase 7 integrates enforcement. The 2026-10-19 request authorizes concept validation and isolated synthetic test harnesses; it does not advance this phase or authorize distro construction. Follow the dependency-ordered validation waves in [TESTING.md](engineering/TESTING.md). No mutation becomes available before its authorization and audit gate.
+Current phase: **1**. Phase 0 exit is recorded (2026-10-24, [FOUNDATION_VALIDATION](engineering/FOUNDATION_VALIDATION.md)); the project owner authorized Phase 1 on 2026-10-24 for the minimal reproducible archiso build only. These are execution gates, not dates. Advancing requires recorded evidence and an explicit phase-status update. Security applies from Phase 0; Phase 7 integrates enforcement. The 2026-10-19 request authorized concept validation; the 2026-10-24 authorization advances to Phase 1. Follow the dependency-ordered validation waves in [TESTING.md](engineering/TESTING.md). No mutation becomes available before its authorization and audit gate.
+
+## Phase status log
+
+| Phase | Status | Evidence |
+| --- | --- | --- |
+| 0 Research and architecture validation | EXIT MET 2026-10-24 | [FOUNDATION_VALIDATION](engineering/FOUNDATION_VALIDATION.md), [PHASE0_EVIDENCE](engineering/PHASE0_EVIDENCE.json) |
+| 1 Repository foundation and reproducible Arch/archiso build | AUTHORIZED 2026-10-24, in progress | [PHASE1_EVIDENCE](engineering/PHASE1_EVIDENCE.md) |
+| 2–12 | Not started | — |
+
+Phase 1 authorization covers only the reviewed archiso profile, build script, QEMU boot harness, CI validation and its evidence. It does not authorize branding, Plasma, custom packages, the installer, or any `apps/`, `shell/` or `services/` component. E01/E02 supply the Phase 1 exit evidence; E03/E09/E12 remain deferred to their own phases.
 
 ## Phase 0: Research and architecture validation
+
+**Status:** EXIT MET 2026-10-24.
 
 **Objective:** Research and architecture validation.
 

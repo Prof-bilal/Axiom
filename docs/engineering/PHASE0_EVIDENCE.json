@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "recorded_utc": "2026-10-24",
+  "phase_exit": 0,
+  "next_phase": 1,
+  "note": "Phase 0 exit evidence. An experiment may only be COMPLETE with a real artifact that exists; anything that requires implementation is DEFERRED to its phase, never silently marked complete. E05/E10 and E13-E20 are the Phase-0-scoped items (identify / record); E01-E04, E06-E09, E11-E12 are produced by later phases.",
+  "experiments": {
+    "E01": { "scope": "phase1", "status": "DEFERRED", "target": 1, "pass_condition": "Two independent archiso builds; compare manifests/hashes; boot each with retained logs" },
+    "E02": { "scope": "phase1", "status": "DEFERRED", "target": 1, "pass_condition": "UEFI/Btrfs recovery layout boots coherently or unsupported coverage blocks commit" },
+    "E03": { "scope": "phase3", "status": "DEFERRED", "target": 3, "pass_condition": "Plasma/QML packaging, keyboard/a11y/multi-DPI; portals deny unsolicited input/capture" },
+    "E04": { "scope": "phase4", "status": "DEFERRED", "target": 4, "pass_condition": "Authenticated D-Bus peer, grant replay/expiry/target swap, Polkit confusion; no unauthorized mutation" },
+    "E05": { "scope": "phase0", "status": "IDENTIFIED", "evidence": "docs/security/SANDBOXING.md", "note": "Upstream identified (Prof-bilal/Warden, MIT, cd5e8bf2, v0.1.17), Linux backend inspected statically; runtime bypass tests NOT RUN" },
+    "E06": { "scope": "phase7", "status": "DEFERRED", "target": 7, "pass_condition": "Audit failure, broker crash, disk-full; no unrecorded privileged mutation" },
+    "E07": { "scope": "phase8", "status": "DEFERRED", "target": 8, "pass_condition": "Hook failure, power-loss, exhausted snapshot space, failed boot, recovery; surviving audit" },
+    "E08": { "scope": "phase5", "status": "DEFERRED", "target": 5, "pass_condition": "One cloud + Ollama conform to neutral streaming/error/cancel types" },
+    "E09": { "scope": "phase9", "status": "DEFERRED", "target": 9, "pass_condition": "Baseline/candidate boot, idle, latency, pressure, agent overhead with variance" },
+    "E10": { "scope": "phase0", "status": "PARTIAL", "evidence": "docs/engineering/FOUNDATION_VALIDATION.md", "note": "codex 0.163.0 / opencode 2.1.3 / commandcode 1.88.0 discovered; freebuff not installed; runtime permission smoke pending" },
+    "E11": { "scope": "phase11", "status": "DEFERRED", "target": 11, "pass_condition": "Android pairing/revocation, discovery spoof/MITM, traversal, feature matrix" },
+    "E12": { "scope": "phase10", "status": "DEFERRED", "target": 10, "pass_condition": "Disposable Calamares install, signed full update, interrupted-update recovery" },
+    "E13": { "scope": "phase0", "status": "RECORDED", "evidence": "docs/system/FLOW.md", "note": "Flow research recorded with sources/limits; no production thresholds chosen. Execution deferred to Phase 9." },
+    "E14": { "scope": "phase0", "status": "RECORDED", "evidence": "docs/system/FLOW.md", "note": "Recorded design only; execution deferred to Phase 9." },
+    "E15": { "scope": "phase0", "status": "RECORDED", "evidence": "docs/system/FLOW.md", "note": "Recorded design only; execution deferred to Phase 9." },
+    "E16": { "scope": "phase0", "status": "RECORDED", "evidence": "docs/system/FLOW.md", "note": "Recorded design only; execution deferred to Phase 9." },
+    "E17": { "scope": "phase0", "status": "RECORDED", "evidence": "docs/system/FLOW.md", "note": "Recorded design only; execution deferred to Phase 9." },
+    "E18": { "scope": "phase0", "status": "RECORDED", "evidence": "docs/system/FLOW.md", "note": "Recorded design only; execution deferred to Phase 9." },
+    "E19": { "scope": "phase0", "status": "RECORDED", "evidence": "docs/system/FLOW.md", "note": "Recorded design only; execution deferred to Phase 9." },
+    "E20": { "scope": "phase0", "status": "RECORDED", "evidence": "docs/system/FLOW.md", "note": "Recorded design only; execution deferred to Phase 9." }
+  }
+}

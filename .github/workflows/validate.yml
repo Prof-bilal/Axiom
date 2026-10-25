@@ -1,0 +1,26 @@
+name: foundation-validation
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Foundation validation
+        run: python3 scripts/validate-repo.py
+      - name: Local concept checks
+        run: python3 scripts/test-concepts.py
+      - name: ISO profile checks
+        run: python3 scripts/check-iso-profile.py
+
+# The privileged archiso build job is intentionally NOT defined here. Building an
+# ISO needs root, KVM and package downloads; per docs/engineering/TESTING.md it must
+# run on an isolated ephemeral builder and untrusted pull-request code must never run
+# on a persistent privileged runner. Add it as a separate self-hosted job when such a
+# runner exists, gated so it never runs on pull requests.

@@ -2,7 +2,7 @@
 
 The Linux desktop built for the AI-agent era: a cohesive, privacy-conscious environment for developers, with structured automation, visible permissions and practical recovery.
 
-**Status: repository foundation / Phase 0. No operating system, ISO, installer or daemon is implemented here.** Architecture choices are project decisions, not compatibility or performance claims. No release is available.
+**Status: repository foundation / Phase 1. The reviewed archiso profile, build script and QEMU boot harness exist; no desktop, installer or daemon is implemented yet.** Architecture choices are project decisions, not compatibility or performance claims. No release is available.
 
 Start with [AGENTS.md](AGENTS.md), [vision](docs/VISION.md), [MVP](docs/MVP.md), [architecture](docs/ARCHITECTURE.md) and [phase gates](docs/PHASES.md). Durable knowledge belongs in this repository; coding tools are replaceable.
 
@@ -18,6 +18,8 @@ See the [validation record](docs/engineering/FOUNDATION_VALIDATION.md) for compl
 ```sh
 python3 scripts/validate-repo.py
 ```
+
+Phase 1 adds `python3 scripts/check-iso-profile.py` (static profile checks), `sudo scripts/build-iso.sh` (reproducible archiso build with evidence capture) and `tests/qemu-boot.sh` (UEFI boot harness).
 
 Skills target `.agents/skills/`. This session's environment mounts `.agents` read-only, so authored skills are durably staged in `portable-skills/`. After that restriction is removed, run `python3 scripts/install-skills.py` and validate again. The staging directory is not claimed to be automatically discovered by any tool.
 

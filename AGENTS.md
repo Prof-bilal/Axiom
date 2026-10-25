@@ -10,7 +10,7 @@ if you must touch a file owned by another run, say so before editing.
 
 Build an AI-native Linux desktop for developers with safe structured automation, privacy, recovery and measured performance. The repository is project memory; no tool or chat is authoritative over maintained project contracts.
 
-**Current phase: Phase 0, foundation and validation.** Current work covers documentation/workflows and isolated concept-validation harnesses. No distro implementation is authorized yet. Phase changes require the exit evidence in [PHASES](docs/PHASES.md).
+**Current phase: Phase 1, foundation and reproducible build.** Phase 0 exit is recorded 2026-10-24 and the project owner authorized Phase 1 (minimal reviewed archiso profile, build script, QEMU boot harness, CI validation and evidence). This authorization does not extend to branding, Plasma, custom packages, the installer, or any `apps/`, `shell/` or `services/` component. Phase changes require the exit evidence in [PHASES](docs/PHASES.md).
 
 ## Architecture and map
 
@@ -19,8 +19,9 @@ Approved direction: Arch x86-64; upstream `linux` plus `linux-lts`; systemd and 
 - `docs/`: product, architecture, contracts, security, phases and evidence.
 - `.agents/skills/`: canonical portable workflows; read the relevant SKILL.md. In this restricted session only, `portable-skills/` stages their contents; see README.
 - `docs/SUBAGENTS.md`: canonical roles; tool adapters only point there.
-- `scripts/`: deterministic foundation validation/skill installation.
-- Future `apps/`, `shell/`, `services/`, `security/`, `packages/`, `iso/`, `installer/`, `branding/`, `tests/` exist only when implementation warrants them.
+- `scripts/`: deterministic foundation validation, skill installation and the Phase 1 ISO build/check helpers.
+- `iso/`: reviewed archiso profile and build output (Phase 1); `tests/`: QEMU boot harness (Phase 1).
+- Future `apps/`, `shell/`, `services/`, `security/`, `packages/`, `installer/`, `branding/` exist only when their phase warrants them.
 
 ## Non-negotiable rules
 
@@ -34,6 +35,6 @@ Read this file, current phase, relevant docs/skill and implementation. Define ac
 
 Documentation follows behavior/architecture changes; link canonical contracts rather than copying them. Label V1/LATER/RESEARCH, targets versus measurements and unverified assumptions. No fabricated APIs, compatibility, benchmarks or empty TODO scaffolds. Add nested AGENTS.md only with real subsystem directories; no CLAUDE.md.
 
-Done means implementation complete, targeted tests and integration pass, failure and security behavior addressed, reproducible build evidence retained, no known regression, documentation updated, and applicable benchmarks/recovery tests recorded. Foundation changes use `python3 scripts/validate-repo.py`; `python3 scripts/install-skills.py` is available only when `.agents` is writable. ISO/package/VM commands are future upstream procedures, not implemented project wrappers.
+Done means implementation complete, targeted tests and integration pass, failure and security behavior addressed, reproducible build evidence retained, no known regression, documentation updated, and applicable benchmarks/recovery tests recorded. Foundation changes use `python3 scripts/validate-repo.py`; `python3 scripts/install-skills.py` requires a writable `.agents`. Phase 1 adds `python3 scripts/check-iso-profile.py`, `sudo scripts/build-iso.sh` and `tests/qemu-boot.sh`. Other ISO/package/VM commands remain upstream procedures, not implemented project wrappers.
 
 Read [architecture](docs/ARCHITECTURE.md), [decisions](docs/DECISIONS.md), [security](docs/security/SECURITY.md), [testing](docs/engineering/TESTING.md) and [workflow](docs/AGENT_WORKFLOW.md). No feature advances merely because code exists.
