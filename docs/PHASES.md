@@ -1,6 +1,6 @@
 # Implementation phases
 
-Current phase: **1 — exit met 2026-10-25**. Phase 0 exit is recorded (2026-10-24, [FOUNDATION_VALIDATION](engineering/FOUNDATION_VALIDATION.md)); the project owner authorized Phase 1 on 2026-10-24 for the minimal reproducible archiso build only, whose exit criteria are now met ([PHASE1_EVIDENCE](engineering/PHASE1_EVIDENCE.md)). **Phase 2 is not yet authorized**: branding, Plasma packages, desktop UI, custom packages, the installer and any `apps/`/`shell/`/`services/` component require a new explicit owner authorization. These are execution gates, not dates. Advancing requires recorded evidence and an explicit phase-status update. Security applies from Phase 0; Phase 7 integrates enforcement. The 2026-10-19 request authorized concept validation; the 2026-10-24 authorization advanced to Phase 1. Follow the dependency-ordered validation waves in [TESTING.md](engineering/TESTING.md). No mutation becomes available before its authorization and audit gate.
+Current phase: **2 — authorized 2026-10-25**. Phase 0 exit is recorded (2026-10-24, [FOUNDATION_VALIDATION](engineering/FOUNDATION_VALIDATION.md)); the project owner authorized Phase 1 on 2026-10-24 for the minimal reproducible archiso build, whose exit criteria are met ([PHASE1_EVIDENCE](engineering/PHASE1_EVIDENCE.md)). **Phase 2 is authorized (2026-10-25)**: branded Plasma 6 Wayland desktop, UEFI boot with LTS fallback, and wiring existing network/audio services; original branding and desktop UI are in scope. The AI runtime, security enforcement, the installer and the first-party product integrations are **not** authorized by this phase — they follow their own gates. These are execution gates, not dates. Advancing requires recorded evidence and an explicit phase-status update. Security applies from Phase 0; Phase 7 integrates enforcement. Follow the dependency-ordered validation waves in [TESTING.md](engineering/TESTING.md). No mutation becomes available before its authorization and audit gate.
 
 ## Phase status log
 
@@ -8,7 +8,8 @@ Current phase: **1 — exit met 2026-10-25**. Phase 0 exit is recorded (2026-10-
 | --- | --- | --- |
 | 0 Research and architecture validation | EXIT MET 2026-10-24 | [FOUNDATION_VALIDATION](engineering/FOUNDATION_VALIDATION.md), [PHASE0_EVIDENCE](engineering/PHASE0_EVIDENCE.json) |
 | 1 Repository foundation and reproducible Arch/archiso build | EXIT MET 2026-10-25 (owner sign-off) | [PHASE1_EVIDENCE](engineering/PHASE1_EVIDENCE.md) |
-| 2–12 | Not started | — |
+| 2 Bootable branded KDE desktop | AUTHORIZED 2026-10-25 | — |
+| 3–12 | Not started | — |
 
 Phase 1 authorization covers only the reviewed archiso profile, build script, QEMU boot harness, CI validation and its evidence. It does not authorize branding, Plasma, custom packages, the installer, or any `apps/`, `shell/` or `services/` component. E01/E02 supply the Phase 1 exit evidence; E03/E09/E12 remain deferred to their own phases.
 
@@ -61,6 +62,8 @@ Phase 1 authorization covers only the reviewed archiso profile, build script, QE
 **Out of scope:** Custom shell, AI runtime and installer.
 
 ## Phase 2: Bootable branded KDE desktop
+
+**Status:** AUTHORIZED 2026-10-25.
 
 **Objective:** Bootable branded KDE desktop.
 

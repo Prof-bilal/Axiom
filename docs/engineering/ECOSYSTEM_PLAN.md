@@ -30,8 +30,25 @@ sequence for working across Axiom and the five first-party projects
 | 7 | ModelCheck: add licence; wire as the model promotion gate | ModelCheck | Licence file; candidate-vs-baseline gate on the user's workload | owner licence choice |
 | 8 | Axiom Phase 6→7: child registry, read-only children, then enforcement + audit via Warden | Axiom | Contract + denial tests; no silent critical action | steps 3–7 |
 
-**Recommended start: step 2 and step 3 in parallel.** Step 2 gives the desktop the rest of the
-work hangs off; step 3 is the security narrative and needs no dependency on Axiom's UI.
+## Sequencing decision (2026-10-25)
+
+Owner decision: **build Axiom itself first, then the AI system, then security enforcement, then
+the five first-party projects.**
+
+1. **Axiom foundation and desktop** — Phase 2 (branded Plasma 6 desktop), then Phase 3 (custom
+   desktop experience): shell, launcher/overlay surfaces, design tokens.
+2. **Axiom AI system** — Phases 4–6: parent `assistantd`, provider router, typed capability
+   contract, child-agent registry and the read-only child set.
+3. **Security enforcement** — Phase 7 with Warden (step 3 below).
+4. **The five projects** — steps 4–7 land once Axiom can host them.
+
+Steps 3–7 below are therefore **deferred** until Axiom's own foundation and AI system exist. The
+contracts are written now ([WARDEN_INTEGRATION](../security/WARDEN_INTEGRATION.md)) so the
+products shape to Axiom, not the other way round.
+
+Write model when those steps start: a **feature branch + pull request per repository** — never a
+commit straight to a sibling project's `main` (owner decision 2026-10-25). ModelCheck licence:
+**MIT** (owner decision 2026-10-25).
 
 ## Cross-cutting rules
 

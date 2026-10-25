@@ -14,9 +14,9 @@ the core desktop still works when any of them is absent.
 
 All five are authored by `Prof-bilal`, the same owner as Axiom. Consequences, stated plainly:
 
-- **Licence permission is not a blocker.** The owner can add or change licences. The one real
-  gap is that ModelCheck currently ships **no licence file**; the action is to add one (align
-  to whatever Axiom ships under), not to negotiate rights.
+- **Licence permission is not a blocker.** The owner can add or change licences. ModelCheck
+  currently ships **no licence file**; the owner decided **MIT** on 2026-10-25 — the remaining
+  action is to commit the file, not to negotiate rights.
 - **Declaration is still required.** The release licence-inventory gate
   ([release](../engineering/RELEASE.md)) needs a declared licence per shipped artifact,
   regardless of ownership. Ownership removes the permission question, not the paperwork.
@@ -41,7 +41,7 @@ the visible default, not a settings toggle. That framing drives the shaping belo
 | **Warden** | Execution enforcement (conceptual **Shield** boundary) | Typed interface beyond the CLI (library or service); policy **generated from the validated capability request**, not hand-written YAML; audit events correlated to Axiom request/audit IDs; permission-class mapping | Bypass matrix on mainline/LTS (NOT RUN) + policy-generation and audit-correlation tests |
 | **RepoSpine** | Context child engine | A defined **multi-root/system** story (today it is repo-scoped); a stable library or MCP path a Rust parent can call; freshness surfaced in UI; decide the Node ≥22.13 runtime floor | Context quality/latency on a real workspace; runtime-packaging proof |
 | **ContextGit** | Runtime context VCS | A headless **runtime API** (not the Electron app); a non-repo mode for session/agent context; per-child context branch isolation and merge; keep context rollback distinct from system rollback | Per-child isolation + no-collision test; branch/merge rollback proof |
-| **ModelCheck** | Model promotion gate | Become the gate that a candidate model/provider must pass against the current default before selection; wire into router adapter acceptance; support local/Ollama; attach the report to the change | Add licence; evaluation reproducibility; delta vs baseline on the user's workload |
+| **ModelCheck** | Model promotion gate | Become the gate that a candidate model/provider must pass against the current default before selection; wire into router adapter acceptance; support local/Ollama; attach the report to the change | Add the **MIT** licence file (decided 2026-10-25); evaluation reproducibility; delta vs baseline on the user's workload |
 | **Morphix** | Desktop customization | Land its own Phases 5–6 (transaction/rollback engine + KDE adapter writes); align its change-plan/snapshot model with Axiom's change-plan and [Btrfs rollback](../system/BTRFS_ROLLBACK.md); expose a typed interface for the Customization child | Transaction + rollback proof; permission mapping (appearance = NORMAL, system-wide = CRITICAL) |
 
 ### Warden — the security answer
@@ -122,5 +122,5 @@ Step-by-step sequence for closing these: [ecosystem work plan](../engineering/EC
 - RepoSpine as a *system* context engine, or repo-scoped plus a thin workspace layer?
 - ContextGit runtime API and a non-repo (session) context mode.
 - Warden as a typed library/service vs a CLI wrapper for Axiom's executor.
-- ModelCheck licence choice and where evaluation runs (on-device, CI, or both).
+- ModelCheck runs: on-device, CI, or both.
 - Which Morphix phases must land before Phase 3 depends on it.
