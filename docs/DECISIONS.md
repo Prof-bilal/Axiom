@@ -192,6 +192,63 @@ Accepted direction means the project chooses a technology subject to integration
 
 **Revisit When:** E13–E20 show no net responsiveness benefit or unacceptable overhead/compatibility; new persistent process or broader authority requires documented alternatives and independent review. DAMON/MGLRU tuning/CRIU/eBPF are later experiments, not automatic additions.
 
+## ADR-011: One parent AI system with bounded child agents
+
+**Status:** Research direction; no runtime. Design in [agent system](ai/AGENT_SYSTEM.md).
+
+**Context:** The product needs many specialised capabilities. Two shapes are possible: many
+peer agents that coordinate, or one parent that delegates to bounded workers. Peer designs
+compound errors, bloat context, obscure accountability and create agent-to-agent trust
+problems; the existing architecture already names a single unprivileged orchestrator.
+
+**Options:** A: one parent (`assistantd`) + a bounded, declarative child catalogue, children
+re-entering the same policy/executor path; B: many peer agents with direct handoffs.
+
+**Decision:** A. Children are ephemeral, least-privilege, budgeted and attributable; they never
+self-authorize and cannot exceed the parent's authority. No child-to-child channels in V1. A
+proposed built-in catalogue of about twelve children, and user-authored children as declarative
+metadata + prompt with inherited ceilings and explicit approval.
+
+**Reasons:** Linear accountability, smallest privilege, reuse of the existing
+permission/audit contracts, and no new daemon.
+
+**Tradeoffs:** The parent is a bottleneck and a single point of failure; delegation adds hops
+and latency; a fixed catalogue may not cover every specialist need until user agents exist.
+
+**Risks:** Runaway loops, cost blow-up, context bloat, unclear partial success, purpose
+collisions between children. Mitigations are recorded in the agent-system document.
+
+**Revisit When:** Measured latency/cost makes delegation worse than a single loop, or a
+verified need for peer handoff appears with a documented trust model.
+
+## ADR-012: First-party products integrate behind adapters
+
+**Status:** Research direction; no product is a dependency and none is bundled.
+
+**Context:** The author maintains five projects (Warden, RepoSpine, ContextGit, ModelCheck,
+Morphix) that map onto Axiom's sandbox, code-context, context-versioning, model-evaluation and
+customization subsystems. Adopting them by name would risk the same unverified-dependency
+problem recorded for Warden in ADR-007.
+
+**Options:** A: consume each behind a versioned adapter (CLI/SDK/MCP/library) with the core
+desktop working when all are absent; B: make first-party products hard dependencies.
+
+**Decision:** A. Mapping and boundaries in [ecosystem](ai/ECOSYSTEM.md). Pinned revisions,
+licence inventory first (ModelCheck currently has **no licence**), untrusted output treated as
+untrusted, execution workers sandboxed, and no integration before its phase gate.
+
+**Reasons:** Keeps the core desktop independent, avoids contradicting ADR-008's replaceability
+and ADR-007's evidence requirement, and lets each product be swapped or dropped.
+
+**Tradeoffs:** Adapter layers cost maintenance and can lag the upstream products; some synergy
+is left on the table for now.
+
+**Risks:** Upstream volatility (young projects), licence gaps, API drift, and accidentally
+granting a product more authority than intended.
+
+**Revisit When:** A product passes a pinned-revision experiment and licence review, or proves
+unusable and is dropped.
+
 ## Change proposal requirements
 
 Explain why current architecture is insufficient; alternatives and primary evidence; replacement; migration cost; compatibility; security; measured or proposed performance impact; rollback strategy; owner and affected contracts. Independent review is required for trust-boundary changes. [Research](RESEARCH.md) records experiments; [phases](PHASES.md) records gates.

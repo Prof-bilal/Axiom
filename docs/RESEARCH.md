@@ -107,6 +107,27 @@ Last research pass: **2026-10-18** (**2026-10-24**: Warden upstream identified; 
 
 **Recommendation:** A, Phase 11 only. **Confidence:** medium; KDE Connect repository/wiki inspection partly blocked. **Unresolved:** notification reply/SMS/calls/device APIs, screen/webcam constraints, iOS limits. **Experiment:** E11. **Sources:** linked contracts. **Last verified:** 2026-10-18.
 
+## Q11: One parent AI system or many peer agents?
+
+**Question:** How should the many specialised capabilities be organised around the model?
+**Options:** A: one parent orchestrator + bounded, declarative child agents; B: many peer agents with direct handoffs.
+**Evidence:** Practitioner and survey write-ups on agentic systems describe compounding error, context growth, runaway loops, cost blow-up and unclear accountability in peer topologies, and converge on a supervising parent with bounded workers; agent definitions in current tooling are declarative (metadata + focused workflow, i.e. an Agent Skills style `SKILL.md`), not executable plugins. Sources below.
+**Recommendation:** A; no child-to-child channels in V1 and no new daemon. **Confidence:** medium-high on architecture, no runtime. **Unresolved:** real latency/cost of delegation vs one loop; purpose-collision handling; the exact child schema. **Experiment:** E21. **Sources:** orchestration write-ups in the register sources below.
+
+## Q12: Should Axiom adopt the five first-party projects?
+
+**Question:** Can Warden, RepoSpine, ContextGit, ModelCheck and Morphix be integrated without repeating the unverified-dependency mistake (ADR-007)?
+**Options:** A: adapters behind existing boundaries, core desktop works when all are absent; B: hard dependencies.
+**Evidence:** Each project's own README was read 2026-10-25 — Warden (Go, MIT; deny-by-default bubblewrap sandbox; self-declared not hardened against a determined local attacker), RepoSpine (TypeScript, MIT; local-first code-context SDK + MCP; Node ≥22.13; beta limits: lexical search, no streaming), ContextGit (Python, Apache-2.0; content-addressed context VCS; already used in this repository), ModelCheck (TypeScript; **no licence file**), Morphix (Rust/Tauri, MIT OR Apache-2.0; KDE Plasma 6 only; transaction/rollback engine not yet implemented).
+**Recommendation:** A; licence inventory and a pinned-revision experiment precede any dependency. **Confidence:** high on boundaries, low on each product's runtime fit. **Unresolved:** ModelCheck licence, RepoSpine as system- vs repo-scoped, Morphix phase gap. **Experiment:** E22. **Sources:** [ecosystem](ai/ECOSYSTEM.md).
+
+## Q13: How should developer environments be provisioned?
+
+**Question:** How do we let a developer pick a stack and get a reproducible, reversible environment?
+**Options:** A: user-scope reversible methods first (version managers, rootless containers, declarative envs), system packages last; B: install everything as system packages.
+**Evidence:** Public comparisons of devcontainers, Nix, devbox, mise and asdf trade isolation, reproducibility and setup cost; RepoSpine's documented `atlas setup` demonstrates the select-and-consent UX (installs only what you pick).
+**Recommendation:** A; the container socket is treated as root-equivalent, services bind loopback-only, and nothing installs before confirmation. **Confidence:** medium direction, unmeasured. **Unresolved:** benchmarked disk/time; irreversibility messaging for database data; rootless availability. **Experiment:** E23. **Sources:** [dev environments](engineering/DEV_ENVIRONMENTS.md).
+
 ## Coverage and evidence ownership
 
 | Required research topics | Evidence and limitations |
@@ -125,7 +146,7 @@ Last research pass: **2026-10-18** (**2026-10-24**: Warden upstream identified; 
 
 ## Experiment register
 
-All experiments are **NOT RUN** except where a status is noted; E05 identification is recorded (2026-10-24) while its runtime bypass tests remain NOT RUN. Owners are specialist roles in [SUBAGENTS](SUBAGENTS.md). Save future raw artifacts with build/input manifests, versions, command lines, timestamps, exit status, expected/observed results and redacted logs. A failed experiment updates the ADR and phase gate; it is not silently worked around.
+All experiments are **NOT RUN** except where a status is noted; E05 identification is recorded (2026-10-24) while its runtime bypass tests remain NOT RUN. Owners are specialist roles in [SUBAGENTS](SUBAGENTS.md). Save future raw artifacts with build/input manifests, versions, command lines, timestamps, exit status, expected/observed results and redacted logs. A failed experiment updates the ADR and phase gate; it is not silently worked around. Register gap: ADR-010 references Flow research Q8–Q9, which are not present in this register; recorded to close rather than paper over. Q11–Q13 were added 2026-10-25 with the first-party product and agent-system design ([agent system](ai/AGENT_SYSTEM.md), [ecosystem](ai/ECOSYSTEM.md), [dev environments](engineering/DEV_ENVIRONMENTS.md)).
 
 | ID / owner / phase | Experiment and pass condition |
 | --- | --- |
@@ -141,6 +162,10 @@ All experiments are **NOT RUN** except where a status is noted; E05 identificati
 | E10 architect + QA / 0–1 | On installed versions of all four tools load AGENTS and selected skill; discover adapters where supported; verify permissions; inspect .agents after mount restriction removed |
 | E11 connect + security / 11 | Android pairing/revocation, discovery spoof/MITM, file traversal and feature matrix; report unsupported SMS/calls/iOS behaviors |
 | E12 release + QA / 10 | Disposable Calamares install, signed full update, interrupted update recovery and release input provenance; no real host disk use |
+| E21 ai-runtime + security / 6–7 | Child-agent contract validation: delegation bounds, no self-authorization, budget/step/cost cascade, purpose-collision rejection, untrusted child definition; no unauthorized mutation |
+| E22 release + security / 5–7 | First-party integration: pinned revision + licence inventory (ModelCheck), adapter-absence test (core desktop works with every product removed), untrusted-output handling |
+| E23 qa + architect / 3–4 | Pick-your-stack provisioning: reproducible apply/remove, isolation proof (services loopback-only, no socket exposure), correct permission class, data-irreversibility messaging |
+| E24 performance + ai-runtime / 5, 9 | Candidate-model evaluation before it becomes a default; record the measured delta and the rollback of the default |
 
 ## Remaining foundation limitation
 

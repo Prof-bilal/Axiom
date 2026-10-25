@@ -36,4 +36,13 @@ Local SQLite stores redacted searchable user activity with FTS5; a separate prot
 
 Desktop, package administration and recovery continue without model access. Deny unavailable model-only reasoning cleanly; deterministic capabilities and saved routines do not require a provider. Bound context, tool steps, wall time, concurrent jobs and provider cost. A model crash never causes implicit retry of an uncertain mutation. Test restart reconciliation and disconnected providers before host actions.
 
+## Parent and child agents
+
+The single orchestrator described above is the *parent*; the specialised workers it spawns are
+*child* agents. The child catalogue, the declarative child contract, user-authored children
+and the multi-agent failure modes are defined in [agent system](AGENT_SYSTEM.md); the
+first-party products consumed behind adapters are mapped in [ecosystem](ECOSYSTEM.md). This
+adds no daemon and no second orchestrator: children re-enter the same policy → executor → audit
+path, and none of them authorizes an action.
+
 Sources: [D-Bus](https://dbus.freedesktop.org/doc/dbus-specification.html), [MCP](https://modelcontextprotocol.io/specification/2026-07-28), [Polkit](https://polkit.pages.freedesktop.org/polkit/polkit.8.html).
