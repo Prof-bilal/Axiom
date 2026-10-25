@@ -38,8 +38,12 @@ NOT RUN.
 Install command (requires an administrator):
 
 ```sh
-sudo pacman -S --needed archiso qemu-system-x86_64 edk2-ovmf libisoburn squashfs-tools arch-install-scripts
+sudo pacman -S --needed archiso qemu-base edk2-ovmf libisoburn squashfs-tools arch-install-scripts
 ```
+
+`qemu-base` provides `qemu-system-x86_64` and `qemu-img` (headless); `qemu-desktop` is the
+heavier desktop variant and is not required. `archiso` already depends on `libisoburn`,
+`squashfs-tools` and `arch-install-scripts`.
 
 ## Experiments
 
