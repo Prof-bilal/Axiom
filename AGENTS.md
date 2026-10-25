@@ -10,7 +10,7 @@ if you must touch a file owned by another run, say so before editing.
 
 Build an AI-native Linux desktop for developers with safe structured automation, privacy, recovery and measured performance. The repository is project memory; no tool or chat is authoritative over maintained project contracts.
 
-**Current phase: Phase 1, foundation and reproducible build.** Phase 0 exit is recorded 2026-10-24 and the project owner authorized Phase 1 (minimal reviewed archiso profile, build script, QEMU boot harness, CI validation and evidence). This authorization does not extend to branding, Plasma, custom packages, the installer, or any `apps/`, `shell/` or `services/` component. Phase changes require the exit evidence in [PHASES](docs/PHASES.md).
+**Current phase: Phase 1 — exit met 2026-10-25.** Phase 1 delivered a reviewed archiso profile, build script, QEMU boot harness, CI validation and evidence ([PHASE1_EVIDENCE](docs/engineering/PHASE1_EVIDENCE.md)). **Phase 2 is not yet authorized**: branding, Plasma packages, desktop UI, custom packages, the installer and any `apps/`, `shell/` or `services/` component require an explicit owner authorization. Phase changes require the exit evidence in [PHASES](docs/PHASES.md).
 
 ## Architecture and map
 

@@ -1,8 +1,9 @@
 # Phase 1 evidence: reproducible Arch/archiso build
 
-Status: **E01 and E02 executed 2026-10-25.** A reviewed profile builds twin ISOs that boot in
-QEMU/KVM with logs. Phase 1 exit criteria are met pending owner sign-off. Nothing below is a
-claim without a corresponding artifact under `iso/out/evidence/` (gitignored).
+Status: **EXIT MET 2026-10-25 (owner sign-off).** E01 and E02 executed 2026-10-25: a reviewed
+profile builds twin ISOs that boot in QEMU/KVM with logs, and the reproducibility level is
+stated explicitly. Open findings are carried into Phase 2. Nothing below is a claim without a
+corresponding artifact under `iso/out/evidence/` (gitignored).
 
 Scope: minimal reviewed archiso profile ([iso/profile/README.md](../../iso/profile/README.md)),
 build wrapper (`scripts/build-iso.sh`), QEMU boot harness (`tests/qemu-boot.sh`). No desktop,

@@ -1,13 +1,13 @@
 # Implementation phases
 
-Current phase: **1**. Phase 0 exit is recorded (2026-10-24, [FOUNDATION_VALIDATION](engineering/FOUNDATION_VALIDATION.md)); the project owner authorized Phase 1 on 2026-10-24 for the minimal reproducible archiso build only. These are execution gates, not dates. Advancing requires recorded evidence and an explicit phase-status update. Security applies from Phase 0; Phase 7 integrates enforcement. The 2026-10-19 request authorized concept validation; the 2026-10-24 authorization advances to Phase 1. Follow the dependency-ordered validation waves in [TESTING.md](engineering/TESTING.md). No mutation becomes available before its authorization and audit gate.
+Current phase: **1 — exit met 2026-10-25**. Phase 0 exit is recorded (2026-10-24, [FOUNDATION_VALIDATION](engineering/FOUNDATION_VALIDATION.md)); the project owner authorized Phase 1 on 2026-10-24 for the minimal reproducible archiso build only, whose exit criteria are now met ([PHASE1_EVIDENCE](engineering/PHASE1_EVIDENCE.md)). **Phase 2 is not yet authorized**: branding, Plasma packages, desktop UI, custom packages, the installer and any `apps/`/`shell/`/`services/` component require a new explicit owner authorization. These are execution gates, not dates. Advancing requires recorded evidence and an explicit phase-status update. Security applies from Phase 0; Phase 7 integrates enforcement. The 2026-10-19 request authorized concept validation; the 2026-10-24 authorization advanced to Phase 1. Follow the dependency-ordered validation waves in [TESTING.md](engineering/TESTING.md). No mutation becomes available before its authorization and audit gate.
 
 ## Phase status log
 
 | Phase | Status | Evidence |
 | --- | --- | --- |
 | 0 Research and architecture validation | EXIT MET 2026-10-24 | [FOUNDATION_VALIDATION](engineering/FOUNDATION_VALIDATION.md), [PHASE0_EVIDENCE](engineering/PHASE0_EVIDENCE.json) |
-| 1 Repository foundation and reproducible Arch/archiso build | AUTHORIZED 2026-10-24; E01/E02 evidence recorded 2026-10-25 (owner sign-off pending) | [PHASE1_EVIDENCE](engineering/PHASE1_EVIDENCE.md) |
+| 1 Repository foundation and reproducible Arch/archiso build | EXIT MET 2026-10-25 (owner sign-off) | [PHASE1_EVIDENCE](engineering/PHASE1_EVIDENCE.md) |
 | 2–12 | Not started | — |
 
 Phase 1 authorization covers only the reviewed archiso profile, build script, QEMU boot harness, CI validation and its evidence. It does not authorize branding, Plasma, custom packages, the installer, or any `apps/`, `shell/` or `services/` component. E01/E02 supply the Phase 1 exit evidence; E03/E09/E12 remain deferred to their own phases.
@@ -37,6 +37,8 @@ Phase 1 authorization covers only the reviewed archiso profile, build script, QE
 **Out of scope:** Any OS implementation.
 
 ## Phase 1: Repository foundation and reproducible Arch/archiso build
+
+**Status:** EXIT MET 2026-10-25. Open findings carried into Phase 2: the upstream-inherited `systemd-loop@…sr0` boot unit failure (non-fatal) and host QEMU firmware-stage flakiness; see [PHASE1_EVIDENCE](engineering/PHASE1_EVIDENCE.md).
 
 **Objective:** Repository foundation and reproducible Arch/archiso build.
 
