@@ -46,6 +46,8 @@ the visible default, not a settings toggle. That framing drives the shaping belo
 
 ### Warden — the security answer
 
+Full shaping spec: [Warden integration](../security/WARDEN_INTEGRATION.md).
+
 Today Warden runs MCP servers in an OS-native sandbox: on Linux `bubblewrap` namespaces, a
 hostname allowlist enforced **before** DNS, deny-by-default bind mounts (ungranted paths
 return `ENOENT`), env allowlisting, wall-clock/memory limits, JSONL audit, and fail-closed
@@ -114,6 +116,8 @@ bundled assets must be original or openly licensed (their ADR-017).
 5. **Sandbox where code executes.** Tool/MCP workers run under Warden or an equivalent.
 
 ## Open questions (see [RESEARCH](../RESEARCH.md))
+
+Step-by-step sequence for closing these: [ecosystem work plan](../engineering/ECOSYSTEM_PLAN.md).
 
 - RepoSpine as a *system* context engine, or repo-scoped plus a thin workspace layer?
 - ContextGit runtime API and a non-repo (session) context mode.
