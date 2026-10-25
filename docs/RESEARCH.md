@@ -114,12 +114,12 @@ Last research pass: **2026-10-18** (**2026-10-24**: Warden upstream identified; 
 **Evidence:** Practitioner and survey write-ups on agentic systems describe compounding error, context growth, runaway loops, cost blow-up and unclear accountability in peer topologies, and converge on a supervising parent with bounded workers; agent definitions in current tooling are declarative (metadata + focused workflow, i.e. an Agent Skills style `SKILL.md`), not executable plugins. Sources below.
 **Recommendation:** A; no child-to-child channels in V1 and no new daemon. **Confidence:** medium-high on architecture, no runtime. **Unresolved:** real latency/cost of delegation vs one loop; purpose-collision handling; the exact child schema. **Experiment:** E21. **Sources:** orchestration write-ups in the register sources below.
 
-## Q12: Should Axiom adopt the five first-party projects?
+## Q12: How do the five first-party projects fit Axiom?
 
-**Question:** Can Warden, RepoSpine, ContextGit, ModelCheck and Morphix be integrated without repeating the unverified-dependency mistake (ADR-007)?
-**Options:** A: adapters behind existing boundaries, core desktop works when all are absent; B: hard dependencies.
-**Evidence:** Each project's own README was read 2026-10-25 — Warden (Go, MIT; deny-by-default bubblewrap sandbox; self-declared not hardened against a determined local attacker), RepoSpine (TypeScript, MIT; local-first code-context SDK + MCP; Node ≥22.13; beta limits: lexical search, no streaming), ContextGit (Python, Apache-2.0; content-addressed context VCS; already used in this repository), ModelCheck (TypeScript; **no licence file**), Morphix (Rust/Tauri, MIT OR Apache-2.0; KDE Plasma 6 only; transaction/rollback engine not yet implemented).
-**Recommendation:** A; licence inventory and a pinned-revision experiment precede any dependency. **Confidence:** high on boundaries, low on each product's runtime fit. **Unresolved:** ModelCheck licence, RepoSpine as system- vs repo-scoped, Morphix phase gap. **Experiment:** E22. **Sources:** [ecosystem](ai/ECOSYSTEM.md).
+**Question:** The five sibling projects share Axiom's author. How do they integrate without repeating the unverified-dependency mistake (ADR-007)?
+**Options:** A: co-evolve each into an Axiom subsystem behind an adapter, shaped to a stated capability, with the core desktop working when all are absent; B: adopt them as-is or hard-depend on them.
+**Evidence:** Each project's README was read 2026-10-25 — Warden (Go, MIT; bubblewrap deny-by-default sandbox; self-declared not hardened against a determined local attacker), RepoSpine (TypeScript, MIT; local-first code context; **repo-scoped**; Node ≥22.13), ContextGit (Python, Apache-2.0; content-addressed context VCS; already used in this repository), ModelCheck (TypeScript; **no licence file**), Morphix (Rust/Tauri, MIT OR Apache-2.0; KDE Plasma 6; **rollback engine unimplemented — its Phases 5–6**). Ownership removes the licence-*permission* question but not the engineering evidence.
+**Recommendation:** A; shape each product to Axiom's contracts, keep adapters for replaceability (ADR-008), pin revisions, and hold the existing evidence gates. **Confidence:** high on ownership and boundaries, low on each product's runtime fit. **Unresolved:** RepoSpine system scope, ContextGit runtime API, Warden typed interface, ModelCheck licence choice, Morphix phase dependency. **Experiment:** E22. **Sources:** [ecosystem](ai/ECOSYSTEM.md).
 
 ## Q13: How should developer environments be provisioned?
 

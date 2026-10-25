@@ -1,114 +1,122 @@
-# First-party ecosystem integration
+# First-party ecosystem: co-evolving products into Axiom subsystems
 
-Status: RESEARCH / design intent — **no product is a dependency yet** and no integration is
-implemented. Facts below were read from each project's own README on 2026-10-25; where a
-project documents limits, those limits are repeated here rather than smoothed over. Last
-researched: 2026-10-25.
+Status: RESEARCH / design intent — nothing is a dependency, no integration is implemented.
+Facts about each product were read from its own README on 2026-10-25; where a product
+documents a limit, the limit is repeated here rather than smoothed over. Last researched:
+2026-10-25.
 
-Axiom is built by the same author as five projects that map almost one-to-one onto the
-subsystems this OS needs. The design intent is to consume them **behind adapters** so the
-core desktop never hard-depends on any of them and each can be swapped or dropped.
+Axiom and five sibling projects share one author. They are **first-party components that
+co-evolve with Axiom**, not third-party dependencies to be evaluated and possibly dropped.
+The intent is that each grows the capability Axiom needs (see *Co-evolution* below) and that
+the core desktop still works when any of them is absent.
 
-## Mapping
+## Ownership
 
-| Product | Repo / licence | Role in Axiom | Boundary | Phase |
-| --- | --- | --- | --- | --- |
-| **Warden** | `Prof-bilal/Warden` · Go · MIT · `warden-sandbox-cli` v0.1.17 | Execution sandbox for tool/MCP workers | CLI `warden run --policy` around a scoped worker | 7 |
-| **RepoSpine** | `Prof-bilal/RepoSpine` · TypeScript · MIT · `repospine-cli`, Node ≥22.13 | Code-context engine for the Context child agent | Context SDK / MCP stdio, bounded `ContextPackage` | 5–6 |
-| **ContextGit** | `Prof-bilal/ContextGit` · Python · Apache-2.0 | Context version control for parallel agents (branch/diff/merge/rollback) | Python core library + API | 4–6 |
-| **ModelCheck** | `Prof-bilal/ModelChecker` · TypeScript · **no licence file** | Evaluate a candidate model before it becomes a default | CLI `modelcheck run` / `compare` | 5, 9 |
-| **Morphix** | `Prof-bilal/Morphix` · Rust/Tauri · MIT OR Apache-2.0 | Safe, reversible desktop customization | Rust core (typed IPC), declarative TOML packs | 3, 8 |
+All five are authored by `Prof-bilal`, the same owner as Axiom. Consequences, stated plainly:
 
-### Warden — sandbox (Security)
+- **Licence permission is not a blocker.** The owner can add or change licences. The one real
+  gap is that ModelCheck currently ships **no licence file**; the action is to add one (align
+  to whatever Axiom ships under), not to negotiate rights.
+- **Declaration is still required.** The release licence-inventory gate
+  ([release](../engineering/RELEASE.md)) needs a declared licence per shipped artifact,
+  regardless of ownership. Ownership removes the permission question, not the paperwork.
+- **Maintenance ownership is unambiguous** — one author, aligned goals. The flip side is
+  concentration risk on a single maintainer across six projects; recorded, not hidden.
+- **Engineering evidence is unchanged.** Owning a product does not make an untested claim
+  true. Warden's bypass matrix is still NOT RUN; Morphix's rollback engine still does not
+  exist yet. Ownership lets us *fix* those; it does not let us *assert* them.
 
-Runs MCP servers in an OS-native sandbox: on Linux, `bubblewrap` namespaces with a
-hostname allowlist enforced before DNS, deny-by-default bind mounts (ungranted paths return
-`ENOENT`), env allowlisting, wall-clock/memory limits, JSONL audit. Fail-closed: with no
-usable backend it refuses to run unsandboxed. Its own README states it is **not hardened
-against a determined local attacker** and lists limits (symlinks within granted paths,
-HTTP/HTTPS-only proxy interception, no CPU throttling). Integration stays gated by the
-[sandboxing evaluation gate](../security/SANDBOXING.md); the bypass matrix is still NOT RUN.
+## Product narrative
 
-### RepoSpine — code context (Context agent)
+The trust question — *"is this AI system actually safe to run on my machine?"* — is answered
+by architecture, not by a promise. When an agent or tool worker executes, the user can see
+that it ran **inside an enforced sandbox (Warden)**, under a policy derived from the approved
+request, with blocked attempts and applied grants visible in the activity view. Security is
+the visible default, not a settings toggle. That framing drives the shaping below.
 
-Scans → hashes → parses → graphs a repo into a local SQLite context DB (`.codeatlas/`), then
-serves **budgeted, deny-filtered** context over a stable SDK, CLI, MCP stdio and a VS Code
-extension. It is local-first, computes facts deterministically before AI, and exposes a
-freshness signal (`fresh | stale | unknown | unavailable`) so an agent reads the current
-working tree. It ships 13 first-party Skills and a tool registry with a trust assessor and
-an **approval-gated** installer; `atlas setup` installs only what the user selects. Documented
-beta limits: lexical (not vector) search, no streaming, no interactive TUI, CI on Ubuntu only.
+## Co-evolution: what each product must become
 
-Mapping: RepoSpine is the natural implementation of the **Context** child and the
-[bounded context](SYSTEM_AGENT_API.md) rule. It is *not* an authorization layer — its schema
-output is untrusted input like any other tool result.
+| Product | Axiom subsystem | What must change to fit | Evidence before reliance |
+| --- | --- | --- | --- |
+| **Warden** | Execution enforcement (conceptual **Shield** boundary) | Typed interface beyond the CLI (library or service); policy **generated from the validated capability request**, not hand-written YAML; audit events correlated to Axiom request/audit IDs; permission-class mapping | Bypass matrix on mainline/LTS (NOT RUN) + policy-generation and audit-correlation tests |
+| **RepoSpine** | Context child engine | A defined **multi-root/system** story (today it is repo-scoped); a stable library or MCP path a Rust parent can call; freshness surfaced in UI; decide the Node ≥22.13 runtime floor | Context quality/latency on a real workspace; runtime-packaging proof |
+| **ContextGit** | Runtime context VCS | A headless **runtime API** (not the Electron app); a non-repo mode for session/agent context; per-child context branch isolation and merge; keep context rollback distinct from system rollback | Per-child isolation + no-collision test; branch/merge rollback proof |
+| **ModelCheck** | Model promotion gate | Become the gate that a candidate model/provider must pass against the current default before selection; wire into router adapter acceptance; support local/Ollama; attach the report to the change | Add licence; evaluation reproducibility; delta vs baseline on the user's workload |
+| **Morphix** | Desktop customization | Land its own Phases 5–6 (transaction/rollback engine + KDE adapter writes); align its change-plan/snapshot model with Axiom's change-plan and [Btrfs rollback](../system/BTRFS_ROLLBACK.md); expose a typed interface for the Customization child | Transaction + rollback proof; permission mapping (appearance = NORMAL, system-wide = CRITICAL) |
 
-### ContextGit — context VCS (parallel agents)
+### Warden — the security answer
+
+Today Warden runs MCP servers in an OS-native sandbox: on Linux `bubblewrap` namespaces, a
+hostname allowlist enforced **before** DNS, deny-by-default bind mounts (ungranted paths
+return `ENOENT`), env allowlisting, wall-clock/memory limits, JSONL audit, and fail-closed
+behaviour (with no usable backend it refuses to run unsandboxed). Its own README states it is
+**not hardened against a determined local attacker** and lists limits (symlinks within granted
+paths, HTTP/HTTPS-only proxy interception, no CPU throttling).
+
+For Axiom, Warden stops being "a CLI you point at an MCP server" and becomes **the layer every
+agent and tool execution passes through**. The concrete changes are in the table above; the
+key one is that policy is *derived from the approved typed request*
+([System Agent API](SYSTEM_AGENT_API.md)) rather than written by hand — the user approves a
+capability, and Warden's grants are the enforcement of that exact approval. This is the
+runtime realisation of the [sandboxing](../security/SANDBOXING.md) and
+[permissions](../security/PERMISSIONS.md) contracts, and it gives the conceptual **Shield**
+boundary its first concrete implementation. It never becomes an authorization layer: it
+enforces what policy already decided.
+
+### RepoSpine — the system context engine
+
+Scans → hashes → parses → graphs a repo into local SQLite (`.codeatlas/`), then serves
+**budgeted, deny-filtered** context over SDK, CLI, MCP stdio and a VS Code extension. Local
+first, deterministic before AI, with a freshness signal (`fresh | stale | unknown |
+unavailable`). Ships 13 skills and an approval-gated tool installer. Documented beta limits:
+lexical (not vector) search, no streaming, no interactive TUI, CI on Ubuntu only. Currently
+**repo-scoped**; making it a *system* context engine (many roots, workspaces, session context)
+is the main shaping task, and a design decision in its own right.
+
+### ContextGit — runtime context branches
 
 Version control for LLM conversations: immutable content-addressed commits, branches/HEAD as
-pointers, and branch/diff/merge/rollback of *context* "while running multiple AI agents
-without collisions". Python core is the source of truth; API/CLI/UI stay thin; local-first
-(only configured model calls leave the machine).
+pointers, branch/diff/merge/rollback of context "while running multiple AI agents without
+collisions". Already used in this repository at development time (`AGENTS.md` carries a
+ContextGit worktree note; `.contextgit/` exists). Runtime use means each child agent gets an
+isolated context branch so parallel children cannot collide — and context rollback stays
+distinct from *system* rollback ([Btrfs rollback](../system/BTRFS_ROLLBACK.md)).
 
-Notably, **ContextGit is already used in this repository at development time** — `AGENTS.md`
-carries a ContextGit-managed note about per-run git worktrees and `.contextgit/` is present.
-The proposal is to extend that from the dev workflow into the runtime: each child agent gets
-an isolated context branch so parallel children cannot collide, with rollback of context
-(runtime *effects* are still governed by [Btrfs rollback](../system/BTRFS_ROLLBACK.md), not
-by ContextGit).
+### ModelCheck — the model promotion gate
 
-### ModelCheck — model evaluation
-
-A CLI that runs a versioned, deterministic evaluation against a chosen model, compares it to
-a pinned baseline, and emits a report where every number links to raw output and the scoring
-rule. `init → baseline → verify`, plus `compare`; YAML config, JSONL cases, lockfiles; runs
-stay local under `RUNS_DIR`; supports CI verdicts; no hosted service or telemetry. It
-explicitly is **not** a leaderboard, router or SDK.
-
-Mapping: this is how "check and benchmark new models" becomes a *repeatable, evidence-backed*
-step instead of adopting a model on vendor claims. It fits the router's adapter-acceptance
-rule ([model router](MODEL_ROUTER.md)): a candidate model is benchmarked on the user's own
-workload before it can become a default.
-
-**Blocking issue:** GitHub reports **no licence** for this repository. Redistribution or
-bundling is therefore not permitted by default. Either a licence is added upstream or the
-integration is user-opted-in-from-npm only. Recorded before any dependency is taken.
+A versioned, deterministic evaluation against a chosen model, compared to a pinned baseline,
+with a report where every number links to raw output and the scoring rule; `init → baseline →
+verify` plus `compare`; local runs; CI verdicts; no hosted service. It explicitly is **not** a
+leaderboard or router. In Axiom it becomes the gate a candidate model must clear before it can
+become a default — evidence, not vendor claims.
 
 ### Morphix — reversible customization
 
-A KDE Plasma 6 customization platform: users browse declarative **TOML** packs (never
-executed code), see a resolved change plan (old → new), snapshot affected resources, apply
-transactionally and roll back. User-scope only, no root. Phases 0–4 are implemented
-(detection, pack spec/parser/validator/store, change planner, snapshot engine); the
-**transaction/rollback engine and KDE adapter writes are Phases 5–6 and do not exist yet**.
-Dual-licensed; bundled assets must be original or openly licensed (their ADR-017).
-
-Mapping: Morphix is the Customization child and the practical realisation of Axiom's
-"visible change plan + recovery" promise for desktop appearance. Its plan/snapshot/transaction
-model mirrors Axiom's change-plan and rollback contracts, so the permission mapping is direct
-(NORMAL for appearance changes; nothing system-wide). It also demonstrates the pattern Axiom
-wants everywhere: *show before you change, and make it reversible*.
+Declarative **TOML** packs (never executed code), resolved change plans (old → new),
+snapshots, transactional apply and rollback; **user-scope only, no root**; KDE Plasma 6 only.
+Phases 0–4 exist (detection, packs, planning, snapshots); the transaction/rollback engine and
+KDE adapter writes are Phases 5–6 and **do not exist yet**. In Axiom it is the customization
+system, and its plan/snapshot/transaction model is the template for Axiom's own
+"show before you change, make it reversible" promise. Dual-licensed (MIT OR Apache-2.0);
+bundled assets must be original or openly licensed (their ADR-017).
 
 ## Integration rules
 
-1. **Adapter, never a hard dependency.** The core desktop (boot, session, files, recovery)
-   must keep working with all five absent. Each integration is a versioned adapter behind an
-   existing boundary (CLI, SDK, MCP, or library) and can be disabled.
+1. **Adapter by discipline, not by licence.** The core desktop (boot, session, files,
+   recovery) must keep working with all five absent — for replaceability and phased evidence
+   (ADR-008), not because rights are unclear. Tighter coupling is allowed but must be a
+   recorded decision, not a default.
 2. **Untrusted output.** Every product's output is untrusted content for the policy engine;
    none of them authorizes an action.
-3. **No invented APIs.** Only the documented interfaces above are referenced; anything
-   closer must be established by an experiment, not assumed.
-4. **Licence inventory first.** ModelCheck (none) blocks bundling now; Warden/RepoSpine MIT,
-   ContextGit/Morphix Apache-2.0, Morphix dual — all require the release licence inventory
-   gate ([release](../engineering/RELEASE.md)).
-5. **Pin revisions.** Bundle or depend only on a pinned commit/tag with recorded provenance.
-6. **Sandboxed where they execute third-party code.** Tool/MCP workers run under Warden or an
-   equivalent, not with the user's ambient environment.
+3. **No invented APIs.** Only documented interfaces are referenced; anything closer comes
+   from an experiment.
+4. **Pin revisions.** Ship against a pinned commit/tag with recorded provenance.
+5. **Sandbox where code executes.** Tool/MCP workers run under Warden or an equivalent.
 
 ## Open questions (see [RESEARCH](../RESEARCH.md))
 
-- Does RepoSpine remain usable as a *system* context engine, or is it repo-scoped only?
-- Can ContextGit's branch model isolate per-child runtime context without a repo per child?
-- Which Morphi phases must land before Axiom's Phase 3 can rely on it?
-- ModelCheck licence, and whether evaluation runs belong on-device or in CI.
-- Does Warden mediate the *Axiom* executor, or only external MCP/tool workers?
+- RepoSpine as a *system* context engine, or repo-scoped plus a thin workspace layer?
+- ContextGit runtime API and a non-repo (session) context mode.
+- Warden as a typed library/service vs a CLI wrapper for Axiom's executor.
+- ModelCheck licence choice and where evaluation runs (on-device, CI, or both).
+- Which Morphix phases must land before Phase 3 depends on it.

@@ -221,33 +221,39 @@ collisions between children. Mitigations are recorded in the agent-system docume
 **Revisit When:** Measured latency/cost makes delegation worse than a single loop, or a
 verified need for peer handoff appears with a documented trust model.
 
-## ADR-012: First-party products integrate behind adapters
+## ADR-012: First-party components co-evolve with Axiom
 
-**Status:** Research direction; no product is a dependency and none is bundled.
+**Status:** Research direction; no component is a dependency and none is bundled.
 
-**Context:** The author maintains five projects (Warden, RepoSpine, ContextGit, ModelCheck,
-Morphix) that map onto Axiom's sandbox, code-context, context-versioning, model-evaluation and
-customization subsystems. Adopting them by name would risk the same unverified-dependency
-problem recorded for Warden in ADR-007.
+**Context:** Five sibling projects share Axiom's author and map onto Axiom's sandbox,
+code-context, context-versioning, model-evaluation and customization subsystems. They are
+first-party components to be shaped to Axiom's contracts, not third-party products to be
+accepted as-is — but the unverified-dependency risk recorded for Warden in ADR-007 still
+applies to their behaviour.
 
-**Options:** A: consume each behind a versioned adapter (CLI/SDK/MCP/library) with the core
-desktop working when all are absent; B: make first-party products hard dependencies.
+**Options:** A: co-evolve each into an Axiom subsystem behind a versioned adapter
+(CLI/SDK/MCP/library), core desktop works when all are absent, each shaped to a stated
+capability; B: adopt them as-is or make them hard dependencies.
 
-**Decision:** A. Mapping and boundaries in [ecosystem](ai/ECOSYSTEM.md). Pinned revisions,
-licence inventory first (ModelCheck currently has **no licence**), untrusted output treated as
-untrusted, execution workers sandboxed, and no integration before its phase gate.
+**Decision:** A. Ownership settles licence *permission* (the owner can add or change licences;
+ModelCheck still needs a licence file added, and every shipped artifact still needs a declared
+licence for the release inventory gate). It does **not** settle evidence: pinned revisions,
+Warden's bypass matrix, Morphix's unimplemented rollback engine and RepoSpine's runtime floor
+remain gates. Mapping and required shaping in [ecosystem](ai/ECOSYSTEM.md).
 
-**Reasons:** Keeps the core desktop independent, avoids contradicting ADR-008's replaceability
-and ADR-007's evidence requirement, and lets each product be swapped or dropped.
+**Reasons:** Ownership is an unusual advantage — the products can be reshaped to fit Axiom's
+contracts (e.g. Warden enforcing policies generated from approved typed requests) instead of
+being bent around a fixed upstream API. Adapters keep the core desktop independent and
+preserve ADR-008 replaceability.
 
-**Tradeoffs:** Adapter layers cost maintenance and can lag the upstream products; some synergy
-is left on the table for now.
+**Tradeoffs:** Six projects maintained by one author; adapter layers cost work; deep coupling
+is tempting and must be a recorded decision each time.
 
-**Risks:** Upstream volatility (young projects), licence gaps, API drift, and accidentally
-granting a product more authority than intended.
+**Risks:** Concentration risk on a single maintainer; behavioural claims asserted merely
+because the code is ours (the ADR-007 mistake in a new form); API drift across six repos.
 
-**Revisit When:** A product passes a pinned-revision experiment and licence review, or proves
-unusable and is dropped.
+**Revisit When:** A component passes a pinned-revision experiment, or a deeper coupling (for
+example Warden as a required execution layer) is proposed and needs its own decision.
 
 ## Change proposal requirements
 
