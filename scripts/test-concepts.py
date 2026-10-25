@@ -36,8 +36,10 @@ class Foundation(unittest.TestCase):
         for folder in ('docs', 'portable-skills', '.opencode', '.commandcode',
                        'scripts', 'iso', 'tests', '.github'):
             if (ROOT / folder).exists():
-                shutil.copytree(ROOT / folder, self.root / folder,
-                                symlinks=True, ignore_dangling_symlinks=True)
+                # iso/ holds multi-GB build output; copy only the reviewed profile.
+                ignore = shutil.ignore_patterns('work*', 'out', '*.iso') if folder == 'iso' else None
+                shutil.copytree(ROOT / folder, self.root / folder, symlinks=True,
+                                ignore_dangling_symlinks=True, ignore=ignore)
         for file in ('README.md', 'AGENTS.md'):
             shutil.copyfile(ROOT / file, self.root / file)
 

@@ -1,6 +1,6 @@
 # ISO build and QEMU workflow
 
-Status: Phase 1 execution design; there is no Axiom ISO profile or build wrapper yet. Last researched: 2026-10-18.
+Status: Phase 1 implemented — reviewed profile in [`iso/profile/`](../../iso/profile/README.md), build wrapper `scripts/build-iso.sh`, QEMU harness `tests/qemu-boot.sh`; results in [PHASE1_EVIDENCE](PHASE1_EVIDENCE.md). Last researched: 2026-10-18; first executed 2026-10-25.
 
 Use a disposable fully updated Arch x86_64 build VM, reviewed archiso package and enough RAM/disk for its root tree and artifacts. Install archiso, qemu-desktop and edk2-ovmf there using an authorized administrator; record exact installed package versions and repository databases. Current upstream mkarchiso supports unprivileged execution when user namespaces/unshare are available; validate the chosen builder rather than assuming root is always mandatory. Prefer isolation over running builds on a personal host.
 

@@ -10,7 +10,7 @@
 *~
 
 # Phase 1 ISO build artifacts (regenerated; never commit)
-iso/work/
+iso/work*/
 iso/out/
 *.iso
 *.iso.sha256

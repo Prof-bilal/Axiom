@@ -11,7 +11,7 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-PROFILE="$ROOT/iso/profile"
+PROFILE="${AXIOM_PROFILE:-$ROOT/iso/profile}"
 WORK="${AXIOM_WORK_DIR:-$ROOT/iso/work}"
 OUT="${AXIOM_OUT_DIR:-$ROOT/iso/out}"
 EVIDENCE="${AXIOM_EVIDENCE_DIR:-$OUT/evidence}"
@@ -23,9 +23,26 @@ command -v mkarchiso >/dev/null 2>&1 \
 [ -d "$PROFILE" ] || die "missing profile: $PROFILE"
 [ -f "$PROFILE/profiledef.sh" ] || die "missing profile definition: $PROFILE/profiledef.sh"
 
-# mkarchiso mounts and pacstraps; it needs real root (or a validated unprivileged path).
+# archiso v91 runs unprivileged via user namespaces (unshare --map-root-user) when
+# they are available; otherwise it needs root. Validate the builder rather than
+# assuming root is always required.
 if [ "$(id -u)" -ne 0 ]; then
-  die "mkarchiso needs root; re-run as: sudo $0"
+  command -v unshare >/dev/null 2>&1 \
+    || die "not root and 'unshare' is unavailable; re-run as: sudo $0"
+  if [ "$(cat /proc/sys/user/max_user_namespaces 2>/dev/null || echo 1)" = "0" ] \
+     && [ "$(cat /proc/sys/kernel/unprivileged_userns_clone 2>/dev/null || echo 1)" = "0" ]; then
+    die "not root and unprivileged user namespaces are disabled; re-run as: sudo $0"
+  fi
+  echo "build-iso: running unprivileged via mkarchiso user namespaces" >&2
+fi
+
+# Work-tree cleanup. An unprivileged build leaves entries owned by unmapped system
+# uids (e.g. var/lib/nfs/statd) and read-only directories; only the mapped-root
+# namespace can remove them, so mirror mkarchiso and clean inside the namespace.
+if [ "$(id -u)" -eq 0 ]; then
+  _rm_work() { rm -rf -- "$1"; }
+else
+  _rm_work() { unshare --map-auto --map-root-user rm -rf -- "$1"; }
 fi
 
 SOURCE_DATE_EPOCH="${SOURCE_DATE_EPOCH:-$(git -C "$ROOT" log -1 --format=%ct 2>/dev/null || date +%s)}"
@@ -33,7 +50,7 @@ export SOURCE_DATE_EPOCH
 
 mkdir -p "$OUT" "$EVIDENCE"
 # Remove only the task-owned work tree. Never touch anything outside it.
-rm -rf "$WORK"
+_rm_work "$WORK"
 
 {
   echo "== build environment (UTC $(date -u +%Y-%m-%dT%H:%M:%SZ)) =="
