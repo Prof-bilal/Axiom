@@ -47,8 +47,10 @@ contracts are written now ([WARDEN_INTEGRATION](../security/WARDEN_INTEGRATION.m
 products shape to Axiom, not the other way round.
 
 Write model when those steps start: a **feature branch + pull request per repository** — never a
-commit straight to a sibling project's `main` (owner decision 2026-10-25). ModelCheck licence:
-**MIT** (owner decision 2026-10-25).
+commit straight to a sibling project's `main` (owner decision 2026-10-25). The working branch in
+every sibling repo is **`axiom/integration`** (created and pushed 2026-10-25; currently identical
+to that repo's `main`, since no sibling changes have been made yet). ModelCheck licence: **MIT**
+(owner decision 2026-10-25).
 
 ## Cross-cutting rules
 
