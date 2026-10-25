@@ -22,3 +22,7 @@ vm-vars.fd
 # Python bytecode
 __pycache__/
 *.pyc
+
+# Local multi-project workspace: sibling first-party repos cloned for
+# cross-project work. Not part of Axiom; never commit them here.
+workspace/
