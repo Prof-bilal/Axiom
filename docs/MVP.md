@@ -4,9 +4,9 @@ V1 means the first serious prototype, not a general availability release. It pro
 
 | Priority | Deliverables |
 | --- | --- |
-| MUST | Rebuildable Arch/archiso x86-64 UEFI environment; Plasma 6 Wayland; original branding; accessible launcher/overlay path; Rust/D-Bus foundation; provider-neutral routing proven with one cloud adapter and Ollama; approximately 5–10 constrained capabilities; trusted permission UX; attributable audit history; Btrfs recovery proof; controlled performance baseline and candidate measurement; repeatable QEMU tests |
-| SHOULD | Calamares disposable-disk installation and update/recovery pipeline; linux-lts fallback; offline help; cancellation; redacted exportable diagnostics; basic hardware smoke on a declared machine |
-| LATER | Android pairing/files/notifications; workspace continuation; deterministic routines; structured opt-in activity memory; broader IDE/provider integrations; software-center enhancements |
+| MUST | Rebuildable Arch/archiso x86-64 UEFI environment; Plasma 6 Wayland; original branding; accessible launcher/overlay path; Rust/D-Bus foundation; provider-neutral routing proven with one cloud adapter and Ollama; approximately 5–10 constrained capabilities; one parent orchestrator with a small read-only child set; trusted permission UX; attributable audit history; Btrfs recovery proof; controlled performance baseline and candidate measurement; repeatable QEMU tests |
+| SHOULD | Calamares disposable-disk installation and update/recovery pipeline; pick-your-stack developer environment selection; linux-lts fallback; offline help; cancellation; redacted exportable diagnostics; basic hardware smoke on a declared machine |
+| LATER | Android pairing/files/notifications; workspace continuation; deterministic routines; structured opt-in activity memory; user-authored child agents; the five first-party product integrations beyond Warden enforcement; broader IDE/provider integrations; software-center enhancements |
 | NOT NOW | Kernel/compositor/init/package-manager forks; universal phone ecosystem; tablet second display; voice-first UI; screenshot memory; dozens of providers/daemons; server/vector infrastructure; arbitrary AI sudo; universal undo; Windows/macOS replacement claims |
 
 The release candidate gate additionally requires installer/update/security/license evidence even when a component is SHOULD for the early live prototype. A live ISO demo may precede installation support and must say so.

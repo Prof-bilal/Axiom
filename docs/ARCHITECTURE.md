@@ -92,6 +92,14 @@ Package/config changes use serialized jobs with preflight, authorization, eligib
 
 These paths are intended architecture, not empty directories to create now. Dependency direction is UI → session runtime → typed contract → authorized executor → upstream service. No provider-specific type in the capability or policy layer. Desktop and system operations remain usable without AI or network.
 
+**First-party components.** Axiom integrates five sibling projects behind versioned adapters
+(ADR-012): Warden (execution enforcement, Phase 7), RepoSpine (bounded code context),
+ContextGit (per-child runtime context branches), ModelCheck (model promotion gate) and Morphix
+(reversible desktop customization). None is a required dependency of the core desktop. The
+single orchestrator spawns bounded child agents; the catalogue, contract and user-authored
+children are defined in [agent system](ai/AGENT_SYSTEM.md), and the product-to-subsystem
+mapping in [ecosystem](ai/ECOSYSTEM.md).
+
 ## Experiments before commitment
 
 Prove UEFI boot + Btrfs recovery including ESP mismatch; Plasma extension packaging/upgrade; per-user/system bus authorization and sender races; request-bound interactive approval; cloud/local adapter conformance; audit crash/recovery; sandbox ABI behavior; and clean-run reproducibility. See [research register](RESEARCH.md). Phase 6 mutation stays disabled until Phase 7 security gates pass, even though API implementation starts earlier.

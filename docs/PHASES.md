@@ -13,6 +13,21 @@ Current phase: **2 — authorized 2026-10-25**. Phase 0 exit is recorded (2026-1
 
 Phase 1 authorization covers only the reviewed archiso profile, build script, QEMU boot harness, CI validation and its evidence. It does not authorize branding, Plasma, custom packages, the installer, or any `apps/`, `shell/` or `services/` component. E01/E02 supply the Phase 1 exit evidence; E03/E09/E12 remain deferred to their own phases.
 
+## Sequencing and first-party components
+
+Execution order is **Axiom itself first, then the AI system, then security enforcement, then the five first-party projects** (owner decision 2026-10-25). The products are shaped to Axiom's contracts, not adopted as-is. See [ecosystem](ai/ECOSYSTEM.md), [agent system](ai/AGENT_SYSTEM.md), [Warden integration](security/WARDEN_INTEGRATION.md) and the [ecosystem work plan](engineering/ECOSYSTEM_PLAN.md).
+
+| Component | Lands in | Role |
+| --- | --- | --- |
+| Parent `assistantd` + child-agent registry | 4–6 | One orchestrator; bounded, declarative child agents ([agent system](ai/AGENT_SYSTEM.md)) |
+| RepoSpine | 5–6 | Context child engine — budgeted code context over SDK/MCP |
+| ContextGit | 4–6 | Per-child runtime context branches; no context collisions |
+| Warden | 7 | Execution enforcement; policy derived from the approved request |
+| Morphix | 3, 8 | Reversible desktop customization through the transaction path |
+| ModelCheck | 5, 9 | Model promotion gate before a default model changes |
+
+Deferred until their phases, and not implied by this table: the five product integrations themselves, user-authored child agents (after Phase 7), and the dev-environment provisioning UI (its Phase 3 surface is selection/confirmation only). Each product keeps its own repository, phase gates and evidence; no component becomes a hard dependency of the core desktop (ADR-012).
+
 ## Phase 0: Research and architecture validation
 
 **Status:** EXIT MET 2026-10-24.
@@ -69,9 +84,9 @@ Phase 1 authorization covers only the reviewed archiso profile, build script, QE
 
 **Dependencies:** Phase 1.
 
-**Implementation tasks:** Add Plasma Wayland packages and original branding; configure UEFI boot and LTS fallback; wire existing networking/audio services. Capture Flow OFF desktop/pressure baseline and inspect actual Plasma app grouping/controllers; this adds no automatic resource policy.
+**Implementation tasks:** Add Plasma Wayland packages and original branding — a logo, wallpaper, Plasma colour scheme and boot/session splash, all original work with no copied assets; configure UEFI boot and LTS fallback; wire existing networking/audio services. Resolve the live-session login mechanism from Plasma 6.8's `plasma-login-manager` rather than assuming SDDM. Capture Flow OFF desktop/pressure baseline and inspect actual Plasma app grouping/controllers; this adds no automatic resource policy.
 
-**Deliverables:** Bootable branded image and versioned package list.
+**Deliverables:** Bootable branded image, original brand asset set and versioned package list.
 
 **Tests:** UEFI boot, session type, graphics/audio/network smoke; fallback boot.
 
@@ -91,7 +106,7 @@ Phase 1 authorization covers only the reviewed archiso profile, build script, QE
 
 **Dependencies:** Phase 2.
 
-**Implementation tasks:** Implement shared tokens then launcher/panel/controls incrementally using Plasma extensions; add overlay surface without model authority. Define Control Center Performance states, grouped workload visibility, rule/restore controls and stale/unsupported telemetry UX using the Flow contract.
+**Implementation tasks:** Implement shared tokens then launcher/panel/controls incrementally using Plasma extensions; add overlay surface without model authority. Define Control Center Performance states, grouped workload visibility, rule/restore controls and stale/unsupported telemetry UX using the Flow contract. Add the dev-environment "pick your stack" onboarding surface — selection, resolved plan and confirmation only; provisioning belongs to later phases ([dev environments](engineering/DEV_ENVIRONMENTS.md)).
 
 **Deliverables:** Coherent QML components and keyboard interaction.
 
@@ -157,7 +172,7 @@ Phase 1 authorization covers only the reviewed archiso profile, build script, QE
 
 **Dependencies:** Phases 4–5; Phase 0 security contracts.
 
-**Implementation tasks:** Implement observe subset and open-action schemas/dry-runs first; schemas and target validation; design mutation handlers behind disabled gates; correlate events.
+**Implementation tasks:** Implement observe subset and open-action schemas/dry-runs first; schemas and target validation; design mutation handlers behind disabled gates; correlate events. Add the child-agent registry and the read-only child set (Context, Research, Security, Performance), with RepoSpine as the context engine and ContextGit isolating per-child context; children never self-authorize and no child-to-child channels exist in V1 ([agent system](ai/AGENT_SYSTEM.md)).
 
 **Deliverables:** 5–10 capability contracts and staged handlers.
 
@@ -179,7 +194,7 @@ Phase 1 authorization covers only the reviewed archiso profile, build script, QE
 
 **Dependencies:** Phases 4–6.
 
-**Implementation tasks:** Implement request-bound trusted approval, independent broker authorization, audit persistence and crash reconciliation; evaluate Warden identified revision or record rejected dependency decision.
+**Implementation tasks:** Implement request-bound trusted approval, independent broker authorization, audit persistence and crash reconciliation; evaluate Warden identified revision or record rejected dependency decision. Warden becomes the execution-enforcement layer: policy derived from the approved typed request (never model-supplied), audit correlated to Axiom request/audit IDs, fail-closed preserved — see [Warden integration](security/WARDEN_INTEGRATION.md); the bypass matrix on mainline and LTS is required evidence.
 
 **Deliverables:** Permission UX, enforceable policy, audit viewer; evidence-backed Warden disposition.
 
@@ -201,7 +216,7 @@ Phase 1 authorization covers only the reviewed archiso profile, build script, QE
 
 **Dependencies:** Phase 7; early layout experiment before installation.
 
-**Implementation tasks:** Specify subvolumes; capture consistent package/root state and boot asset policy; serialize eligible transactions; implement verification/recovery jobs.
+**Implementation tasks:** Specify subvolumes; capture consistent package/root state and boot asset policy; serialize eligible transactions; implement verification/recovery jobs. Align Morphix change plans with Axiom transactions so desktop customization is recovered through the same verification path.
 
 **Deliverables:** Recovery proof and per-capability limitations.
 

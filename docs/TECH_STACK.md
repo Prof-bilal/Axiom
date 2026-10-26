@@ -18,7 +18,12 @@ These are selected directions, not a tested integration matrix. Consult [researc
 | Inference | Adapter interface considers OpenAI, Anthropic, Gemini, OpenRouter, Ollama | V1 proof: one cloud plus Ollama; others later conformance work |
 | Tooling | MCP with explicit mediation | V1 optional integration; protocol is not authorization |
 | Enforcement | Polkit, systemd hardening, Linux primitives, portals | V1 policy design; support/ABI probe on chosen kernel |
-| Warden | Exact upstream selection and implementation inspection | RESEARCH; not a release dependency yet |
+| Warden | Execution enforcement; policy derived from approved typed requests | First-party; enforcement behaviour RESEARCH until the bypass matrix runs |
+| Agent orchestration | One parent `assistantd` + bounded, declarative child agents | V1 design; no runtime ([agent system](ai/AGENT_SYSTEM.md)) |
+| Context engine (RepoSpine) | Budgeted code context for the Context child | RESEARCH; repo-scoped today; Node ≥22.13 |
+| Context VCS (ContextGit) | Per-child runtime context branches | RESEARCH; local-first, Python core |
+| Model evaluation (ModelCheck) | Model promotion gate before a default changes | RESEARCH; licence MIT |
+| Customization (Morphix) | Reversible Plasma 6 desktop packs | RESEARCH; KDE Plasma 6 only; transaction engine unimplemented |
 | Flow / performance | Rust, D-Bus, systemd user scopes/services/slices, cgroup v2 accounting/controls, PSI | V1 bounded telemetry/manual policy proof; no scheduler replacement or LLM control loop |
 | Flow memory / power | zram baseline, existing power-profiles-daemon | V1 experiments, no chosen zram default; reuse the single performance-profile system |
 | Flow optional controls | MemoryHigh/targeted reclaim; freezer / systemd FreezeUnit-ThawUnit; systemd-oomd | Isolated reclaim MUST experiment; freeze/oomd SHOULD proofs; probe version, permissions and recovery |
