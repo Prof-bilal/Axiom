@@ -128,6 +128,13 @@ Last research pass: **2026-10-18** (**2026-10-24**: Warden upstream identified; 
 **Evidence:** Public comparisons of devcontainers, Nix, devbox, mise and asdf trade isolation, reproducibility and setup cost; RepoSpine's documented `atlas setup` demonstrates the select-and-consent UX (installs only what you pick).
 **Recommendation:** A; the container socket is treated as root-equivalent, services bind loopback-only, and nothing installs before confirmation. **Confidence:** medium direction, unmeasured. **Unresolved:** benchmarked disk/time; irreversibility messaging for database data; rootless availability. **Experiment:** E23. **Sources:** [dev environments](engineering/DEV_ENVIRONMENTS.md).
 
+## Q14: How should the install-time developer checklist select and provision tooling?
+
+**Question:** How do we let a developer tick IDE, AI tools, languages and datastores at install and get them provisioned safely?
+**Options:** A: curated checklist recorded at install, applied by a first-boot job from a declarative profile; B: a fixed "developer edition" package list; C: provision inside the installer chroot.
+**Evidence:** **PARTIAL — research gap (2026-10-25):** the external search/fetch backends were unavailable, so installer-specific evidence (Calamares post-install payloads, archinstall-style profiles, distro developer-edition flows) is **not gathered**. In-repo only: [installer](engineering/INSTALLER.md) prefers upstream Calamares; RepoSpine's `atlas setup` verifies a nothing-preselected select-and-confirm flow; Morphix verifies plan → snapshot → apply → verify.
+**Recommendation:** A, provisional and unverified. **Confidence:** low (research incomplete). **Unresolved:** Calamares persistence/first-boot hook; profile reuse and attribution; failure UX; whether any online in-installer provisioning is acceptable. **Experiment:** E25. **Sources:** [install checklist](engineering/INSTALL_CHECKLIST.md).
+
 ## Coverage and evidence ownership
 
 | Required research topics | Evidence and limitations |
@@ -166,6 +173,7 @@ All experiments are **NOT RUN** except where a status is noted; E05 identificati
 | E22 release + security / 5–7 | First-party integration: pinned revision + licence inventory (ModelCheck), adapter-absence test (core desktop works with every product removed), untrusted-output handling |
 | E23 qa + architect / 3–4 | Pick-your-stack provisioning: reproducible apply/remove, isolation proof (services loopback-only, no socket exposure), correct permission class, data-irreversibility messaging |
 | E24 performance + ai-runtime / 5, 9 | Candidate-model evaluation before it becomes a default; record the measured delta and the rollback of the default |
+| E25 qa + release / 10 | Install checklist: profile recorded at install but not applied there; first-boot provisioning per-item outcomes; offline deferral; idempotent re-apply; no pre-selection; loopback-only services |
 
 ## Remaining foundation limitation
 

@@ -260,7 +260,7 @@ Deferred until their phases, and not implied by this table: the five product int
 
 **Dependencies:** Phases 1–9 candidate exits.
 
-**Implementation tasks:** Integrate Calamares with tested Btrfs/UEFI layout; full pacman update path; signed repository/artifact process; release notes/checksums/license inventory.
+**Implementation tasks:** Integrate Calamares with tested Btrfs/UEFI layout; full pacman update path; signed repository/artifact process; release notes/checksums/license inventory. Include the developer install checklist: selection stored at install, provisioning applied on first boot, nothing pre-selected ([install checklist](engineering/INSTALL_CHECKLIST.md)).
 
 **Deliverables:** Installable release candidate and recovery media.
 
