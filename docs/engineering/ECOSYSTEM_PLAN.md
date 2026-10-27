@@ -1,81 +1,97 @@
 # Ecosystem work plan
 
-Status: plan — steps 1–8 are **not started** except where noted. This is the dependency-ordered
-sequence for working across Axiom and the five first-party projects
-([ecosystem](../ai/ECOSYSTEM.md)). Last updated: 2026-10-25.
+Status: plan — steps are not started except where noted. This is the dependency-ordered sequence
+for working across Axiom and the five first-party projects. Re-verified **2026-10-27**; stale
+repository pins and the `axiom/integration` claim from the 2026-10-25 version are corrected.
+See [ecosystem](../ai/ECOSYSTEM.md) and the [migration report](OMARCHY_MIGRATION.md).
 
 ## Working model
 
 - **Axiom is the host repository.** The five sibling projects are separate repositories; for
   cross-project work they are cloned into `workspace/` (gitignored, never committed here).
-- **Each project keeps its own rules.** Read that repo's `AGENTS.md` and `PHASES.md` before
-  editing; changes are committed in *that* repo, not in Axiom.
+- **Each project keeps its own rules.** Read that repo's `AGENTS.md` and phases before editing;
+  changes are committed in *that* repo, not in Axiom.
 - **Pinned revisions.** Axiom records the exact commit it depends on per project; no floating
-  `main`.
+  `main`. Current verified heads:
+
+  | Project | Repository | Verified head 2026-10-27 |
+  | --- | --- | --- |
+  | Warden | `Prof-bilal/Warden` | `f7c9793167398c86a61148c746cb4d934be11727` |
+  | RepoSpine | `Prof-bilal/RepoSpine` | `9ea06ec33a69a613a91831cd7c533a11ca16b032` |
+  | ContextGit | `Prof-bilal/ContextGit` | `8acd4e7df4ca583334745c20f17968094ced6162` |
+  | ModelCheck | `Prof-bilal/ModelChecker` | `eddcf746c30399c77e494cc6dfcfa9398e64c1bb` |
+  | Morphix | `Prof-bilal/Morphix` | `1ee76d1189b843d306f4987a71cf49fdaae2b683` |
+
 - **Evidence, not existence.** A step completes on its stated evidence, never because code
-  exists ([workflow](PHASE1_EVIDENCE.md) is the model).
+  exists.
 - **No cross-repo push without explicit authorization** for that specific repository.
+- The earlier claim that every sibling repo's `axiom/integration` was "currently identical to
+  that repo's `main`" was wrong for Warden; the branch exists but does not match `main`.
 
 ## Steps (dependency ordered)
 
 | # | Step | Repo | Output / evidence | Blocked by |
 | --- | --- | --- | --- | --- |
-| 0 | Workspace prepared — 5 repos cloned into `workspace/`, Axiom tree clean | Axiom | **DONE 2026-10-25** | — |
+| 0 | Workspace prepared — sibling repos cloned into `workspace/`; upstream mirrors pinned | Axiom | Recorded revisions; **DONE (pins corrected 2026-10-27)** | — |
 | 1 | Warden shaping spec (typed interface, request→policy, audit correlation) | Axiom | [WARDEN_INTEGRATION](../security/WARDEN_INTEGRATION.md) — **DONE** | — |
-| 2 | Authorize and start Phase 2: branded Plasma 6 desktop | Axiom | Bootable branded session; UI surfaces for launcher/overlay/permission views | owner authorization |
-| 3 | Warden: programmatic interface + request→policy builder + audit IDs | Warden | Interface implemented in Go; unit tests; then bypass matrix mainline **and** LTS in a VM | step 1; VM time |
-| 4 | Morphix: land its Phases 5–6 (transaction/rollback engine + KDE adapter writes) | Morphix | Transaction + rollback proof on a live Plasma 6 session | step 2 (a desktop to customize) |
-| 5 | RepoSpine: system/multi-root scope + freshness contract; settle Node floor | RepoSpine | Multi-root context serving; runtime-packaging decision | — |
-| 6 | ContextGit: headless runtime API + non-repo session mode | ContextGit | Per-child context branch isolation; no-collision test | — |
-| 7 | ModelCheck: add licence; wire as the model promotion gate | ModelCheck | Licence file; candidate-vs-baseline gate on the user's workload | owner licence choice |
-| 8 | Axiom Phase 6→7: child registry, read-only children, then enforcement + audit via Warden | Axiom | Contract + denial tests; no silent critical action | steps 3–7 |
+| 2 | Axiom foundation migration: pinned Omarchy, Hyprland/Quickshell, Axiom identity, reproducible boot | Axiom | Phase 2 exit evidence (E26) | ADR-013; owner sign-off on this plan |
+| 3 | Axiom Shell on Quickshell | Axiom | Phase 3 shell acceptance (E27, E29) | step 2 |
+| 4 | RepoSpine: system/multi-root scope, stable interface, Node floor decision | RepoSpine | Multi-root context serving; packaging decision | step 0 |
+| 5 | ContextGit: confirm headless runtime interface, non-repo session mode, per-child isolation | ContextGit | Isolation + no-collision evidence | step 0 |
+| 6 | Warden: programmatic interface + request→policy builder + audit correlation | Warden | Interface implemented in Go; unit tests | step 1 |
+| 7 | ModelCheck: commit the licence; wire as the model promotion gate | ModelChecker | Licence file; candidate-vs-baseline gate | owner licence choice |
+| 8 | Morphix decision: Hyprland/Quickshell adapter vs shell-agnostic redesign vs removal | Morphix | Recorded ADR-level decision | steps 2–3 |
+| 9 | Axiom integration: context POC (Phase 6), Warden enforcement + Sentinel POC (Phase 7) | Axiom | Contract + denial tests; no silent critical action | steps 4–8 |
+| 10 | Independent Warden bypass matrix on mainline and LTS | Warden + Axiom security | E32 evidence | step 6 |
 
-## Sequencing decision (2026-10-25)
+## Sequencing decision
 
-Owner decision: **build Axiom itself first, then the AI system, then security enforcement, then
-the five first-party projects.**
+Owner decision (2026-10-25, re-scoped 2026-10-27): **Axiom foundation first, then Axiom Shell,
+then the AI runtime and context foundation, then security enforcement, then first-party
+products shaped to Axiom's contracts.**
 
-1. **Axiom foundation and desktop** — Phase 2 (branded Plasma 6 desktop), then Phase 3 (custom
-   desktop experience): shell, launcher/overlay surfaces, design tokens.
-2. **Axiom AI system** — Phases 4–6: parent `assistantd`, provider router, typed capability
-   contract, child-agent registry and the read-only child set.
-3. **Security enforcement** — Phase 7 with Warden (step 3 below).
-4. **The five projects** — steps 4–7 land once Axiom can host them.
+Reason: RepoSpine + ContextGit give the AI runtime useful context and multi-agent state before
+any mutation authority exists; Warden then provides safe execution; ModelCheck governs model
+changes before defaults move; Morphix must be re-evaluated because the desktop foundation
+changed from Plasma to Hyprland/Quickshell.
 
-Steps 3–7 below are therefore **deferred** until Axiom's own foundation and AI system exist. The
-contracts are written now ([WARDEN_INTEGRATION](../security/WARDEN_INTEGRATION.md)) so the
-products shape to Axiom, not the other way round.
+Write model when sibling steps start: a **feature branch + pull request per repository** — never
+a commit straight to a sibling project's `main`. ModelCheck licence: **MIT** (owner decision
+2026-10-25); the file still needs to be committed in `Prof-bilal/ModelChecker`.
 
-Write model when those steps start: a **feature branch + pull request per repository** — never a
-commit straight to a sibling project's `main` (owner decision 2026-10-25). The working branch in
-every sibling repo is **`axiom/integration`** (created and pushed 2026-10-25; currently identical
-to that repo's `main`, since no sibling changes have been made yet). ModelCheck licence: **MIT**
-(owner decision 2026-10-25).
+## Build vs bundle (proposed)
+
+| Product | Preferred shape | Alternative | Reason |
+| --- | --- | --- | --- |
+| Warden | Library/service behind a typed interface | CLI wrapper for the first POC | Process overhead vs isolation and audit correlation |
+| RepoSpine | MCP/stdin or library | Bundled CLI | Node ≥22.13 runtime floor |
+| ContextGit | Headless library/API | Sidecar service | Python runtime and packaging |
+| ModelCheck | CLI invoked by runtime/CI | Library | Local-first evaluation with CI artifacts |
+| Morphix | Deferred pending its disposition decision | Shell-agnostic library | Plasma adapter does not fit |
 
 ## Cross-cutting rules
 
-1. **Axiom defines the contract; the product shapes to it.** For each integration, the typed
-   interface is written in Axiom first (as step 1 did for Warden), then implemented in the
-   product. This is the whole point of ownership.
+1. **Axiom defines the contract; the product shapes to it.** The typed interface is written in
+   Axiom first, then implemented in the product.
 2. **Untrusted output everywhere.** No product's output authorizes an action.
 3. **Sandbox where code executes.** Tool/MCP workers run under Warden or an equivalent.
-4. **Phase gates still apply.** Axiom's [phases](../PHASES.md) and each project's own phases are
-   not bypassed because the code is ours.
+4. **Phase gates still apply.** Axiom's phases and each project's own phases are not bypassed
+   because the code is ours.
+5. **Graceful absence.** Core desktop works with every first-party component removed.
 
 ## What needs the owner
 
 | Need | Why |
 | --- | --- |
-| Authorization to modify and push each of the five repos | They are separate repositories with their own history and CI |
-| Axiom Phase 2 authorization | It is a phase gate and unlocks steps 2 and 4 |
-| ModelCheck licence choice (MIT/Apache-2.0/etc.) | Required for the release inventory gate |
-| A decision on coupling depth | Warden as a *required* layer vs an adapter is a real architecture decision (see ADR-012) |
+| Authorization to modify and push each of the five repos | Separate repositories with their own history and CI |
+| Approval of this migration plan and of ADR-013 | It re-scopes Phase 2/3 and the foundation |
+| ModelCheck licence file commit | Required for the release inventory gate |
+| Morphix disposition (adapter vs redesign vs removal) | Its Plasma-only adapter does not fit the new foundation |
 
 ## Open risks
 
 - **Concentration:** six projects, one author.
-- **Ordering risk:** Morphix cannot be integrated before its own Phases 5–6 land, and it needs a
-  real Plasma session (step 2).
-- **Runtime floor:** RepoSpine requires Node ≥22.13 — a bundled runtime is a packaging decision.
-- **Verification:** Warden's bypass matrix and Morphix's rollback proof are the two hardest
-  pieces of evidence in this plan.
+- **Ordering risk:** RepoSpine/ContextGit interfaces and Morphix's disposition are unproven.
+- **Runtime floor:** RepoSpine requires Node ≥22.13.
+- **Verification:** Warden's bypass matrix and Morphix's rollback proof are the hardest evidence.
+- **Upstream churn:** Omarchy `quattro` moves quickly; only stable tags/packages are pinned.

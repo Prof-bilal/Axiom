@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
-"""Static checks for the reviewed archiso profile; does not run mkarchiso."""
+"""Static checks for the legacy Phase 1 reviewed archiso profile; does not run mkarchiso.
+
+After ADR-013 this profile is historical Phase 1 evidence. It is still validated so the
+retained artifact remains reproducible and its checks do not silently rot.
+"""
 from pathlib import Path
 import re
 import sys

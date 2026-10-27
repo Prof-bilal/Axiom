@@ -30,4 +30,14 @@ Separate user history (SQLite, user-only access, configurable retention/deletion
 
 Security owns adversarial review independently of implementation. Changes crossing privilege, device, provider, or storage boundaries require misuse tests and explicit residual risk. Report vulnerabilities privately to maintainers through an established private channel; until a security contact is configured, do not publish exploit details in public issues. Release readiness requires a working private reporting route. Offline recovery and administrator-directed maintenance remain available without AI.
 
-Sources: [Polkit](https://polkit.pages.freedesktop.org/polkit/polkit.8.html), [D-Bus specification](https://dbus.freedesktop.org/doc/dbus-specification.html), [systemd execution controls](https://www.freedesktop.org/software/systemd/man/latest/systemd.exec.html).
+## Upstream foundation security position
+
+[ADR-013](../DECISIONS.md) moves the proposed foundation to Omarchy-derived Arch/Hyprland/
+Quickshell. Omarchy documents that **Secure Boot and TPM must be disabled to install** and
+offers an opt-in passwordless-sudo feature; Axiom records both as **upstream limitations and
+divergence targets**, not inherited decisions. Axiom's long-term target is UEFI Secure Boot →
+signed boot chain/UKI → TPM where useful → LUKS2; none of this is implemented or claimed. The
+Hyprland permission model, Quickshell as trusted shell code, and the shell/lock process crash
+path reported upstream are new review surfaces. See the [migration report](../engineering/OMARCHY_MIGRATION.md).
+
+Sources: [Polkit](https://polkit.pages.freedesktop.org/polkit/polkit.8.html), [D-Bus specification](https://dbus.freedesktop.org/doc/dbus-specification.html), [systemd execution controls](https://www.freedesktop.org/software/systemd/man/latest/systemd.exec.html). See [Warden integration](WARDEN_INTEGRATION.md).

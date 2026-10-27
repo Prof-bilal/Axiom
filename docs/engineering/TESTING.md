@@ -9,8 +9,9 @@ Status: foundation specification; distro tests do not exist yet. Last researched
 | D-Bus contract | Introspection/versioned signatures, errors, sender identity, signals | Systems + QA |
 | Security | Prompt injection, forged consent, unauthorized peer, secret leakage | Independent security |
 | Integration | UI → policy → typed executor → audit; offline/provider failure | QA |
-| QEMU / ISO | UEFI boot, Plasma Wayland, network/audio smoke, logs | Linux-base + QA |
+| QEMU / ISO | UEFI boot, Hyprland/Quickshell session, shell smoke, network/audio smoke, logs | Linux-base + QA |
 | Installer | Blank disposable disk, layout, users, reboot, failure recovery | QA |
+| Migration / upstream | Pinned Omarchy boot, branding removal, Axiom Shell start, upstream-divergence upgrade | Migration + QA |
 | Update / rollback | Version N→N+1, interrupted transaction, ESP consistency | Release + security |
 | Performance | Controlled baseline and variance; see benchmarks | Performance |
 | Hardware | GPU, Wi-Fi, Bluetooth, sound, suspend, battery | QA |

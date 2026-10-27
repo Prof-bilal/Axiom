@@ -2,7 +2,7 @@
 
 Status: proposed V1 tokens; usability/accessibility validation pending. Last researched: 2026-10-18.
 
-The visual direction is graphite surfaces with a restrained teal accent, clear typography and explicit activity states. Publish tokens once in a shared QML theme module when implementation begins; component QML consumes semantic names rather than repeated literals. Respect desktop font, scale and accessibility preferences.
+The visual direction is graphite surfaces with a restrained teal accent, clear typography and explicit activity states. Publish tokens once in a shared QML theme module when Axiom Shell implementation begins (Quickshell/QML); component QML consumes semantic names rather than repeated literals. Respect desktop font, scale and accessibility preferences.
 
 | Token family | Proposed values (logical pixels unless specified) |
 |---|---|

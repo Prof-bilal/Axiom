@@ -6,7 +6,10 @@ benchmarked. Last researched: 2026-10-25.
 Axiom's first-run experience should ask a developer what they use — languages, databases,
 services, tooling — then provision a reproducible, reversible environment, instead of
 shipping a fixed set of developer tools and hoping. The install-time selection experience
-built on these methods is specified in [install checklist](INSTALL_CHECKLIST.md).
+built on these methods is specified in [install checklist](INSTALL_CHECKLIST.md). Omarchy
+already ships a `mise`-based lazy tool-installation mechanism; Axiom may reuse that
+implementation, but the selection/profile contract, permission classes and reversal
+guarantees remain Axiom's.
 
 ## Goal and non-goals
 

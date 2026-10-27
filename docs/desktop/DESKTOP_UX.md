@@ -2,9 +2,9 @@
 
 Status: V1 product specification; custom components are not implemented. Last researched: 2026-10-18.
 
-Axiom presents a calm developer workspace: a slim status panel, compact application dock, keyboard-first launcher and a visible agent surface. Original identity comes from layout, typography, precise status and recoverability, not copying another operating system's chrome. Keep standard KDE settings and recovery access available while custom surfaces mature.
+Axiom presents a calm developer workspace: a slim status panel, compact application dock, keyboard-first launcher and a visible agent surface. Original identity comes from layout, typography, precise status and recoverability, not copying another operating system's chrome. Keep standard upstream desktop settings and recovery access available while custom surfaces mature.
 
-V1 custom scope is a coherent branded Plasma session, launcher/agent entry point and permission/activity views. Complete settings, software center, device center and replacement notification center are LATER. Extend Plasma/KWin through supported packaging and APIs; retain KWin as compositor. Application UIs use Qt Quick Controls/Kirigami where appropriate; Plasma surfaces use compatible Plasma components.
+V1 custom scope is a coherent Axiom Shell session, launcher/agent entry point and permission/activity views. Complete settings, software center, device center and replacement notification center are LATER. Build on Quickshell/QML and supported Hyprland APIs; Hyprland remains the compositor, window manager and workspace owner. Application UIs use Qt Quick Controls/Kirigami where appropriate; shell surfaces use Quickshell components and Axiom design tokens.
 
 ## Core journeys
 
@@ -18,11 +18,11 @@ Authorization UI must be trusted and distinguishable from model-generated conten
 
 Acceptance includes keyboard-only completion, screen-reader naming, visible focus, 200% text scaling, mixed DPI, multi-monitor, suspend/resume, offline and denied-permission scenarios. Review 1366×768 and 4K layouts and right-to-left text before freezing components.
 
-Sources: [Plasma 6 packaging changes](https://develop.kde.org/docs/plasma/theme/theme-porting-to-plasma6/), [Qt accessibility](https://doc.qt.io/qt-6/accessible-qtquick.html). See [tokens](DESIGN_SYSTEM.md), [Wayland](WAYLAND.md).
+Sources: [Quickshell](https://quickshell.org/docs/), [Hyprland wiki](https://wiki.hypr.land/), [Qt accessibility](https://doc.qt.io/qt-6/accessible-qtquick.html). See [tokens](DESIGN_SYSTEM.md), [Wayland](WAYLAND.md).
 
 ## Control Center: Performance / Flow
 
-Extend the existing Control Center performance surface; do not create a separate Flow application or another profile selector. [Flow](../system/FLOW.md) owns policy and supported controls, while [performance](../system/PERFORMANCE.md) owns profiles and targets.
+Extend the Axiom Control Center performance surface; do not create a separate Flow application or another profile selector. [Flow](../system/FLOW.md) owns policy and supported controls, while [performance](../system/PERFORMANCE.md) owns profiles and targets.
 
 Show System Pressure (with freshness/unknown state), memory use, swap and compression (logical versus actual backing RAM), background/sleeping counts and expandable app groups. Each heavy-app row shows measured resource use and an effective state such as Active, Efficient, Limited, Sleeping or Unsupported. Do not present sample GB values as measurements. Budget percentages state whether they mean one CPU or all eligible CPUs; hard/soft memory boundaries have different warnings.
 

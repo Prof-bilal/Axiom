@@ -53,7 +53,7 @@ flowchart TD
 
 Children do not talk to each other directly in V1. Coordination is the parent's job through
 a shared, versioned task graph — this keeps accountability linear and avoids the
-agent-to-agent trust problem. Peer handoff is deferred (see *Failure modes*).
+agent-to-agent trust problem. Peer handoff is deferred (see *Failure modes*). The UI is Axiom Shell on Hyprland/Quickshell (ADR-013); the runtime has no Plasma/KWin dependency.
 
 ## Child agent contract (proposed)
 

@@ -1,11 +1,6 @@
 # Developer install checklist
 
-Status: design proposal. **Research gap (2026-10-25):** the external research pass for this
-round could not run — the search and fetch backends were unavailable. The doctrine below is
-grounded only in this repository's contracts and two first-party READMEs that were read
-directly. Installer-specific specifics (Calamares module/order for a post-install payload,
-archinstall-style profile formats, distro "developer edition" flows) are **not researched yet**
-and must be verified before implementation. Last updated: 2026-10-25.
+Status: design proposal. **Research gap (2026-10-25; updated 2026-10-27):** the earlier external research pass could not run, and after [ADR-013](../DECISIONS.md) the installer flow changed to an Omarchy-derived candidate. The doctrine below is grounded only in this repository's contracts and first-party READMEs read directly. Installer-specific specifics (the Omarchy-derived ISO/configurator flow, archinstall-style profile formats, distro "developer edition" flows) must be verified before implementation. Last updated: 2026-10-27.
 
 ## Goal
 
@@ -20,13 +15,15 @@ Decision: the installer **records the selection**; a one-time provisioning job a
 
 Reasons: a failure mid-provisioning cannot corrupt a half-written install; user-scope tools do
 not need root inside the installer; the live/installed session is the real environment the
-tools must run in; and Calamares stays upstream and minimal (per [installer](INSTALLER.md),
-which prefers upstream modules over a custom installer).
+tools must run in; and the Omarchy-derived installer stays upstream and minimal (per
+[installer](INSTALLER.md), which now prefers the proven upstream flow over a Calamares-first
+design).
 
 ## Flow
 
-1. **Calamares** — disk layout → user account → **developer checklist** (selection only; no
-   provisioning) → install. The checklist is stored as a declarative profile.
+1. **Installer (Omarchy-derived flow; Calamares legacy)** — disk layout → user account →
+   **developer checklist** (selection only; no provisioning) → install. The checklist is stored
+   as a declarative profile.
 2. **First boot** — the provisioning job reads the profile, shows the *resolved plan*, applies
    items in order, verifies each, and reports outcomes.
 3. **Re-runnable** — the profile can be viewed, edited and re-applied at any time; re-apply is
@@ -107,7 +104,8 @@ never a hidden commitment.
 
 ## Open research (must complete before implementation)
 
-- Calamares: the supported way to persist a post-install payload and a first-boot hook.
+- Omarchy-derived installer: the supported way to persist a post-install payload and a
+  first-boot hook.
 - archinstall-style profile formats and whether one is reusable, with attribution.
 - How distro "developer edition" / first-run flows present selection and handle failure.
 - Whether any in-installer (online) provisioning is worth the failure risk versus first boot.

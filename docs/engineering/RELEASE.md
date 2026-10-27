@@ -4,6 +4,8 @@ Status: future workflow; no release artifacts, CI build or signing infrastructur
 
 A release is a tested package set and installation/recovery contract, not an ISO that boots once. GitHub Actions orchestrates unprivileged checks and isolated builds; signing credentials never enter pull-request jobs. Separate immutable build artifacts from publication rights. Use ephemeral release builders, protected promotion and independent review of security-sensitive changes.
 
+**Upstream inputs (ADR-013, RESEARCH):** the foundation is a pinned Omarchy-derived set (`omacom/omarchy`, `omarchy-iso`, `omarchy-pkgs` plus the Quickshell revision). Freeze the exact upstream revision, package versions, mirror identity and license inventory per build; preserve Omarchy's MIT notices, Quickshell's LGPL-3.0 obligations and every third-party asset license ([notices](../../THIRD_PARTY_NOTICES.md)). Do not publish any bundled wallpaper, font, icon or sound whose provenance is unresolved. The release pipeline is inherited as a mechanism to evaluate, not as an approved Axiom process.
+
 Execution order:
 
 1. Freeze source revision, package versions, repository inputs, licenses and known issues; check every required phase exit criterion.

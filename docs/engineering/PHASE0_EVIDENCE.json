@@ -3,6 +3,7 @@
   "recorded_utc": "2026-10-24",
   "phase_exit": 0,
   "next_phase": 1,
+  "migration_note": "2026-10-27: ADR-013 re-scoped the desktop foundation to an Omarchy-derived Arch/Hyprland/Quickshell base. This Phase 0 record is historical and unchanged; E03's Plasma/QML pass condition is superseded by the migration experiments E26-E29 in docs/RESEARCH.md and docs/engineering/OMARCHY_MIGRATION.md.",
   "note": "Phase 0 exit evidence. An experiment may only be COMPLETE with a real artifact that exists; anything that requires implementation is DEFERRED to its phase, never silently marked complete. E05/E10 and E13-E20 are the Phase-0-scoped items (identify / record); E01-E04, E06-E09, E11-E12 are produced by later phases.",
   "experiments": {
     "E01": { "scope": "phase1", "status": "DEFERRED", "target": 1, "pass_condition": "Two independent archiso builds; compare manifests/hashes; boot each with retained logs" },

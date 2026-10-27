@@ -9,17 +9,17 @@ ROOT = Path(__file__).resolve().parents[1]
 REQUIRED = '''VISION PRD MVP ARCHITECTURE TECH_STACK ROADMAP PHASES SUBAGENTS AGENT_WORKFLOW DECISIONS RESEARCH'''.split()
 GROUPS = {
     'desktop': 'DESKTOP_UX DESIGN_SYSTEM WAYLAND',
-    'ai': 'AI_ARCHITECTURE SYSTEM_AGENT_API MODEL_ROUTER ROUTINES MCP',
-    'security': 'SECURITY THREAT_MODEL PERMISSIONS SANDBOXING',
-    'system': 'PERFORMANCE BTRFS_ROLLBACK SYSTEMD PACKAGING',
+    'ai': 'AI_ARCHITECTURE AGENT_SYSTEM SYSTEM_AGENT_API MODEL_ROUTER ECOSYSTEM ROUTINES MCP',
+    'security': 'SECURITY THREAT_MODEL PERMISSIONS SANDBOXING WARDEN_INTEGRATION',
+    'system': 'PERFORMANCE FLOW BTRFS_ROLLBACK SYSTEMD PACKAGING',
     'connect': 'CONNECT ANDROID CROSS_DEVICE',
-    'engineering': 'TESTING BENCHMARKS ISO_BUILD INSTALLER RELEASE',
+    'engineering': 'TESTING BENCHMARKS ISO_BUILD INSTALLER RELEASE ECOSYSTEM_PLAN OMARCHY_MIGRATION FOUNDATION_VALIDATION PHASE1_EVIDENCE DEV_ENVIRONMENTS INSTALL_CHECKLIST',
 }
-SKILLS = set('archiso-build arch-pkgbuild plasma-qml wayland-integration rust-daemon dbus-service systemd-service agent-system-api threat-model security-review warden-policy btrfs-transaction performance-benchmark qemu-integration-test mcp-tool provider-adapter android-connect release-check'.split())
+SKILLS = set('archiso-build arch-pkgbuild quickshell-ui wayland-integration rust-daemon dbus-service systemd-service agent-system-api threat-model security-review warden-policy btrfs-transaction performance-benchmark qemu-integration-test mcp-tool provider-adapter android-connect release-check omarchy-upstream'.split())
 
 def validate(root):
     errors = []
-    required = ['README.md', 'AGENTS.md'] + [f'docs/{name}.md' for name in REQUIRED]
+    required = ['README.md', 'AGENTS.md', 'THIRD_PARTY_NOTICES.md'] + [f'docs/{name}.md' for name in REQUIRED]
     required += [f'docs/{group}/{name}.md' for group, names in GROUPS.items() for name in names.split()]
     for item in required:
         path = root / item

@@ -4,7 +4,7 @@ Status: proposed prototype requirements; no acceptance result exists. Owner role
 
 | ID | User problem and required behavior | Acceptance evidence |
 | --- | --- | --- |
-| R01 | Boot a cohesive Arch/Plasma Wayland environment on x86-64 UEFI | Clean QEMU boot, Wayland session and retained journal |
+| R01 | Boot a cohesive Arch/Hyprland Axiom Shell environment on x86-64 UEFI | Clean QEMU boot, Wayland session and retained journal |
 | R02 | Find launcher, settings, AI overlay and action history with keyboard | Keyboard-only walkthrough plus accessibility inspection |
 | R03 | Ask for useful operations without delegating a root shell | 5–10 typed capabilities, schema validation and deny tests |
 | R04 | Understand the exact target/impact before granting authority | Trusted confirmation bound to normalized request; replay/tamper tests |

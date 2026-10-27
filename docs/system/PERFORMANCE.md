@@ -6,7 +6,7 @@ Status: Phase 0 design and measurement plan; no tuning or Flow behavior validate
 
 Optimize foreground response and useful background progress, not the lowest RAM number. High allocation can be healthy; excessive stalls, latency and contention need evidence. Flow orchestrates existing Linux/systemd controls without replacing scheduling or requiring an LLM. The performance doctor uses timestamped deterministic facts; optional AI explanation never sits in the control loop.
 
-Use logical application groups from systemd scopes/services and cgroup v2, preserving Plasma's session/application/background boundaries. Avoid disconnected PID rankings and double counting. Unknown mappings/controller support are visible limitations. Classify foreground, visible background, background/heavy, critical, pinned, agent, development, media and game workloads using activity/overrides; details and precedence live in [Flow](FLOW.md).
+Use logical application groups from systemd scopes/services and cgroup v2, preserving the Hyprland/Quickshell session/application/background boundaries. Avoid disconnected PID rankings and double counting. Unknown mappings/controller support are visible limitations. Classify foreground, visible background, background/heavy, critical, pinned, agent, development, media and game workloads using activity/overrides; details and precedence live in [Flow](FLOW.md).
 
 | Signal | Flow policy use | Constraint |
 | --- | --- | --- |
@@ -41,7 +41,7 @@ Success requires reduced stalls and foreground latency under the declared conten
 | Metric | TARGET — unvalidated proposal | MEASURED |
 | --- | --- | --- |
 | Boot / login-to-interactive | No >5% median regression beyond noise; startup experiments must improve desktop-ready without losing optional work | NOT YET MEASURED |
-| Idle RAM/CPU | No >5% regression against branded Plasma baseline; separately report Flow incremental PSS/CPU/wakeups | NOT YET MEASURED |
+| Idle RAM/CPU | No >5% regression against the pinned Axiom baseline; separately report Flow incremental PSS/CPU/wakeups | NOT YET MEASURED |
 | Launcher / app startup | No >5% p95 regression beyond noise with adequate samples | NOT YET MEASURED |
 | Foreground input/switch/frame response under pressure | Improve paired latency/stall distributions beyond noise without starvation; absolute target pending baseline | NOT YET MEASURED |
 | Stall exposure / hangs / OOM | Reduce sustained stalls and emergency events under equal offered load; no hidden work loss or Flow kill-as-optimization | NOT YET MEASURED |

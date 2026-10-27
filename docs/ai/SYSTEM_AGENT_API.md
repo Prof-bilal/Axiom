@@ -58,7 +58,7 @@ All audit events include identity, capability/version, redacted arguments, decis
 
 - Purpose: Launch an installed trusted desktop application.
 - Arguments: `{"desktop_id":string}`. Return: `{"launch_id":string,"dispatched":bool}`.
-- Example arguments: `{"desktop_id":"org.kde.kate.desktop"}`.
+- Example arguments: `{"desktop_id":"org.kde.konsole.desktop"}`.
 - Validation: reject unknown fields, enforce bounded schema and exact enrolled/allowlisted identities; no path, command or extra argument may expand the described scope.
 - Permission: NORMAL; effective classification can only increase.
 - Execution path / privilege: shared lifecycle → user; desktop launch API, no shell.

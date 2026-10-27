@@ -75,7 +75,7 @@ class Foundation(unittest.TestCase):
         self.install()
         before = {p.relative_to(self.root): p.read_bytes()
                   for p in (self.root / '.agents/skills').glob('*/SKILL.md')}
-        self.assertEqual(len(before), 18)
+        self.assertEqual(len(before), 19)
         self.install()
         self.assertEqual(before, {p: (self.root / p).read_bytes() for p in before})
 

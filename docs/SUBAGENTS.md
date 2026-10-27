@@ -24,11 +24,19 @@ Read: [engineering/ISO_BUILD.md](engineering/ISO_BUILD.md), [system/PACKAGING.md
 
 ## desktop
 
-KDE Plasma, Qt/QML, KWin/Wayland, panels, dock, launcher, Control Center, notifications and coherent accessible UX.
+Hyprland, Quickshell/QML, Axiom Shell surfaces (panel, dock, launcher, Control Center, notifications), compositor integration and coherent accessible UX.
 
-Expected output: Interaction acceptance evidence, token reuse, keyboard/accessibility and target-session checks.
+Expected output: Interaction acceptance evidence, token reuse, keyboard/accessibility, reduced-motion, multi-DPI and shell performance checks in the Hyprland/Quickshell session.
 
 Read: [desktop/DESKTOP_UX.md](desktop/DESKTOP_UX.md), [desktop/DESIGN_SYSTEM.md](desktop/DESIGN_SYSTEM.md), [desktop/WAYLAND.md](desktop/WAYLAND.md).
+
+## upstream-migration
+
+Upstream Omarchy revision review, change classification, Axiom compatibility/license/security checks, and deliberate port/cherry-pick decisions.
+
+Expected output: Pinned revision comparison, classified changes, compatibility and regression evidence, and an explicit port/reject decision.
+
+Read: [migration report](engineering/OMARCHY_MIGRATION.md), [third-party notices](../THIRD_PARTY_NOTICES.md), [phases](PHASES.md).
 
 ## systems-rust
 

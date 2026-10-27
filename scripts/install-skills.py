@@ -10,8 +10,8 @@ TARGET = ROOT / '.agents' / 'skills'
 
 def main():
     sources = sorted(SOURCE.glob('*/SKILL.md'))
-    if len(sources) != 18:
-        raise ValueError('Expected 18 reviewed staged skills; validate source before installation')
+    if len(sources) != 19:
+        raise ValueError('Expected 19 reviewed staged skills; validate source before installation')
     # Preflight all conflicts before changing anything. Never overwrite local edits.
     for source in sources:
         dest = TARGET / source.parent.name / 'SKILL.md'

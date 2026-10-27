@@ -1,6 +1,6 @@
 # Architecture
 
-Status: design baseline, not implemented. V1 is a prototype scope label; LATER is intentionally deferred; RESEARCH means no dependency may assume support. See [ADRs](DECISIONS.md), [API contract](ai/SYSTEM_AGENT_API.md) and [security](security/SECURITY.md).
+Status: design baseline, not implemented. The desktop foundation was re-scoped by [ADR-013](DECISIONS.md) to an Omarchy-derived Arch/Hyprland/Quickshell base; older Plasma/KWin statements are historical. V1 is a prototype scope label; LATER is intentionally deferred; RESEARCH means no dependency may assume support. See the [migration report](engineering/OMARCHY_MIGRATION.md), [ADRs](DECISIONS.md), [API contract](ai/SYSTEM_AGENT_API.md) and [security](security/SECURITY.md).
 
 ## Platform responsibilities
 
@@ -21,11 +21,24 @@ flowchart LR
   FL -. integration experiments .-> RR[zram / scheduler controls / oomd]
 ```
 
+## Foundation layers
+
+| Layer | Owner | Status | Notes |
+| --- | --- | --- | --- |
+| Omarchy-derived Arch infrastructure | UPSTREAM | RESEARCH | Pinned `omacom/omarchy` stable release, `omarchy-iso`, `omarchy-pkgs`; Hyprland, Quickshell, SDDM, Plymouth, hardware helpers |
+| Axiom Shell | AXIOM CORE | V1 design | Quickshell/QML panel, dock, launcher, notifications, Control Center and agent surfaces; original identity |
+| AI runtime | AXIOM CORE | V1 design | `assistantd`, provider router, typed capabilities, parent/child agents |
+| Shield | AXIOM CORE (conceptual) | RESEARCH | Authorization + Warden enforcement; Warden is an adapter, never the authority |
+| Sentinel | AXIOM CORE (conceptual) | RESEARCH | Bounded security/QA workers for developer applications |
+| Flow | AXIOM CORE | V1 design | Resource orchestration over systemd/cgroups/PSI; no scheduler replacement |
+| First-party adapters | FIRST-PARTY | RESEARCH | Pinned RepoSpine, ContextGit, ModelCheck, Morphix behind versioned interfaces |
+| Optional developer/AI tooling | OPTIONAL | LATER | Core desktop works with every first-party component absent |
+
 ## Process architecture
 
 ```mermaid
 flowchart TD
-  User[User] --> UI[Plasma / QML agent UI — V1 user session]
+  User[User] --> UI[Axiom Shell — Quickshell/QML agent UI, V1 user session]
   UI --> A[assistantd — V1 unprivileged]
   A --> R[Provider router — V1 library]
   R --> P[One cloud + Ollama — V1 adapters]
@@ -55,7 +68,7 @@ flowchart TD
 
 ## Processes and privilege boundaries
 
-Plasma/KWin provides the compositor and existing desktop integration. Shell customizations and QML apps run as the logged-in user. Never move UI into a root process to bypass permissions. The overlay is a client, not the policy authority.
+Hyprland provides the compositor, windows, workspaces and Wayland input; Quickshell provides the shell surfaces. Axiom Shell and QML apps run as the logged-in user. Never move UI into a root process to bypass permissions. The overlay is a client, not the policy authority.
 
 `assistantd` is a proposed per-user process for cancellation, request lifecycle and adapter IO. It has no system privilege; justify its idle cost before making it persistent. Router, planner and routine engine are modules, not separate daemons. Models return proposals; a non-model validator produces bounded typed requests. No plan itself conveys authority.
 
@@ -82,7 +95,7 @@ Package/config changes use serialized jobs with preflight, authorization, eligib
 | Path / component | Status | Responsibility |
 | --- | --- | --- |
 | `apps/{control-center,launcher,settings,welcome,agent-ui}` | V1 incrementally | Session UI; shared design tokens |
-| `shell/{panel,dock,notifications,workspace}` | V1 incrementally | Plasma extensions; KWin remains compositor |
+| `shell/{panel,dock,notifications,workspace}` | V1 incrementally | Axiom Shell on Quickshell; Hyprland remains compositor |
 | `services/{assistantd,system-agentd}` | V1 | Session orchestration and narrow privileged execution |
 | `services/flowd` | RESEARCH service; V1 on-demand proof | One candidate per-user Rust Flow controller; replaces speculative performanced, no parallel duplicate |
 | `services/{connectd,memoryd}` | LATER, process need unproven | Device / activity modules first |
@@ -102,4 +115,4 @@ mapping in [ecosystem](ai/ECOSYSTEM.md).
 
 ## Experiments before commitment
 
-Prove UEFI boot + Btrfs recovery including ESP mismatch; Plasma extension packaging/upgrade; per-user/system bus authorization and sender races; request-bound interactive approval; cloud/local adapter conformance; audit crash/recovery; sandbox ABI behavior; and clean-run reproducibility. See [research register](RESEARCH.md). Phase 6 mutation stays disabled until Phase 7 security gates pass, even though API implementation starts earlier.
+Prove UEFI boot + Btrfs recovery including ESP mismatch; Hyprland/Quickshell shell packaging/upgrade; per-user/system bus authorization and sender races; request-bound interactive approval; cloud/local adapter conformance; audit crash/recovery; sandbox ABI behavior; and clean-run reproducibility. See [research register](RESEARCH.md). Phase 6 mutation stays disabled until Phase 7 security gates pass, even though API implementation starts earlier.

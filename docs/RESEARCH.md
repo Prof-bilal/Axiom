@@ -30,7 +30,7 @@ Last research pass: **2026-10-18** (**2026-10-24**: Warden upstream identified; 
 | Performance | Must measure extension/UI overhead | No evidence custom compositor improves user metrics |
 | Maintenance | Follow upstream supported interfaces | Own protocol, drivers, UX and compatibility |
 
-**Recommendation:** A, no custom compositor V1. **Confidence:** high, particular integrations unproven. **Unresolved:** portal/KWin feature matrix, keyboard/focus behavior, accessibility. **Experiment:** E03. **Sources:** above and [desktop](desktop/DESKTOP_UX.md). **Last verified:** 2026-10-18.
+**Recommendation:** no custom compositor. The desktop foundation was re-scoped by [ADR-013](DECISIONS.md) to Omarchy-derived Hyprland/Quickshell; see Q26–Q29. **Confidence:** high on no custom compositor, medium on the new foundation. **Unresolved:** Quickshell feature/accessibility matrix, Hyprland permission model, boot chain. **Experiment:** E03 (re-scoped), E26–E29. **Sources:** above, [migration report](engineering/OMARCHY_MIGRATION.md). **Last verified:** 2026-10-27.
 
 ## Q3: What enforces agent authority?
 
@@ -132,20 +132,55 @@ Last research pass: **2026-10-18** (**2026-10-24**: Warden upstream identified; 
 
 **Question:** How do we let a developer tick IDE, AI tools, languages and datastores at install and get them provisioned safely?
 **Options:** A: curated checklist recorded at install, applied by a first-boot job from a declarative profile; B: a fixed "developer edition" package list; C: provision inside the installer chroot.
-**Evidence:** **PARTIAL — research gap (2026-10-25):** the external search/fetch backends were unavailable, so installer-specific evidence (Calamares post-install payloads, archinstall-style profiles, distro developer-edition flows) is **not gathered**. In-repo only: [installer](engineering/INSTALLER.md) prefers upstream Calamares; RepoSpine's `atlas setup` verifies a nothing-preselected select-and-confirm flow; Morphix verifies plan → snapshot → apply → verify.
-**Recommendation:** A, provisional and unverified. **Confidence:** low (research incomplete). **Unresolved:** Calamares persistence/first-boot hook; profile reuse and attribution; failure UX; whether any online in-installer provisioning is acceptable. **Experiment:** E25. **Sources:** [install checklist](engineering/INSTALL_CHECKLIST.md).
+**Evidence:** **PARTIAL — superseded by ADR-013 (2026-10-27).** The earlier external pass could not gather installer evidence; after ADR-013 the candidate is the Omarchy-derived ISO/configurator flow, not Calamares. In-repo only: [installer](engineering/INSTALLER.md) now prefers the proven upstream flow; RepoSpine's `atlas setup` verifies a nothing-preselected select-and-confirm flow; Morphix verifies plan → snapshot → apply → verify.
+**Recommendation:** A, provisional and unverified; installer choice is re-scoped to the Omarchy-derived flow by ADR-013. **Confidence:** low (research incomplete). **Unresolved:** Omarchy-derived installer persistence/first-boot hook; profile reuse and attribution; failure UX; whether any online in-installer provisioning is acceptable. **Experiment:** E25. **Sources:** [install checklist](engineering/INSTALL_CHECKLIST.md).
+
+## Q26: Should Axiom adopt Omarchy as its upstream foundation?
+
+**Question:** What should Axiom inherit from Omarchy, and on what revision?
+**Options:** A: keep raw Arch + Plasma/KWin; B: raw Arch + custom Hyprland/Quickshell; C: Omarchy-derived Arch/Hyprland/Quickshell with Axiom-owned product layers.
+**Evidence:** [migration report](engineering/OMARCHY_MIGRATION.md), upstream `omacom/omarchy` `v4.0.6` (`237f1b40`), `quattro` `39d56653`, `omarchy-iso`, Quickshell `v0.3.2`, Hyprland `v0.56.2`. Omarchy is MIT; Quickshell is LGPL-3.0-only; Hyprland BSD-3-Clause. The Omarchy default branch is a `4.0.0.alpha` pre-release; stable artifacts come from tags/packages.
+**Recommendation:** C as a researched direction, pinned to stable releases; Axiom owns identity, shell, AI runtime, security and system APIs. **Confidence:** medium-high on reuse, low on individual integrations. **Unresolved:** boot chain, Secure Boot/TPM, Quickshell accessibility/reduced motion, asset licensing. **Experiment:** E26–E33. **Last verified:** 2026-10-27.
+
+## Q27: Is Quickshell sufficient for the complete Axiom Shell?
+
+**Question:** Which shell surfaces can Quickshell implement, and what must Axiom build?
+**Options:** A: Quickshell for the shell; B: keep Plasma shell; C: custom compositor/shell.
+**Evidence:** Quickshell `v0.3.2` provides layer-shell panels/docks, popups, session lock, notifications, StatusNotifier/DBusMenu, PipeWire, NetworkManager, BlueZ, UPower, MPRIS, polkit, screencopy and Hyprland IPC. It has no launcher UI, clipboard manager, OSD UI, logind helper or reduced-motion handling; it uses private Qt APIs and expects API breaks in minor releases. A lock/shell crash path was reported upstream. Axiom Shell must build those missing surfaces.
+**Recommendation:** A; Hyprland remains the compositor; do not build a compositor. **Confidence:** medium; the missing surfaces are real work. **Unresolved:** accessibility completeness, lock robustness, idle cost. **Experiment:** E27, E29. **Last verified:** 2026-10-27.
+
+## Q28: Secure Boot, TPM and encryption under an Omarchy-derived base
+
+**Question:** Can Axiom keep its stronger boot trust direction if upstream requires Secure Boot and TPM to be disabled?
+**Options:** A: inherit the upstream limitation; B: signed boot/UKI + LUKS2 divergence; C: defer.
+**Evidence:** Omarchy's getting-started manual instructs users to turn off Secure Boot and/or TPM; LUKS full-disk encryption is the default but no TPM-sealed unlock is documented. Axiom's target is signed boot/UKI and LUKS2; nothing is implemented.
+**Recommendation:** B as a RESEARCH divergence; do not claim support and do not silently inherit the limitation. **Confidence:** low until the experiment runs. **Unresolved:** UKI signing, key custody, PCR policy, recovery. **Experiment:** E28, E30. **Last verified:** 2026-10-27.
+
+## Q29: Does Morphix remain useful after the foundation change?
+
+**Question:** Morphix is Plasma 6 only with no transaction/rollback engine. Does it still fit?
+**Options:** A: add a Hyprland/Quickshell adapter; B: redesign shell-agnostic; C: defer/remove from the immediate integration plan.
+**Evidence:** `Prof-bilal/Morphix` `main` `1ee76d11`; dual MIT/Apache-2.0; no releases; README states no user-facing functionality yet and no transaction/rollback or KDE adapter writes; Plasma `>=6.0,<7.0` only.
+**Recommendation:** C for the immediate plan, with A or B as a later recorded decision after the Foundation POC. **Confidence:** high on the current limitation, medium on the replacement shape. **Unresolved:** whether declarative shell customization is better owned by Axiom Shell itself. **Experiment:** none yet; a design decision after E26/E27. **Last verified:** 2026-10-27.
+
+## Q30: Which boot chain and recovery integration should Axiom use?
+
+**Question:** Omarchy ships Limine + UKI; Axiom accepted systemd-boot. Which is the base?
+**Options:** A: adopt Limine/UKI; B: keep systemd-boot; C: support both.
+**Evidence:** Omarchy's Limine/UKI integration includes bootable snapshots and direct-EFI entries; Axiom's ADR-002 accepted systemd-boot and its Btrfs experiment assumes systemd-boot entry selection.
+**Recommendation:** RESEARCH; decide by E28 on an encrypted Btrfs layout. Do not silently replace ADR-002. **Confidence:** low until measured. **Unresolved:** snapshot boot generation, ESP consistency, Secure Boot interaction. **Experiment:** E28. **Last verified:** 2026-10-27.
 
 ## Coverage and evidence ownership
 
 | Required research topics | Evidence and limitations |
 | --- | --- |
 | Arch, archiso, PKGBUILD, pacman, Flatpak | [Packaging](system/PACKAGING.md), [ISO](engineering/ISO_BUILD.md); blocked Arch pages acknowledged; accessible upstream/manual evidence distinguished |
-| Plasma 6, Qt 6, QML, KWin, Wayland, portals | [UX](desktop/DESKTOP_UX.md), [Wayland](desktop/WAYLAND.md), [design tokens](desktop/DESIGN_SYSTEM.md) |
+| Hyprland, Quickshell, Qt 6, QML, Wayland, portals | [UX](desktop/DESKTOP_UX.md), [Wayland](desktop/WAYLAND.md), [design tokens](desktop/DESIGN_SYSTEM.md) |
 | D-Bus, systemd, credentials, Polkit | [Systemd](system/SYSTEMD.md), [AI](ai/AI_ARCHITECTURE.md), [permissions](security/PERMISSIONS.md) |
 | namespaces, capabilities, cgroups v2, seccomp, Landlock, bubblewrap | [Sandboxing](security/SANDBOXING.md); no universal support claim |
 | Btrfs, Snapper, bootloader consistency | [Recovery](system/BTRFS_ROLLBACK.md) |
 | PipeWire, WirePlumber, NetworkManager, BlueZ, Mesa | [Systemd integration](system/SYSTEMD.md); GPU/hardware tests pending |
-| Calamares, QEMU/KVM, GitHub Actions | [Installer](engineering/INSTALLER.md), [ISO](engineering/ISO_BUILD.md), [testing](engineering/TESTING.md), [release](engineering/RELEASE.md) |
+| Omarchy-derived installer, QEMU/KVM, GitHub Actions | [Installer](engineering/INSTALLER.md), [ISO](engineering/ISO_BUILD.md), [testing](engineering/TESTING.md), [release](engineering/RELEASE.md) |
 | zram, PSI, power-profiles-daemon, resource controls | [Performance](system/PERFORMANCE.md), [benchmarks](engineering/BENCHMARKS.md); NOT YET MEASURED |
 | MCP, Ollama, OpenAI, Anthropic, Gemini, OpenRouter | [MCP](ai/MCP.md), [router](ai/MODEL_ROUTER.md); protocol/version conformance tests pending |
 | Agent Skills, Codex, OpenCode, Command Code, Freebuff | [Workflow](AGENT_WORKFLOW.md); installed tool smoke tests pending |
@@ -159,21 +194,29 @@ All experiments are **NOT RUN** except where a status is noted; E05 identificati
 | --- | --- |
 | E01 linux-base + release / 1 | Two independent controlled archiso builds; compare manifests/hashes, explain nondeterminism; boot each with retained logs |
 | E02 linux-base + QA / 1, 8 | UEFI/Btrfs/root+package database+ESP recovery layout; recovered state boots coherently or clear unsupported coverage blocks commit |
-| E03 desktop + QA / 3 | Plasma/QML packaging across pinned versions, keyboard/a11y/multi-DPI; portals deny unsolicited input/capture |
+| E03 desktop + QA / 3 | Hyprland/Quickshell shell on pinned versions, keyboard/a11y/reduced-motion/multi-DPI; portals/Hyprland permissions deny unsolicited input/capture |
 | E04 security + systems-rust / 4, 7 | D-Bus authenticated peer, UID/session/disconnect, grant replay/expiry/target swap and Polkit confusion; no unauthorized mutation |
-| E05 security + researcher / 0, 7 | Identify Warden repo/revision/license; inspect implementation; namespace/seccomp/Landlock/network bypass tests on main/LTS; reject unsupported assumptions. **IDENTIFIED 2026-10-24**: [Prof-bilal/Warden](https://github.com/Prof-bilal/Warden) MIT `cd5e8bf2…` v0.1.17, implementation inspected statically (see [sandboxing](security/SANDBOXING.md)); bypass tests **NOT RUN** |
+| E05 security + researcher / 0, 7 | Identify Warden repo/revision/license; inspect implementation; namespace/seccomp/Landlock/network bypass tests on main/LTS; reject unsupported assumptions. **RE-VERIFIED 2026-10-27**: [Prof-bilal/Warden](https://github.com/Prof-bilal/Warden) MIT, `main` `f7c9793167`; the earlier `cd5e8bf2…` pin is the `axiom/integration` tip, not `main` or `v0.1.17`; Linux backend is bubblewrap + setpriv + strace (no seccomp/Landlock); bypass tests **NOT RUN** |
 | E06 security + QA / 7 | Fail audit persistence, broker crash and disk-full; no unrecorded privileged mutation, explicit uncertain outcomes reconciled |
 | E07 QA + linux-base / 8 | Hook failure, power-loss simulation, exhausted snapshot space, failed boot and rollback bypass; test surviving audit and manual recovery |
 | E08 ai-runtime + QA / 5 | One cloud and Ollama conform to neutral streaming/error/cancel types; no cloud required for core desktop; no implicit content forwarding |
 | E09 performance / 2, 9 | Baseline/candidate boot, idle, latency, pressure and agent overhead; raw runs/variance and thresholds; hardware-only battery claim |
 | E10 architect + QA / 0–1 | On installed versions of all four tools load AGENTS and selected skill; discover adapters where supported; verify permissions; inspect .agents after mount restriction removed |
 | E11 connect + security / 11 | Android pairing/revocation, discovery spoof/MITM, file traversal and feature matrix; report unsupported SMS/calls/iOS behaviors |
-| E12 release + QA / 10 | Disposable Calamares install, signed full update, interrupted update recovery and release input provenance; no real host disk use |
+| E12 release + QA / 10 | Disposable Omarchy-derived install, signed full update, interrupted-update recovery and release input provenance; no real host disk use |
 | E21 ai-runtime + security / 6–7 | Child-agent contract validation: delegation bounds, no self-authorization, budget/step/cost cascade, purpose-collision rejection, untrusted child definition; no unauthorized mutation |
 | E22 release + security / 5–7 | First-party integration: pinned revision + licence inventory (ModelCheck), adapter-absence test (core desktop works with every product removed), untrusted-output handling |
 | E23 qa + architect / 3–4 | Pick-your-stack provisioning: reproducible apply/remove, isolation proof (services loopback-only, no socket exposure), correct permission class, data-irreversibility messaging |
 | E24 performance + ai-runtime / 5, 9 | Candidate-model evaluation before it becomes a default; record the measured delta and the rollback of the default |
 | E25 qa + release / 10 | Install checklist: profile recorded at install but not applied there; first-boot provisioning per-item outcomes; offline deferral; idempotent re-apply; no pre-selection; loopback-only services |
+| E26 migration / 2 | Boot pinned stable Omarchy with Axiom identity in QEMU; clean UEFI boot, Hyprland/Quickshell session, no visible Omarchy branding, retained logs |
+| E27 migration + desktop / 2–3 | Pinned Quickshell Axiom Shell smoke: panel, launcher, notifications, audio, network, lock; responsive and keyboard-accessible |
+| E28 linux-base + security / 2 | Boot-chain decision on encrypted Btrfs: Limine/UKI vs systemd-boot reversal and rollback, with fallback kernel |
+| E29 performance / 2 | Quickshell idle RSS/CPU and private-Qt rebuild behavior; pin/rebuild policy recorded |
+| E30 security / 2 | Secure Boot/TPM divergence feasibility with UKI + LUKS2, or explicit rejection with evidence |
+| E31 ai-runtime + context / 6 | RepoSpine bounded context + ContextGit per-agent branch isolation, no collisions, graceful absence |
+| E32 security / 7 | Warden request→policy generation, audit correlation, fail-closed and bypass matrix on mainline and LTS |
+| E33 release + migration / 2, 10 | Upstream-divergence upgrade test: Axiom customization survives an Omarchy-derived update |
 
 ## Remaining foundation limitation
 

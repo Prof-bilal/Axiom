@@ -29,8 +29,25 @@ Triggered by an explicit request to validate the foundation before building. Env
 | `python3 scripts/validate-repo.py` | PASS: zero errors | Static only |
 | `python3 scripts/test-concepts.py` | PASS: 12/12, 0 skipped | Local primitives; SQLite rollback is not Btrfs/OS rollback and peer credentials are not an authorization engine |
 | `python3 scripts/install-skills.py` | PASS: 18 skills installed to canonical `.agents/skills`; second run idempotent | Supersedes the earlier BLOCKED row; the read-only constraint did not apply in this checkout |
-| E05 Warden upstream identification | PASS (identification only): [Prof-bilal/Warden](https://github.com/Prof-bilal/Warden), MIT, Go, `main`@`cd5e8bf2717bd0003194aba8beecd01f33704af9`, release v0.1.17; Linux backend inspected statically | Our runtime namespace/seccomp/Landlock/network bypass tests on mainline/LTS are NOT RUN |
+| E05 Warden upstream identification | PASS (identification only): [Prof-bilal/Warden](https://github.com/Prof-bilal/Warden), MIT, Go, `main`@`f7c9793167398c86a61148c746cb4d934be11727` (re-verified 2026-10-27; earlier `cd5e8bf2` pin is the `axiom/integration` tip, not `main` or `v0.1.17`); Linux backend inspected statically (bubblewrap + setpriv + strace, no seccomp/Landlock) | Our runtime namespace/seccomp/Landlock/network bypass tests on mainline/LTS are NOT RUN |
 | E10 tool discovery smoke | PARTIAL: codex 0.163.0, opencode 2.1.3, commandcode 1.88.0 installed; canonical skills present; adapter counts valid (11 opencode, 6 commandcode) each referencing `docs/SUBAGENTS.md` | freebuff not installed; per-client runtime discovery and permission smoke tests not executed |
 | `python3 scripts/readiness-audit.py` | BLOCKED: missing `qemu-system-x86_64`/`qemu-img`/`mkarchiso`; E01–E20 runtime evidence absent | See note below |
 
 `readiness-audit.py` requires `runtime_experiments_E01_E20 == "COMPLETE"`, but E01/E02/E03/E09/E12 require an implementation that Phase 0 does not authorize. The gate therefore cannot pass in Phase 0: it gates progress into Phase 1, not Phase 0 exit, which [PHASES](../PHASES.md) defines. No experiment was recorded complete without a run.
+
+## Revalidation 2026-10-27 (Omarchy-derived migration documentation)
+
+This pass was documentation/research only: no Omarchy code was copied, no image was built, and no boot/desktop experiment ran. Changes are on branch `migration/omarchy-foundation`; `main` is untouched.
+
+| Check | Result | Limits |
+| --- | --- | --- |
+| `python3 -E scripts/validate-repo.py` | PASS: 0 errors | Static only |
+| `python3 -E scripts/check-iso-profile.py` | PASS: 0 errors | Legacy Phase 1 archiso profile only |
+| `python3 -E scripts/test-concepts.py` | PASS: 12/12, 0 failures/errors | Local primitives; no boot/desktop run |
+| Skill inventory | 19 skills in both trees; `plasma-qml` removed, `quickshell-ui` and `omarchy-upstream` added; validator/installer/test counts updated | Static inventory, not client discovery |
+| Upstream mirrors | Bare mirrors under gitignored `workspace/upstream/`; detached worktrees at Omarchy `v4.0.6` `237f1b40`, `quattro` `39d56653`, `omarchy-iso` `main` `3c36557`, `quattro` `50832fb` | Inspection only; no build |
+| Migration documents | [OMARCHY_MIGRATION](OMARCHY_MIGRATION.md) and [THIRD_PARTY_NOTICES](../../THIRD_PARTY_NOTICES.md) added; ADR-013, phases, ecosystem and affected contracts updated | No runtime evidence |
+| Branding cleanup | Untracked `branding/` deleted; `docs.zip` left untouched | No tracked history removed |
+| Phase/desktop claims | Plasma/KWin statements remaining are historical, SUPERSEDED or product-fact references | Not a semantic proof of every paragraph |
+
+No result here authorizes Phase 2 implementation; the next gate is owner review of this migration plan and the first Foundation POC (E26).

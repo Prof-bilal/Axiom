@@ -1,6 +1,6 @@
 # Implementation phases
 
-Current phase: **2 — authorized 2026-10-25**. Phase 0 exit is recorded (2026-10-24, [FOUNDATION_VALIDATION](engineering/FOUNDATION_VALIDATION.md)); the project owner authorized Phase 1 on 2026-10-24 for the minimal reproducible archiso build, whose exit criteria are met ([PHASE1_EVIDENCE](engineering/PHASE1_EVIDENCE.md)). **Phase 2 is authorized (2026-10-25)**: branded Plasma 6 Wayland desktop, UEFI boot with LTS fallback, and wiring existing network/audio services; original branding and desktop UI are in scope. The AI runtime, security enforcement, the installer and the first-party product integrations are **not** authorized by this phase — they follow their own gates. These are execution gates, not dates. Advancing requires recorded evidence and an explicit phase-status update. Security applies from Phase 0; Phase 7 integrates enforcement. Follow the dependency-ordered validation waves in [TESTING.md](engineering/TESTING.md). No mutation becomes available before its authorization and audit gate.
+Current phase: **2 — authorized 2026-10-25, re-scoped 2026-10-27 by [ADR-013](DECISIONS.md)**. Phase 0 exit is recorded (2026-10-24, [FOUNDATION_VALIDATION](engineering/FOUNDATION_VALIDATION.md)); Phase 1 (repeatable archiso build + QEMU boot) exited 2026-10-25 ([PHASE1_EVIDENCE](engineering/PHASE1_EVIDENCE.md)) and its profile is retained as legacy evidence. **Phase 2 is authorized (2026-10-25; re-scoped 2026-10-27)** as the **Omarchy-derived foundation migration**: pin stable Omarchy, boot Hyprland + Quickshell in QEMU, remove Omarchy product identity and validate the core system. The earlier "branded Plasma 6 Wayland desktop" Phase 2 scope is **SUPERSEDED**. The AI runtime, security enforcement, the installer and the first-party product integrations are **not** authorized by this phase — they follow their own gates. These are execution gates, not dates. Advancing requires recorded evidence and an explicit phase-status update. Security applies from Phase 0; Phase 7 integrates enforcement. Follow the dependency-ordered validation waves in [TESTING.md](engineering/TESTING.md). No mutation becomes available before its authorization and audit gate.
 
 ## Phase status log
 
@@ -8,10 +8,11 @@ Current phase: **2 — authorized 2026-10-25**. Phase 0 exit is recorded (2026-1
 | --- | --- | --- |
 | 0 Research and architecture validation | EXIT MET 2026-10-24 | [FOUNDATION_VALIDATION](engineering/FOUNDATION_VALIDATION.md), [PHASE0_EVIDENCE](engineering/PHASE0_EVIDENCE.json) |
 | 1 Repository foundation and reproducible Arch/archiso build | EXIT MET 2026-10-25 (owner sign-off) | [PHASE1_EVIDENCE](engineering/PHASE1_EVIDENCE.md) |
-| 2 Bootable branded KDE desktop | AUTHORIZED 2026-10-25 | — |
-| 3–12 | Not started | — |
+| 2 Omarchy-derived foundation migration | AUTHORIZED 2026-10-25; re-scoped 2026-10-27 by [ADR-013](DECISIONS.md) | — |
+| 3 Axiom Shell on Hyprland/Quickshell | Not started (replaces Plasma-extension Phase 3, SUPERSEDED) | — |
+| 4–12 | Not started | — |
 
-Phase 1 authorization covers only the reviewed archiso profile, build script, QEMU boot harness, CI validation and its evidence. It does not authorize branding, Plasma, custom packages, the installer, or any `apps/`, `shell/` or `services/` component. E01/E02 supply the Phase 1 exit evidence; E03/E09/E12 remain deferred to their own phases.
+Phase 1 authorization covers only the reviewed archiso profile, build script, QEMU boot harness, CI validation and its evidence. It does not authorize branding, Plasma, custom packages, the installer, or any `apps/`, `shell/` or `services/` component. E01/E02 supply the Phase 1 exit evidence; E03/E09/E12 remain deferred to their own phases. The Phase 1 archiso profile is retained as legacy evidence; the Phase 2 Plasma scope was superseded by [ADR-013](DECISIONS.md).
 
 ## Sequencing and first-party components
 
@@ -76,51 +77,53 @@ Deferred until their phases, and not implied by this table: the five product int
 
 **Out of scope:** Custom shell, AI runtime and installer.
 
-## Phase 2: Bootable branded KDE desktop
+## Phase 2: Omarchy-derived foundation migration
 
-**Status:** AUTHORIZED 2026-10-25.
+**Status:** AUTHORIZED 2026-10-25; re-scoped 2026-10-27 by [ADR-013](DECISIONS.md). The earlier "bootable branded KDE desktop" content is **SUPERSEDED** and preserved only as history. The Plasma packages added to the legacy Phase 1 archiso profile are legacy evidence, not the migration base.
 
-**Objective:** Bootable branded KDE desktop.
+**Objective:** Adopt the pinned Omarchy-derived Arch/Hyprland/Quickshell foundation safely.
 
-**Dependencies:** Phase 1.
+**Dependencies:** Phase 1 evidence; [ADR-013](DECISIONS.md); completed documentation migration; upstream mirrors pinned to recorded revisions.
 
-**Implementation tasks:** Add Plasma Wayland packages and original branding — a logo, wallpaper, Plasma colour scheme and boot/session splash, all original work with no copied assets; configure UEFI boot and LTS fallback; wire existing networking/audio services. Resolve the live-session login mechanism from Plasma 6.8's `plasma-login-manager` rather than assuming SDDM. Capture Flow OFF desktop/pressure baseline and inspect actual Plasma app grouping/controllers; this adds no automatic resource policy.
+**Implementation tasks:** pin the stable Omarchy release plus `omarchy-iso` and matching package set; boot original Omarchy in disposable QEMU; map components and audit licenses; remove Omarchy product identity; produce a minimally Axiom-branded boot using Hyprland + Quickshell; validate NetworkManager, PipeWire/WirePlumber, BlueZ, snapshots and the update path; record a reproducible build recipe. Axiom Shell, the AI runtime and first-party integrations are **not** started here.
 
-**Deliverables:** Bootable branded image, original brand asset set and versioned package list.
+**Deliverables:** Axiom-branded foundation image, component audit, pinned upstream revisions, reproducible build instructions.
 
-**Tests:** UEFI boot, session type, graphics/audio/network smoke; fallback boot.
+**Tests:** UEFI boot, Hyprland/Quickshell session, system/network/audio/Bluetooth smoke, snapshot/update checks, and visible-branding removal.
 
-**Security review:** Review live account, services, default network exposure and credentials.
+**Security review:** live account, greeter, firewall/SSH defaults, boot chain (Limine/UKI vs systemd-boot), and no inherited passwordless sudo or agent bypass mode.
 
-**Demo:** Login to branded Wayland session.
+**Demo:** boot the Axiom-branded foundation in QEMU.
 
-**Exit criteria:** Clean VM boot/login reproducible, no unexpected listeners, logs retained.
+**Exit criteria:** Axiom-branded Omarchy-derived system boots reproducibly in QEMU with no visible Omarchy identity and retained logs.
 
-**Risks:** GPU differences; live versus installed layout.
+**Risks:** upstream pre-release drift, boot-chain conflict with ADR-002, hardware variance, package-set pinning.
 
-**Out of scope:** Custom compositor and broad hardware claims.
+**Out of scope:** Axiom Shell, AI runtime, installer release, first-party integration, Secure Boot/TPM claims.
 
-## Phase 3: Custom desktop experience
+## Phase 3: Axiom Shell on Hyprland/Quickshell
 
-**Objective:** Custom desktop experience.
+**Status:** Not started. Replaces the previous "Custom desktop experience" content, which assumed Plasma extensions and is **SUPERSEDED** by [ADR-013](DECISIONS.md).
 
-**Dependencies:** Phase 2.
+**Objective:** Deliver the Axiom-owned shell experience on the pinned foundation.
 
-**Implementation tasks:** Implement shared tokens then launcher/panel/controls incrementally using Plasma extensions; add overlay surface without model authority. Define Control Center Performance states, grouped workload visibility, rule/restore controls and stale/unsupported telemetry UX using the Flow contract. Add the dev-environment "pick your stack" onboarding surface — selection, resolved plan and confirmation only; provisioning belongs to later phases ([dev environments](engineering/DEV_ENVIRONMENTS.md)).
+**Dependencies:** Phase 2 exit; pinned Quickshell revision.
 
-**Deliverables:** Coherent QML components and keyboard interaction.
+**Implementation tasks:** implement shared design tokens, then the top panel, dock, launcher, Control Center, notifications, workspace UX, system menu and agent/Shield/Flow indicators incrementally on Quickshell/QML; keep Hyprland as compositor, window manager and workspace owner; define focus order, keyboard-only flows, accessible names, reduced-motion behavior and multi-DPI/multi-monitor handling; measure shell idle cost and responsiveness. Include the dev-environment "pick your stack" onboarding surface — selection, resolved plan and confirmation only; provisioning remains a later phase.
 
-**Tests:** QML checks, accessibility/focus, multi-DPI and responsiveness tests.
+**Deliverables:** Coherent Axiom Shell components, design tokens and keyboard interaction.
 
-**Security review:** Verify portals and prohibit unrestricted input/capture shortcuts.
+**Tests:** QML checks, focus/accessibility, reduced motion, multi-DPI, 1366×768 and 4K, shell idle cost, and compositor integration (workspaces, IPC, layer-shell).
 
-**Demo:** Keyboard-only launch/settings/overlay walkthrough.
+**Security review:** Hyprland permissions, portals and Quickshell trusted-code boundary; prohibit unrestricted input/capture shortcuts; protect the lock screen.
 
-**Exit criteria:** UX acceptance passes with no Wayland security weakening.
+**Demo:** keyboard-only launch, settings, overlay and Control Center walkthrough.
 
-**Risks:** Plasma API/upgrade compatibility.
+**Exit criteria:** UX acceptance passes with no Wayland security weakening and no Plasma dependency.
 
-**Out of scope:** Complete graphical store and desktop rewrite.
+**Risks:** Quickshell API/private-Qt churn, accessibility gaps, shell/lock crash paths.
+
+**Out of scope:** custom compositor, complete software center, Plasma compatibility layer.
 
 ## Phase 4: Rust service and D-Bus foundation
 
@@ -144,13 +147,13 @@ Deferred until their phases, and not implied by this table: the five product int
 
 **Out of scope:** Privileged mutation.
 
-## Phase 5: AI overlay and provider router
+## Phase 5: AI runtime and model promotion
 
-**Objective:** AI overlay and provider router.
+**Objective:** AI overlay, provider router and a gated model-promotion path.
 
 **Dependencies:** Phases 3–4.
 
-**Implementation tasks:** Implement neutral request/stream/error types; one cloud adapter and Ollama; connect overlay; explicit content-sharing consent.
+**Implementation tasks:** Implement neutral request/stream/error types; one cloud adapter and Ollama; connect the Axiom Shell overlay; explicit content-sharing consent. Add the **ModelCheck promotion-gate POC**: a candidate model/provider must pass a baseline comparison on the user's workload before it can become a default, with raw evidence and no vendor-claim promotion. ModelCheck remains a local tool first; CI verdict artifacts are later.
 
 **Deliverables:** Cloud/local proof with replaceable adapters.
 
@@ -166,13 +169,13 @@ Deferred until their phases, and not implied by this table: the five product int
 
 **Out of scope:** Dozens of providers and autonomous actions.
 
-## Phase 6: System Agent API
+## Phase 6: System Agent API and context foundation
 
-**Objective:** System Agent API.
+**Objective:** System Agent API plus the first RepoSpine/ContextGit context proof.
 
 **Dependencies:** Phases 4–5; Phase 0 security contracts.
 
-**Implementation tasks:** Implement observe subset and open-action schemas/dry-runs first; schemas and target validation; design mutation handlers behind disabled gates; correlate events. Add the child-agent registry and the read-only child set (Context, Research, Security, Performance), with RepoSpine as the context engine and ContextGit isolating per-child context; children never self-authorize and no child-to-child channels exist in V1 ([agent system](ai/AGENT_SYSTEM.md)).
+**Implementation tasks:** Implement observe subset and open-action schemas/dry-runs first; schemas and target validation; design mutation handlers behind disabled gates; correlate events. Add the child-agent registry and the read-only child set (Context, Research, Security, Performance), with RepoSpine as the context engine and ContextGit isolating per-child context; children never self-authorize and no child-to-child channels exist in V1 ([agent system](ai/AGENT_SYSTEM.md), [ecosystem](ai/ECOSYSTEM.md)). POC: parent agent requests bounded RepoSpine context, a child gets its own ContextGit branch, edits a project, and context history is preserved without collisions. Both tools stay optional; absence degrades to approved bounded file reads.
 
 **Deliverables:** 5–10 capability contracts and staged handlers.
 
@@ -194,7 +197,7 @@ Deferred until their phases, and not implied by this table: the five product int
 
 **Dependencies:** Phases 4–6.
 
-**Implementation tasks:** Implement request-bound trusted approval, independent broker authorization, audit persistence and crash reconciliation; evaluate Warden identified revision or record rejected dependency decision. Warden becomes the execution-enforcement layer: policy derived from the approved typed request (never model-supplied), audit correlated to Axiom request/audit IDs, fail-closed preserved — see [Warden integration](security/WARDEN_INTEGRATION.md); the bypass matrix on mainline and LTS is required evidence.
+**Implementation tasks:** Implement request-bound trusted approval, independent broker authorization, audit persistence and crash reconciliation; evaluate Warden identified revision or record rejected dependency decision. Warden becomes the execution-enforcement layer: policy derived from the approved typed request (never model-supplied), audit correlated to Axiom request/audit IDs, fail-closed preserved — see [Warden integration](security/WARDEN_INTEGRATION.md); the bypass matrix on mainline and LTS is required evidence. Add a bounded **Sentinel POC** on a local target: synthetic user/test run inside Warden-isolated workers, reproducible finding, explicit resource budget, no production target.
 
 **Deliverables:** Permission UX, enforceable policy, audit viewer; evidence-backed Warden disposition.
 
@@ -216,7 +219,7 @@ Deferred until their phases, and not implied by this table: the five product int
 
 **Dependencies:** Phase 7; early layout experiment before installation.
 
-**Implementation tasks:** Specify subvolumes; capture consistent package/root state and boot asset policy; serialize eligible transactions; implement verification/recovery jobs. Align Morphix change plans with Axiom transactions so desktop customization is recovered through the same verification path.
+**Implementation tasks:** Specify subvolumes; capture consistent package/root state and boot asset policy; serialize eligible transactions; implement verification/recovery jobs. Align Morphix change plans with Axiom transactions so desktop customization is recovered through the same verification path (Morphix's retention and its Plasma-only adapter remain a separate decision). Account for Omarchy's root-only snapshot coverage: `/home`, boot assets and external effects stay excluded unless separately proven.
 
 **Deliverables:** Recovery proof and per-capability limitations.
 
@@ -260,7 +263,7 @@ Deferred until their phases, and not implied by this table: the five product int
 
 **Dependencies:** Phases 1–9 candidate exits.
 
-**Implementation tasks:** Integrate Calamares with tested Btrfs/UEFI layout; full pacman update path; signed repository/artifact process; release notes/checksums/license inventory. Include the developer install checklist: selection stored at install, provisioning applied on first boot, nothing pre-selected ([install checklist](engineering/INSTALL_CHECKLIST.md)).
+**Implementation tasks:** Adopt the Omarchy-derived installer/update/release path after research and rebranding; do not rebuild Calamares-first functionality merely because the old architecture expected it. Keep a full pacman update path, signed repository/artifact process, release notes/checksums/license inventory and tested rollback. Include the developer install checklist: selection stored at install, provisioning applied on first boot, nothing pre-selected ([install checklist](engineering/INSTALL_CHECKLIST.md), [installer](engineering/INSTALLER.md)).
 
 **Deliverables:** Installable release candidate and recovery media.
 

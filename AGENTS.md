@@ -10,17 +10,19 @@ if you must touch a file owned by another run, say so before editing.
 
 Build an AI-native Linux desktop for developers with safe structured automation, privacy, recovery and measured performance. The repository is project memory; no tool or chat is authoritative over maintained project contracts.
 
-**Current phase: Phase 2 — authorized 2026-10-25.** Phase 1 (repeatable archiso build + QEMU boot) exited 2026-10-25 ([PHASE1_EVIDENCE](docs/engineering/PHASE1_EVIDENCE.md)). Phase 2 is the bootable branded Plasma 6 Wayland desktop: Plasma packages, original branding, UEFI boot with LTS fallback, existing network/audio services. The AI runtime, security enforcement, the installer and the first-party product integrations are **not** authorized by this phase — they follow their own gates ([PHASES](docs/PHASES.md), [ecosystem plan](docs/engineering/ECOSYSTEM_PLAN.md)).
+**Current phase: Phase 2 — authorized 2026-10-25, re-scoped 2026-10-27 by [ADR-013](docs/DECISIONS.md).** Phase 1 (repeatable archiso build + QEMU boot) exited 2026-10-25 ([PHASE1_EVIDENCE](docs/engineering/PHASE1_EVIDENCE.md)); its archiso profile is retained as legacy evidence. Phase 2 is now the **Omarchy-derived foundation migration**: pin stable Omarchy, boot Hyprland + Quickshell in QEMU, remove Omarchy product identity and validate the core system. The AI runtime, security enforcement, the installer and the first-party product integrations are **not** authorized by this phase — they follow their own gates ([PHASES](docs/PHASES.md), [migration report](docs/engineering/OMARCHY_MIGRATION.md), [ecosystem plan](docs/engineering/ECOSYSTEM_PLAN.md)).
 
 ## Architecture and map
 
-Approved direction: Arch x86-64; upstream `linux` plus `linux-lts`; systemd and UEFI systemd-boot; Plasma 6/KWin/Wayland; Qt 6/QML UI; Rust backend; D-Bus first, Unix sockets only with justification; Btrfs/Snapper; pacman/PKGBUILD; archiso; Calamares initially. Reuse PipeWire/WirePlumber, NetworkManager, BlueZ, Mesa; optional Flatpak applications. SQLite/FTS5 for local metadata. Providers remain replaceable; MCP grants no authority. Warden is RESEARCH until exact upstream and enforcement behavior are verified.
+Proposed direction ([ADR-013](docs/DECISIONS.md)): Arch x86-64 with an **Omarchy-derived foundation** — Hyprland compositor, Quickshell shell toolkit, systemd, pacman, Plymouth, SDDM; Axiom Shell on Qt 6/QML; Rust backend; D-Bus first, Unix sockets only with justification; Btrfs/Snapper; pacman/PKGBUILD; Omarchy-derived ISO/update flow pending research. Upstream `linux` plus `linux-lts` remains the kernel target; the Limine/UKI boot chain is RESEARCH against the accepted systemd-boot direction. Reuse PipeWire/WirePlumber, NetworkManager, BlueZ, Mesa; optional Flatpak applications. SQLite/FTS5 for local metadata. Providers remain replaceable; MCP grants no authority. Warden is RESEARCH until the bypass matrix and typed interface are proven.
+
+Omarchy is **upstream infrastructure, not the product**. Never modify upstream files blindly or let Omarchy naming/theming become the Axiom surface. Pin upstream revisions, classify changes, and keep Axiom-owned shell, AI runtime, security and system APIs independent of upstream churn. First-party projects keep their own repositories and are consumed through pinned adapters, not merged into one monolith. Details: [migration report](docs/engineering/OMARCHY_MIGRATION.md), [third-party notices](THIRD_PARTY_NOTICES.md).
 
 - `docs/`: product, architecture, contracts, security, phases and evidence.
 - `.agents/skills/`: canonical portable workflows; read the relevant SKILL.md. In this restricted session only, `portable-skills/` stages their contents; see README.
 - `docs/SUBAGENTS.md`: canonical roles; tool adapters only point there.
 - `scripts/`: deterministic foundation validation, skill installation and the Phase 1 ISO build/check helpers.
-- `iso/`: reviewed archiso profile and build output (Phase 1); `tests/`: QEMU boot harness (Phase 1).
+- `iso/`: legacy Phase 1 reviewed archiso profile and build output; `tests/`: Phase 1 QEMU boot harness. Both are retained as historical evidence and are not the migration base.
 - Future `apps/`, `shell/`, `services/`, `security/`, `packages/`, `installer/`, `branding/` exist only when their phase warrants them.
 
 ## Non-negotiable rules

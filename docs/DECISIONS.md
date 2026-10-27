@@ -22,7 +22,7 @@ Accepted direction means the project chooses a technology subject to integration
 
 ## ADR-002: Upstream kernel, systemd and UEFI boot
 
-**Status:** Accepted direction.
+**Status:** Accepted direction; the systemd-boot half is re-opened for investigation by [ADR-013](#adr-013-omarchy-derived-archhyprlandquickshell-foundation) because Omarchy ships a Limine/UKI boot chain. Kernel direction (upstream `linux` + `linux-lts`) is unchanged.
 
 **Context:** Need a maintainable boot baseline.
 
@@ -40,7 +40,7 @@ Accepted direction means the project chooses a technology subject to integration
 
 ## ADR-003: Plasma Wayland desktop
 
-**Status:** Accepted direction.
+**Status:** SUPERSEDED by [ADR-013](#adr-013-omarchy-derived-archhyprlandquickshell-foundation) (2026-10-27). The record below is preserved as history; do not base new work on it.
 
 **Context:** Need cohesive UI without compositor ownership.
 
@@ -120,7 +120,7 @@ Accepted direction means the project chooses a technology subject to integration
 
 **Decision:** No Warden dependency until repo/revision/license/Linux tests established.
 
-**Progress (2026-10-24):** Repository, license and revision identified ([Prof-bilal/Warden](https://github.com/Prof-bilal/Warden), MIT, `cd5e8bf2717bd0003194aba8beecd01f33704af9`, release v0.1.17) and its Linux backend inspected statically; see [sandboxing](security/SANDBOXING.md). Our own namespace/seccomp/Landlock/network bypass tests on mainline and LTS remain **NOT RUN**, so the dependency gate is unchanged.
+**Progress (2026-10-24; re-verified 2026-10-27):** Repository and license identified ([Prof-bilal/Warden](https://github.com/Prof-bilal/Warden), MIT) and its Linux backend inspected statically; see [sandboxing](security/SANDBOXING.md). Corrected revision: `main` `f7c9793167398c86a61148c746cb4d934be11727`; the earlier `cd5e8bf2…` reference is the `axiom/integration` branch tip, not `main` or the `v0.1.17` tag. The Linux backend uses bubblewrap + setpriv `no_new_privs` + strace, with no seccomp filter and no Landlock. Our own namespace/seccomp/Landlock/network bypass tests on mainline and LTS remain **NOT RUN**, so the dependency gate is unchanged.
 
 **Reasons:** Prevents invented security properties; avoids duplicate sandbox architecture.
 
@@ -254,6 +254,38 @@ because the code is ours (the ADR-007 mistake in a new form); API drift across s
 
 **Revisit When:** A component passes a pinned-revision experiment, or a deeper coupling (for
 example Warden as a required execution layer) is proposed and needs its own decision.
+
+## ADR-013: Omarchy-derived Arch/Hyprland/Quickshell foundation
+
+**Status:** Research direction, accepted 2026-10-27 for Phase 2 investigation. It supersedes ADR-003's Plasma/KWin desktop foundation. It does not authorize importing Omarchy code, changing the boot chain, or shipping anything; those remain gated by [PHASES](PHASES.md) and experiments E26–E33.
+
+**Context:** Axiom needs a cohesive Arch-based desktop it can shape without maintaining a compositor or a shell toolkit from scratch. The earlier direction built on Plasma 6/KWin. Omarchy now provides a mature, actively maintained Arch/Hyprland/Quickshell foundation with installer, update, hardware, theme and recovery tooling. Axiom's existing documentation was written around Plasma and contains stale assumptions; the migration must be update-first, not a rewrite.
+
+**Options:**
+
+- A: raw Arch + Plasma/KWin (the previous direction). Mature shell components and accessibility, but Axiom's custom shell work becomes Plasma-extension work and the product identity is constrained by a large upstream desktop.
+- B: raw Arch + custom Hyprland/Quickshell. Maximum control, but Axiom would rebuild installer, update, hardware and shell foundations that already exist.
+- C: Omarchy-derived Arch/Hyprland/Quickshell foundation with Axiom-owned shell, AI runtime, Shield, Sentinel, Flow, system APIs and identity.
+
+**Decision:** C, as a researched direction. Omarchy is upstream infrastructure, never the product. Axiom consumes pinned upstream revisions and replaces identity, shell UX, security behavior and agent integration.
+
+**Evidence:** [migration report](engineering/OMARCHY_MIGRATION.md). Stable upstream pin `omacom/omarchy` `v4.0.6` (`237f1b40`) with `quattro` (`39d56653`) tracked read-only; `omarchy-iso` `main` `3c36557f`; Quickshell `v0.3.2` (`4f508be5`, LGPL-3.0-only); Hyprland `v0.56.2` (BSD-3-Clause). Quickshell covers panels, docks, lock, notifications, tray, audio, network, Bluetooth, UPower and polkit, but lacks a launcher UI, clipboard manager, OSD UI, a logind module and reduced-motion handling — those are Axiom Shell work. Omarchy documents that Secure Boot and TPM must be disabled to install; Axiom records this as an upstream limitation and a divergence target, not a supported outcome.
+
+**Benefits:** reuse of proven Arch/Hyprland/Quickshell infrastructure; smaller foundation surface to own; an original Axiom Shell rather than Plasma extensions; clear separation between upstream infrastructure and product; upstream update/hardware work can be reviewed and ported deliberately.
+
+**Costs:** a large documentation migration; Hyprland/Quickshell API churn and private-Qt rebuild requirements; loss of Plasma/KWin-specific work; new shell, installer and recovery research; Quickshell LGPL obligations; no inherited Secure Boot/TPM path.
+
+**Security implications:** Hyprland's permission model, Quickshell as trusted shell code, Omarchy's documented Secure Boot/TPM limitation and opt-in passwordless sudo all require review. Axiom keeps its authorization invariants: Warden enforces, Axiom authorizes. No upstream agent bypass mode is inherited.
+
+**Maintenance implications:** pin upstream release tags plus package versions and a pinned Quickshell build; track `quattro` read-only; classify every upstream change and port deliberately. Axiom will diverge substantially, so no auto-merge.
+
+**Upstream strategy:** review diff → classify → Axiom compatibility review → security/performance/boot tests → port or reject. Upstream repositories (`omarchy`, `omarchy-iso`, `omarchy-pkgs`) form a pinned set.
+
+**Migration strategy:** update the existing docs in place, preserve Phase 0/1 evidence, delete the abandoned `branding/` scaffold, mark Plasma work SUPERSEDED, and run the Foundation POC (E26) before any rebranding or code migration.
+
+**Rollback strategy:** all migration work lives on `migration/omarchy-foundation`; upstream references are isolated under gitignored `workspace/upstream/`; ADR-003 is preserved and can be reinstated by a new superseding ADR rather than by rewriting history.
+
+**Revisit when:** the Foundation POC fails to produce a reproducible bootable Axiom-branded Hyprland/Quickshell image, the Quickshell maintenance/tooling cost exceeds its benefit, or Hyprland/Quickshell cannot meet Axiom's accessibility, security or recovery requirements.
 
 ## Change proposal requirements
 

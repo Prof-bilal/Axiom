@@ -1,8 +1,10 @@
 # Warden integration: Axiom's execution-enforcement layer
 
 Status: design spec — **not implemented**. Shapes a first-party project; see
-[ecosystem](../ai/ECOSYSTEM.md) and the [sandboxing gate](SANDBOXING.md). Warden source was
-read from a local clone at `cd5e8bf` (2026-10-25). Last updated: 2026-10-25.
+[ecosystem](../ai/ECOSYSTEM.md) and the [sandboxing gate](SANDBOXING.md). Warden was re-verified
+on 2026-10-27 against `main` `f7c9793167398c86a61148c746cb4d934be11727`; the earlier `cd5e8bf`
+reference is the `axiom/integration` branch tip, not `main` or `v0.1.17`, and is corrected here.
+Last updated: 2026-10-27.
 
 Warden today is a CLI that sandboxes one MCP server from a hand-written policy. Axiom needs it
 to be **the layer every agent and tool execution passes through**, enforcing a policy derived
@@ -22,10 +24,12 @@ Go module `warden-starter/warden`:
 | `internal/audit` | JSONL decision log |
 | `internal/approve`, `gateway`, `mcpproxy`, `mcpbridge`, `mcpserver`, `envfilter`, `proxy`, `packs`, `attestation` | Approval prompt, gateway registry, MCP filtering, env filtering, egress proxy, packs, attestation |
 
-Behaviour (from the same clone): Linux uses `bubblewrap` namespaces, a hostname allowlist
-checked before DNS, deny-by-default bind mounts (`ENOENT`), env allowlisting, wall-clock/memory
-limits, and fail-closed refusal when no backend is available. Upstream states it is **not
-hardened against a determined local attacker**. The bypass matrix here is **NOT RUN**.
+Behaviour (from the same source inspection): Linux uses `bubblewrap` namespaces plus
+`setpriv --nnp`, a hostname allowlist checked before DNS, deny-by-default bind mounts (`ENOENT`),
+env allowlisting, wall-clock/memory limits, `strace`-based auditing (required; launch refuses
+without it), and fail-closed refusal when no backend is available. There is **no seccomp filter,
+no Landlock use and no typed programmatic interface**. Upstream states it is **not hardened
+against a determined local attacker**. The bypass matrix here is **NOT RUN**.
 
 ## What must change (the shaping)
 

@@ -16,7 +16,7 @@ Candidate revision, package/ISO manifests, checksums, test matrix, known issues 
 ## Procedure
 
 1. Verify clean package provenance, pinned builder inputs, dependency licenses and reproducibility claims.
-2. Check ISO UEFI boot, Plasma Wayland, installer storage choices, mainline/LTS boot and offline operation.
+2. Check ISO UEFI boot, Hyprland/Quickshell session, installer storage choices, mainline/LTS boot and offline operation.
 3. Require update/upgrade, rollback and recovery evidence plus adversarial permission/audit tests.
 4. Compare benchmark distributions with declared thresholds; publish limitations and hardware support matrix.
 5. Verify checksums/signatures, documentation, known issues, migration notes and rollback path; keep publishing separately authorized.

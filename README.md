@@ -2,7 +2,7 @@
 
 The Linux desktop built for the AI-agent era: a cohesive, privacy-conscious environment for developers, with structured automation, visible permissions and practical recovery.
 
-**Status: repository foundation / Phase 1. The reviewed archiso profile, build script and QEMU boot harness exist; no desktop, installer or daemon is implemented yet.** Architecture choices are project decisions, not compatibility or performance claims. No release is available.
+**Status: Phase 2 authorized and re-scoped. The current work is documentation and research for an Omarchy-derived Arch/Hyprland/Quickshell foundation ([migration report](docs/engineering/OMARCHY_MIGRATION.md), [ADR-013](docs/DECISIONS.md)). No desktop implementation, installer or daemon exists yet, and no release is available.**
 
 Start with [AGENTS.md](AGENTS.md), [vision](docs/VISION.md), [MVP](docs/MVP.md), [architecture](docs/ARCHITECTURE.md) and [phase gates](docs/PHASES.md). Durable knowledge belongs in this repository; coding tools are replaceable.
 
@@ -13,20 +13,13 @@ Start with [AGENTS.md](AGENTS.md), [vision](docs/VISION.md), [MVP](docs/MVP.md),
 3. Define acceptance criteria, make one coherent change, validate failures as well as success, and record evidence.
 4. Propose major architectural changes through [ADRs](docs/DECISIONS.md).
 
-See the [validation record](docs/engineering/FOUNDATION_VALIDATION.md) for completed checks and environment limitations. Run the foundation checks with Python 3:
-
-```sh
-python3 scripts/validate-repo.py
-```
-
-Phase 1 adds `python3 scripts/check-iso-profile.py` (static profile checks), `sudo scripts/build-iso.sh` (reproducible archiso build with evidence capture) and `tests/qemu-boot.sh` (UEFI boot harness).
-
-Skills target `.agents/skills/`. This session's environment mounts `.agents` read-only, so authored skills are durably staged in `portable-skills/`. After that restriction is removed, run `python3 scripts/install-skills.py` and validate again. The staging directory is not claimed to be automatically discovered by any tool.
+Omarchy is the proposed upstream infrastructure, not the product: Axiom owns identity, shell UX, AI runtime, Shield, Sentinel, Flow, system APIs and recovery. Upstream revisions are pinned; changes are classified and ported deliberately, never auto-merged.
 
 ## Documentation map
 
 | Area | Entry points |
 | --- | --- |
+| Migration | [Omarchy migration report](docs/engineering/OMARCHY_MIGRATION.md), [third-party notices](THIRD_PARTY_NOTICES.md) |
 | Product | [PRD](docs/PRD.md), [scope](docs/MVP.md), [roadmap](docs/ROADMAP.md) |
 | Engineering | [stack](docs/TECH_STACK.md), [research](docs/RESEARCH.md), [testing](docs/engineering/TESTING.md), [benchmarks](docs/engineering/BENCHMARKS.md), [dev environments](docs/engineering/DEV_ENVIRONMENTS.md), [ecosystem plan](docs/engineering/ECOSYSTEM_PLAN.md) |
 | Desktop | [UX](docs/desktop/DESKTOP_UX.md), [tokens](docs/desktop/DESIGN_SYSTEM.md), [Wayland](docs/desktop/WAYLAND.md) |
@@ -36,4 +29,16 @@ Skills target `.agents/skills/`. This session's environment mounts `.agents` rea
 | Delivery | [ISO](docs/engineering/ISO_BUILD.md), [installer](docs/engineering/INSTALLER.md), [install checklist](docs/engineering/INSTALL_CHECKLIST.md), [release](docs/engineering/RELEASE.md) |
 | Future | [connectivity](docs/connect/CONNECT.md), [routines](docs/ai/ROUTINES.md), [MCP](docs/ai/MCP.md) |
 
-Do not create implementation directories until there is reviewed implementation work for them. Contributions do not authorize publishing a release, changing a machine's disks, or executing privileged operations. Project licensing and redistribution/trademark review must be resolved before distribution; no license grant is inferred from this documentation.
+## Validation
+
+Run the foundation checks with Python 3:
+
+```sh
+python3 scripts/validate-repo.py
+python3 scripts/check-iso-profile.py
+python3 scripts/test-concepts.py
+```
+
+Phase 1 also produced `sudo scripts/build-iso.sh` and `tests/qemu-boot.sh`; both target the legacy archiso profile. Migration work adds no privileged runner.
+
+Do not create implementation directories until there is reviewed implementation work for them. Contributions do not authorize publishing a release, changing a machine's disks, or executing privileged operations. Project licensing and redistribution/trademark review must be resolved before distribution; see [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md). No license grant is inferred from this documentation.
