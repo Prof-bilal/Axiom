@@ -37,6 +37,15 @@ privileged broker, arbitrary shell interpolation or AI control path was added.
 | `tests/qemu-boot.sh` on that ISO | NOT VERIFIED: two attempts produced firmware/bootloader output but no serial login prompt; retained under `iso/out/evidence/phase3-iso-boot/` and treated as host/boot evidence gap, not shell success |
 | `QT_QPA_PLATFORM=offscreen qs -p shell/axiom-shell.qml` | EXPECTED HOST LIMITATION: no Wayland `PanelWindow` backend outside a compositor |
 
+The QEMU workflow used the required disposable ISO path with QEMU 11.1.2,
+OVMF `edk2-ovmf 202608-1`, KVM acceleration (`/dev/kvm` present), UEFI
+`q35`, host CPU, 1536 MiB RAM, 2 vCPUs, no network, no host disk and a serial
+file plus QEMU monitor. The harness retained both firmware variables and all
+attempt logs. Attempt 1 stopped at firmware output; attempt 2 reached the DVD
+bootloader but produced no serial kernel/login output before timeout. This is
+an unresolved ISO/harness boot gate and is not converted into a shell-pass
+claim.
+
 The build staged `axiom-shell.qml` at
 `/usr/share/omarchy/default/axiom-shell/axiom-shell.qml` and changed the
 Hyprland autostart boundary to `axiom-shell-launch`. The ISO remains a
