@@ -9,8 +9,10 @@ Current phase: **2 — authorized 2026-10-25, re-scoped 2026-10-27 by [ADR-013](
 | 0 Research and architecture validation | EXIT MET 2026-10-24 | [FOUNDATION_VALIDATION](engineering/FOUNDATION_VALIDATION.md), [PHASE0_EVIDENCE](engineering/PHASE0_EVIDENCE.json) |
 | 1 Repository foundation and reproducible Arch/archiso build | EXIT MET 2026-10-25 (owner sign-off) | [PHASE1_EVIDENCE](engineering/PHASE1_EVIDENCE.md) |
 | 2 Omarchy-derived foundation migration | AUTHORIZED 2026-10-25; re-scoped 2026-10-27 by [ADR-013](DECISIONS.md) | — |
-| 3 Axiom Shell on Hyprland/Quickshell | IN PROGRESS (initial implementation) | [PHASE3_EVIDENCE](engineering/PHASE3_EVIDENCE.md) |
+| 3 Axiom Shell on Hyprland/Quickshell | RESET — awaiting redesign | — |
 | 4–12 | Not started | — |
+
+> **Note:** The original Phase 3 desktop shell implementation was removed because the visual and interaction architecture did not meet the intended Axiom desktop quality. Phase 3 will restart from a new shell specification inspired by macOS interaction quality.
 
 Phase 1 authorization covers only the reviewed archiso profile, build script, QEMU boot harness, CI validation and its evidence. It does not authorize branding, Plasma, custom packages, the installer, or any `apps/`, `shell/` or `services/` component. E01/E02 supply the Phase 1 exit evidence; E03/E09/E12 remain deferred to their own phases. The Phase 1 archiso profile is retained as legacy evidence; the Phase 2 Plasma scope was superseded by [ADR-013](DECISIONS.md).
 
@@ -103,9 +105,9 @@ Deferred until their phases, and not implied by this table: the five product int
 
 ## Phase 3: Axiom Shell on Hyprland/Quickshell
 
-**Status:** IN PROGRESS (initial implementation). The first Axiom-owned shell slice is implemented and tested in the Phase 2 VM; see [PHASE3_EVIDENCE](engineering/PHASE3_EVIDENCE.md). Full Phase 3 acceptance is not claimed.
+**Status:** RESET — awaiting redesign. The initial prototype implementation was removed as it did not meet Axiom's quality standards for a production desktop environment.
 
-**Objective:** Deliver the Axiom-owned shell experience on the pinned foundation.
+**Objective:** Deliver the Axiom-owned shell experience on the pinned foundation. The next implementation will focus on macOS-inspired interaction quality.
 
 **Dependencies:** Phase 2 exit; pinned Quickshell revision.
 

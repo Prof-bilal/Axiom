@@ -13,7 +13,7 @@ GROUPS = {
     'security': 'SECURITY THREAT_MODEL PERMISSIONS SANDBOXING WARDEN_INTEGRATION',
     'system': 'PERFORMANCE FLOW BTRFS_ROLLBACK SYSTEMD PACKAGING',
     'connect': 'CONNECT ANDROID CROSS_DEVICE',
-    'engineering': 'TESTING BENCHMARKS ISO_BUILD INSTALLER RELEASE ECOSYSTEM_PLAN OMARCHY_MIGRATION PHASE2_EVIDENCE PHASE3_EVIDENCE FOUNDATION_VALIDATION PHASE1_EVIDENCE DEV_ENVIRONMENTS INSTALL_CHECKLIST',
+    'engineering': 'TESTING BENCHMARKS ISO_BUILD INSTALLER RELEASE ECOSYSTEM_PLAN OMARCHY_MIGRATION FOUNDATION_VALIDATION PHASE1_EVIDENCE DEV_ENVIRONMENTS INSTALL_CHECKLIST',
 }
 SKILLS = set('archiso-build arch-pkgbuild quickshell-ui wayland-integration rust-daemon dbus-service systemd-service agent-system-api threat-model security-review warden-policy btrfs-transaction performance-benchmark qemu-integration-test mcp-tool provider-adapter android-connect release-check omarchy-upstream'.split())
 
