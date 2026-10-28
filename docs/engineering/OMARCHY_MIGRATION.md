@@ -1,10 +1,9 @@
 # Omarchy-derived Axiom foundation — migration report
 
-Status: **RESEARCH + migration plan, 2026-10-27.** This report records what was inspected,
-what is proposed, and what remains unproven. It does not authorize implementation; the
-migration stops at documentation, upstream pins and this plan. Evidence is upstream source,
-release metadata and repository files inspected on 2026-10-27; nothing here was executed as a
-runtime experiment unless explicitly marked.
+Status: **FOUNDATION MIGRATION EXIT MET 2026-10-28; installer and hardware follow-up remain open.**
+This report records the pinned upstream relationship and the compatibility boundaries. The
+build and QEMU results are maintained in [PHASE2_EVIDENCE](PHASE2_EVIDENCE.md) and the
+repeatable wrapper is [PHASE2_BUILD](PHASE2_BUILD.md).
 
 Related: [ADR-013](../DECISIONS.md), [phases](../PHASES.md), [ecosystem](../ai/ECOSYSTEM.md),
 [ecosystem work plan](ECOSYSTEM_PLAN.md), [Warden integration](../security/WARDEN_INTEGRATION.md),
@@ -64,8 +63,8 @@ AI runtime, security enforcement and system APIs.
 
 ## 4. Current Axiom baseline
 
-- Phases 0 and 1 are EXIT MET with retained evidence; Phase 2 is authorized for a Plasma 6
-  desktop that this migration supersedes.
+- Phases 0, 1 and the Omarchy-derived Phase 2 foundation are EXIT MET with retained evidence;
+  the earlier Plasma 6 scope is superseded.
 - The security, AI/agent/ecosystem, Flow/performance, Btrfs, packaging and systemd contracts are
   desktop-neutral and reusable.
 - The identity/desktop layer is Plasma/KWin-coupled: `AGENTS.md`, `README.md`,

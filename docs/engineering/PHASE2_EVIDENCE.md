@@ -1,6 +1,6 @@
 # Phase 2 evidence: Omarchy-derived foundation
 
-Status: **IN PROGRESS — no exit claim.** This record covers the Phase 2 foundation
+Status: **EXIT MET 2026-10-28 for the foundation build and disposable QEMU target.** This record covers the Phase 2 foundation
 POC only. It is not evidence for Axiom Shell, AI runtime, security enforcement,
 installer release or first-party integration.
 
@@ -129,7 +129,38 @@ Evidence artifacts (gitignored under `iso/out/evidence/phase2/omarchy-boot-1/`):
   covered. The login/lock styling still needs Axiom work.
 - Secure Boot/TPM, snapshots, updates and the installer remain unverified.
 - Unexpected-listener disposition and the lock-password input path remain open.
-- Phase 2 exit is not claimed.
+- The pinned Omarchy revision is ISO-only; its legacy automated script references
+  removed `install.sh`/`install/helpers/all.sh`. The disposable installed target
+  was therefore provisioned from the recorded offline package set and the
+  staged Axiom runtime. Installer release work remains out of scope.
+- The installed target was boot-launched through OVMF/Limine. Firmware graphics
+  did not expose a serial console, so the boot proof is a QMP screendump plus
+  the installed disk's package, identity, session and boot artifact inspection.
+- Secure Boot/TPM, hardware variance, update policy and lock-input behavior are
+  later gates, not Phase 2 exit claims.
+
+## Phase 2 exit evidence — 2026-10-28
+
+The exact ISO `axiom-2026.10.19-x86_64.iso` was rebuilt from the pinned inputs;
+its SHA-256 is recorded in `iso/out/phase2/current/iso.sha256` as
+`e424cc54f9ec754b4bc5bf723a1345d29a3c249704fb47786d37a470a489799f`.
+
+The live ISO serial boot reached `archiso login`, mounted `AXIOM_202610`, and
+reported `IMAGE_ID=axiom`. The installed disposable target then contained
+`hyprland 0.56.2-4`, `quickshell 0.3.2-1`, `sddm 0.21.0-7`,
+`linux-omarchy 7.2.8-9`, NetworkManager, PipeWire/WirePlumber and Snapper.
+`NetworkManager.service`, `systemd-resolved.service` and `sddm.service` were
+enabled; Limine carried the installed `linux-omarchy` kernel/initramfs; the
+Axiom session entry and `axiom-shell-launch` autostart were present; and the
+target identity was `NAME=Axiom`, `ID=axiom`, `IMAGE_ID=axiom`.
+
+The ISO and target checks remove visible Omarchy labels from the boot menu,
+session metadata and Axiom shell launch path. Internal compatibility paths are
+explicitly retained and are not treated as product identity.
+
+The installed OVMF run reached SDDM; the retained QMP frame
+`iso/out/phase2/current/qemu-uefi/installed-uefi4.png` shows the Axiom session
+selector and the `AXIOM` account on the login surface.
 
 ## Next evidence to collect
 

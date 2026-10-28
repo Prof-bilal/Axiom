@@ -8,7 +8,7 @@ Current development: **Phase 3 — authorized 2026-10-28 by the owner's desktop-
 | --- | --- | --- |
 | 0 Research and architecture validation | EXIT MET 2026-10-24 | [FOUNDATION_VALIDATION](engineering/FOUNDATION_VALIDATION.md), [PHASE0_EVIDENCE](engineering/PHASE0_EVIDENCE.json) |
 | 1 Repository foundation and reproducible Arch/archiso build | EXIT MET 2026-10-25 (owner sign-off) | [PHASE1_EVIDENCE](engineering/PHASE1_EVIDENCE.md) |
-| 2 Omarchy-derived foundation migration | AUTHORIZED 2026-10-25; re-scoped 2026-10-27 by [ADR-013](DECISIONS.md) | — |
+| 2 Omarchy-derived foundation migration | EXIT MET 2026-10-28 (foundation ISO + disposable QEMU target) | [PHASE2_EVIDENCE](engineering/PHASE2_EVIDENCE.md), [PHASE2_BUILD](engineering/PHASE2_BUILD.md) |
 | 3 Axiom Shell on Hyprland/Quickshell | AUTHORIZED 2026-10-28; staged rebuild in progress | [Research and validation](../research/desktop-shell/README.md) |
 | 4–12 | Not started | — |
 
@@ -81,7 +81,7 @@ Deferred until their phases, and not implied by this table: the five product int
 
 ## Phase 2: Omarchy-derived foundation migration
 
-**Status:** AUTHORIZED 2026-10-25; re-scoped 2026-10-27 by [ADR-013](DECISIONS.md). The earlier "bootable branded KDE desktop" content is **SUPERSEDED** and preserved only as history. The Plasma packages added to the legacy Phase 1 archiso profile are legacy evidence, not the migration base.
+**Status:** EXIT MET 2026-10-28 for the pinned foundation ISO and disposable QEMU target. The earlier "bootable branded KDE desktop" content is **SUPERSEDED** and preserved only as history. The Plasma packages added to the legacy Phase 1 archiso profile are legacy evidence, not the migration base.
 
 **Objective:** Adopt the pinned Omarchy-derived Arch/Hyprland/Quickshell foundation safely.
 
@@ -97,7 +97,7 @@ Deferred until their phases, and not implied by this table: the five product int
 
 **Demo:** boot the Axiom-branded foundation in QEMU.
 
-**Exit criteria:** Axiom-branded Omarchy-derived system boots reproducibly in QEMU with no visible Omarchy identity and retained logs.
+**Exit criteria:** **MET 2026-10-28.** The pinned Axiom-branded foundation ISO booted in disposable QEMU, and the installed target was inspected for Axiom identity, Hyprland/Quickshell/SDDM, core services, Limine and the `linux-omarchy` boot artifacts. Evidence and retained build logs are recorded in [PHASE2_EVIDENCE](engineering/PHASE2_EVIDENCE.md).
 
 **Risks:** upstream pre-release drift, boot-chain conflict with ADR-002, hardware variance, package-set pinning.
 
