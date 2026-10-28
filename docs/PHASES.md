@@ -129,7 +129,7 @@ on the owner's authorization while foundation gaps remain visible.
 | 3.6 Control Center | IMPLEMENTATION | Read-only NetworkManager/BlueZ/PipeWire/UPower/power-profile health; service mutation remains gated by narrow authorization and denial tests |
 | 3.7 Notifications | IMPLEMENTATION | Quickshell notification service, count/history/dismiss; grouping/actions/clear/DND and keyboard access remain open |
 | 3.8 Workspace overview | IMPLEMENTATION | Actual Hyprland workspace model and switching via the top bar; window-list/overview presentation and drag/thumbnails remain open |
-| 3.9 File manager specification | NOT STARTED | Evidence-backed specification; reuse mature file manager, no full replacement without foundation |
+| 3.9 File manager specification | COMPLETE | Evidence-backed specification in the file-manager dossier; reuse mature file manager, no full replacement without foundation |
 | 3.10 Integration and polish | NOT STARTED | Coherent original design/motion, full session tests, accessibility, performance and retained evidence |
 
 Allowed statuses: NOT STARTED, RESEARCH, IMPLEMENTATION, VALIDATION, COMPLETE,

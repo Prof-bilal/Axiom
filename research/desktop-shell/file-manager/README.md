@@ -1,6 +1,7 @@
 # 3.9 File manager specification
 
-Status: NOT STARTED. This scope record is not completed feature research.
+Status: SPECIFICATION READY. The dossier records a mature-file-manager reuse
+boundary and portal contract; it does not authorize a full replacement.
 
 No file-manager foundation exists in this checkout. Specify sidebar, grid/list, path/breadcrumbs, preview, search, tabs, drag/drop, removable media, recents and network locations against mature Linux file managers and portals. Default to an existing installed file manager; a full Finder replacement is not authorized by this subphase.
 
