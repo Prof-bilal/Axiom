@@ -1,7 +1,8 @@
 # 3.6 Control Center
 
-Status: RESEARCH. Backends and authorization remain unimplemented; the
-integrated shell intentionally exposes read-only service readiness only.
+Status: IMPLEMENTATION. The integrated shell exposes read-only
+NetworkManager/BlueZ/PipeWire/UPower/power-profile health. Mutating controls
+remain gated until each backend has a narrow authorization and denial test.
 
 Research actual NetworkManager/BlueZ/PipeWire/brightness/power-profile/session backends; preserve existing Polkit authorization. Confirm requested and reported state separately. Microphone, Wi-Fi, Bluetooth, volume, brightness, theme when supported, DND and battery each need unavailable/failure UX and real guest tests. No new privileged generic service.
 

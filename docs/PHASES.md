@@ -126,7 +126,7 @@ on the owner's authorization while foundation gaps remain visible.
 | 3.3 Dock | IMPLEMENTATION | Actual desktop entries, launch/focus behavior and running-window grouping; persistence, menus/reorder/autohide and measured interaction remain open |
 | 3.4 Top bar | IMPLEMENTATION | Axiom identity, actual workspace/active-window/time/audio/battery/notification state; NetworkManager/Bluetooth and multi-monitor ownership remain open |
 | 3.5 Launcher | IMPLEMENTATION | Keyboard-ready desktop-entry search and activation; file/settings/command/recent/calculator/quick-action search and measured latency remain open |
-| 3.6 Control Center | RESEARCH | Backends and authorization are specified; no service mutation is implemented before its narrow contract and denial tests |
+| 3.6 Control Center | IMPLEMENTATION | Read-only NetworkManager/BlueZ/PipeWire/UPower/power-profile health; service mutation remains gated by narrow authorization and denial tests |
 | 3.7 Notifications | IMPLEMENTATION | Quickshell notification service, count/history/dismiss; grouping/actions/clear/DND and keyboard access remain open |
 | 3.8 Workspace overview | IMPLEMENTATION | Actual Hyprland workspace model and switching via the top bar; window-list/overview presentation and drag/thumbnails remain open |
 | 3.9 File manager specification | NOT STARTED | Evidence-backed specification; reuse mature file manager, no full replacement without foundation |

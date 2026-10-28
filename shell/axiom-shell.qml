@@ -7,6 +7,8 @@ import Quickshell.Wayland
 import Quickshell.Services.Notifications
 import Quickshell.Services.Pipewire
 import Quickshell.Services.UPower
+import Quickshell.Networking
+import Quickshell.Bluetooth
 import "theme"
 
 // Integrated Phase 3 shell surface. Every displayed state comes from a
@@ -18,6 +20,8 @@ ShellRoot {
     property var theme: AxiomTheme {}
     property bool launcherOpen: false
     property bool notificationsOpen: false
+    property bool overviewOpen: false
+    property bool controlCenterOpen: false
     property string launcherQuery: ""
     property var launcherEntries: []
 
@@ -123,6 +127,24 @@ ShellRoot {
                         }
                     }
 
+                    Button {
+                        width: 30
+                        height: 30
+                        anchors.verticalCenter: parent.verticalCenter
+                        text: "▦"
+                        focusPolicy: Qt.NoFocus
+                        Accessible.name: "Open workspace overview"
+                        onClicked: root.overviewOpen = !root.overviewOpen
+                        background: Rectangle { color: "transparent" }
+                        contentItem: Text {
+                            text: parent.text
+                            color: root.theme.accent
+                            font.pixelSize: 16
+                            horizontalAlignment: Text.AlignHCenter
+                            verticalAlignment: Text.AlignVCenter
+                        }
+                    }
+
                     Repeater {
                         model: Hyprland.workspaces.values || []
                         delegate: Button {
@@ -173,6 +195,26 @@ ShellRoot {
 
                     Text {
                         anchors.verticalCenter: parent.verticalCenter
+                        text: Networking.devices && Networking.devices.values
+                              && Networking.devices.values.some(device => device.connected) ? "⌁" : "⌁?"
+                        color: Networking.devices && Networking.devices.values
+                               && Networking.devices.values.some(device => device.connected)
+                               ? root.theme.accent : root.theme.muted
+                        font.pixelSize: 14
+                        Accessible.name: text === "⌁" ? "Network connected" : "Network unavailable"
+                    }
+
+                    Text {
+                        anchors.verticalCenter: parent.verticalCenter
+                        text: Bluetooth.defaultAdapter && Bluetooth.defaultAdapter.enabled ? "ᛒ" : "ᛒ?"
+                        color: Bluetooth.defaultAdapter && Bluetooth.defaultAdapter.enabled
+                               ? root.theme.accent : root.theme.muted
+                        font.pixelSize: 14
+                        Accessible.name: text === "ᛒ" ? "Bluetooth enabled" : "Bluetooth unavailable"
+                    }
+
+                    Text {
+                        anchors.verticalCenter: parent.verticalCenter
                         text: UPower.devices && UPower.devices.values && UPower.devices.values.length > 0
                               ? Math.round(UPower.devices.values[0].percentage) + "%" : "—"
                         color: root.theme.muted
@@ -194,6 +236,24 @@ ShellRoot {
                         contentItem: Text {
                             text: notificationButton.text
                             color: notificationButton.text === "●" ? root.theme.accent : root.theme.muted
+                            horizontalAlignment: Text.AlignHCenter
+                            verticalAlignment: Text.AlignVCenter
+                        }
+                    }
+
+                    Button {
+                        width: 30
+                        height: 30
+                        anchors.verticalCenter: parent.verticalCenter
+                        text: "☷"
+                        focusPolicy: Qt.NoFocus
+                        Accessible.name: "Open Control Center"
+                        onClicked: root.controlCenterOpen = !root.controlCenterOpen
+                        background: Rectangle { color: "transparent" }
+                        contentItem: Text {
+                            text: parent.text
+                            color: root.theme.muted
+                            font.pixelSize: 16
                             horizontalAlignment: Text.AlignHCenter
                             verticalAlignment: Text.AlignVCenter
                         }
@@ -406,6 +466,133 @@ ShellRoot {
                         TapHandler { onTapped: modelData.dismiss() }
                     }
                 }
+            }
+        }
+    }
+
+    // A textual overview is the first technically safe workspace surface. It
+    // lists live native toplevels and activates them; thumbnails and drag
+    // previews stay out until a capture/permission contract is proven.
+    // qmllint disable uncreatable-type
+    PanelWindow {
+        id: overviewPanel
+        visible: root.overviewOpen
+        implicitWidth: 620
+        implicitHeight: 440
+        anchors { top: true; left: true; right: true; bottom: true }
+        // qmllint disable unresolved-type
+        // qmllint disable unqualified
+        margins { top: 72; left: 120; right: 120; bottom: 120 }
+        // qmllint enable unresolved-type
+        // qmllint enable unqualified
+        color: "transparent"
+        focusable: true
+        WlrLayershell.namespace: "axiom-workspace-overview"
+        WlrLayershell.layer: WlrLayer.Overlay
+
+        Rectangle {
+            anchors.fill: parent
+            radius: root.theme.radiusSurface
+            color: Qt.rgba(0.08, 0.10, 0.12, 0.98)
+            border.width: 1
+            border.color: root.theme.accent
+            Column {
+                anchors.fill: parent
+                anchors.margins: root.theme.spacingMedium
+                spacing: root.theme.spacingSmall
+                Row {
+                    width: parent.width
+                    Text { text: "Workspace overview"; color: root.theme.foreground; font.bold: true; font.pixelSize: 17 }
+                    Item { width: Math.max(1, parent.width - 190); height: 1 }
+                    Text { text: "Live windows"; color: root.theme.muted; font.pixelSize: 11 }
+                }
+                ListView {
+                    width: parent.width
+                    height: parent.height - 34
+                    clip: true
+                    model: Hyprland.workspaces.values || []
+                    spacing: root.theme.spacingSmall
+                    delegate: Rectangle {
+                        required property var modelData
+                        width: parent ? parent.width : 0
+                        height: Math.max(54, (modelData.toplevels.values || []).length * 42 + 26)
+                        radius: root.theme.radiusControl
+                        color: modelData.active ? root.theme.surfaceRaised : root.theme.surface
+                        border.width: modelData.focused ? 1 : 0
+                        border.color: root.theme.accent
+                        Column {
+                            anchors.fill: parent
+                            anchors.margins: root.theme.spacingSmall
+                            spacing: 3
+                            Text {
+                                text: "Workspace " + String(modelData.name || modelData.id)
+                                color: modelData.active ? root.theme.accent : root.theme.foreground
+                                font.bold: true
+                            }
+                            Repeater {
+                                model: modelData.toplevels.values || []
+                                delegate: Button {
+                                    required property var modelData
+                                    width: parent ? parent.width : 0
+                                    height: 34
+                                    text: String(modelData.title || modelData.wayland && modelData.wayland.appId || "Window")
+                                    focusPolicy: Qt.NoFocus
+                                    Accessible.name: "Activate " + text
+                                    onClicked: modelData.activate()
+                                    background: Rectangle { color: "transparent" }
+                                    contentItem: Text {
+                                        text: parent.text
+                                        color: root.theme.muted
+                                        elide: Text.ElideRight
+                                        verticalAlignment: Text.AlignVCenter
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    // Control Center is deliberately observational until each mutating
+    // backend has an independently tested authorization and failure contract.
+    // qmllint disable uncreatable-type
+    PanelWindow {
+        id: controlCenterPanel
+        visible: root.controlCenterOpen
+        implicitWidth: 360
+        implicitHeight: 330
+        anchors { top: true; right: true }
+        // qmllint disable unresolved-type
+        // qmllint disable unqualified
+        margins { top: 50; right: root.theme.spacingMedium }
+        // qmllint enable unresolved-type
+        // qmllint enable unqualified
+        color: "transparent"
+        focusable: true
+        WlrLayershell.namespace: "axiom-control-center"
+        WlrLayershell.layer: WlrLayer.Overlay
+
+        Rectangle {
+            anchors.fill: parent
+            radius: root.theme.radiusSurface
+            color: Qt.rgba(0.08, 0.10, 0.12, 0.98)
+            border.width: 1
+            border.color: Qt.rgba(0.39, 0.85, 0.77, 0.34)
+            Column {
+                anchors.fill: parent
+                anchors.margins: root.theme.spacingMedium
+                spacing: root.theme.spacingSmall
+                Text { text: "Control Center"; color: root.theme.foreground; font.bold: true; font.pixelSize: 17 }
+                Text { text: "Read-only service health"; color: root.theme.muted; font.pixelSize: 11 }
+                Rectangle { width: parent.width; height: 1; color: root.theme.surfaceRaised }
+                Text { text: "Network  " + (Networking.devices && Networking.devices.values && Networking.devices.values.some(device => device.connected) ? "Connected" : "Unavailable"); color: root.theme.foreground }
+                Text { text: "Bluetooth  " + (Bluetooth.defaultAdapter && Bluetooth.defaultAdapter.enabled ? "Enabled" : "Unavailable"); color: root.theme.foreground }
+                Text { text: "Audio  " + (Pipewire.ready ? "Ready" : "Unavailable"); color: root.theme.foreground }
+                Text { text: "Battery  " + (UPower.displayDevice && UPower.displayDevice.isPresent ? Math.round(UPower.displayDevice.percentage) + "%" : "Unavailable"); color: root.theme.foreground }
+                Text { text: "Power profile  " + PowerProfiles.profile; color: root.theme.foreground }
+                Text { text: "Service mutation is gated until authorization and denial tests are recorded."; color: root.theme.warning; wrapMode: Text.WordWrap; width: parent.width; font.pixelSize: 11 }
             }
         }
     }

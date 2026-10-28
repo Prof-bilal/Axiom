@@ -40,7 +40,9 @@ qs ipc -p shell/window-controls-probe.qml call axiomWindowControlsProbe summary
 The integrated session surface is launched with `qs -p shell/axiom-shell.qml`.
 It provides a real workspace/active-window top bar, desktop-entry dock,
 desktop-entry launcher, notification history/count and read-only audio/battery
-state. The smaller control proof surface remains available with
+state, a textual live-window workspace overview and a read-only Control Center
+for network/Bluetooth/audio/battery/power-profile health. The smaller control
+proof surface remains available with
 `qs -p shell/window-controls.qml` for focused action tests.
 It is a non-exclusive, non-keyboard-interactive layer surface and operates only
 on the currently active native target. Close, maximize/fullscreen and the

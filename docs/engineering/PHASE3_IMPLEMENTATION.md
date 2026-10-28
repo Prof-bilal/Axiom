@@ -16,6 +16,9 @@ provide:
 - notification ownership/count/history through the Quickshell notification
   service, with dismiss-on-selection behavior;
 - read-only PipeWire readiness, UPower battery state and a session clock;
+- a live textual workspace overview that activates real toplevels, plus a
+  read-only Control Center for NetworkManager/BlueZ/PipeWire/UPower/power-
+  profile health;
 - explicit unavailable values instead of invented service status.
 
 The existing `WindowState`/`WindowActions` adapters remain the only path for
@@ -45,6 +48,7 @@ The next guest run must use a real Hyprland user session and capture startup,
 idle CPU/PSS, keyboard/focus/accessibility, mixed-DPI/multi-monitor behavior,
 browser/Electron window controls, notification bus conflicts and service
 failure/denial states. Dock pin persistence, full launcher search modes,
-Control Center mutation contracts, workspace overview presentation and file
-manager specification are not complete. REA's native decompiler providers are
+Control Center mutation contracts, thumbnail/drag workspace overview
+presentation and file manager specification are not complete. REA's native
+decompiler providers are
 not installed on this host, so no binary semantics are inferred from REA.

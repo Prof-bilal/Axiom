@@ -22,6 +22,8 @@ for fragment in (
     "import Quickshell.Services.Notifications",
     "import Quickshell.Services.Pipewire",
     "import Quickshell.Services.UPower",
+    "import Quickshell.Networking",
+    "import Quickshell.Bluetooth",
     "DesktopEntries.applications.values",
     "ToplevelManager.toplevels.values",
     "Hyprland.workspaces.values",
@@ -30,6 +32,11 @@ for fragment in (
     "Pipewire.ready",
     "UPower.devices",
     "notifications.trackedNotifications",
+    "Hyprland.workspaces.values || []",
+    "modelData.activate()",
+    "Networking.devices",
+    "Bluetooth.defaultAdapter",
+    "PowerProfiles.profile",
 ):
     require(fragment)
 
