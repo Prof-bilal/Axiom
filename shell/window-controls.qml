@@ -23,7 +23,7 @@ ShellRoot {
             required property var modelData
             screen: modelData
             visible: root.actions.windowState.available
-            implicitWidth: 342
+            implicitWidth: 382
             implicitHeight: 54
             anchors { top: true; left: true }
             // qmllint disable unresolved-type
@@ -142,6 +142,39 @@ ShellRoot {
                         }
                         contentItem: Text {
                             text: maximize.text
+                            color: root.theme.foreground
+                            font.pixelSize: 16
+                            horizontalAlignment: Text.AlignHCenter
+                            verticalAlignment: Text.AlignVCenter
+                        }
+                    }
+
+                    Button {
+                        id: fullscreen
+                        width: root.theme.pointerTarget
+                        height: root.theme.pointerTarget
+                        anchors.verticalCenter: parent.verticalCenter
+                        focusPolicy: Qt.NoFocus
+                        text: "↗"
+                        enabled: !root.actions.busy && root.actions.windowState.activeWindow !== null
+                        Accessible.name: root.actions.windowState.activeWindow && root.actions.windowState.activeWindow.wayland
+                                         && root.actions.windowState.activeWindow.wayland.fullscreen
+                                         ? "Exit fullscreen for active window" : "Enter fullscreen for active window"
+                        onClicked: {
+                            const window = root.actions.windowState.activeWindow;
+                            if (!window) return;
+                            const op = window.wayland && window.wayland.fullscreen
+                                      ? "exit-fullscreen" : "fullscreen";
+                            root.actions.request("0x" + window.address, op);
+                        }
+                        background: Rectangle {
+                            radius: root.theme.radiusControl
+                            color: fullscreen.down ? root.theme.accent : Qt.rgba(0.39, 0.85, 0.77, 0.17)
+                            border.color: Qt.rgba(0.39, 0.85, 0.77, 0.45)
+                            border.width: 1
+                        }
+                        contentItem: Text {
+                            text: fullscreen.text
                             color: root.theme.foreground
                             font.pixelSize: 16
                             horizontalAlignment: Text.AlignHCenter
