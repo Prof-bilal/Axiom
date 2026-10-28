@@ -1,0 +1,24 @@
+{
+  "schema": 1,
+  "status": "visual-concepts",
+  "purpose": "Preview-only Axiom Shell screen concepts",
+  "screens": [
+    {"id": "desktop-home", "path": "screens/desktop-home.png", "surface": "desktop", "status": "core"},
+    {"id": "launcher", "path": "screens/launcher.png", "surface": "shell-launcher", "status": "core"},
+    {"id": "file-explorer", "path": "screens/file-explorer.png", "surface": "file-explorer", "status": "concept"},
+    {"id": "terminal", "path": "screens/terminal.png", "surface": "terminal", "status": "concept"},
+    {"id": "settings", "path": "screens/settings.png", "surface": "settings", "status": "core"},
+    {"id": "notifications", "path": "screens/notifications.png", "surface": "notifications", "status": "core"},
+    {"id": "control-center-performance", "path": "screens/control-center-performance.png", "surface": "performance", "status": "core"},
+    {"id": "about", "path": "screens/about.png", "surface": "about", "status": "core"},
+    {"id": "login", "path": "screens/login.png", "surface": "login", "status": "core"},
+    {"id": "lock-screen", "path": "screens/lock-screen.png", "surface": "lock", "status": "core"},
+    {"id": "user-switcher", "path": "screens/user-switcher.png", "surface": "user-switcher", "status": "core"},
+    {"id": "session-menu", "path": "screens/session-menu.png", "surface": "session-power", "status": "core"}
+  ],
+  "deduplication": {
+    "policy": "one stable filename per screen",
+    "shared_identity_assets": "kept outside this directory",
+    "duplicate_sha256": false
+  }
+}

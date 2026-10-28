@@ -63,15 +63,16 @@ shutdown or power-menu acceptance result; the shutdown behavior remains open.
 ## Findings and limitations
 
 Initial active detection needed the Wayland handle because upstream's IPC pointer
-is empty before a focus event. Native minimize is event-only in the pinned
-compositor; the adapter returns **unknown** for minimized state. Controls must
-implement a proven policy rather than assume a Wayland request hides a window.
+is empty before a focus event. Native minimize property writes timed out in the
+pinned Foot/Hyprland fixture; controls therefore must implement a proven policy
+rather than assume a Wayland request hides a window. The current 3.2 adapter's
+private-workspace policy is recorded in the window-controls dossier.
 
 Follow-up acceptance progress: workspace mappings, scale changes, populated
-monitor removal, request-only failure/revalidation/reinitialization and actual
-lock/PAM unlock are exercised. The final health-helper source still needs the
-complete lifecycle/placement/disconnect rerun after the running performance
-collection, whose raw startup/PSS/CPU results must be inspected before exit.
+monitor removal, request-only failure/revalidation/reinitialization, actual
+lock/PAM unlock and the complete lifecycle/placement/disconnect rerun are
+exercised. The remaining 3.1 gate is the raw startup/PSS/CPU performance
+collection plus final source-hash review before exit.
 Relay disconnect proves transport loss handling,
 not every independent internal Quickshell failure. UI/keyboard/accessibility,
 normal/browser/Electron actions and fullscreen mutation are 3.2 acceptance;
@@ -86,9 +87,11 @@ inventory only. Decision: one shared native read-only QML model with explicit
 unavailable state; no new daemon or authority surface.
 
 Files: `shell/services/WindowState.qml`, `shell/window-state-probe.qml`,
-`shell/README.md`, the two window-state test scripts, REA verifier/setup/evidence,
+`shell/README.md`, the window-state test scripts, REA verifier/setup/evidence,
 the research dossiers and phase/UX/entry-point documentation. Original branding
-and editor state were preserved. No window-control/Dock implementation exists.
+and editor state were preserved. Window controls now have an implementation
+slice and guest harness; Dock remains unstarted.
 
-Next: finish the remaining 3.1 acceptance checks; then investigate/implement
-3.2 window controls and 3.3 Dock in order. No later visible feature is advanced.
+Next: finish the 3.1 performance/source-hash gate; expand 3.2 across the
+application/accessibility matrix; then investigate/implement 3.3 Dock. No later
+visible feature is advanced.

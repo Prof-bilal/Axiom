@@ -2,7 +2,12 @@
 
 The Linux desktop built for the AI-agent era: a cohesive, privacy-conscious environment for developers, with structured automation, visible permissions and practical recovery.
 
-**Status: Phase 2 authorized and re-scoped. The current work is documentation and research for an Omarchy-derived Arch/Hyprland/Quickshell foundation ([migration report](docs/engineering/OMARCHY_MIGRATION.md), [ADR-013](docs/DECISIONS.md)). No desktop implementation, installer or daemon exists yet, and no release is available.**
+**Status: Phase 3 development authorized 2026-10-28. The shell rebuild now has a
+real Hyprland/Quickshell window foundation and the first native window-controls
+implementation slice. Phase 2 foundation validation remains incomplete; no
+release is available.** See
+[phase gates](docs/PHASES.md), [research](research/desktop-shell/README.md) and the
+[current diagnostic](shell/README.md).
 
 Start with [AGENTS.md](AGENTS.md), [vision](docs/VISION.md), [MVP](docs/MVP.md), [architecture](docs/ARCHITECTURE.md) and [phase gates](docs/PHASES.md). Durable knowledge belongs in this repository; coding tools are replaceable.
 

@@ -106,9 +106,8 @@ Deferred until their phases, and not implied by this table: the five product int
 ## Phase 3: Axiom Shell on Hyprland/Quickshell
 
 **Status:** AUTHORIZED 2026-10-28. Research infrastructure is complete; the window
-foundation is in validation. The owner has paused implementation for a
-research/documentation pass; no new Phase 3 code should be added until explicitly
-resumed. This does not declare Phase 2 complete.
+foundation remains in validation and the owner has now resumed the first native
+window-controls implementation slice. This does not declare Phase 2 complete.
 
 **Objective:** A real Linux desktop shell with original Axiom identity and
 macOS-inspired interaction quality. Public Apple UX references inform behavior;
@@ -123,7 +122,7 @@ on the owner's authorization while foundation gaps remain visible.
 | --- | --- | --- |
 | 3.0 Research infrastructure | COMPLETE | [Infrastructure evidence](../research/desktop-shell/validation.md); later feature investigations remain sequential |
 | 3.1 Window foundation | VALIDATION | Shared real window/workspace/monitor identity and lifecycle; disconnect/failure/guest evidence |
-| 3.2 Window controls | NOT STARTED | Real close, minimize, maximize/restore across app/window/fullscreen/monitor matrix |
+| 3.2 Window controls | IMPLEMENTATION | Real close, minimize, maximize/restore across app/window/fullscreen/monitor matrix |
 | 3.3 Dock | NOT STARTED | Actual desktop entries/icons, launch/restore/window grouping, pin persistence, menus/reorder/autohide and measured interaction |
 | 3.4 Top bar | NOT STARTED | Axiom menu and actual network/Bluetooth/audio/battery/power/time/notification state |
 | 3.5 Launcher | NOT STARTED | Keyboard app/file/settings/command/recent/calculator/quick-action search and measured latency |

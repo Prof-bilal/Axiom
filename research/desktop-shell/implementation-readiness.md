@@ -1,15 +1,14 @@
 # Phase 3 implementation-readiness ledger
 
-Status: **RESEARCH ONLY**. The owner requested documentation and reverse
-engineering before further Phase 3 coding. A row becomes READY only after the
-linked eight-record dossier, source/license review and validation plan are
-complete.
+Status: **IMPLEMENTATION TRACKING**. The owner has authorized Phase 3 coding.
+Rows still require the linked evidence and validation gates; implementation
+does not imply completion.
 
 | Subphase | Current state | Required research before code | Implementation gate |
 | --- | --- | --- | --- |
 | 3.0 infrastructure | COMPLETE for evidence workflow | Keep REA setup/version and bounded evidence reproducible | No feature code implied |
 | 3.1 window foundation | VALIDATION evidence exists from disposable guest work | Reconcile remaining health/lifecycle/performance artifacts; preserve explicit unavailable and identity contracts | Real window/workspace/monitor model, disconnect recovery and lock boundaries pass |
-| 3.2 window controls | NOT STARTED | Research close/maximize/minimize semantics, fullscreen and cross-monitor behavior; document confirmation and unsupported states | Real operations on real windows; no title-based dispatch or fake minimize |
+| 3.2 window controls | IMPLEMENTATION | Dossier and source review complete; pinned Foot/Hyprland action slice exercised; browser/Electron, keyboard, pointer-focus and performance evidence remain | Real operations on real windows; no title-based dispatch or fake minimize |
 | 3.3 Dock | NOT STARTED | Research desktop-entry metadata, process launch, grouping, pin persistence, menus, reorder and autohide ownership | Actual entries/icons, launch/restore/grouping and persistence tests |
 | 3.4 top bar | NOT STARTED | Identify service owners and stale/denied states for network, Bluetooth, audio, battery, power, time and notifications | Each module reports real state and failure, not sample values |
 | 3.5 launcher | NOT STARTED | Define local indexes, recency, app/file/settings/command boundaries, keyboard navigation and latency protocol | Search remains data; action execution is separately typed/authorized |

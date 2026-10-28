@@ -34,7 +34,7 @@ class Foundation(unittest.TestCase):
 
     def fixture(self):
         for folder in ('docs', 'portable-skills', '.opencode', '.commandcode',
-                       'scripts', 'iso', 'tests', '.github'):
+                       'scripts', 'iso', 'tests', '.github', 'research', 'shell'):
             if (ROOT / folder).exists():
                 # iso/ holds multi-GB build output; copy only the reviewed profile.
                 ignore = shutil.ignore_patterns('work*', 'out', '*.iso') if folder == 'iso' else None
@@ -69,6 +69,19 @@ class Foundation(unittest.TestCase):
         self.fixture()
         shutil.rmtree(self.root / 'portable-skills')
         self.assertTrue(any('No portable skill inventory' in e for e in self.validate(self.root)))
+
+    def test_research_dossier_requires_all_records(self):
+        self.fixture()
+        (self.root / 'research/desktop-shell/window-foundation/behavior.md').unlink()
+        self.assertTrue(any('research record: window-foundation/behavior.md' in error
+                            for error in self.validate(self.root)))
+
+    def test_validator_checks_research_links(self):
+        self.fixture()
+        record = self.root / 'research/desktop-shell/macos/behavior.md'
+        record.write_text(record.read_text() + '\n[missing](missing-research.md)\n')
+        self.assertTrue(any('Broken local link: research/desktop-shell/macos/behavior.md' in error
+                            for error in self.validate(self.root)))
 
     def test_skill_installation_is_complete_and_idempotent(self):
         shutil.copytree(ROOT / 'portable-skills', self.root / 'portable-skills')

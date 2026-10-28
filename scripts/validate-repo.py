@@ -16,6 +16,10 @@ GROUPS = {
     'engineering': 'TESTING BENCHMARKS ISO_BUILD INSTALLER RELEASE ECOSYSTEM_PLAN OMARCHY_MIGRATION FOUNDATION_VALIDATION PHASE1_EVIDENCE DEV_ENVIRONMENTS INSTALL_CHECKLIST',
 }
 SKILLS = set('archiso-build arch-pkgbuild quickshell-ui wayland-integration rust-daemon dbus-service systemd-service agent-system-api threat-model security-review warden-policy btrfs-transaction performance-benchmark qemu-integration-test mcp-tool provider-adapter android-connect release-check omarchy-upstream'.split())
+RESEARCH_RECORDS = {'evidence', 'behavior', 'architecture', 'interaction-map',
+                    'linux-references', 'unknowns', 'axiom-spec', 'validation'}
+SHELL_RESEARCH_FEATURES = ('macos linux dock top-bar window-controls launcher '
+                         'control-center notifications workspace-overview file-manager').split()
 
 def validate(root):
     errors = []
@@ -26,6 +30,22 @@ def validate(root):
         if not path.is_file() or len(path.read_text().strip()) < 200:
             errors.append(f'Missing or insubstantial required document: {item}')
     paths = list((root / 'docs').rglob('*.md')) + [root / 'README.md', root / 'AGENTS.md']
+    research = root / 'research/desktop-shell'
+    if research.is_dir():
+        paths += list(research.rglob('*.md'))
+        for feature in SHELL_RESEARCH_FEATURES:
+            if not (research / feature).is_dir():
+                errors.append(f'Missing desktop research scope: {feature}')
+        for feature in (p for p in research.iterdir() if p.is_dir()):
+            # A scope-only README does not pretend to be an investigation. Once
+            # a dossier starts, all eight owner-required records must exist.
+            if any((feature / f'{name}.md').exists() for name in RESEARCH_RECORDS):
+                for name in sorted(RESEARCH_RECORDS):
+                    record = feature / f'{name}.md'
+                    if not record.is_file() or len(record.read_text().strip()) < 200:
+                        errors.append(f'Missing or insubstantial research record: {feature.name}/{name}.md')
+    if (root / 'shell/README.md').is_file():
+        paths.append(root / 'shell/README.md')
     for base in ('portable-skills/skills', '.agents/skills', '.opencode/agents', '.commandcode/agents'):
         folder = root / base
         if folder.exists():

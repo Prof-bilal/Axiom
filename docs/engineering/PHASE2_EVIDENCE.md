@@ -140,3 +140,23 @@ Evidence artifacts (gitignored under `iso/out/evidence/phase2/omarchy-boot-1/`):
 4. SDDM/Plymouth Axiom logo replacement and login/lock styling.
 5. Snapshot/update and failed-unit tests.
 6. Axiom Shell replacement of Omarchy widgets (Phase 3).
+
+## Phase 3 fixture validation — 2026-10-28
+
+The owner authorized Phase 3 development while this foundation exit remained
+open. A new disposable overlay of the same checksum-verified 4.0.6 image booted
+through OVMF/UEFI with KVM, 4 GiB RAM, two vCPUs and standard VGA. Restricted
+QEMU user networking exposed SSH only on host localhost port 2233. The original
+base disk was not changed and no host home/block device was attached.
+
+Actual native Wayland/Hyprland model tests passed in that guest: same-application
+window open/focus/close, headless-output add/remove and unavailable state after
+owned IPC relay disconnect. See the [Phase 3 foundation validation](../../research/desktop-shell/window-foundation/validation.md)
+for package versions, commands, results and limitations. Raw fixture state/logs
+are retained at `iso/out/developer/run-jsxc3cbS/`.
+
+This supplies a UEFI boot observation for the preinstalled upstream fixture;
+it does not supply a clean Axiom build recipe, original Axiom session, branding
+removal, snapshot/update/recovery or hardware evidence. Earlier statements that
+UEFI had not yet been exercised describe the baseline POC at that date. Phase 2
+still has no exit claim.
