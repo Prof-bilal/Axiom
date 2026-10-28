@@ -44,3 +44,18 @@ completion. The guest used software/emulated graphics.
 
 The result must update this file and the phase ledger. Rendering the cluster or
 calling an IPC method once is insufficient for completion.
+
+## Implementation update — 2026-10-28
+
+The visible control cluster now exposes an explicit fullscreen toggle alongside
+close, minimize/restore and maximize/restore. It uses the same canonical target
+address and bounded `WindowActions` adapter as the existing controls; the
+accessible name changes between entering and exiting fullscreen from the real
+Wayland state. The surface remains a non-exclusive, non-keyboard-interactive
+layer surface so it cannot steal compositor focus.
+
+QML lint passes for the surface, adapter, probe and theme. The REA verifier also
+passes against the installed Quickshell Hyprland module (server 6.8.0,
+229-tool catalog, bounded directory evidence `ev_056eb0d504af8726ebd1a3258db52d9278b87aa4e8ac38c581553620fef9a80e`).
+REA's native decompiler providers are not configured on this host; no binary
+behavior is inferred from that unavailable probe.
