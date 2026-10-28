@@ -591,7 +591,7 @@ ShellRoot {
                 Text { text: "Bluetooth  " + (Bluetooth.defaultAdapter && Bluetooth.defaultAdapter.enabled ? "Enabled" : "Unavailable"); color: root.theme.foreground }
                 Text { text: "Audio  " + (Pipewire.ready ? "Ready" : "Unavailable"); color: root.theme.foreground }
                 Text { text: "Battery  " + (UPower.displayDevice && UPower.displayDevice.isPresent ? Math.round(UPower.displayDevice.percentage) + "%" : "Unavailable"); color: root.theme.foreground }
-                Text { text: "Power profile  " + PowerProfiles.profile; color: root.theme.foreground }
+                Text { text: "Power profile  " + PowerProfile.toString(PowerProfiles.profile); color: root.theme.foreground }
                 Text { text: "Service mutation is gated until authorization and denial tests are recorded."; color: root.theme.warning; wrapMode: Text.WordWrap; width: parent.width; font.pixelSize: 11 }
             }
         }

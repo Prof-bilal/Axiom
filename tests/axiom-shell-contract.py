@@ -37,6 +37,7 @@ for fragment in (
     "Networking.devices",
     "Bluetooth.defaultAdapter",
     "PowerProfiles.profile",
+    "PowerProfile.toString(PowerProfiles.profile)",
 ):
     require(fragment)
 
