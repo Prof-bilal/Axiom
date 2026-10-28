@@ -1,6 +1,8 @@
 # 3.4 Top bar
 
-Status: NOT STARTED. This scope record is not completed feature research.
+Status: IMPLEMENTATION. The integrated shell has a first real workspace,
+active-window, clock, PipeWire, UPower and notification top bar; this scope
+record is not a completed feature gate.
 
 After Dock stability: original penguin menu and active-app context; right side uses real NetworkManager, BlueZ, PipeWire, UPower, clock, notifications and Control Center state. Handle missing services and multi-monitor ownership. No hardcoded percentages, statuses or fake global application menu.
 

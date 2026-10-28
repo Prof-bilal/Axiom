@@ -1,9 +1,10 @@
 # Axiom Shell
 
 Phase 3 is being rebuilt in order. This directory contains the read-only window
-foundation plus the first native window-controls implementation slice. Hyprland
-owns windows; Quickshell owns native models and surfaces. No daemon or root
-service is added. The original Axiom branding remains in `branding/`.
+foundation, native window controls and the first integrated Axiom session
+surface. Hyprland owns windows; Quickshell owns native models and surfaces. No
+daemon or root service is added. The original Axiom branding remains in
+`branding/`.
 
 Run the surface-free diagnostic in a Hyprland user session:
 
@@ -36,13 +37,19 @@ qs -p shell/window-controls-probe.qml
 qs ipc -p shell/window-controls-probe.qml call axiomWindowControlsProbe summary
 ```
 
-The visible proof surface is launched with `qs -p shell/window-controls.qml`.
+The integrated session surface is launched with `qs -p shell/axiom-shell.qml`.
+It provides a real workspace/active-window top bar, desktop-entry dock,
+desktop-entry launcher, notification history/count and read-only audio/battery
+state. The smaller control proof surface remains available with
+`qs -p shell/window-controls.qml` for focused action tests.
 It is a non-exclusive, non-keyboard-interactive layer surface and operates only
 on the currently active native target. Close, maximize/fullscreen and the
 explicit private-workspace minimize policy all require same-target bounded
 verification. The minimize restore location is in-memory for this slice and is
 not promised across shell restart. Browser/Electron coverage, keyboard/pointer
-focus isolation, accessibility, persistence and performance remain open.
+focus isolation, accessibility, pin persistence, service-control authorization,
+multi-monitor policy and performance remain open. A rendered surface is not an
+exit claim.
 
 The default read-only integration check is `python3 tests/window-state-smoke.py`.
 Only in a disposable guest, opt into actual owned-window and monitor lifecycle

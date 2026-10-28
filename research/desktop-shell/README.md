@@ -1,8 +1,10 @@
 # Desktop shell investigation
 
-Status: Phase 3 authorized by the owner's 2026-10-28 execution brief, with
-implementation currently paused by the owner. Work is research/documentation
-only until explicitly resumed; the Phase 2 exit is still unproven.
+Status: Phase 3 authorized by the owner's 2026-10-28 execution brief. The
+window foundation and native controls remain in validation, and the integrated
+shell now has a first implementation slice for Dock, top bar, launcher,
+notifications and workspace state. Runtime acceptance is still open; a
+rendered QML surface is never treated as integration evidence.
 
 The workflow is reference → investigation → evidence → behavior model → Linux
 implementation research → Axiom specification → implementation → validation.
@@ -35,7 +37,10 @@ Execution order is 3.0 research infrastructure, 3.1 window foundation, 3.2 windo
 controls, 3.3 Dock, 3.4 top bar, 3.5 launcher, 3.6 Control Center, 3.7 notifications,
 3.8 workspace overview, 3.9 file-manager specification, 3.10 integration/polish.
 Canonical status lives in [PHASES](../../docs/PHASES.md). Later feature directories
-start with explicit investigation scope rather than fabricated findings.
+start with explicit investigation scope rather than fabricated findings. The
+integrated implementation is intentionally limited to APIs inspected in the
+pinned Quickshell package; persistence, accessibility, multi-monitor and
+service-control behavior remain explicit validation gates.
 
 The foundation is additionally investigated in [window-foundation](window-foundation/axiom-spec.md).
 No UI, service, authentication policy or host Hyprland configuration is installed

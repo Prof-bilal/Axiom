@@ -2,10 +2,10 @@
 
 The Linux desktop built for the AI-agent era: a cohesive, privacy-conscious environment for developers, with structured automation, visible permissions and practical recovery.
 
-**Status: Phase 3 development authorized 2026-10-28. The shell rebuild now has a
-real Hyprland/Quickshell window foundation and the first native window-controls
-implementation slice. Phase 2 foundation validation remains incomplete; no
-release is available.** See
+**Status: Phase 3 development authorized 2026-10-28. Phase 2 foundation exit is
+recorded. The shell rebuild now has a real Hyprland/Quickshell window
+foundation, native window controls and an integrated top-bar/dock/launcher/
+notification surface. Phase 3 remains in validation; no release is available.** See
 [phase gates](docs/PHASES.md), [research](research/desktop-shell/README.md) and the
 [current diagnostic](shell/README.md).
 

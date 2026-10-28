@@ -1,6 +1,7 @@
 # 3.3 Dock
 
-Status: RESEARCH. This scope record is not completed feature research.
+Status: IMPLEMENTATION. The integrated shell has a first DesktopEntries-backed
+launch/focus dock; this scope record is not a completed feature gate.
 
 After 3.1/3.2 validation: investigate pinned/running/active state, installed desktop entries and icons, multi-window selection, launch/restore/minimize, context menus, drag/reorder/removal, atomic user configuration, autohide, workspace and monitor policy. Apple Dock guide is a UX source; exact timing/magnification curves remain unknown.
 

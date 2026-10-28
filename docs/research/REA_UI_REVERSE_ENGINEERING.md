@@ -1,7 +1,9 @@
 # REA for desktop-shell research and later UI changes
 
-Status: **RESEARCH/DOCUMENTATION ONLY**. This document describes how REA may
-inform future coding; it does not authorize new shell code.
+Status: **RESEARCH plus bounded implementation evidence**. REA informs shell
+coding, but it never authorizes an action or substitutes for a real guest
+session. The current integrated surface uses only APIs independently confirmed
+from the pinned Quickshell package and keeps unverified behavior in validation.
 
 ## Verified local REA scope
 
@@ -41,7 +43,7 @@ runtime behavior. It must not be used as decoration around an unverified guess.
 
 ## Future coding loop: evidence to QML change
 
-When implementation is resumed, each UI change follows this recordable loop:
+Each UI change follows this recordable loop:
 
 1. **State the behavior.** Define the user-visible trigger, state transition,
    cancellation path, unavailable state and success/failure result.

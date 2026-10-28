@@ -1,6 +1,6 @@
 # Implementation phases
 
-Current development: **Phase 3 — authorized 2026-10-28 by the owner's desktop-shell execution brief**. Phase 2 remains IN PROGRESS; authorization to develop Phase 3 does not establish its foundation exit or authorize a release. Phase 0 exit is recorded (2026-10-24, [FOUNDATION_VALIDATION](engineering/FOUNDATION_VALIDATION.md)); Phase 1 (repeatable archiso build + QEMU boot) exited 2026-10-25 ([PHASE1_EVIDENCE](engineering/PHASE1_EVIDENCE.md)) and its profile is retained as legacy evidence. **Phase 2 is authorized (2026-10-25; re-scoped 2026-10-27)** as the **Omarchy-derived foundation migration**: pin stable Omarchy, boot Hyprland + Quickshell in QEMU, remove Omarchy product identity and validate the core system. The earlier "branded Plasma 6 Wayland desktop" Phase 2 scope is **SUPERSEDED**. The AI runtime, security enforcement, the installer and the first-party product integrations are **not** authorized by this phase — they follow their own gates. These are execution gates, not dates. Advancing requires recorded evidence and an explicit phase-status update. Security applies from Phase 0; Phase 7 integrates enforcement. Follow the dependency-ordered validation waves in [TESTING.md](engineering/TESTING.md). No mutation becomes available before its authorization and audit gate.
+Current development: **Phase 3 — authorized 2026-10-28 by the owner's desktop-shell execution brief**. Phase 2 foundation exit is recorded; installer-release, hardware, update and security gates remain separate. Phase 0 exit is recorded (2026-10-24, [FOUNDATION_VALIDATION](engineering/FOUNDATION_VALIDATION.md)); Phase 1 (repeatable archiso build + QEMU boot) exited 2026-10-25 ([PHASE1_EVIDENCE](engineering/PHASE1_EVIDENCE.md)) and its profile is retained as legacy evidence. **Phase 2 is the completed pinned Omarchy-derived foundation migration**: Hyprland + Quickshell in disposable QEMU, Axiom identity and core-system evidence. The earlier "branded Plasma 6 Wayland desktop" Phase 2 scope is **SUPERSEDED**. The AI runtime, security enforcement, the installer and the first-party product integrations are **not** authorized by this phase — they follow their own gates. These are execution gates, not dates. Advancing requires recorded evidence and an explicit phase-status update. Security applies from Phase 0; Phase 7 integrates enforcement. Follow the dependency-ordered validation waves in [TESTING.md](engineering/TESTING.md). No mutation becomes available before its authorization and audit gate.
 
 ## Phase status log
 
@@ -9,7 +9,7 @@ Current development: **Phase 3 — authorized 2026-10-28 by the owner's desktop-
 | 0 Research and architecture validation | EXIT MET 2026-10-24 | [FOUNDATION_VALIDATION](engineering/FOUNDATION_VALIDATION.md), [PHASE0_EVIDENCE](engineering/PHASE0_EVIDENCE.json) |
 | 1 Repository foundation and reproducible Arch/archiso build | EXIT MET 2026-10-25 (owner sign-off) | [PHASE1_EVIDENCE](engineering/PHASE1_EVIDENCE.md) |
 | 2 Omarchy-derived foundation migration | EXIT MET 2026-10-28 (foundation ISO + disposable QEMU target) | [PHASE2_EVIDENCE](engineering/PHASE2_EVIDENCE.md), [PHASE2_BUILD](engineering/PHASE2_BUILD.md) |
-| 3 Axiom Shell on Hyprland/Quickshell | AUTHORIZED 2026-10-28; staged rebuild in progress | [Research and validation](../research/desktop-shell/README.md) |
+| 3 Axiom Shell on Hyprland/Quickshell | AUTHORIZED 2026-10-28; integrated implementation in validation | [Research and validation](../research/desktop-shell/README.md), [implementation evidence](engineering/PHASE3_IMPLEMENTATION.md) |
 | 4–12 | Not started | — |
 
 > **Note:** The original Phase 3 desktop shell implementation was removed because the visual and interaction architecture did not meet the intended Axiom desktop quality. Phase 3 will restart from a new shell specification inspired by macOS interaction quality.
@@ -105,9 +105,9 @@ Deferred until their phases, and not implied by this table: the five product int
 
 ## Phase 3: Axiom Shell on Hyprland/Quickshell
 
-**Status:** AUTHORIZED 2026-10-28. Research infrastructure is complete; the window
-foundation remains in validation and the owner has now resumed the first native
-window-controls implementation slice. This does not declare Phase 2 complete.
+**Status:** AUTHORIZED 2026-10-28. Research infrastructure is complete; the
+window foundation and controls remain in validation while the integrated shell
+implementation advances through the remaining feature gates.
 
 **Objective:** A real Linux desktop shell with original Axiom identity and
 macOS-inspired interaction quality. Public Apple UX references inform behavior;
@@ -123,12 +123,12 @@ on the owner's authorization while foundation gaps remain visible.
 | 3.0 Research infrastructure | COMPLETE | [Infrastructure evidence](../research/desktop-shell/validation.md); later feature investigations remain sequential |
 | 3.1 Window foundation | VALIDATION | Shared real window/workspace/monitor identity and lifecycle; disconnect/failure/guest evidence |
 | 3.2 Window controls | IMPLEMENTATION | Real close, minimize, maximize/restore across app/window/fullscreen/monitor matrix |
-| 3.3 Dock | NOT STARTED | Actual desktop entries/icons, launch/restore/window grouping, pin persistence, menus/reorder/autohide and measured interaction |
-| 3.4 Top bar | NOT STARTED | Axiom menu and actual network/Bluetooth/audio/battery/power/time/notification state |
-| 3.5 Launcher | NOT STARTED | Keyboard app/file/settings/command/recent/calculator/quick-action search and measured latency |
-| 3.6 Control Center | NOT STARTED | Actual service controls, unavailable/denied/failed states and confirmed outcomes |
-| 3.7 Notifications | NOT STARTED | Proper notification service integration, history/grouping/actions/clear/DND and keyboard access |
-| 3.8 Workspace overview | NOT STARTED | Actual Hyprland switching/window lists; thumbnails/drag only when technically proven |
+| 3.3 Dock | IMPLEMENTATION | Actual desktop entries, launch/focus behavior and running-window grouping; persistence, menus/reorder/autohide and measured interaction remain open |
+| 3.4 Top bar | IMPLEMENTATION | Axiom identity, actual workspace/active-window/time/audio/battery/notification state; NetworkManager/Bluetooth and multi-monitor ownership remain open |
+| 3.5 Launcher | IMPLEMENTATION | Keyboard-ready desktop-entry search and activation; file/settings/command/recent/calculator/quick-action search and measured latency remain open |
+| 3.6 Control Center | RESEARCH | Backends and authorization are specified; no service mutation is implemented before its narrow contract and denial tests |
+| 3.7 Notifications | IMPLEMENTATION | Quickshell notification service, count/history/dismiss; grouping/actions/clear/DND and keyboard access remain open |
+| 3.8 Workspace overview | IMPLEMENTATION | Actual Hyprland workspace model and switching via the top bar; window-list/overview presentation and drag/thumbnails remain open |
 | 3.9 File manager specification | NOT STARTED | Evidence-backed specification; reuse mature file manager, no full replacement without foundation |
 | 3.10 Integration and polish | NOT STARTED | Coherent original design/motion, full session tests, accessibility, performance and retained evidence |
 

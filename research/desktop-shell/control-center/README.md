@@ -1,6 +1,7 @@
 # 3.6 Control Center
 
-Status: NOT STARTED. This scope record is not completed feature research.
+Status: RESEARCH. Backends and authorization remain unimplemented; the
+integrated shell intentionally exposes read-only service readiness only.
 
 Research actual NetworkManager/BlueZ/PipeWire/brightness/power-profile/session backends; preserve existing Polkit authorization. Confirm requested and reported state separately. Microphone, Wi-Fi, Bluetooth, volume, brightness, theme when supported, DND and battery each need unavailable/failure UX and real guest tests. No new privileged generic service.
 

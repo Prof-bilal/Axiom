@@ -1,6 +1,7 @@
 # 3.8 Workspace overview
 
-Status: NOT STARTED. This scope record is not completed feature research.
+Status: IMPLEMENTATION. The top bar consumes and activates the real Hyprland
+workspace model; a full overview/window-list surface remains open.
 
 Consume the validated shared window/workspace model. Research real Hyprland switching, window moves and monitor relationships. Thumbnails require supported capture and permission evidence; textual real-window lists are a useful first integration, fake preview rectangles are not. Drag between workspaces is conditional on a proven backend.
 

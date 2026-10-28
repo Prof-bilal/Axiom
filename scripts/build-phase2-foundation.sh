@@ -131,7 +131,7 @@ sed -i 's#Quickshell.shellPath("../branding/theme/axiom/icons/axiom-penguin.svg"
 cat > "$WORK/omarchy/bin/axiom-shell-launch" <<'EOF'
 #!/usr/bin/env bash
 set -euo pipefail
-exec quickshell -n -p "${OMARCHY_PATH:-/usr/share/omarchy}/default/axiom-shell/window-controls.qml"
+exec quickshell -n -p "${OMARCHY_PATH:-/usr/share/omarchy}/default/axiom-shell/axiom-shell.qml"
 EOF
 chmod 0755 "$WORK/omarchy/bin/axiom-shell-launch"
 

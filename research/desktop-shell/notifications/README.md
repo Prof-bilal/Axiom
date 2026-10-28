@@ -1,6 +1,8 @@
 # 3.7 Notification Center
 
-Status: NOT STARTED. This scope record is not completed feature research.
+Status: IMPLEMENTATION. The integrated shell now owns the pinned Quickshell
+notification service and renders count/history/dismiss behavior; this scope
+record is not a completed feature gate.
 
 Investigate freedesktop notification service ownership and Quickshell notification API before replacing any daemon. History, grouping, timestamps, clearing, actions and DND need lifecycle/persistence/privacy contracts. Actions belong to originating live notifications; user content is untrusted. Test bus-name conflicts and keyboard flows.
 

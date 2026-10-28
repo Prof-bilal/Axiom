@@ -1,6 +1,8 @@
 # 3.5 Launcher
 
-Status: NOT STARTED. This scope record is not completed feature research.
+Status: IMPLEMENTATION. The integrated shell has a first keyboard-ready
+DesktopEntries search and activation surface; this scope record is not a
+completed feature gate.
 
 Research desktop-entry indexing/activation, user-scoped file search, settings registry, explicit command mode, bounded recent items, deterministic calculator and quick actions. Keyboard-first selection; generation-safe async search and latency measurements. No massive AI runtime or arbitrary shell interpolation from app metadata.
 
