@@ -9,6 +9,7 @@ import Quickshell.Services.Pipewire
 import Quickshell.Services.UPower
 import Quickshell.Networking
 import Quickshell.Bluetooth
+import "services"
 import "theme"
 
 // Integrated Phase 3 shell surface. Every displayed state comes from a
@@ -18,6 +19,7 @@ import "theme"
 ShellRoot {
     id: root
     property var theme: AxiomTheme {}
+    property var actions: WindowActions {}
     property bool launcherOpen: false
     property bool notificationsOpen: false
     property bool overviewOpen: false
@@ -265,6 +267,102 @@ ShellRoot {
                         color: root.theme.foreground
                         font.pixelSize: 12
                         Accessible.name: "Current time " + text
+                    }
+                }
+            }
+        }
+    }
+
+    // The integrated session owns the same target-scoped native controls as
+    // the focused proof surface. The adapter verifies every request against
+    // the selected live Hyprland/Wayland object; this panel never retargets by
+    // title or launches a privileged command.
+    Variants {
+        model: Quickshell.screens
+        // qmllint disable uncreatable-type
+        PanelWindow {
+            id: integratedControls
+            required property var modelData
+            screen: modelData
+            visible: root.actions.windowState.available
+            implicitWidth: 382
+            implicitHeight: 48
+            anchors { top: true; left: true }
+            // qmllint disable unresolved-type
+            // qmllint disable unqualified
+            margins { top: 46; left: root.theme.spacingMedium }
+            // qmllint enable unresolved-type
+            // qmllint enable unqualified
+            exclusiveZone: 0
+            exclusionMode: ExclusionMode.Ignore
+            focusable: false
+            aboveWindows: true
+            color: "transparent"
+            WlrLayershell.namespace: "axiom-integrated-window-controls"
+            WlrLayershell.layer: WlrLayer.Top
+
+            Rectangle {
+                anchors.fill: parent
+                radius: root.theme.radiusSurface
+                color: Qt.rgba(0.08, 0.10, 0.12, 0.94)
+                border.width: 1
+                border.color: Qt.rgba(0.39, 0.85, 0.77, 0.30)
+                Row {
+                    anchors.fill: parent
+                    anchors.margins: root.theme.spacingSmall
+                    spacing: root.theme.spacingSmall
+                    Text {
+                        width: 156
+                        anchors.verticalCenter: parent.verticalCenter
+                        text: root.actions.windowState.activeWindow && root.actions.windowState.activeWindow.wayland
+                              ? root.actions.windowState.activeWindow.wayland.appId : "No active window"
+                        color: root.theme.foreground
+                        elide: Text.ElideRight
+                        font.pixelSize: 11
+                        Accessible.name: text
+                    }
+                    Repeater {
+                        model: [
+                            { glyph: "−", operation: "minimize", restore: "restore-minimize", name: "Minimize active window" },
+                            { glyph: "□", operation: "maximize", restore: "restore-maximize", name: "Maximize active window" },
+                            { glyph: "↗", operation: "fullscreen", restore: "exit-fullscreen", name: "Enter fullscreen for active window" },
+                            { glyph: "×", operation: "close", restore: "close", name: "Close active window" }
+                        ]
+                        delegate: Button {
+                            required property var modelData
+                            width: root.theme.pointerTarget
+                            height: root.theme.pointerTarget
+                            anchors.verticalCenter: parent.verticalCenter
+                            focusPolicy: Qt.NoFocus
+                            text: modelData.glyph
+                            enabled: !root.actions.busy && root.actions.windowState.activeWindow !== null
+                            Accessible.name: modelData.name
+                            onClicked: {
+                                const window = root.actions.windowState.activeWindow;
+                                if (!window) return;
+                                let operation = modelData.operation;
+                                if (modelData.operation === "minimize")
+                                    operation = root.actions.isMinimized(window) ? modelData.restore : modelData.operation;
+                                if (modelData.operation === "maximize" && window.wayland && window.wayland.maximized)
+                                    operation = modelData.restore;
+                                if (modelData.operation === "fullscreen" && window.wayland && window.wayland.fullscreen)
+                                    operation = modelData.restore;
+                                root.actions.request("0x" + window.address, operation);
+                            }
+                            background: Rectangle {
+                                radius: root.theme.radiusControl
+                                color: parent.down ? root.theme.accent : Qt.rgba(0.39, 0.85, 0.77, 0.17)
+                                border.width: 1
+                                border.color: Qt.rgba(0.39, 0.85, 0.77, 0.45)
+                            }
+                            contentItem: Text {
+                                text: parent.text
+                                color: parent.down ? root.theme.accentText : root.theme.foreground
+                                font.pixelSize: 16
+                                horizontalAlignment: Text.AlignHCenter
+                                verticalAlignment: Text.AlignVCenter
+                            }
+                        }
                     }
                 }
             }

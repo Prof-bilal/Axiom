@@ -38,6 +38,9 @@ for fragment in (
     "Bluetooth.defaultAdapter",
     "PowerProfiles.profile",
     "PowerProfile.toString(PowerProfiles.profile)",
+    "property var actions: WindowActions {}",
+    "root.actions.request(\"0x\" + window.address",
+    "axiom-integrated-window-controls",
 ):
     require(fragment)
 
