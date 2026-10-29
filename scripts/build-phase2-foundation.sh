@@ -11,6 +11,7 @@ OUT="$ROOT/iso/out/phase2"
 WORK="$ROOT/iso/work-phase2"
 SOURCE_DATE_EPOCH="${SOURCE_DATE_EPOCH:-1792436745}"
 IMAGE="${AXIOM_ARCHISO_IMAGE:-archlinux:latest}"
+NODE_TARBALL="${AXIOM_NODE_TARBALL:-}"
 
 die() { echo "build-phase2-foundation: $*" >&2; exit 1; }
 command -v docker >/dev/null || die "docker is required"
@@ -21,6 +22,17 @@ command -v sha256sum >/dev/null || die "sha256sum is required"
 [[ -d "$ISO_SRC/archiso/configs/releng" ]] || {
   die "omarchy-iso archiso submodule is not initialized"
 }
+
+# The pinned upstream builder fetches Node.js for the offline image. Allow a
+# caller-provided (or previously cached) tarball so a transient container DNS
+# or CDN failure cannot strand an otherwise reproducible foundation build.
+if [[ -z "$NODE_TARBALL" && -f "$OUT/cache/node-v26.12.1-linux-x64.tar.gz" ]]; then
+  NODE_TARBALL="$OUT/cache/node-v26.12.1-linux-x64.tar.gz"
+fi
+if [[ -n "$NODE_TARBALL" ]]; then
+  [[ -f "$NODE_TARBALL" ]] || die "Node.js tarball does not exist: $NODE_TARBALL"
+  [[ "$NODE_TARBALL" = /* ]] || die "AXIOM_NODE_TARBALL must be an absolute path"
+fi
 
 omarchy_rev="$(git -C "$OMARCHY_SRC" rev-parse HEAD)"
 iso_rev="$(git -C "$ISO_SRC" rev-parse HEAD)"
@@ -109,6 +121,33 @@ sed -i '/systemctl enable docker\.socket/d' \
 sed -i '/install_ufw_docker_rules/d' "$WORK/omarchy/install/config/firewall.sh"
 sed -i 's/linux-t2 git gum/linux-omarchy git gum/' "$WORK/iso/builder/build-iso.sh"
 
+if [[ -n "$NODE_TARBALL" ]]; then
+  node_filename="$(basename "$NODE_TARBALL")"
+  cp "$NODE_TARBALL" "$WORK/iso/builder/$node_filename"
+  python3 - "$WORK/iso/builder/build-iso.sh" "$node_filename" <<'PY'
+import pathlib
+import sys
+
+builder = pathlib.Path(sys.argv[1])
+filename = sys.argv[2]
+text = builder.read_text()
+start_marker = "# Download and verify Node.js binary for offline installation"
+end_marker = "# Add our additional packages to packages.x86_64"
+start = text.find(start_marker)
+end = text.find(end_marker, start)
+if start < 0 or end < 0:
+    raise SystemExit("unable to locate the upstream Node.js download block")
+replacement = f'''# Axiom supplies a verified host-side Node.js tarball for offline builds.
+NODE_FILENAME="{filename}"
+cp "/builder/$NODE_FILENAME" "/tmp/$NODE_FILENAME"
+NODE_SHA=$(sha256sum "/tmp/$NODE_FILENAME" | awk '{{print $1}}')
+echo "$NODE_SHA /tmp/$NODE_FILENAME" | sha256sum -c -
+
+'''
+builder.write_text(text[:start] + replacement + text[end:])
+PY
+fi
+
 # The upstream ISO profile still carries Omarchy's visible boot-menu labels and
 # its historical T2 kernel name.  Rewrite every bootloader template in the
 # staged profile so the generated media both boots the package we ship and does
@@ -164,6 +203,9 @@ mkdir -p "$OUT/current" "$OUT/cache"
 printf 'omarchy_revision=%s\niso_revision=%s\narchiso_submodule=%s\nsource_date_epoch=%s\ndocker_image=%s\n' \
   "$omarchy_rev" "$iso_rev" "$(git -C "$ISO_SRC/archiso" rev-parse HEAD)" \
   "$SOURCE_DATE_EPOCH" "$image_digest" > "$OUT/current/inputs.txt"
+if [[ -n "$NODE_TARBALL" ]]; then
+  printf 'node_filename=%s\nnode_sha256=%s\n' "$node_filename" "$(sha256sum "$NODE_TARBALL" | awk '{print $1}')" >> "$OUT/current/inputs.txt"
+fi
 printf '%s\n' \
   'Removed obsolete releng package broadcom-wl.' \
   'Filtered omarchy-other.packages to generic/QEMU foundation inputs; vendor hardware drivers remain deferred.' \

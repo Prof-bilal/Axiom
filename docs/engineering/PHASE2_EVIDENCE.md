@@ -141,9 +141,13 @@ Evidence artifacts (gitignored under `iso/out/evidence/phase2/omarchy-boot-1/`):
 
 ## Phase 2 exit evidence — 2026-10-28
 
-The exact ISO `axiom-2026.10.19-x86_64.iso` was rebuilt from the pinned inputs;
-its SHA-256 is recorded in `iso/out/phase2/current/iso.sha256` as
+The historical Phase 2 exit artifact `axiom-2026.10.19-x86_64.iso` was rebuilt
+from the pinned inputs on 2026-10-28; its SHA-256 was
 `e424cc54f9ec754b4bc5bf723a1345d29a3c249704fb47786d37a470a489799f`.
+The current 2026-10-29 rebuild of the same pinned profile (including the
+integrated Axiom Shell payload) is recorded in
+`iso/out/phase2/current/iso.sha256` as
+`ffe5b9347f3ecb3402bdfa515a0c22f2d1293982383a3c1550e0155be673cb7d`.
 
 The live ISO serial boot reached `archiso login`, mounted `AXIOM_202610`, and
 reported `IMAGE_ID=axiom`. The installed disposable target then contained

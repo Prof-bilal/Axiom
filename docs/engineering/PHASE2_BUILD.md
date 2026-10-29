@@ -17,6 +17,12 @@ filters, and the resulting ISO checksum under `iso/out/phase2/current/`.
 Those outputs are intentionally gitignored; retain them with the release
 evidence bundle rather than committing multi-gigabyte artifacts.
 
+For offline/reproducible rebuilds, set `AXIOM_NODE_TARBALL` to an absolute
+Node.js Linux x64 tarball. If omitted, the wrapper reuses
+`iso/out/phase2/cache/node-v26.12.1-linux-x64.tar.gz` when present, verifies it
+with SHA-256, and records the path and digest in `inputs.txt`. Without a cache,
+the staged upstream builder falls back to its network download.
+
 ## Foundation scope
 
 The Phase 2 image contains the generic QEMU foundation: Hyprland, Quickshell,

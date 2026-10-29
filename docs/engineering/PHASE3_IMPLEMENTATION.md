@@ -33,8 +33,9 @@ privileged broker, arbitrary shell interpolation or AI control path was added.
 | `qmllint -I /usr/lib/qt6/qml ...` | PASS; Quickshell's abstract `PanelWindow` warnings are expected tooling metadata warnings |
 | `python3 scripts/validate-repo.py` | PASS (0 foundation errors) |
 | `python3 scripts/verify-rea.py` | PASS; REA 6.8.0, 229-tool catalog, pinned Quickshell Hyprland inventory evidence `ev_056eb0d504af8726ebd1a3258db52d9278b87aa4e8ac38c581553620fef9a80e` |
-| `bash scripts/build-phase2-foundation.sh` | PASS; new staged ISO SHA-256 `e0e7cc099829cf4cdfd54a4e00369822980d0faeaf4fdc541836256b25baab6d` |
-| `tests/qemu-boot.sh` on that ISO | NOT VERIFIED: two attempts produced firmware/bootloader output but no serial login prompt; retained under `iso/out/evidence/phase3-iso-boot/` and treated as host/boot evidence gap, not shell success |
+| `bash scripts/build-phase2-foundation.sh` | PASS; rebuilt staged ISO SHA-256 `ffe5b9347f3ecb3402bdfa515a0c22f2d1293982383a3c1550e0155be673cb7d`; the wrapper used the recorded Node.js cache SHA-256 `0fd1eb7770598f52a21995edf6ed35fc690400fa437c2386af329519e9143132` |
+| `tests/qemu-boot.sh` on the rebuilt ISO | NOT VERIFIED: one UEFI attempt produced 113 bytes of graphical-terminal control output but no serial login prompt; retained under `iso/out/evidence/phase3-iso-boot-current/`. This is not converted into a shell-pass claim. |
+| Direct kernel/initramfs QEMU boot from the rebuilt ISO | PASS for live guest core: KVM/QEMU 11.1.2 reached systemd Basic, Network, OpenSSH and User Login Management targets and an `archiso login:` prompt; clean HMP `system_powerdown` completed. Serial evidence is retained under `iso/out/evidence/phase3-direct-kernel-current/`. This bypasses UEFI and does not prove a graphical user session. |
 | `QT_QPA_PLATFORM=offscreen qs -p shell/axiom-shell.qml` | EXPECTED HOST LIMITATION: no Wayland `PanelWindow` backend outside a compositor |
 
 The QEMU workflow used the required disposable ISO path with QEMU 11.1.2,
@@ -47,18 +48,24 @@ an unresolved ISO/harness boot gate and is not converted into a shell-pass
 claim.
 
 The build staged `axiom-shell.qml` at
-`/usr/share/omarchy/default/axiom-shell/axiom-shell.qml` and changed the
-Hyprland autostart boundary to `axiom-shell-launch`. The ISO remains a
-disposable validation artifact and is not a release deliverable.
+`/usr/share/omarchy/default/axiom-shell/axiom-shell.qml`, copied the
+target-scoped `WindowActions` adapter and integrated control cluster, and
+changed the Hyprland autostart boundary to `axiom-shell-launch`. The rebuilt
+SquashFS was inspected directly: the ISO contains the launcher, Axiom shell,
+window-controls surface/probes, asset, Axiom session entry and autostart
+reference. The ISO remains a disposable validation artifact and is not a
+release deliverable.
 
 ## Open gates
 
 The next guest run must use a real Hyprland user session and capture startup,
 idle CPU/PSS, keyboard/focus/accessibility, mixed-DPI/multi-monitor behavior,
 browser/Electron window controls, notification bus conflicts and service
-failure/denial states. Dock pin persistence, full launcher search modes,
-Control Center mutation contracts and thumbnail/drag workspace overview
-presentation are not complete. The file-manager specification is recorded in
-its dossier, but no replacement implementation is authorized. REA's native
-decompiler providers are
-not installed on this host, so no binary semantics are inferred from REA.
+failure/denial states. The current live ISO boots an automatic root tty when
+started with `graphical.target`; that is why direct guest-core evidence is
+separate from the still-missing installed-session evidence. Dock pin
+persistence, full launcher search modes, Control Center mutation contracts and
+thumbnail/drag workspace overview presentation are not complete. The
+file-manager specification is recorded in its dossier, but no replacement
+implementation is authorized. REA's native decompiler providers are not
+installed on this host, so no binary semantics are inferred from REA.
