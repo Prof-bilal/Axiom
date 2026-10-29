@@ -17,12 +17,6 @@ filters, and the resulting ISO checksum under `iso/out/phase2/current/`.
 Those outputs are intentionally gitignored; retain them with the release
 evidence bundle rather than committing multi-gigabyte artifacts.
 
-For offline/reproducible rebuilds, set `AXIOM_NODE_TARBALL` to an absolute
-Node.js Linux x64 tarball. If omitted, the wrapper reuses
-`iso/out/phase2/cache/node-v26.12.1-linux-x64.tar.gz` when present, verifies it
-with SHA-256, and records the path and digest in `inputs.txt`. Without a cache,
-the staged upstream builder falls back to its network download.
-
 ## Foundation scope
 
 The Phase 2 image contains the generic QEMU foundation: Hyprland, Quickshell,
@@ -31,10 +25,9 @@ SDDM, NetworkManager, PipeWire/WirePlumber, Snapper, Limine and the pinned
 rolling repositories do not provide them; the exclusion is recorded in
 `compatibility-adjustments.txt`.
 
-The staged profile changes only visible product identity and the shell launch
-boundary. Internal `/usr/share/omarchy` compatibility paths remain until the
-Axiom Shell migration replaces them. This keeps upstream runtime assumptions
-isolated from the Axiom-visible session name, boot labels and launcher.
+The staged profile changes only visible foundation identity. Internal
+`/usr/share/omarchy` compatibility paths and the upstream shell launch remain
+until the separately authorized Phase 3 shell redesign.
 
 ## Validation recipe
 
@@ -43,12 +36,11 @@ isolated from the Axiom-visible session name, boot labels and launcher.
 2. Check `iso.sha256`, `inputs.txt`, `build.log` and
    `iso-identity-paths.txt`.
 3. Boot the exact ISO in disposable QEMU. The live root must report
-   `IMAGE_ID=axiom`, mount `AXIOM_202610`, expose the Axiom shell payload and
-   reach the serial login without unexpected Docker/UFW listeners.
+   `IMAGE_ID=axiom`, mount `AXIOM_202610`, and reach the serial login without
+   unexpected Docker/UFW listeners.
 4. Install the foundation package set into a disposable target disk and check
    the installed root for Axiom `os-release`, the `linux-omarchy` Limine
-   artifacts, enabled NetworkManager/systemd-resolved/SDDM, the Axiom session
-   entry and the `axiom-shell-launch` Hyprland autostart.
+   artifacts, and enabled NetworkManager/systemd-resolved/SDDM.
 
 The current disposable target used a 32 GiB qcow2 because the 16 GiB fixture
 was too small for the rolling firmware transaction. The target is not a release

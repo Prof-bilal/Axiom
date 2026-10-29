@@ -1,6 +1,6 @@
 # Phase 2 evidence: Omarchy-derived foundation
 
-Status: **EXIT MET 2026-10-28 for the foundation build and disposable QEMU target.** This record covers the Phase 2 foundation
+Status: **IN PROGRESS — no exit claim.** This record covers the Phase 2 foundation
 POC only. It is not evidence for Axiom Shell, AI runtime, security enforcement,
 installer release or first-party integration.
 
@@ -35,19 +35,6 @@ tracked in Axiom.
 | Existing Phase 1 ISO screenshot smoke | PASS: QMP `screendump` produced a 1280×800 PNG |
 | VM image checksum | PASS: `130144a193494c0510812ac02dbc1218b79de0ad53598eabc41b685907987d9f` |
 
-## Reference UI
-
-The user supplied preview-only concepts under `branding/assets/screens/`:
-
-- desktop home, launcher, file explorer, terminal, settings, notifications
-- Control Center performance, About Axiom
-- login, lock screen, user switcher, session/power menu
-
-They describe the Phase 3 Axiom Shell direction: graphite/teal surfaces, aurora
-backdrop, top panel, dock, keyboard-first launcher, compact controls and original
-Axiom identity. They are **references, not runtime assets**, and are not wired into
-the foundation image.
-
 ## Phase 2 branding integration
 
 Added under `branding/theme/axiom/`:
@@ -56,10 +43,11 @@ Added under `branding/theme/axiom/`:
 - `backgrounds/aurora.svg` + `aurora.png` (3840×2160 original composition)
 - `preview.png` (1800×1012)
 - `shell.bar.toml`, `shell.lock.toml` — shell surface adjustments
-- `branding/identity/axiom-wordmark.svg` + `.png` (800×188; SDDM/Plymouth logo size)
+- `branding/identity/axiom-wordmark.svg` + `.png` (800×188; retained identity assets)
 
 This is an Omarchy **user theme**, not Axiom Shell. It changes palette, wallpaper and
-branding only; Omarchy's shell widgets remain and must be replaced in Phase 3.
+branding only; Omarchy's shell widgets remain. A replacement shell is not part
+of this reset.
 
 ## Harness
 
@@ -129,42 +117,7 @@ Evidence artifacts (gitignored under `iso/out/evidence/phase2/omarchy-boot-1/`):
   covered. The login/lock styling still needs Axiom work.
 - Secure Boot/TPM, snapshots, updates and the installer remain unverified.
 - Unexpected-listener disposition and the lock-password input path remain open.
-- The pinned Omarchy revision is ISO-only; its legacy automated script references
-  removed `install.sh`/`install/helpers/all.sh`. The disposable installed target
-  was therefore provisioned from the recorded offline package set and the
-  staged Axiom runtime. Installer release work remains out of scope.
-- The installed target was boot-launched through OVMF/Limine. Firmware graphics
-  did not expose a serial console, so the boot proof is a QMP screendump plus
-  the installed disk's package, identity, session and boot artifact inspection.
-- Secure Boot/TPM, hardware variance, update policy and lock-input behavior are
-  later gates, not Phase 2 exit claims.
-
-## Phase 2 exit evidence — 2026-10-28
-
-The historical Phase 2 exit artifact `axiom-2026.10.19-x86_64.iso` was rebuilt
-from the pinned inputs on 2026-10-28; its SHA-256 was
-`e424cc54f9ec754b4bc5bf723a1345d29a3c249704fb47786d37a470a489799f`.
-The current 2026-10-29 rebuild of the same pinned profile (including the
-integrated Axiom Shell payload) is recorded in
-`iso/out/phase2/current/iso.sha256` as
-`ffe5b9347f3ecb3402bdfa515a0c22f2d1293982383a3c1550e0155be673cb7d`.
-
-The live ISO serial boot reached `archiso login`, mounted `AXIOM_202610`, and
-reported `IMAGE_ID=axiom`. The installed disposable target then contained
-`hyprland 0.56.2-4`, `quickshell 0.3.2-1`, `sddm 0.21.0-7`,
-`linux-omarchy 7.2.8-9`, NetworkManager, PipeWire/WirePlumber and Snapper.
-`NetworkManager.service`, `systemd-resolved.service` and `sddm.service` were
-enabled; Limine carried the installed `linux-omarchy` kernel/initramfs; the
-Axiom session entry and `axiom-shell-launch` autostart were present; and the
-target identity was `NAME=Axiom`, `ID=axiom`, `IMAGE_ID=axiom`.
-
-The ISO and target checks remove visible Omarchy labels from the boot menu,
-session metadata and Axiom shell launch path. Internal compatibility paths are
-explicitly retained and are not treated as product identity.
-
-The installed OVMF run reached SDDM; the retained QMP frame
-`iso/out/phase2/current/qemu-uefi/installed-uefi4.png` shows the Axiom session
-selector and the `AXIOM` account on the login surface.
+- Phase 2 exit is not claimed.
 
 ## Next evidence to collect
 
@@ -175,23 +128,3 @@ selector and the `AXIOM` account on the login surface.
 4. SDDM/Plymouth Axiom logo replacement and login/lock styling.
 5. Snapshot/update and failed-unit tests.
 6. Axiom Shell replacement of Omarchy widgets (Phase 3).
-
-## Phase 3 fixture validation — 2026-10-28
-
-The owner authorized Phase 3 development while this foundation exit remained
-open. A new disposable overlay of the same checksum-verified 4.0.6 image booted
-through OVMF/UEFI with KVM, 4 GiB RAM, two vCPUs and standard VGA. Restricted
-QEMU user networking exposed SSH only on host localhost port 2233. The original
-base disk was not changed and no host home/block device was attached.
-
-Actual native Wayland/Hyprland model tests passed in that guest: same-application
-window open/focus/close, headless-output add/remove and unavailable state after
-owned IPC relay disconnect. See the [Phase 3 foundation validation](../../research/desktop-shell/window-foundation/validation.md)
-for package versions, commands, results and limitations. Raw fixture state/logs
-are retained at `iso/out/developer/run-jsxc3cbS/`.
-
-This supplies a UEFI boot observation for the preinstalled upstream fixture;
-it does not supply a clean Axiom build recipe, original Axiom session, branding
-removal, snapshot/update/recovery or hardware evidence. Earlier statements that
-UEFI had not yet been exercised describe the baseline POC at that date. Phase 2
-still has no exit claim.

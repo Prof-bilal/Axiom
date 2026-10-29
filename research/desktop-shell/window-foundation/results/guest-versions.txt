@@ -1,5 +1,0 @@
-qt6-base 6.12.0-3
-qt6-declarative 6.12.0-1
-quickshell 0.3.2.r7.g2b4501a-1
-hyprland 0.56.2-4
-7.2.8-9-omarchy

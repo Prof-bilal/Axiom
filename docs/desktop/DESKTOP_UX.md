@@ -1,10 +1,10 @@
 # Desktop experience
 
-Status: Phase 3 execution specification, authorized 2026-10-28; window foundation in validation, first native window-controls slice in implementation.
+Status: V1 product specification; custom components are not implemented. Last researched: 2026-10-18.
 
 Axiom presents a calm developer workspace: a slim status panel, compact application dock, keyboard-first launcher and a visible agent surface. Original identity comes from layout, typography, precise status and recoverability, not copying another operating system's chrome. Keep standard upstream desktop settings and recovery access available while custom surfaces mature.
 
-V1 custom scope is a coherent Axiom Shell session, launcher/agent entry point and permission/activity views. Phase 3 includes real notification history, Control Center, launcher and workspace overview in the order recorded in [PHASES](../PHASES.md). Complete settings, software center and device center remain LATER. Build on Quickshell/QML and supported Hyprland APIs; Hyprland remains the compositor, window manager and workspace owner. Application UIs use Qt Quick Controls/Kirigami where appropriate; shell surfaces use Quickshell components and Axiom design tokens.
+V1 custom scope is a coherent Axiom Shell session, launcher/agent entry point and permission/activity views. Complete settings, software center, device center and replacement notification center are LATER. Build on Quickshell/QML and supported Hyprland APIs; Hyprland remains the compositor, window manager and workspace owner. Application UIs use Qt Quick Controls/Kirigami where appropriate; shell surfaces use Quickshell components and Axiom design tokens.
 
 ## Core journeys
 
