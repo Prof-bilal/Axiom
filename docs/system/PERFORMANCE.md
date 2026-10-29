@@ -6,7 +6,12 @@ Status: Phase 0 design and measurement plan; no tuning or Flow behavior validate
 
 Optimize foreground response and useful background progress, not the lowest RAM number. High allocation can be healthy; excessive stalls, latency and contention need evidence. Flow orchestrates existing Linux/systemd controls without replacing scheduling or requiring an LLM. The performance doctor uses timestamped deterministic facts; optional AI explanation never sits in the control loop.
 
-Use logical application groups from systemd scopes/services and cgroup v2, preserving the Hyprland/Quickshell session/application/background boundaries. Avoid disconnected PID rankings and double counting. Unknown mappings/controller support are visible limitations. Classify foreground, visible background, background/heavy, critical, pinned, agent, development, media and game workloads using activity/overrides; details and precedence live in [Flow](FLOW.md).
+Use logical application groups from systemd scopes/services and cgroup v2,
+preserving the Axiom session/application/background boundaries. Avoid
+disconnected PID rankings and double counting. Unknown mappings/controller
+support are visible limitations. Classify foreground, visible background,
+background/heavy, critical, pinned, agent, development, media and game workloads
+using activity/overrides; details and precedence live in [Flow](FLOW.md).
 
 | Signal | Flow policy use | Constraint |
 | --- | --- | --- |

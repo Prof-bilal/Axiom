@@ -16,7 +16,7 @@ Use an unchanged pinned baseline with matching package inputs; randomize/interle
 | Battery | Fixed workload and brightness; energy delta, duration and thermal state |
 | Agent idle/execution | Incremental PSS, CPU, wakeups and capability latency, provider time separate |
 
-Initial proposed regression gate: >5% median regression when greater than measurement noise blocks promotion pending investigation. Security or correctness regressions block regardless of speed. Predeclare metric-specific absolute floors after baselines exist; this threshold is not evidence of any achieved target. Compare with the same pinned Axiom (Hyprland/Quickshell) baseline and isolate Axiom additions. VM results report guest/host contention and cannot establish GPU smoothness or battery performance.
+Initial proposed regression gate: >5% median regression when greater than measurement noise blocks promotion pending investigation. Security or correctness regressions block regardless of speed. Predeclare metric-specific absolute floors after baselines exist; this threshold is not evidence of any achieved target. Compare with the same pinned Axiom session/compositor baseline and isolate Axiom additions. VM results report guest/host contention and cannot establish GPU smoothness or battery performance.
 
 Commands on a future installed test target include `systemd-analyze time`, `systemd-analyze critical-chain`, `cat /proc/pressure/memory`, `cat /proc/meminfo`; collect repeatedly with timestamps rather than treating one sample as a benchmark. Runtime traces and process metadata may contain private information; use synthetic workloads and redact artifacts.
 
@@ -38,7 +38,7 @@ Sentinel has no implementation in this checkout. F5 may first use a deterministi
 
 ### OFF/ON comparison and controls
 
-1. **OFF** disables only Flow adjustments; preserve kernel, Hyprland/Quickshell, inherited budgets, zram/swap, oomd policy, power profile and hardware inputs. “OFF” does not disable emergency protection. Record restored runtime properties and rebuild/reboot when persistent configuration changed.
+1. **OFF** disables only Flow adjustments; preserve kernel, Axiom session/compositor, inherited budgets, zram/swap, oomd policy, power profile and hardware inputs. “OFF” does not disable emergency protection. Record restored runtime properties and rebuild/reboot when persistent configuration changed.
 2. **ON** uses the same fixture/input schedule, effective parent budgets and emergency policy. Record exact candidate settings, supported controllers, group map and consented interventions. Observe-only Flow is a useful separate overhead arm.
 3. Randomize/interleave pairs using the existing run protocol. Script bounded typing/switching/launch interactions without unrestricted Wayland input injection: instrument a controlled Qt fixture, use an explicitly permitted test interface or external input hardware. State measurement boundary; dispatch time alone is not input-to-frame latency. Real app/compositor response needs validated presentation/trace or external video/hardware timing. Unsupported measurement remains unavailable, never inferred from CPU usage.
 4. Match offered work and also report **completed useful work**. If pausing/throttling a job reduces processed data, show that tradeoff; no speed claim from silently killing work, reducing tab count, dropping requests or omitting timeouts. Do not compare different kernel reclaim/oomd policies as if Flow alone caused improvement.

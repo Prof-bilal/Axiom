@@ -128,7 +128,7 @@ xfsprogs
 xl2tpd
 zsh
 
-# --- Axiom Phase 2: Plasma 6 Wayland desktop ---
+# --- Historical desktop experiment (not the active Axiom base) ---
 plasma-meta
 konsole
 dolphin

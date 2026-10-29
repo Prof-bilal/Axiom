@@ -1,118 +1,126 @@
-# Architecture
+# Axiom architecture
 
-Status: design baseline, not implemented. The desktop foundation was re-scoped by [ADR-013](DECISIONS.md) to an Omarchy-derived Arch/Hyprland/Quickshell base; older Plasma/KWin statements are historical. V1 is a prototype scope label; LATER is intentionally deferred; RESEARCH means no dependency may assume support. See the [migration report](engineering/OMARCHY_MIGRATION.md), [ADRs](DECISIONS.md), [API contract](ai/SYSTEM_AGENT_API.md) and [security](security/SECURITY.md).
+Status: **architecture reset, Phase 0**. This is the active product boundary;
+implementation is intentionally limited to the bootable-base milestone. The
+superseded Omarchy foundation experiment is preserved under
+[`archive/legacy/omarchy-foundation/`](../archive/legacy/omarchy-foundation/)
+and is not a runtime or build dependency.
 
-## Platform responsibilities
+## Product boundary
 
-Axiom comprises Desktop, AI Runtime, Shield (protect machine/user), Sentinel (test developer-built applications) and Flow (resource orchestration/responsiveness). These are separate subsystems, not one daemon. Shield/Sentinel have no dedicated specifications in this checkout; their labels below express conceptual boundaries only. Flow does not authorize agent actions or run tests. [FLOW.md](system/FLOW.md) owns its detailed design; [PERFORMANCE.md](system/PERFORMANCE.md) retains the single profile/target system.
+Axiom reuses mature Linux infrastructure where it has no product value to
+rebuild. Axiom owns the visible desktop, session behavior, developer workflow,
+platform contracts, security UX and future applications.
 
 ```mermaid
-flowchart LR
-  AX[Axiom] --> D[Desktop — V1]
-  AX --> AI[AI Runtime — V1]
-  AX --> SH[Shield — conceptual security boundary]
-  AX --> SE[Sentinel — future test integration]
-  AX --> FL[Flow — V1 proof / service RESEARCH]
-  SE -. explicit worker budgets .-> FL
-  AI -. explicit agent budgets .-> FL
-  D --> FL
-  SH -. authority constraints .-> FL
-  FL --> PR[PSI / cgroups / systemd]
-  FL -. integration experiments .-> RR[zram / scheduler controls / oomd]
+flowchart TB
+  K[Linux kernel + drivers] --> B[Boot and base userspace]
+  B --> P[systemd / udev / networking / audio / graphics]
+  P --> W[Wayland protocols]
+  W --> C[Axiom compositor and session boundary]
+  C --> S[Axiom Shell]
+  S --> SH[Panel · Dock · Launcher · Workspaces]
+  S --> SU[Windows · Notifications · Control Center]
+  S --> SL[Lock · Login · Session management]
+  S --> A[Axiom core applications]
+  A --> F[Files · Settings · Terminal · Software]
+  C --> PS[Axiom platform services]
+  PS --> IDX[Search and indexing]
+  PS --> APP[App/update management]
+  PS --> PERM[Permissions and secrets]
+  PS --> AUD[Audit and recovery contracts]
+  PS --> AI[Axiom AI boundary]
+  AI --> AG[Agent runtime and context]
+  AI --> TOOLS[Typed tool runtime]
+  PS --> SEC[Axiom security boundary]
+  SEC --> CAP[Capability authorization]
+  SEC --> ISO[Sandbox and filesystem/network scopes]
 ```
 
-## Foundation layers
+## Layer ownership
 
-| Layer | Owner | Status | Notes |
+| Layer | Upstream provides | Axiom owns | Status |
 | --- | --- | --- | --- |
-| Omarchy-derived Arch infrastructure | UPSTREAM | RESEARCH | Pinned `omacom/omarchy` stable release, `omarchy-iso`, `omarchy-pkgs`; Hyprland, Quickshell, SDDM, Plymouth, hardware helpers |
-| Axiom Shell | AXIOM CORE | V1 design | Quickshell/QML panel, dock, launcher, notifications, Control Center and agent surfaces; original identity |
-| AI runtime | AXIOM CORE | V1 design | `assistantd`, provider router, typed capabilities, parent/child agents |
-| Shield | AXIOM CORE (conceptual) | RESEARCH | Authorization + Warden enforcement; Warden is an adapter, never the authority |
-| Sentinel | AXIOM CORE (conceptual) | RESEARCH | Bounded security/QA workers for developer applications |
-| Flow | AXIOM CORE | V1 design | Resource orchestration over systemd/cgroups/PSI; no scheduler replacement |
-| First-party adapters | FIRST-PARTY | RESEARCH | Pinned RepoSpine, ContextGit, ModelCheck, Morphix behind versioned interfaces |
-| Optional developer/AI tooling | OPTIONAL | LATER | Core desktop works with every first-party component absent |
+| Base system | Kernel, drivers, libc, systemd, udev, bootloader, package manager | Supported input set, image policy, recovery contract and provenance | Phase 1/RESEARCH |
+| Device/network/audio/graphics | NetworkManager (or justified alternative), BlueZ, PipeWire/WirePlumber, Mesa, firmware and portals | Integration defaults, diagnostics and user-facing policy | Phase 1/5 |
+| Display platform | Wayland protocols and compatible client libraries | Compositor/session API, window policy, input routing, outputs and workspace semantics | Phase 2 |
+| Axiom Shell | Qt/QML or another reviewed UI toolkit | Panel, dock, launcher, workspace UI, window decorations, notifications, Control Center, lock/login/session UX | Phase 3 |
+| Core apps | Toolkit and standard Linux APIs | Files, Settings, Terminal integration, Software Center and their information architecture | Phase 4 |
+| Platform services | systemd/D-Bus/SQLite primitives | Search/indexing, app/update contracts, permissions, secrets, audit and recovery orchestration | Phase 5 |
+| AI platform | Replaceable local/cloud providers and model libraries | Agent lifecycle, context, typed tools, consent and offline degradation | Phase 7 |
+| Security platform | Kernel namespaces, Landlock/seccomp where proven, Polkit, portals and systemd sandboxing | Capability policy, Warden adapter boundary, scopes, audit and fail-closed behavior | Phase 6 |
 
-## Process architecture
+The UI never runs as root. Privileged operations use narrow versioned D-Bus
+interfaces or existing authorized services. Models and tools propose typed
+requests; they do not convey authority. Core desktop operation does not depend
+on network access or AI availability.
 
-```mermaid
-flowchart TD
-  User[User] --> UI[Axiom Shell — Quickshell/QML agent UI, V1 user session]
-  UI --> A[assistantd — V1 unprivileged]
-  A --> R[Provider router — V1 library]
-  R --> P[One cloud + Ollama — V1 adapters]
-  A --> C[Typed capability request — V1]
-  C --> E[Policy engine — V1]
-  E --> U[User-session executor — V1]
-  E --> B[system-agentd broker — V1 narrow system D-Bus]
-  B --> K[Polkit / Linux enforcement — V1]
-  K --> S[Existing system services — V1]
-  E -. integration decision .-> W[Warden — RESEARCH]
-  B --> T[Snapshot coordinator — V1 job/module]
-  T --> BS[Btrfs / Snapper — V1]
-  E --> AU[Audit events — V1]
-  B --> AU
-  U --> AU
-  A -.-> RT[Deterministic routine engine — LATER module]
-  UI -.-> CD[Cross-device layer — LATER]
-  UI -.-> MM[Structured activity memory — LATER]
-  UI --> FT[Flow telemetry and manual policy — V1]
-  FT --> FM[systemd user manager / app cgroups — V1 proof]
-  FM --> FK[Kernel resource controllers / PSI]
-  FW[Enrolled agents / future Sentinel workers] --> FM
-  FT --> FH[Bounded intervention history]
-  FH --> UI
-  FT -. SHOULD experiment .-> FO[systemd-oomd / freeze compatibility]
+## Display and compositor strategy
+
+Three approaches were evaluated during the reset:
+
+| Option | Benefit | Cost/risk | Decision |
+| --- | --- | --- | --- |
+| A. Build an Axiom compositor on wlroots or a comparable low-level library | Maximum window/input policy ownership and a clean long-term product boundary | Security-critical Wayland code, accessibility, multi-GPU/output behavior, protocol compatibility and a large test matrix | **Long-term candidate; Phase 2 research only** |
+| B. Use a small existing compositor as the permanent foundation | Fastest path to a usable desktop and hardware coverage | Repeats the old lock-in problem; product behavior and release cadence remain upstream-owned | **Rejected as the product architecture** |
+| C. Build the Axiom shell/session contract first with a temporary compositor harness, then assume compositor ownership | Validates real shell workflows early while keeping the product boundary explicit; avoids a fake browser UI | Requires a temporary compatibility adapter and later migration work; compositor ownership must not be postponed indefinitely | **Selected** |
+
+The Phase 1/2 implementation target is a minimal existing Wayland compositor
+only as a disposable bring-up harness (candidate packages are RESEARCH and are
+not named as an Axiom dependency). The harness must expose standard Wayland
+protocols and a narrow adapter for launch, outputs, input and workspaces. It may
+not define Axiom UX, identity, permissions or release claims. Phase 2 chooses
+the Axiom compositor implementation after measuring the harness and validating
+the session contracts; a wlroots-based or Rust compositor library remains an
+engineering choice, not a product dependency decision.
+
+## Session contracts
+
+The compositor/session boundary owns:
+
+- output discovery, scale and transform;
+- seat and input routing with Wayland consent boundaries;
+- application launch and lifecycle observation;
+- window placement, focus and workspace state;
+- lock-screen exclusion and session shutdown/restart;
+- a versioned event/query interface consumed by the shell.
+
+The shell owns presentation and interaction, not privileged execution. A shell
+surface must be reconstructible from real session/service state after restart;
+no hardcoded fake windows, app icons, timers or notification counts satisfy an
+acceptance gate.
+
+## Dependency rules
+
+1. Prefer a standard Linux primitive, library or protocol over a new daemon.
+2. Keep upstream components behind replaceable adapters; no upstream desktop
+   project is the Axiom product contract.
+3. Keep ownership and license provenance recorded before a package is shipped.
+4. Keep user-session UI and AI unprivileged; independently authorize target,
+   operation and caller for every privileged request.
+5. Keep storage local by default: SQLite/FTS5 for user metadata, system audit at
+   the privileged boundary, and no server database without measured need.
+6. Keep the desktop useful offline and without model providers.
+7. Treat QEMU as the reproducible gate until hardware evidence exists.
+
+## Future repository boundaries
+
+Create implementation directories only when their phase authorizes real work:
+
+```text
+system/       base image, boot, device and package contracts
+compositor/   Axiom compositor/session implementation
+shell/        Axiom Shell surfaces and design-token runtime
+apps/         Files, Settings, Terminal and Software
+services/     search, app/update, audit and session services
+security/     capabilities, sandbox adapters and policy
+ai/           agent/context/provider adapters
+packages/     PKGBUILDs and package manifests
+vm/           reproducible QEMU fixtures and evidence
+assets/       reviewed product assets
+docs/         contracts, research and evidence
 ```
 
-## Processes and privilege boundaries
-
-Hyprland provides the compositor, windows, workspaces and Wayland input; Quickshell provides the shell surfaces. Axiom Shell and QML apps run as the logged-in user. Never move UI into a root process to bypass permissions. The overlay is a client, not the policy authority.
-
-`assistantd` is a proposed per-user process for cancellation, request lifecycle and adapter IO. It has no system privilege; justify its idle cost before making it persistent. Router, planner and routine engine are modules, not separate daemons. Models return proposals; a non-model validator produces bounded typed requests. No plan itself conveys authority.
-
-`system-agentd` is a proposed minimal system broker, preferably activatable, for operations existing services cannot safely expose directly to the caller. Split user actions from privileged handlers; do not make every capability transit a root executor. Every privileged handler authenticates D-Bus sender identity, validates target and authorizes independently of the assistant's claims. Reuse existing service APIs/Polkit when they already provide the required scope. Determine per-handler process isolation in a threat review, rather than requiring the entire broker to be root permanently.
-
-The policy engine performs deterministic classification and request-bound authorization. A trusted confirmation UI shows canonical target, side effects and recovery limitations, separate from model-authored text. Warden remains an evaluated enforcement adapter only: identify repository, revision, Linux behavior and gaps before integration. Linux mechanisms supply defense in depth, not a competing orchestration architecture.
-
-Flow telemetry, deterministic resource policy and Resource Guard form one subsystem outside the AI runtime. Begin on demand; `flowd` persistence is conditional on event/recovery needs and measured overhead. Existing systemd user scopes/services own app lifecycle; do not rewrite their cgroup tree. Session resource presets stay within enrolled same-user groups, effective parent ceilings and [permission classifications](security/PERMISSIONS.md). System swap/oomd policy and rootful containers require separately authorized narrow system integration. Soft weights precede hard boundaries; Flow never runs a normal app-kill loop. Freeze is not memory release. Shield constrains authority and Sentinel declares budgets; neither merges into Flow. No production resource thresholds have been chosen.
-
-## IPC and contracts
-
-Session D-Bus connects user UI and session services. System D-Bus carries the narrow privileged API and upstream service calls. Version interface names and explicit error/result schemas; prohibit arbitrary bus destination/method forwarding. Proposed names are design identifiers pending a project-controlled reverse-DNS namespace. Do not ship fabricated `org.axiom` ownership assumptions.
-
-Unix sockets require a demonstrated need (for example bounded local streaming); document filesystem permissions, peer credentials, framing, limits, cancellation and authorization parity. Do not introduce general RPC infrastructure by default. Model streaming stays in the session process and cannot bypass the capability contract.
-
-## State and audit
-
-Use per-user SQLite for application metadata; FTS5 only for user-visible search requirements. System audit persistence belongs to the privileged boundary with append-only behavior from unprivileged callers. An audit database is not tamper-proof against root. Each action has correlation ID, actor/session, normalized request digest, policy/version, authorization scope/expiry, timestamps, affected resources, execution status, verification and recovery reference. Redact secrets/content and bound retention; record pre-execution intent before mutation and report crash reconciliation states. Audit history remains distinct from future opt-in personal activity memory.
-
-Package/config changes use serialized jobs with preflight, authorization, eligible snapshots, execution, verification and explicit commit/recovery. No claim of atomic rollback across Btrfs, ESP, pacman hooks, firmware, cloud or another device. [Recovery](system/BTRFS_ROLLBACK.md) owns layout and consistency requirements. Audit evidence must survive recovery or explicitly expose a recovery gap.
-
-## Future components and directory boundaries
-
-| Path / component | Status | Responsibility |
-| --- | --- | --- |
-| `apps/{control-center,launcher,settings,welcome,agent-ui}` | V1 incrementally | Session UI; shared design tokens |
-| `shell/{panel,dock,notifications,workspace}` | V1 incrementally | Axiom Shell on Quickshell; Hyprland remains compositor |
-| `services/{assistantd,system-agentd}` | V1 | Session orchestration and narrow privileged execution |
-| `services/flowd` | RESEARCH service; V1 on-demand proof | One candidate per-user Rust Flow controller; replaces speculative performanced, no parallel duplicate |
-| `services/{connectd,memoryd}` | LATER, process need unproven | Device / activity modules first |
-| `security/{policies,warden}` | V1 policies / RESEARCH Warden | Reviewed enforcement configuration |
-| `packages`, `iso`, `installer`, `branding`, `tests` | V1 as phases authorize | Packaging, image, installation, identity and evidence |
-| Workspace continuation | LATER | Serializable intent, not process/checkpoint migration |
-
-These paths are intended architecture, not empty directories to create now. Dependency direction is UI → session runtime → typed contract → authorized executor → upstream service. No provider-specific type in the capability or policy layer. Desktop and system operations remain usable without AI or network.
-
-**First-party components.** Axiom integrates five sibling projects behind versioned adapters
-(ADR-012): Warden (execution enforcement, Phase 7), RepoSpine (bounded code context),
-ContextGit (per-child runtime context branches), ModelCheck (model promotion gate) and Morphix
-(reversible desktop customization). None is a required dependency of the core desktop. The
-single orchestrator spawns bounded child agents; the catalogue, contract and user-authored
-children are defined in [agent system](ai/AGENT_SYSTEM.md), and the product-to-subsystem
-mapping in [ecosystem](ai/ECOSYSTEM.md).
-
-## Experiments before commitment
-
-Prove UEFI boot + Btrfs recovery including ESP mismatch; Hyprland/Quickshell shell packaging/upgrade; per-user/system bus authorization and sender races; request-bound interactive approval; cloud/local adapter conformance; audit crash/recovery; sandbox ABI behavior; and clean-run reproducibility. See [research register](RESEARCH.md). Phase 6 mutation stays disabled until Phase 7 security gates pass, even though API implementation starts earlier.
+These names are boundaries, not empty scaffolds. Phase 0 creates contracts and
+tests; Phase 1 creates only the minimal base needed to boot a real graphical
+session.

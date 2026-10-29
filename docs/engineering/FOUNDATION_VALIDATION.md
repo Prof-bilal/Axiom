@@ -35,18 +35,18 @@ Triggered by an explicit request to validate the foundation before building. Env
 
 `readiness-audit.py` requires `runtime_experiments_E01_E20 == "COMPLETE"`, but E01/E02/E03/E09/E12 require an implementation that Phase 0 does not authorize. The gate therefore cannot pass in Phase 0: it gates progress into Phase 1, not Phase 0 exit, which [PHASES](../PHASES.md) defines. No experiment was recorded complete without a run.
 
-## Revalidation 2026-10-27 (Omarchy-derived migration documentation)
+## Revalidation 2026-10-27 (superseded foundation documentation)
 
-This pass was documentation/research only: no Omarchy code was copied, no image was built, and no boot/desktop experiment ran. Changes are on branch `migration/omarchy-foundation`; `main` is untouched.
+This pass was documentation/research only: no upstream desktop code was copied, no image was built, and no boot/desktop experiment ran. Its migration material is archived under `archive/legacy/omarchy-foundation/` and does not authorize the current architecture.
 
 | Check | Result | Limits |
 | --- | --- | --- |
 | `python3 -E scripts/validate-repo.py` | PASS: 0 errors | Static only |
 | `python3 -E scripts/check-iso-profile.py` | PASS: 0 errors | Legacy Phase 1 archiso profile only |
 | `python3 -E scripts/test-concepts.py` | PASS: 12/12, 0 failures/errors | Local primitives; no boot/desktop run |
-| Skill inventory | 19 skills in both trees; `plasma-qml` removed, `quickshell-ui` and `omarchy-upstream` added; validator/installer/test counts updated | Static inventory, not client discovery |
-| Upstream mirrors | Bare mirrors under gitignored `workspace/upstream/`; detached worktrees at Omarchy `v4.0.6` `237f1b40`, `quattro` `39d56653`, `omarchy-iso` `main` `3c36557`, `quattro` `50832fb` | Inspection only; no build |
-| Migration documents | [OMARCHY_MIGRATION](OMARCHY_MIGRATION.md) and [THIRD_PARTY_NOTICES](../../THIRD_PARTY_NOTICES.md) added; ADR-013, phases, ecosystem and affected contracts updated | No runtime evidence |
+| Skill inventory | 19 skills in both trees; desktop workflows are now shell/toolkit-neutral | Static inventory, not client discovery |
+| Upstream mirrors | Historical mirrors under gitignored `workspace/upstream/` | Inspection only; no active build dependency |
+| Migration documents | Historical migration report and ADR-013 moved to `archive/legacy/omarchy-foundation/`; reset impact report added | No runtime evidence |
 | Branding cleanup | Untracked `branding/` deleted; `docs.zip` left untouched | No tracked history removed |
 | Phase/desktop claims | Plasma/KWin statements remaining are historical, SUPERSEDED or product-fact references | Not a semantic proof of every paragraph |
 

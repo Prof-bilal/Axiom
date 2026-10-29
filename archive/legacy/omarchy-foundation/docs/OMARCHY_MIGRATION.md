@@ -1,13 +1,18 @@
-# Omarchy-derived Axiom foundation — migration report
+# Archived: Omarchy-derived Axiom foundation — migration report
+
+> **SUPERSEDED 2026-10-29.** Historical research only. This report is not an
+> active Axiom architecture, build input or runtime dependency. See
+> [decision 001](../../../docs/decisions/001-remove-omarchy.md).
 
 Status: **FOUNDATION MIGRATION EXIT MET 2026-10-28; installer and hardware follow-up remain open.**
 This report records the pinned upstream relationship and the compatibility boundaries. The
 build and QEMU results are maintained in [PHASE2_EVIDENCE](PHASE2_EVIDENCE.md) and the
 repeatable wrapper is [PHASE2_BUILD](PHASE2_BUILD.md).
 
-Related: [ADR-013](../DECISIONS.md), [phases](../PHASES.md), [ecosystem](../ai/ECOSYSTEM.md),
-[ecosystem work plan](ECOSYSTEM_PLAN.md), [Warden integration](../security/WARDEN_INTEGRATION.md),
-[third-party notices](../../THIRD_PARTY_NOTICES.md).
+Related: historical [ADR-013](../../../docs/DECISIONS.md), current [phases](../../../docs/PHASES.md),
+[ecosystem](../../../docs/ai/ECOSYSTEM.md), [ecosystem work plan](../../../docs/engineering/ECOSYSTEM_PLAN.md),
+[Warden integration](../../../docs/security/WARDEN_INTEGRATION.md),
+[third-party notices](../../../THIRD_PARTY_NOTICES.md).
 
 ## 1. Decision
 
@@ -133,7 +138,7 @@ branding → original Axiom identity; Omarchy agent integration → Axiom runtim
 - Bundled asset provenance is incomplete upstream: theme wallpapers have no in-tree
   attribution; the icon font partially documents glyph sources; sounds were not located;
   vendor icons are trademarks. These are **RESEARCH / redistribution blockers** and must be
-  resolved before any Axiom release — see [THIRD_PARTY_NOTICES](../../THIRD_PARTY_NOTICES.md).
+  resolved before any Axiom release — see [THIRD_PARTY_NOTICES](../../../THIRD_PARTY_NOTICES.md).
 - Axiom still has no root `LICENSE`, and first-party ModelCheck still has no license file. The
   release license-inventory gate remains open.
 

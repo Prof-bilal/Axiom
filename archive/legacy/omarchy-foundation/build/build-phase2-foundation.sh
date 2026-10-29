@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+# HISTORICAL ARCHIVE: superseded Omarchy-derived build wrapper. Do not run as
+# the active Axiom builder; retained only for migration evidence.
 # Build the pinned Omarchy-derived Axiom foundation without editing upstream
 # worktrees. The staged tree is disposable; only the build inputs and evidence
 # are retained under iso/out/phase2.

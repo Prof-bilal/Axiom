@@ -1,6 +1,9 @@
 # Developer install checklist
 
-Status: design proposal. **Research gap (2026-10-25; updated 2026-10-27):** the earlier external research pass could not run, and after [ADR-013](../DECISIONS.md) the installer flow changed to an Omarchy-derived candidate. The doctrine below is grounded only in this repository's contracts and first-party READMEs read directly. Installer-specific specifics (the Omarchy-derived ISO/configurator flow, archinstall-style profile formats, distro "developer edition" flows) must be verified before implementation. Last updated: 2026-10-27.
+Status: design proposal. Installer and first-run implementation are Phase 9
+work. The doctrine below is grounded in Axiom's permission, recovery and
+developer-environment contracts; installer-specific profile formats and first-
+boot behavior must be verified before implementation. Last updated: 2026-10-29.
 
 ## Goal
 
@@ -14,14 +17,12 @@ Decision: the installer **records the selection**; a one-time provisioning job a
 **first boot**.
 
 Reasons: a failure mid-provisioning cannot corrupt a half-written install; user-scope tools do
-not need root inside the installer; the live/installed session is the real environment the
-tools must run in; and the Omarchy-derived installer stays upstream and minimal (per
-[installer](INSTALLER.md), which now prefers the proven upstream flow over a Calamares-first
-design).
+not need root inside the installer; and the installed session is the real environment the tools
+must run in. The chosen installer technology remains replaceable and must not define Axiom UX.
 
 ## Flow
 
-1. **Installer (Omarchy-derived flow; Calamares legacy)** — disk layout → user account →
+1. **Installer (reviewed Linux technology; implementation later)** — disk layout → user account →
    **developer checklist** (selection only; no provisioning) → install. The checklist is stored
    as a declarative profile.
 2. **First boot** — the provisioning job reads the profile, shows the *resolved plan*, applies
@@ -104,8 +105,7 @@ never a hidden commitment.
 
 ## Open research (must complete before implementation)
 
-- Omarchy-derived installer: the supported way to persist a post-install payload and a
-  first-boot hook.
+- Installer profile/first-boot format and a safe way to persist a post-install payload.
 - archinstall-style profile formats and whether one is reusable, with attribution.
 - How distro "developer edition" / first-run flows present selection and handle failure.
 - Whether any in-installer (online) provisioning is worth the failure risk versus first boot.

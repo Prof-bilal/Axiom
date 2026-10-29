@@ -3,7 +3,7 @@
 Status: RESEARCH / design intent — nothing is a dependency and no integration is implemented.
 Facts about each product were re-verified from its own repository on **2026-10-27**; where a
 product documents a limit, the limit is repeated here rather than smoothed over. Pinned
-revisions are recorded in the [migration report](../engineering/OMARCHY_MIGRATION.md) and
+revisions are recorded in the [architecture/reset report](../engineering/ARCHITECTURE_RESET_IMPACT.md) and
 [third-party notices](../../THIRD_PARTY_NOTICES.md).
 
 Axiom and five sibling projects share one author. They are **first-party components that
@@ -52,7 +52,7 @@ default, not a settings toggle.
 | **RepoSpine** | Context child engine | A defined **multi-root/system** story (today it is repo-scoped); a stable library or MCP path a Rust parent can call; freshness surfaced in UI; decide the Node ≥22.13 runtime floor | Context quality/latency on a real workspace; runtime-packaging proof |
 | **ContextGit** | Runtime context VCS | Confirm a headless runtime interface (CLI/API exist); a non-repo mode for session/agent context (currently an unmerged branch); per-child context branch isolation and merge | Per-child isolation + no-collision test; branch/merge rollback proof |
 | **ModelCheck** | Model promotion gate | Become the gate a candidate model/provider must pass against the current default before selection; wire into router adapter acceptance; support local/Ollama; attach the report to the change | Add the **MIT** licence file; evaluation reproducibility; delta vs baseline on the user's workload |
-| **Morphix** | Desktop customization | Its Plasma-only adapter does not fit Hyprland/Quickshell. Either gain a Hyprland/Quickshell adapter or be redesigned shell-agnostic — a separate future decision; its transaction/rollback engine does not exist | Transaction + rollback proof; a recorded adapter decision; permission mapping |
+| **Morphix** | Desktop customization | Its current desktop-specific adapter does not fit the Axiom-owned session boundary. Either become shell-agnostic or remain optional/deferred; its transaction/rollback engine does not exist | Transaction + rollback proof; a recorded adapter decision; permission mapping |
 
 ### Warden — the security answer
 
@@ -102,11 +102,11 @@ and has no documented Ollama support.
 ### Morphix — reversible customization
 
 Declarative packs, resolved change plans, snapshots, transactional apply and rollback;
-**user-scope only, no root**; **KDE Plasma 6 only**. Phases 0–4 exist (detection, packs,
+**user-scope only, no root**; **desktop adapter unproven**. Phases 0–4 exist (detection, packs,
 planning, snapshots); the transaction/rollback engine and desktop adapter writes do not exist
-yet, and there are no releases. After [ADR-013](../DECISIONS.md), the Plasma-only adapter no
-longer fits: retaining Morphix requires a Hyprland/Quickshell adapter or a shell-agnostic
-redesign. That is a **future decision**, not this migration's implementation.
+yet, and there are no releases. The current adapter does not define the Axiom
+session contract; retaining Morphix requires a shell-agnostic redesign. That is
+a **future decision**, not this reset's implementation.
 
 ## Integration rules
 
@@ -141,6 +141,6 @@ sibling repositories or merge them into `services/everything`.
 - ContextGit headless runtime confirmation and a non-repo session mode.
 - Warden as a typed library/service vs a CLI wrapper for Axiom's executor.
 - ModelCheck local-first vs CI vs both; Ollama support.
-- Morphix disposition after the Hyprland/Quickshell move.
+- Morphix disposition after the Axiom session contract exists.
 - Which components ship default vs optional (proposal: foundation, shell, runtime and Shield
   default; RepoSpine, ContextGit, ModelCheck and Morphix optional).

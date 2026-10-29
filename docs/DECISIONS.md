@@ -257,7 +257,7 @@ example Warden as a required execution layer) is proposed and needs its own deci
 
 ## ADR-013: Omarchy-derived Arch/Hyprland/Quickshell foundation
 
-**Status:** Research direction, accepted 2026-10-27 for Phase 2 investigation. It supersedes ADR-003's Plasma/KWin desktop foundation. It does not authorize importing Omarchy code, changing the boot chain, or shipping anything; those remain gated by [PHASES](PHASES.md) and experiments E26–E33.
+**Status:** **SUPERSEDED 2026-10-29** by [architecture reset decision 001](decisions/001-remove-omarchy.md). Retained as historical research; it no longer authorizes an Omarchy-derived product or runtime.
 
 **Context:** Axiom needs a cohesive Arch-based desktop it can shape without maintaining a compositor or a shell toolkit from scratch. The earlier direction built on Plasma 6/KWin. Omarchy now provides a mature, actively maintained Arch/Hyprland/Quickshell foundation with installer, update, hardware, theme and recovery tooling. Axiom's existing documentation was written around Plasma and contains stale assumptions; the migration must be update-first, not a rewrite.
 
@@ -269,7 +269,7 @@ example Warden as a required execution layer) is proposed and needs its own deci
 
 **Decision:** C, as a researched direction. Omarchy is upstream infrastructure, never the product. Axiom consumes pinned upstream revisions and replaces identity, shell UX, security behavior and agent integration.
 
-**Evidence:** [migration report](engineering/OMARCHY_MIGRATION.md). Stable upstream pin `omacom/omarchy` `v4.0.6` (`237f1b40`) with `quattro` (`39d56653`) tracked read-only; `omarchy-iso` `main` `3c36557f`; Quickshell `v0.3.2` (`4f508be5`, LGPL-3.0-only); Hyprland `v0.56.2` (BSD-3-Clause). Quickshell covers panels, docks, lock, notifications, tray, audio, network, Bluetooth, UPower and polkit, but lacks a launcher UI, clipboard manager, OSD UI, a logind module and reduced-motion handling — those are Axiom Shell work. Omarchy documents that Secure Boot and TPM must be disabled to install; Axiom records this as an upstream limitation and a divergence target, not a supported outcome.
+**Evidence:** historical [migration report](../archive/legacy/omarchy-foundation/docs/OMARCHY_MIGRATION.md). Stable upstream pin `omacom/omarchy` `v4.0.6` (`237f1b40`) with `quattro` (`39d56653`) tracked read-only; `omarchy-iso` `main` `3c36557f`; Quickshell `v0.3.2` (`4f508be5`, LGPL-3.0-only); Hyprland `v0.56.2` (BSD-3-Clause). This evidence is retained for the superseded decision only.
 
 **Benefits:** reuse of proven Arch/Hyprland/Quickshell infrastructure; smaller foundation surface to own; an original Axiom Shell rather than Plasma extensions; clear separation between upstream infrastructure and product; upstream update/hardware work can be reviewed and ported deliberately.
 
@@ -285,7 +285,23 @@ example Warden as a required execution layer) is proposed and needs its own deci
 
 **Rollback strategy:** all migration work lives on `migration/omarchy-foundation`; upstream references are isolated under gitignored `workspace/upstream/`; ADR-003 is preserved and can be reinstated by a new superseding ADR rather than by rewriting history.
 
-**Revisit when:** the Foundation POC fails to produce a reproducible bootable Axiom-branded Hyprland/Quickshell image, the Quickshell maintenance/tooling cost exceeds its benefit, or Hyprland/Quickshell cannot meet Axiom's accessibility, security or recovery requirements.
+**Revisit when:** historical only. Any reuse of an individual component requires a new, component-scoped decision under the reset architecture.
+
+## ADR-014: Axiom-owned desktop architecture after the reset
+
+**Status:** Accepted 2026-10-29; Phase 0 implementation gate.
+
+The product must be an original desktop built on standard Linux infrastructure.
+The visible compositor/session behavior, shell, core applications and product
+services belong to Axiom. A temporary existing Wayland compositor may be used
+as a disposable bring-up harness, but no upstream desktop project, theme or
+dotfiles tree is a product dependency. The options and migration analysis are
+maintained in [decision 001](decisions/001-remove-omarchy.md).
+
+This decision keeps Linux, systemd, udev, networking, PipeWire, Mesa, Wayland,
+libc, package management, drivers and boot technologies upstream. It changes the
+roadmap to architecture reset → bootable base → graphical session → shell MVP →
+apps → system experience → security → AI → hardware → distribution.
 
 ## Change proposal requirements
 

@@ -24,19 +24,23 @@ Read: [engineering/ISO_BUILD.md](engineering/ISO_BUILD.md), [system/PACKAGING.md
 
 ## desktop
 
-Hyprland, Quickshell/QML, Axiom Shell surfaces (panel, dock, launcher, Control Center, notifications), compositor integration and coherent accessible UX.
+Axiom compositor/session boundary, shell surfaces (panel, dock, launcher,
+Control Center, notifications), Wayland integration and coherent accessible UX.
 
-Expected output: Interaction acceptance evidence, token reuse, keyboard/accessibility, reduced-motion, multi-DPI and shell performance checks in the Hyprland/Quickshell session.
+Expected output: Interaction acceptance evidence, token reuse, keyboard/
+accessibility, reduced-motion, multi-DPI and shell performance checks in a real
+QEMU session. Temporary compositor adapters must remain replaceable.
 
 Read: [desktop/DESKTOP_UX.md](desktop/DESKTOP_UX.md), [desktop/DESIGN_SYSTEM.md](desktop/DESIGN_SYSTEM.md), [desktop/WAYLAND.md](desktop/WAYLAND.md).
 
-## upstream-migration
+## upstream-review
 
-Upstream Omarchy revision review, change classification, Axiom compatibility/license/security checks, and deliberate port/cherry-pick decisions.
+Review of a pinned Linux infrastructure component, change classification, Axiom
+compatibility/license/security checks and an explicit adopt/adapt/reject decision.
 
 Expected output: Pinned revision comparison, classified changes, compatibility and regression evidence, and an explicit port/reject decision.
 
-Read: [migration report](engineering/OMARCHY_MIGRATION.md), [third-party notices](../THIRD_PARTY_NOTICES.md), [phases](PHASES.md).
+Read: [architecture](ARCHITECTURE.md), [reset impact report](engineering/ARCHITECTURE_RESET_IMPACT.md), [third-party notices](../THIRD_PARTY_NOTICES.md), [phases](PHASES.md).
 
 ## systems-rust
 

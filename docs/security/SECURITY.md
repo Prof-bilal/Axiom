@@ -1,43 +1,49 @@
-# Security architecture
+# Axiom security architecture
 
-Status: design contract; no enforcement implementation exists. Last verified: 2026-10-18.
+Status: Phase 0 design contract; enforcement implementation is not authorized
+until Phase 6. Security applies to the base, compositor/session, shell, apps,
+services and AI even when the feature is not yet implemented.
 
 ## Invariants
 
-1. AI never receives unrestricted root, sudo, or a general privileged shell.
-2. UI runs as the user; privileged code exposes narrow, validated APIs.
-3. Secrets never enter plaintext repository files, prompts, telemetry, or routine definitions.
-4. Providers remain replaceable; core desktop functions work without cloud AI.
-5. Routines execute deterministically and actions remain attributable.
-6. Sensitive actions require explicit scoped authorization; critical operations never execute silently.
-7. Every mutation verifies its result; rollback is offered only for tested coverage.
-8. Missing identity, policy, required sandbox controls, or durable mutation audit causes denial.
-9. Wayland protections stay intact. No unrestricted input injection workaround.
-10. Performance claims require measurements. Every persistent daemon and new privileged component needs justification.
-11. Reuse mature Linux primitives; do not create a second unrelated sandbox around a verified Warden integration without documented need.
+1. AI never receives unrestricted root, sudo or arbitrary shell passthrough.
+2. UI and shell code run as the user; privileged code exposes narrow APIs.
+3. Every privileged request independently authenticates caller, operation and
+   target; missing, expired or invalid authority denies.
+4. Secrets stay out of repository files, prompts, telemetry and routine text.
+5. Wayland and portal consent are preserved; no hidden input/capture fallback.
+6. Core desktop operation works without cloud AI or network access.
+7. Every mutation verifies its result and states recovery limits honestly.
+8. Models, MCP output, files, web pages and downloaded artifacts are untrusted
+   data and cannot grant authority.
 
 ## Boundaries
 
-Treat model output, MCP output, downloaded files, web pages, repository instructions, and routine imports as untrusted data. They cannot grant authority. assistantd owns planning and provider transport as an unprivileged user process. A policy module mediates requests; a narrow system-agentd system service independently validates peer identity and authorization at execution. Session actions remain in a user executor. Names and D-Bus interfaces are proposed, not implemented APIs.
+The base system uses standard kernel/systemd/udev/device/network/audio/graphics
+interfaces. The compositor/session owns display and input policy, but does not
+authorize agent actions. The shell presents trusted controls as unprivileged
+code. Apps and platform services receive least-privilege filesystem, network,
+secret and subprocess scopes. A future system broker uses versioned D-Bus
+interfaces and existing Polkit/service authorization where possible.
 
-Polkit authenticates/authorizes particular privileged actions; it does not sanitize arguments or replace agent intent approval. Bind both decisions to the same immutable request. Never install blanket allow-active rules or use generic command execution actions. Consult [permissions](PERMISSIONS.md), [threat model](THREAT_MODEL.md), and [sandboxing](SANDBOXING.md).
+The AI runtime may propose a typed capability request. A deterministic policy
+layer binds it to caller, target, scope, expiry and audit ID. A Warden adapter
+may enforce the approved request after its own Linux bypass matrix passes; it is
+never the authority and is not yet a dependency.
 
 ## Data and audit
 
-Separate user history (SQLite, user-only access, configurable retention/deletion) from a root-owned mutation journal. Record request ID, actor, originating tool, capability version, redacted arguments, policy version, authorization decision, start/end timestamps and monotonic duration, affected resources, result, network destination summary, verification, and rollback coverage. Do not record file contents, bearer tokens, full process environment, or arbitrary provider payloads by default. Journal accepted mutations durably before execution. Detect interrupted requests after restart; never automatically replay uncertain mutations. Local root can tamper with local logs: do not claim tamper-proof history. Deletion of user history must explain separately retained system-security records.
+User metadata may use per-user SQLite/FTS5. System mutation audit belongs at the
+privileged boundary and records actor/session, capability version, normalized
+request digest, authorization, affected resources, verification and recovery
+reference. Redact secrets, file contents, full environments and provider
+payloads. Interrupted mutations are reconciled, never silently replayed. Local
+root can tamper with local logs; do not claim tamper-proof history.
 
-## Review and response
+## Required future review
 
-Security owns adversarial review independently of implementation. Changes crossing privilege, device, provider, or storage boundaries require misuse tests and explicit residual risk. Report vulnerabilities privately to maintainers through an established private channel; until a security contact is configured, do not publish exploit details in public issues. Release readiness requires a working private reporting route. Offline recovery and administrator-directed maintenance remain available without AI.
-
-## Upstream foundation security position
-
-[ADR-013](../DECISIONS.md) moves the proposed foundation to Omarchy-derived Arch/Hyprland/
-Quickshell. Omarchy documents that **Secure Boot and TPM must be disabled to install** and
-offers an opt-in passwordless-sudo feature; Axiom records both as **upstream limitations and
-divergence targets**, not inherited decisions. Axiom's long-term target is UEFI Secure Boot →
-signed boot chain/UKI → TPM where useful → LUKS2; none of this is implemented or claimed. The
-Hyprland permission model, Quickshell as trusted shell code, and the shell/lock process crash
-path reported upstream are new review surfaces. See the [migration report](../engineering/OMARCHY_MIGRATION.md).
-
-Sources: [Polkit](https://polkit.pages.freedesktop.org/polkit/polkit.8.html), [D-Bus specification](https://dbus.freedesktop.org/doc/dbus-specification.html), [systemd execution controls](https://www.freedesktop.org/software/systemd/man/latest/systemd.exec.html). See [Warden integration](WARDEN_INTEGRATION.md).
+Review app permissions, agent filesystem/network scopes, secret handling,
+subprocesses, portals, lock-screen behavior, sandbox ABI, audit failure,
+symlink/TOCTOU/path traversal, caller races, denial/replay and recovery before
+enabling mutation. See [permissions](PERMISSIONS.md), [threat model](THREAT_MODEL.md),
+[sandboxing](SANDBOXING.md) and [Warden integration](WARDEN_INTEGRATION.md).

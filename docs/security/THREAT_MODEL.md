@@ -6,7 +6,7 @@ Status: initial design; refresh per feature. Last verified: 2026-10-18.
 
 Assets: user files and secrets; account/device identity; provider keys; boot integrity; package trust; authorizations; trustworthy audit and recovery data. Actors: legitimate user, remote provider, local model, untrusted MCP server, compromised application, malicious paired device, hostile downloaded content, malicious package/build dependency, and local attacker. Root compromise and hostile firmware exceed agent isolation guarantees; document this limitation rather than claiming containment.
 
-Boundaries: UI→runtime; provider/MCP→planner; planner→policy; session bus→system bus; executor→filesystem/package manager; device→desktop; installed system→recovery environment. Each boundary needs authenticated identity, bounded schema, resource scope, cancellation and audit handling. The shell boundary changes with [ADR-013](../DECISIONS.md): Quickshell is trusted shell code with compositor-granted surfaces, and Hyprland mediates capture/input/plugin permissions. A crash or compromise of the shell or lock process is a session-integrity event, not an authorization shortcut.
+Boundaries: UI→runtime; provider/MCP→planner; planner→policy; session bus→system bus; executor→filesystem/package manager; device→desktop; installed system→recovery environment. Each boundary needs authenticated identity, bounded schema, resource scope, cancellation and audit handling. The Axiom shell is trusted user-session code with compositor-granted surfaces; the selected compositor adapter mediates capture/input permissions. A crash or compromise of the shell or lock process is a session-integrity event, not an authorization shortcut.
 
 | Misuse | Required mitigation | Adversarial evidence |
 |---|---|---|

@@ -24,7 +24,7 @@ flowchart TD
   Agents[AI agents / local model] --> Groups
   Sentinel[Sentinel workers — future integration] --> Groups
   Groups --> T[Flow telemetry — V1]
-  Desktop[Hyprland / Quickshell / media hints] --> T
+  Desktop[Axiom session / shell / media hints] --> T
   Kernel[Kernel PSI / accounting / sensors] --> T
   T --> P[Deterministic policy / Resource Guard — V1]
   CC[Control Center — V1] --> P
@@ -45,7 +45,11 @@ A session service may only adjust approved same-user workloads through the user 
 
 ## Logical workload identity and grouping
 
-Use existing launch integration first. systemd's desktop convention separates essential session processes, applications and background jobs; Hyprland launches applications through its exec system and Quickshell observes windows/workspaces through Hyprland IPC. Inspect the pinned Hyprland/Quickshell versions, units and launch paths before adding wrappers. [Desktop integration](https://systemd.io/DESKTOP_ENVIRONMENTS/), [Hyprland IPC](https://wiki.hypr.land/IPC/), [Quickshell Hyprland module](https://quickshell.org/docs/).
+Use existing launch integration first. systemd's desktop convention separates
+essential session processes, applications and background jobs; the Axiom session
+contract supplies launch and focus/workspace events. Inspect the selected
+compositor adapter, units and launch paths before adding wrappers. [Desktop
+integration](https://systemd.io/DESKTOP_ENVIRONMENTS/).
 
 Illustrative user-manager layout, **not literal unit names or guaranteed session output**:
 
@@ -100,7 +104,15 @@ Classes are dynamic hints; user pins and safety exclusions take precedence over 
 | MEDIA | Playback/recording/streaming inhibits sleep; do not alter existing real-time media policy |
 | GAME | Profile hint, not executable-name privilege; exclude essential supporting services from throttling |
 
-Focus from supported Hyprland/Quickshell integration is local metadata, not permission for global input capture. Missing focus/activity evidence disables adaptive targeting. Visibility does not prove inactivity; focus can span multiple windows/instances and dependencies. If an editor is focused while its compiler is active, protect the interaction and allow compiler progress. Downloads/uploads, audio, capture, explicit builds and active services veto sleeping unless a specific user rule knowingly overrides that behavior. Uncertainty vetoes sleep. User hints alone cannot exempt an untrusted agent from enforced parent budgets.
+Focus from the Axiom session contract is local metadata, not permission for
+global input capture. Missing focus/activity evidence disables adaptive
+targeting. Visibility does not prove inactivity; focus can span multiple
+windows/instances and dependencies. If an editor is focused while its compiler
+is active, protect the interaction and allow compiler progress. Downloads,
+uploads, audio, capture, explicit builds and active services veto sleeping unless
+a specific user rule knowingly overrides that behavior. Uncertainty vetoes
+sleep. User hints alone cannot exempt an untrusted agent from enforced parent
+budgets.
 
 For V1 manual Efficient mode, lower a selected enrolled background group's weights within reviewed bounds and show the result; restoring Normal returns its previous settings. A foreground policy proof may apply a temporary bounded preference within an explicitly enrolled session preset. No SCHED_FIFO/RR, affinity pinning, global scheduler/sysctl changes, unbounded memory protection, priority-zeroing siblings or silent hard limit. Foreground benefits must coexist with minimum background progress and dependency/priority-inversion tests.
 
@@ -185,7 +197,14 @@ Container idle management is LATER. Per-container low CPU, no observed connectio
 
 The existing [profile matrix](PERFORMANCE.md) is authoritative; Flow supplies workload policy within it, not another profile selector or competing CPU governor/power daemon. Eco/Balanced/Performance map only to advertised power-profiles-daemon support; Development/Gaming remain later workload presets. [Power Profiles upstream](https://upower.pages.freedesktop.org/power-profiles-daemon/).
 
-Startup orchestration first measures login bursts. Evaluate on-demand activation and optional startup priorities; delay only user-approved nonessential jobs with dependency/readiness evidence. `After=` orders activation but is not a global concurrency or readiness guarantee. Do not serialize all startup or delay input, accessibility, secret store, networking/media essentials or security UI. No fixed arbitrary sleep inserted into every app launch. Use existing systemd/Hyprland launch machinery, measure desktop-ready and optional-work completion separately.
+Startup orchestration first measures login bursts. Evaluate on-demand activation
+and optional startup priorities; delay only user-approved nonessential jobs with
+dependency/readiness evidence. `After=` orders activation but is not a global
+concurrency or readiness guarantee. Do not serialize all startup or delay input,
+accessibility, secret store, networking/media essentials or security UI. No fixed
+arbitrary sleep inserted into every app launch. Use existing systemd and Axiom
+session launch machinery, measure desktop-ready and optional-work completion
+separately.
 
 Integrate the Axiom Control Center Performance page; no new app. Show pressure state and freshness, memory/swap/compression with correct units, active/sleeping groups, heavy apps, effective rules, inherited budgets, safety exclusions and intervention history. Unsupported sensors/actions are explicit. [UX contract](../desktop/DESKTOP_UX.md) owns journeys/accessibility.
 

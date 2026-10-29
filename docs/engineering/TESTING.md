@@ -1,27 +1,25 @@
 # Testing strategy
 
-Status: foundation specification; distro tests do not exist yet. Last researched: 2026-10-18.
+Status: Phase 0 reset; runtime implementation is not yet present. Tests are
+organized around real contracts and failure behavior, not screenshots.
 
-| Layer | Required evidence | Gate owner |
-|---|---|---|
-| Unit | Validators, policy decisions, provider normalization, transaction state | Implementer |
-| Component | Timeouts, cancellation, malformed input, persistence migration | Implementer + QA |
-| D-Bus contract | Introspection/versioned signatures, errors, sender identity, signals | Systems + QA |
-| Security | Prompt injection, forged consent, unauthorized peer, secret leakage | Independent security |
-| Integration | UI → policy → typed executor → audit; offline/provider failure | QA |
-| QEMU / ISO | UEFI boot, Hyprland/Quickshell session, shell smoke, network/audio smoke, logs | Linux-base + QA |
-| Installer | Blank disposable disk, layout, users, reboot, failure recovery | QA |
-| Migration / upstream | Pinned Omarchy boot, branding removal, Axiom Shell start, upstream-divergence upgrade | Migration + QA |
-| Update / rollback | Version N→N+1, interrupted transaction, ESP consistency | Release + security |
-| Performance | Controlled baseline and variance; see benchmarks | Performance |
-| Hardware | GPU, Wi-Fi, Bluetooth, sound, suspend, battery | QA |
+| Layer | Required evidence | Gate |
+| --- | --- | --- |
+| Unit | State machines, parsers, service rules, token logic | Implementer |
+| Component | Cancellation, malformed input, persistence migration, restart | Implementer + QA |
+| Session/integration | Login, app launch, focus/workspace, notifications, settings, logout/shutdown | QA |
+| Security | Forged consent, unauthorized peer, secret leakage, path traversal, portal/Wayland denial | Independent security |
+| QEMU | UEFI boot, real Wayland session, compositor/shell restart, input/output, app smoke, clean shutdown | Linux-base + QA |
+| Hardware later | GPU, Wi-Fi, Bluetooth, audio, suspend, battery, multi-monitor, HiDPI, USB | QA |
+| Update/recovery later | Signed update, interruption, rollback limits, boot assets and audit survival | Release + security |
+| Performance | Idle CPU/RAM, frame/interaction latency, startup and evidence uncertainty | Performance |
 
-Every test identifies phase, fixture/build hash, environment, expected result, timeout and retained logs. Tests must be isolated, deterministic where feasible and leave no host changes. Security cases cover denial, downgrade, stale authorization, compromised MCP output, symlink/path traversal/TOCTOU, D-Bus/Polkit abuse, exfiltration and audit failure. Passing compilation is insufficient.
+Every test records phase, source/image hash, environment, expected result,
+timeout, retained logs and cleanup. QEMU fixtures do not mount a host home,
+share credentials/clipboard, pass through arbitrary USB or bridge into a
+production LAN. Default egress is disabled except for explicit fixtures.
 
-Run pure documentation/schema/unit checks on unprivileged GitHub-hosted runners. Arch package/ISO jobs use pinned clean builders with no secrets on untrusted pull requests. KVM availability on hosted runners must be checked; use isolated ephemeral self-hosted runners or explicit TCG jobs when needed. Never run untrusted PR code on a persistent privileged release runner. Signing runs separately after trusted promotion.
-
-VM fixtures have no host home mount, shared clipboard, real credentials, arbitrary USB passthrough or bridged production LAN. Default test egress is disabled except explicit fixture/update cases. Use synthetic provider responses first; live provider tests are opt-in, redacted and budget-bounded.
-
-Failure artifacts include serial console, journal, service logs, package manifest, boot entries and transaction/audit state. Redact before upload; retain according to declared CI policy. A failing required gate blocks phase advancement; flaky tests need a tracked owner and cannot silently be ignored.
-
-Source: [QEMU system emulation](https://www.qemu.org/docs/master/system/introduction.html). See [ISO workflow](ISO_BUILD.md), [release gates](RELEASE.md), [phases](../PHASES.md).
+Graphical milestones are incomplete unless they run in the real guest. A
+browser prototype may support design discussion but cannot satisfy a session or
+shell gate. A failure gate blocks phase advancement; flaky behavior is recorded
+with an owner rather than ignored.

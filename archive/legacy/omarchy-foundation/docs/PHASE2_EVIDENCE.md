@@ -1,4 +1,7 @@
-# Phase 2 evidence: Omarchy-derived foundation
+# Archived: Phase 2 evidence: Omarchy-derived foundation
+
+> **HISTORICAL 2026-10-29.** This evidence belongs to the superseded
+> Omarchy-derived experiment and does not establish an Axiom desktop milestone.
 
 Status: **IN PROGRESS — no exit claim.** This record covers the Phase 2 foundation
 POC only. It is not evidence for Axiom Shell, AI runtime, security enforcement,

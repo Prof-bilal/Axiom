@@ -1,20 +1,14 @@
-# Axiom Omarchy theme
+# Axiom identity palette
 
-Status: Phase 2 foundation theme. This is a **user theme** for the pinned
-Omarchy-derived foundation, not an Axiom Shell implementation. It changes
-palette, wallpaper and branding while the Phase 3 Axiom Shell is still pending.
+Status: reviewed Phase 0 product asset; not an Omarchy or compositor theme.
 
-Install on a test guest:
+This directory preserves the original Axiom aurora wallpaper, palette and
+identity previews as inputs to the future Axiom design-token runtime. The files
+are not installed through `~/.config/omarchy`, Hyprland or another upstream
+desktop's theme command. The shell, window decorations and applications will
+consume semantic Axiom tokens after their implementation phases authorize it.
 
-```sh
-mkdir -p ~/.config/omarchy/themes
-cp -a axiom ~/.config/omarchy/themes/axiom
-omarchy theme set axiom
-```
-
-The theme contains only colours, an original aurora wallpaper and previews. It
-does not ship Lua, terminal configs or VSCode extensions. Identity assets live
-under `../../identity/`.
-
-Phase 2 remains a foundation POC: Omarchy's shell widgets and layout are still
-present and must be replaced by Axiom Shell in Phase 3.
+The palette is provisional: validate contrast, light/dark behavior, scaling,
+color-blindness and high-contrast modes before shipping. Terminal/bar/lock
+adapters from the old experiment are archived under
+`archive/legacy/omarchy-theme/` and are intentionally inactive.

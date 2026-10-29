@@ -6,16 +6,16 @@ import runpy
 import sys
 
 ROOT = Path(__file__).resolve().parents[1]
-REQUIRED = '''VISION PRD MVP ARCHITECTURE TECH_STACK ROADMAP PHASES SUBAGENTS AGENT_WORKFLOW DECISIONS RESEARCH'''.split()
+REQUIRED = '''VISION PRD MVP ARCHITECTURE TECH_STACK ROADMAP PHASES SUBAGENTS AGENT_WORKFLOW DECISIONS RESEARCH DESIGN DEVELOPMENT BUILD TESTING SECURITY PRODUCT'''.split()
 GROUPS = {
     'desktop': 'DESKTOP_UX DESIGN_SYSTEM WAYLAND',
     'ai': 'AI_ARCHITECTURE AGENT_SYSTEM SYSTEM_AGENT_API MODEL_ROUTER ECOSYSTEM ROUTINES MCP',
     'security': 'SECURITY THREAT_MODEL PERMISSIONS SANDBOXING WARDEN_INTEGRATION',
     'system': 'PERFORMANCE FLOW BTRFS_ROLLBACK SYSTEMD PACKAGING',
     'connect': 'CONNECT ANDROID CROSS_DEVICE',
-    'engineering': 'TESTING BENCHMARKS ISO_BUILD INSTALLER RELEASE ECOSYSTEM_PLAN OMARCHY_MIGRATION FOUNDATION_VALIDATION PHASE1_EVIDENCE DEV_ENVIRONMENTS INSTALL_CHECKLIST',
+    'engineering': 'TESTING BENCHMARKS ISO_BUILD INSTALLER RELEASE ECOSYSTEM_PLAN ARCHITECTURE_RESET_IMPACT FOUNDATION_VALIDATION PHASE1_EVIDENCE DEV_ENVIRONMENTS INSTALL_CHECKLIST',
 }
-SKILLS = set('archiso-build arch-pkgbuild quickshell-ui wayland-integration rust-daemon dbus-service systemd-service agent-system-api threat-model security-review warden-policy btrfs-transaction performance-benchmark qemu-integration-test mcp-tool provider-adapter android-connect release-check omarchy-upstream'.split())
+SKILLS = set('archiso-build arch-pkgbuild shell-ui wayland-integration rust-daemon dbus-service systemd-service agent-system-api threat-model security-review warden-policy btrfs-transaction performance-benchmark qemu-integration-test mcp-tool provider-adapter android-connect release-check upstream-review'.split())
 
 def validate(root):
     errors = []

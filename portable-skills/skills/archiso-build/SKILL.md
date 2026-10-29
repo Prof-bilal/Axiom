@@ -23,7 +23,7 @@ Arch builder version, profile revision, package source date, output/work directo
 
 ## Validation
 
-Validate image checksum, UEFI boot and repeat build provenance. This profile is legacy Phase 1 evidence; migration profiles verify the Hyprland/Quickshell session instead. Do not claim bit reproducibility without comparing artifacts.
+Validate image checksum, UEFI boot and repeat build provenance. This profile is legacy Phase 1 evidence; the future Axiom base must verify a real Wayland session through its selected compositor adapter. Do not claim bit reproducibility without comparing artifacts.
 
 ## Failure handling
 

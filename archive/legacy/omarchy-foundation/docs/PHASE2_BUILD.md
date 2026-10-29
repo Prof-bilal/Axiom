@@ -1,6 +1,9 @@
-# Phase 2 foundation build
+# Archived: Phase 2 foundation build
 
-The Axiom-owned build entry point is [`scripts/build-phase2-foundation.sh`](../../scripts/build-phase2-foundation.sh).
+> **SUPERSEDED 2026-10-29.** This wrapper described the Omarchy-derived
+> foundation and must not be used for the current Axiom base.
+
+The historical build entry point was [`build-phase2-foundation.sh`](../build/build-phase2-foundation.sh).
 It stages pinned upstream checkouts into an ignored work directory, applies only
 the compatibility changes listed in the build output, and invokes the pinned
 `ghcr.io/omacom/omarchy-iso` builder without editing either upstream checkout.

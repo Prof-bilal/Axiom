@@ -20,7 +20,7 @@ flowchart LR
  D[Cross-device LATER] --> P
 ```
 
-Planning and execution are separate. Model responses are proposals, never authorization. assistantd and overlay run as the user; no provider is reachable from the privileged executor. A policy module validates capability/schema versions, originating identity, resource scope and consent. system-agentd repeats checks against transport-authenticated identity and consumes exact one-use grants. Do not expose a root shell, generic command, arbitrary D-Bus call or unrestricted file API. Reuse existing desktop/system services rather than duplicating their authority. The session UI target is Axiom Shell on Hyprland/Quickshell ([ADR-013](../DECISIONS.md)); no Plasma/KWin dependency remains.
+Planning and execution are separate. Model responses are proposals, never authorization. assistantd and overlay run as the user; no provider is reachable from the privileged executor. A policy module validates capability/schema versions, originating identity, resource scope and consent. system-agentd repeats checks against transport-authenticated identity and consumes exact one-use grants. Do not expose a root shell, generic command, arbitrary D-Bus call or unrestricted file API. Reuse existing desktop/system services rather than duplicating their authority. The session UI is the Axiom-owned shell/session client; it has no dependency on another desktop project.
 
 ## Request lifecycle
 

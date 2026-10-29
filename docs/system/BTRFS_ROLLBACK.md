@@ -19,7 +19,13 @@ Do not auto-reboot after an unverified restoration. A running root cannot safely
 
 ## Required experiment
 
-In disposable UEFI VMs, prove bootloader entries select the intended root generation. The boot chain is itself an open question after [ADR-013](../DECISIONS.md): Omarchy ships Limine/UKI with bootable snapshots while ADR-002 accepted systemd-boot, so E28 must compare both with linux and linux-lts, matching modules/initramfs and encryption. A fixed `subvol=` boot parameter can defeat default-subvolume changes; plain `snapper rollback` is not a boot integration design. Compare explicit boot-generation entries against default-subvolume switching before recording an ADR. Omarchy's snapshot coverage is root-only; `/home` and external effects remain excluded.
+In disposable UEFI VMs, prove bootloader entries select the intended root
+generation. The boot chain remains a Phase 1/9 experiment against signed boot,
+fallback kernels, encryption and recovery. A fixed `subvol=` boot parameter can
+defeat default-subvolume changes; plain `snapper rollback` is not a boot
+integration design. Compare explicit boot-generation entries against
+default-subvolume switching before recording an ADR. `/home` and external
+effects remain excluded unless separately proven.
 
 Inject ENOSPC, package-script failure, interruption, power loss, mismatched ESP, missing snapshot, corrupt metadata, concurrent updates and expired authorization. Recover from the ISO when root cannot boot. Prove audit survives and user data remains untouched. Retention must preserve a tested known-good boot generation and enforce capacity limits.
 

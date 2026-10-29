@@ -2,7 +2,10 @@
 
 Status: V1 design rules. Last researched: 2026-10-18.
 
-systemd remains the init/service manager; systemd-boot is the accepted UEFI boot direction, now re-opened for investigation against Omarchy's Limine/UKI chain by [ADR-013](../DECISIONS.md) and experiment E28. Legacy BIOS installation is outside the initial hardware contract. linux-lts is a separate tested fallback, not a custom kernel.
+systemd remains the init/service manager. The bootloader choice is a Phase 1/9
+experiment against the recovery and signing requirements; legacy BIOS is outside
+the initial hardware contract. `linux-lts` is a separate tested fallback, not a
+custom kernel.
 
 Desktop UI and provider-facing runtime run in the user session. A privileged operation broker exposes only reviewed typed methods and delegates to established system services. Flow replaces the speculative performanced proposal: evaluate one per-user flowd only when its phase, event/recovery lifecycle and measured overhead justify persistence. Do not add a parallel performance daemon; memoryd/connectd also require lifecycle justification. NetworkManager owns connections; BlueZ owns Bluetooth; PipeWire with WirePlumber owns media policy. Axiom should integrate, not create parallel managers.
 
@@ -18,7 +21,7 @@ Sources: [execution environment and credentials](https://www.freedesktop.org/sof
 
 ## Flow user-manager integration
 
-[Flow](FLOW.md) owns resource policy, not unit lifecycle or the cgroup hierarchy. Preserve manager ownership/delegation and existing Hyprland/Quickshell session/application/background units. Prefer approved runtime properties through the owning manager; direct cgroup writes are limited to a separately verified delegation and reviewed operation (for example the targeted-reclaim experiment where no supported manager method exists). Never write arbitrary paths beneath the machine hierarchy. [systemd delegation](https://systemd.io/CGROUP_DELEGATION/).
+[Flow](FLOW.md) owns resource policy, not unit lifecycle or the cgroup hierarchy. Preserve manager ownership/delegation and the Axiom session/application/background units. Prefer approved runtime properties through the owning manager; direct cgroup writes are limited to a separately verified delegation and reviewed operation (for example the targeted-reclaim experiment where no supported manager method exists). Never write arbitrary paths beneath the machine hierarchy. [systemd delegation](https://systemd.io/CGROUP_DELEGATION/).
 
 Probe controller availability, effective parent settings, property/method support and identity/generation on mainline and LTS. Freeze/thaw and runtime property access must be tested with the installed manager, not inferred from latest documentation. No broad Polkit manage-units grant to a performance process. Root/system configuration stays separately authorized. Resource changes are not service stop/restart authority. [systemd manager API](https://www.freedesktop.org/software/systemd/man/latest/org.freedesktop.systemd1.html).
 

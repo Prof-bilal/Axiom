@@ -3,7 +3,8 @@
 Status: plan — steps are not started except where noted. This is the dependency-ordered sequence
 for working across Axiom and the five first-party projects. Re-verified **2026-10-27**; stale
 repository pins and the `axiom/integration` claim from the 2026-10-25 version are corrected.
-See [ecosystem](../ai/ECOSYSTEM.md) and the [migration report](OMARCHY_MIGRATION.md).
+See [ecosystem](../ai/ECOSYSTEM.md), [architecture](../ARCHITECTURE.md) and the
+[reset impact report](ARCHITECTURE_RESET_IMPACT.md).
 
 ## Working model
 
@@ -32,28 +33,28 @@ See [ecosystem](../ai/ECOSYSTEM.md) and the [migration report](OMARCHY_MIGRATION
 
 | # | Step | Repo | Output / evidence | Blocked by |
 | --- | --- | --- | --- | --- |
-| 0 | Workspace prepared — sibling repos cloned into `workspace/`; upstream mirrors pinned | Axiom | Recorded revisions; **DONE (pins corrected 2026-10-27)** | — |
+| 0 | Workspace prepared — sibling repos remain optional and pinned when adopted | Axiom | Recorded revisions; no core desktop dependency | — |
 | 1 | Warden shaping spec (typed interface, request→policy, audit correlation) | Axiom | [WARDEN_INTEGRATION](../security/WARDEN_INTEGRATION.md) — **DONE** | — |
-| 2 | Axiom foundation migration: pinned Omarchy, Hyprland/Quickshell, Axiom identity, reproducible boot | Axiom | Phase 2 exit evidence (E26) | ADR-013; owner sign-off on this plan |
-| 3 | Axiom Shell on Quickshell | Axiom | Phase 3 shell acceptance (E27, E29) | step 2 |
+| 2 | Axiom graphical-session contract and compositor evaluation | Axiom | Phase 2 QEMU session evidence | Phase 0 reset decision |
+| 3 | Axiom Shell MVP on the owned session contract | Axiom | Phase 3 shell acceptance | step 2 |
 | 4 | RepoSpine: system/multi-root scope, stable interface, Node floor decision | RepoSpine | Multi-root context serving; packaging decision | step 0 |
 | 5 | ContextGit: confirm headless runtime interface, non-repo session mode, per-child isolation | ContextGit | Isolation + no-collision evidence | step 0 |
 | 6 | Warden: programmatic interface + request→policy builder + audit correlation | Warden | Interface implemented in Go; unit tests | step 1 |
 | 7 | ModelCheck: commit the licence; wire as the model promotion gate | ModelChecker | Licence file; candidate-vs-baseline gate | owner licence choice |
-| 8 | Morphix decision: Hyprland/Quickshell adapter vs shell-agnostic redesign vs removal | Morphix | Recorded ADR-level decision | steps 2–3 |
+| 8 | Morphix decision: shell-agnostic adapter vs removal | Morphix | Recorded ADR-level decision | steps 2–3 |
 | 9 | Axiom integration: context POC (Phase 6), Warden enforcement + Sentinel POC (Phase 7) | Axiom | Contract + denial tests; no silent critical action | steps 4–8 |
 | 10 | Independent Warden bypass matrix on mainline and LTS | Warden + Axiom security | E32 evidence | step 6 |
 
 ## Sequencing decision
 
-Owner decision (2026-10-25, re-scoped 2026-10-27): **Axiom foundation first, then Axiom Shell,
+Current decision (2026-10-29 reset): **Axiom base/session first, then Axiom Shell,
 then the AI runtime and context foundation, then security enforcement, then first-party
 products shaped to Axiom's contracts.**
 
 Reason: RepoSpine + ContextGit give the AI runtime useful context and multi-agent state before
 any mutation authority exists; Warden then provides safe execution; ModelCheck governs model
-changes before defaults move; Morphix must be re-evaluated because the desktop foundation
-changed from Plasma to Hyprland/Quickshell.
+changes before defaults move; Morphix must be re-evaluated because the desktop foundation is
+now Axiom-owned and shell-agnostic.
 
 Write model when sibling steps start: a **feature branch + pull request per repository** — never
 a commit straight to a sibling project's `main`. ModelCheck licence: **MIT** (owner decision
@@ -84,7 +85,7 @@ a commit straight to a sibling project's `main`. ModelCheck licence: **MIT** (ow
 | Need | Why |
 | --- | --- |
 | Authorization to modify and push each of the five repos | Separate repositories with their own history and CI |
-| Approval of this migration plan and of ADR-013 | It re-scopes Phase 2/3 and the foundation |
+| Authorization to modify and push each sibling repo | Separate repositories with their own history and CI |
 | ModelCheck licence file commit | Required for the release inventory gate |
 | Morphix disposition (adapter vs redesign vs removal) | Its Plasma-only adapter does not fit the new foundation |
 
@@ -94,4 +95,4 @@ a commit straight to a sibling project's `main`. ModelCheck licence: **MIT** (ow
 - **Ordering risk:** RepoSpine/ContextGit interfaces and Morphix's disposition are unproven.
 - **Runtime floor:** RepoSpine requires Node ≥22.13.
 - **Verification:** Warden's bypass matrix and Morphix's rollback proof are the hardest evidence.
-- **Upstream churn:** Omarchy `quattro` moves quickly; only stable tags/packages are pinned.
+- **Upstream churn:** Temporary compositor/toolkit candidates can move quickly; pin them behind an adapter and keep them replaceable.

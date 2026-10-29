@@ -8,15 +8,20 @@ a license, and listing a component here does not complete the release inventory.
 Recorded 2026-10-27 from repository and release metadata. Verify every item against the actual
 installed artifact before any distribution.
 
-## Upstream foundation (proposed)
+## Upstream infrastructure (research / not a current product dependency)
+
+The old Omarchy foundation experiment is archived. These entries are retained
+for provenance only; no current Axiom image is authorized to ship them as a
+product/runtime dependency. Current reuse decisions are made per component
+under [ARCHITECTURE](docs/ARCHITECTURE.md) and [decision 001](docs/decisions/001-remove-omarchy.md).
 
 | Component | Pinned input | License | Obligation / note |
 | --- | --- | --- | --- |
-| Omarchy | `omacom/omarchy` tag `v4.0.6` `237f1b40` | MIT | Preserve copyright/license text |
-| Omarchy ISO tooling | `omacom/omarchy-iso` `main` `3c36557f` | MIT | Preserve notice |
-| Omarchy packages | `omacom/omarchy-pkgs` (verify at build) | MIT (repository metadata) | Verify package metadata |
-| Hyprland | `hyprwm/Hyprland` `v0.56.2` | BSD-3-Clause | Preserve copyright/license text |
-| Quickshell | `quickshell-mirror/quickshell` `v0.3.2` `4f508be5` | **LGPL-3.0-only** | Provide license text and an LGPL-compatible path to relink/source if distributed or linked |
+| Omarchy | `omacom/omarchy` tag `v4.0.6` `237f1b40` (archived experiment) | MIT | Historical notice only; not an active Axiom input |
+| Omarchy ISO tooling | `omacom/omarchy-iso` `main` `3c36557f` (archived experiment) | MIT | Historical notice only; not an active Axiom input |
+| Omarchy packages | `omacom/omarchy-pkgs` (archived experiment) | MIT (repository metadata) | Verify only if a future decision reopens a component |
+| Hyprland | `hyprwm/Hyprland` (historical evaluation) | BSD-3-Clause | Not an Axiom product dependency; retain notice if a temporary harness uses it |
+| Quickshell | `quickshell-mirror/quickshell` (historical evaluation) | **LGPL-3.0-only** | Not an Axiom product dependency; LGPL obligations apply only if deliberately shipped |
 | SDDM (greeter) | Arch package (pin at build) | GPL-2.0-or-later (verify) | Preserve notice; distribution obligations |
 | Plymouth | Arch package (pin at build) | GPL-2.0-or-later (verify) | Preserve notice |
 | Btrfs / Snapper | Arch/SUSE packages | GPL-2.0 | Preserve notices |
@@ -44,9 +49,9 @@ Omarchy bundles artwork and fonts whose upstream license status is incomplete:
   Tokyo Night, Everforest, Kanagawa, Flexoki); upstream licenses still apply.
 - One ALSA UCM directory ships an HP license file; other hardware data may differ.
 
-No Omarchy bundled asset may ship in an Axiom artifact until its provenance and redistribution
-rights are recorded. Axiom's own future branding must be original or openly licensed with the
-license text and attribution retained.
+No archived Omarchy bundled asset may ship in an Axiom artifact. Axiom's own
+branding must be original or openly licensed with the license text and
+attribution retained.
 
 ## Project-level status
 

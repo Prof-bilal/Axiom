@@ -1,44 +1,49 @@
 # Axiom
 
-The Linux desktop built for the AI-agent era: a cohesive, privacy-conscious environment for developers, with structured automation, visible permissions and practical recovery.
+Axiom is an experimental AI-native Linux desktop focused on developer
+workflows, privacy, secure system agents, recovery and a desktop experience
+designed from first principles.
 
-**Status: Phase 2 authorized and re-scoped. The current work is documentation and research for an Omarchy-derived Arch/Hyprland/Quickshell foundation ([migration report](docs/engineering/OMARCHY_MIGRATION.md), [ADR-013](docs/DECISIONS.md)). No desktop implementation, installer or daemon exists yet, and no release is available.**
+**Status: Phase 0 architecture reset (2026-10-29).** Axiom uses standard Linux
+infrastructure, but the compositor/session boundary, shell, core applications
+and product services are being developed specifically for Axiom. The previous
+Omarchy-derived desktop direction is archived and is not an active dependency.
 
-Start with [AGENTS.md](AGENTS.md), [vision](docs/VISION.md), [MVP](docs/MVP.md), [architecture](docs/ARCHITECTURE.md) and [phase gates](docs/PHASES.md). Durable knowledge belongs in this repository; coding tools are replaceable.
+Start with [the product brief](docs/PRODUCT.md), [architecture](docs/ARCHITECTURE.md),
+[phase gates](docs/PHASES.md), [design](docs/DESIGN.md) and [development workflow](docs/DEVELOPMENT.md).
+The first implementation target is a bootable minimal Axiom graphical session
+inside QEMU; no browser mock or themed upstream desktop counts as that result.
 
-## Working here
+## What Axiom reuses and owns
 
-1. Read the current phase and relevant contracts before changing files.
-2. Use [specialist roles](docs/SUBAGENTS.md), [agent workflow](docs/AGENT_WORKFLOW.md) and the relevant portable skill.
-3. Define acceptance criteria, make one coherent change, validate failures as well as success, and record evidence.
-4. Propose major architectural changes through [ADRs](docs/DECISIONS.md).
-
-Omarchy is the proposed upstream infrastructure, not the product: Axiom owns identity, shell UX, AI runtime, Shield, Sentinel, Flow, system APIs and recovery. Upstream revisions are pinned; changes are classified and ported deliberately, never auto-merged.
+Linux, systemd, udev, device drivers, networking, PipeWire, Mesa, Wayland
+protocols, libc, package management and boot technologies remain upstream
+infrastructure. Axiom owns the visible desktop workflow: compositor/session
+contracts, shell surfaces, core apps, platform services, AI boundaries and
+security UX. Axiom does not rewrite mature infrastructure without a measured,
+product-specific reason.
 
 ## Documentation map
 
-| Area | Entry points |
+| Area | Entry point |
 | --- | --- |
-| Migration | [Omarchy migration report](docs/engineering/OMARCHY_MIGRATION.md), [third-party notices](THIRD_PARTY_NOTICES.md) |
-| Product | [PRD](docs/PRD.md), [scope](docs/MVP.md), [roadmap](docs/ROADMAP.md) |
-| Engineering | [stack](docs/TECH_STACK.md), [research](docs/RESEARCH.md), [testing](docs/engineering/TESTING.md), [benchmarks](docs/engineering/BENCHMARKS.md), [dev environments](docs/engineering/DEV_ENVIRONMENTS.md), [ecosystem plan](docs/engineering/ECOSYSTEM_PLAN.md) |
-| Desktop | [UX](docs/desktop/DESKTOP_UX.md), [tokens](docs/desktop/DESIGN_SYSTEM.md), [Wayland](docs/desktop/WAYLAND.md) |
-| AI | [runtime](docs/ai/AI_ARCHITECTURE.md), [agent system](docs/ai/AGENT_SYSTEM.md), [capability contract](docs/ai/SYSTEM_AGENT_API.md), [routing](docs/ai/MODEL_ROUTER.md), [ecosystem](docs/ai/ECOSYSTEM.md) |
-| Security | [invariants](docs/security/SECURITY.md), [threat model](docs/security/THREAT_MODEL.md), [permissions](docs/security/PERMISSIONS.md), [sandboxing](docs/security/SANDBOXING.md), [Warden integration](docs/security/WARDEN_INTEGRATION.md) |
-| System | [packaging](docs/system/PACKAGING.md), [recovery](docs/system/BTRFS_ROLLBACK.md), [services](docs/system/SYSTEMD.md), [performance](docs/system/PERFORMANCE.md), [Flow](docs/system/FLOW.md) |
-| Delivery | [ISO](docs/engineering/ISO_BUILD.md), [installer](docs/engineering/INSTALLER.md), [install checklist](docs/engineering/INSTALL_CHECKLIST.md), [release](docs/engineering/RELEASE.md) |
-| Future | [connectivity](docs/connect/CONNECT.md), [routines](docs/ai/ROUTINES.md), [MCP](docs/ai/MCP.md) |
+| Product and design | [PRODUCT](docs/PRODUCT.md), [DESIGN](docs/DESIGN.md), [VISION](docs/VISION.md) |
+| Architecture and decisions | [ARCHITECTURE](docs/ARCHITECTURE.md), [DECISIONS](docs/DECISIONS.md), [reset impact report](docs/engineering/ARCHITECTURE_RESET_IMPACT.md) |
+| Roadmap and scope | [PHASES](docs/PHASES.md), [ROADMAP](docs/ROADMAP.md), [MVP](docs/MVP.md) |
+| Development and build | [DEVELOPMENT](docs/DEVELOPMENT.md), [BUILD](docs/BUILD.md), [testing](docs/TESTING.md) |
+| Desktop contracts | [desktop UX](docs/desktop/DESKTOP_UX.md), [tokens](docs/desktop/DESIGN_SYSTEM.md), [Wayland](docs/desktop/WAYLAND.md) |
+| AI and security | [AI architecture](docs/ai/AI_ARCHITECTURE.md), [security](docs/SECURITY.md), [threat model](docs/security/THREAT_MODEL.md) |
+| Evidence and legacy | [Phase 1 ISO](docs/engineering/ISO_BUILD.md), [archive](archive/legacy/README.md) |
 
 ## Validation
 
-Run the foundation checks with Python 3:
-
 ```sh
 python3 scripts/validate-repo.py
-python3 scripts/check-iso-profile.py
 python3 scripts/test-concepts.py
+python3 scripts/check-iso-profile.py
 ```
 
-Phase 1 also produced `sudo scripts/build-iso.sh` and `tests/qemu-boot.sh`; both target the legacy archiso profile. Migration work adds no privileged runner.
-
-Do not create implementation directories until there is reviewed implementation work for them. Contributions do not authorize publishing a release, changing a machine's disks, or executing privileged operations. Project licensing and redistribution/trademark review must be resolved before distribution; see [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md). No license grant is inferred from this documentation.
+The retained `scripts/build-iso.sh` and `tests/qemu-boot.sh` support historical
+Phase 1 evidence. A new base-image builder will be added only after Phase 0
+contracts and inputs are reviewed. Do not publish a release, alter host disks,
+or run privileged operations based on documentation alone.

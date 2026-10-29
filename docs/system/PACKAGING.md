@@ -4,7 +4,12 @@ Status: V1 contract; package definitions and repository do not exist. Last resea
 
 pacman owns system packages; PKGBUILD defines Axiom packages. Flatpak is optional for user applications; it does not replace OS updates. Snap and automatic AUR installation are outside default scope. Upstream Arch rolling repositories require full upgrades: do not design a UI around partial upgrades or claim that a snapshot makes live package mutation atomic.
 
-**Omarchy-derived upstream (ADR-013, RESEARCH):** the proposed foundation consumes a pinned set of `omacom/omarchy`, `omacom/omarchy-pkgs` and the Omarchy Arch mirror. Axiom must record the exact package versions, mirror identity and upstream revision per build; it must not use the Omarchy package repository as an unreviewed trust root, and it must not let upstream package updates overwrite Axiom-owned files. The update path, migration mechanism and channel behavior are upstream inputs to evaluate, not inherited policy. Calamares/archiso remain legacy research only.
+**Base inputs (RESEARCH):** the reset evaluates recorded Arch package
+repositories and a reviewed image builder. Axiom must record exact versions,
+mirror identity and source revisions per build; no third-party desktop repository
+is an implicit trust root and updates must not overwrite Axiom-owned files. The
+update path, migration mechanism and channel behavior are Axiom decisions, not
+inherited policy. Installer work remains Phase 9.
 
 Every package must declare name/version/release, architecture, license, upstream URL, source provenance/checksums, runtime/build/test dependencies and packaging functions. Pin reviewed source revisions, verify upstream signatures when available, and avoid network downloads inside build functions. Separate build-only dependencies and executable install hooks; hooks are privileged code requiring review. No provider keys or machine identifiers in artifacts.
 

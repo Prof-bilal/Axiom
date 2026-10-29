@@ -142,6 +142,6 @@ AXIOM_SUMS=iso/out/evidence/run2/sha256sums.txt \
   tests/qemu-boot.sh iso/out/axiom-*.iso
 ```
 
-## Applicability after ADR-013 (2026-10-27)
+## Applicability after the architecture reset (2026-10-29)
 
-This evidence is **historical and unchanged.** It proves that the reviewed archiso profile built and booted reproducibly in QEMU/KVM at the recorded inputs. After [ADR-013](../DECISIONS.md), the Phase 2 image base is the pinned Omarchy-derived ISO flow, so this profile is not the migration base. Nothing here is retracted: the E01/E02 results, the open findings and the stated reproducibility level ("reproducible inputs, not bit-identical artifacts") remain valid for the Phase 1 artifact. The Plasma packages later appended to `iso/profile/packages.x86_64` are legacy and were never built into the evidence ISO.
+This evidence is **historical and unchanged.** It proves that the reviewed archiso profile built and booted reproducibly in QEMU/KVM at the recorded inputs. It is not the new Axiom base or a desktop product claim. Nothing here is retracted: the E01/E02 results, open findings and stated reproducibility level ("reproducible inputs, not bit-identical artifacts") remain valid for the Phase 1 artifact. The historical desktop packages later appended to `iso/profile/packages.x86_64` were not built into the evidence ISO.
