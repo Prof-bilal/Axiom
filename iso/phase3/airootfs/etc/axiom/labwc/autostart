@@ -1,0 +1,4 @@
+# Axiom session: start the Axiom Shell (supervised) once labwc is running.
+# labwc runs this file with sh. The supervisor stops by itself when the
+# session ends (AXIOM_SESSION_PID, exported by axiom-session).
+/usr/local/bin/axiom-shell >/dev/null 2>&1 &

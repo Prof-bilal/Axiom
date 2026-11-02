@@ -1,0 +1,32 @@
+#!/bin/sh
+# Supervise the Axiom Shell so a shell crash does not end the session.
+# The shell is a single Quickshell process hosting every surface (see
+# docs/research/phase3/features/session-startup.md for the failure model).
+
+SHELL_DIR=/usr/local/share/axiom/shell
+
+# AXIOM_SESSION_PID (exported by axiom-session) is the dbus-run-session
+# process, which lives exactly as long as the compositor. When it is gone
+# (compositor crash or session end) there is nothing left to serve; without
+# this check an orphaned supervisor would restart the shell forever. ($PPID
+# is not usable: the compositor's autostart/exec detaches the process.) Unset in development runs.
+fails=0
+while :; do
+  if [ -n "$AXIOM_SESSION_PID" ] && ! kill -0 "$AXIOM_SESSION_PID" 2>/dev/null; then
+    echo "axiom-shell: session (pid $AXIOM_SESSION_PID) has ended; exiting" >&2
+    exit 0
+  fi
+  quickshell -p "$SHELL_DIR"
+  rc=$?
+  if [ "$rc" -eq 0 ]; then
+    exit 0
+  fi
+  fails=$((fails + 1))
+  echo "axiom-shell: shell exited with status $rc (restart $fails)" >&2
+  # Back off if the shell keeps crashing, so we do not spin the CPU.
+  if [ "$fails" -ge 5 ]; then
+    sleep 5
+  else
+    sleep 1
+  fi
+done

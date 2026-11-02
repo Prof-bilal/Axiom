@@ -6,18 +6,27 @@
 
 # Editor and OS noise
 .DS_Store
+.vscode/
+# Local agent-tool settings (machine-specific permissions), not project files
+.commandcode/
 *.swp
 *~
 
-# Phase 1 ISO build artifacts (regenerated; never commit)
+# ISO build artifacts (regenerated; never commit)
 iso/work*/
-iso/out/
+iso/out*/
 *.iso
 *.iso.sha256
 *.qcow2
 serial.log
 OVMF_VARS*.fd
 vm-vars.fd
+
+# Phase 3 research: cloned reference repositories are read-only research
+# material, never product dependencies. Pins are recorded in
+# research/phase3/repos.lock; only analysis artifacts are committed.
+research/phase3/repos/
+research/phase3/rea/
 
 # Python bytecode
 __pycache__/

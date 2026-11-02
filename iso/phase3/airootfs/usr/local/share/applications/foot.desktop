@@ -1,0 +1,15 @@
+[Desktop Entry]
+# Axiom Terminal: the system foot entry under its Axiom role name and icon.
+# Same desktop-file id as /usr/share/applications/foot.desktop, which this
+# overrides via XDG_DATA_DIRS precedence (/usr/local/share first). Launches
+# through axiom-terminal so the window opens at the Axiom default size.
+Type=Application
+Exec=axiom-terminal
+Icon=axiom-terminal
+Terminal=false
+Categories=System;TerminalEmulator;
+Keywords=shell;prompt;command;commandline;foot;
+Name=Terminal
+GenericName=Axiom Terminal
+Comment=Axiom Terminal (foot)
+StartupWMClass=foot

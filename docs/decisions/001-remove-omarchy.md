@@ -8,8 +8,8 @@
 Axiom will no longer be built on Omarchy as its desktop or product foundation.
 Omarchy, its ISO/package setup, shell/theme conventions, Hyprland/Quickshell
 integration assumptions and user-facing commands are historical research only.
-They are archived under `archive/legacy/omarchy-foundation/` and are not active
-build or runtime dependencies.
+They have been removed from the repository and are not active build or runtime
+dependencies.
 
 Axiom will reuse mature Linux infrastructure—kernel, libc, systemd, udev,
 drivers, networking, PipeWire, Mesa, Wayland protocols, package management and

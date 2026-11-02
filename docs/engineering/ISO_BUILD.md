@@ -3,7 +3,7 @@
 Status: Phase 0 reset. The reviewed `iso/profile/`, `scripts/build-iso.sh` and
 `tests/qemu-boot.sh` remain as **legacy Phase 1 evidence**. They are useful for
 boot-harness validation but are not the new Axiom desktop base. The former
-Omarchy wrapper is archived and has no active build path.
+upstream wrapper has been removed and has no active build path.
 
 The next image contract is deliberately small: recorded Arch inputs, Linux
 kernel, init/userspace, systemd, device management, networking, audio/graphics

@@ -3,7 +3,7 @@
 Status: Phase 9 research; no installer implementation is authorized. Axiom
 will own the target-disk plan, identity, update/recovery semantics and first-run
 experience while reusing a proven Linux installer technology when its behavior
-and license are verified. The archived Omarchy installer path is not a
+and license are verified. The removed upstream installer path is not a
 requirement or preferred dependency.
 
 The first hardware contract is x86-64 UEFI, GPT, a reviewed filesystem layout,

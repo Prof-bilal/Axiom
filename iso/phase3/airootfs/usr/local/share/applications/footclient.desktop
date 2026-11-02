@@ -1,0 +1,7 @@
+[Desktop Entry]
+# Hidden in Axiom: server/client variants of the Axiom Terminal clutter the
+# launcher. Same id as the upstream entry, which this overrides.
+Type=Application
+Name=footclient
+Exec=footclient
+NoDisplay=true

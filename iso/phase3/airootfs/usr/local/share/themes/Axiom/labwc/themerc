@@ -1,0 +1,69 @@
+# Axiom window theme for the labwc compositor harness (ADR-016).
+# Palette: branding/theme/axiom/colors.toml. Rules: docs/DESKTOP_DESIGN.md.
+#
+# Focused window: cyan-muted border plus a soft cyan glow (drop shadow tinted
+# with Axiom cyan; labwc cannot draw gradient borders). Unfocused: neutral
+# border, dark shadow, dimmer title text. Close is the only orange element.
+
+border.width: 1
+window.titlebar.padding.width: 8
+window.titlebar.padding.height: 4
+
+window.active.border.color: #1d8f8d
+window.inactive.border.color: #233238
+
+window.active.title.bg.color: #0c1215
+window.inactive.title.bg.color: #0a0f12
+window.*.title.bg: Solid
+
+window.active.label.text.color: #edf5f5
+window.inactive.label.text.color: #8ea2a5
+window.label.text.justify: left
+
+window.button.width: 30
+window.button.height: 26
+window.button.spacing: 2
+window.button.hover.bg.color: #ffffff18
+window.button.hover.bg.corner-radius: 6
+
+window.active.button.unpressed.image.color: #c7d3d4
+window.inactive.button.unpressed.image.color: #4e5e62
+window.active.button.close.unpressed.image.color: #ff9418
+window.inactive.button.close.unpressed.image.color: #804713
+
+window.active.shadow.size: 28
+window.inactive.shadow.size: 18
+window.active.shadow.color: #20d6d238
+window.inactive.shadow.color: #00000050
+
+menu.overlap.x: 0
+menu.overlap.y: 0
+menu.width.min: 160
+menu.width.max: 280
+menu.border.width: 1
+menu.border.color: #233238
+menu.items.bg.color: #0c1215
+menu.items.text.color: #edf5f5
+menu.items.active.bg.color: #123e40
+menu.items.active.text.color: #edf5f5
+menu.items.padding.x: 10
+menu.items.padding.y: 6
+menu.separator.width: 1
+menu.separator.padding.width: 8
+menu.separator.padding.height: 4
+menu.separator.color: #182328
+menu.title.bg.color: #0c1215
+menu.title.text.color: #8ea2a5
+menu.title.text.justify: Left
+
+osd.bg.color: #0c1215
+osd.border.color: #233238
+osd.border.width: 1
+osd.label.text.color: #edf5f5
+osd.window-switcher.style-classic.width: 50%
+osd.window-switcher.style-classic.item.active.border.color: #20d6d2
+osd.window-switcher.style-classic.item.active.bg.color: #123e40
+osd.window-switcher.preview.border.color: #20d6d2
+
+snapping.overlay.region.border.color: #20d6d2
+snapping.overlay.edge.border.color: #20d6d2

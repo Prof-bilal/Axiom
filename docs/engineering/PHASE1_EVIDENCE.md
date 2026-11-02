@@ -19,7 +19,7 @@ and any `apps/`/`shell/`/`services/` component are out of scope.
 
 | Item | Value |
 | --- | --- |
-| Host | Arch-based (Omarchy), kernel `7.2.8-9-omarchy` |
+| Host | Arch-based build host, kernel `7.2.8-9-omarchy` |
 | Python | 3.15.1 (`python3 -E`) |
 | `archiso` | `91-1` (profile pinned to upstream tag `v91`, commit `723da192`) |
 | QEMU | `qemu-base 11.1.2-1`, `qemu-system-x86 11.1.2-1` |

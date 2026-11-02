@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Axiom: the desktop is drawn by the Axiom Shell, so labwc's root menu is
+  intentionally empty. The per-window menu (click a window's icon) stays
+  available from labwc's built-in client-menu.
+-->
+<openbox_menu>
+  <menu id="root-menu" label="" />
+</openbox_menu>

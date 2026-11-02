@@ -1,10 +1,8 @@
 # Axiom architecture
 
-Status: **architecture reset, Phase 0**. This is the active product boundary;
-implementation is intentionally limited to the bootable-base milestone. The
-superseded Omarchy foundation experiment is preserved under
-[`archive/legacy/omarchy-foundation/`](../archive/legacy/omarchy-foundation/)
-and is not a runtime or build dependency.
+Status: **Phase 3 shell MVP**. This is the active product boundary. The
+previous upstream-derived desktop direction has been removed; it is not a
+runtime or build dependency.
 
 ## Product boundary
 
@@ -124,3 +122,18 @@ docs/         contracts, research and evidence
 These names are boundaries, not empty scaffolds. Phase 0 creates contracts and
 tests; Phase 1 creates only the minimal base needed to boot a real graphical
 session.
+
+## Phase 3 shell implementation
+
+- **Shell:** `shell/` — panel, dock, launcher, workspaces, notifications,
+  status and session surfaces as QML components, consuming only the service
+  singletons in `shell/services/`.
+- **Toolkit:** Quickshell/QML 0.3.2, a replaceable implementation dependency
+  (LGPL-3.0-only), not Axiom identity.
+- **Compositor:** a *temporary* harness (sway, MIT) providing standard protocols
+  (`zwlr_layer_shell_v1`, `zwlr_foreign_toplevel_management_v1`,
+  `ext-workspace-v1`). `WorkspaceService` and `WindowService` are the only
+  adapters that name a compositor protocol; an Axiom compositor replaces them.
+- **Session:** `iso/phase3/airootfs/usr/local/bin/axiom-session` and
+  `axiom-shell`, unprivileged user `axiom`, autologin on tty1.
+- **Decision and rationale:** [ADR-015](decisions/phase3-shell-architecture.md).

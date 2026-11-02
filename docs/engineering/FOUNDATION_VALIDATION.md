@@ -37,7 +37,7 @@ Triggered by an explicit request to validate the foundation before building. Env
 
 ## Revalidation 2026-10-27 (superseded foundation documentation)
 
-This pass was documentation/research only: no upstream desktop code was copied, no image was built, and no boot/desktop experiment ran. Its migration material is archived under `archive/legacy/omarchy-foundation/` and does not authorize the current architecture.
+This pass was documentation/research only: no upstream desktop code was copied, no image was built, and no boot/desktop experiment ran. Its migration material has since been removed from the repository and does not authorize the current architecture.
 
 | Check | Result | Limits |
 | --- | --- | --- |
@@ -46,7 +46,7 @@ This pass was documentation/research only: no upstream desktop code was copied, 
 | `python3 -E scripts/test-concepts.py` | PASS: 12/12, 0 failures/errors | Local primitives; no boot/desktop run |
 | Skill inventory | 19 skills in both trees; desktop workflows are now shell/toolkit-neutral | Static inventory, not client discovery |
 | Upstream mirrors | Historical mirrors under gitignored `workspace/upstream/` | Inspection only; no active build dependency |
-| Migration documents | Historical migration report and ADR-013 moved to `archive/legacy/omarchy-foundation/`; reset impact report added | No runtime evidence |
+| Migration documents | Historical migration material removed from the repository; reset impact report retained | No runtime evidence |
 | Branding cleanup | Untracked `branding/` deleted; `docs.zip` left untouched | No tracked history removed |
 | Phase/desktop claims | Plasma/KWin statements remaining are historical, SUPERSEDED or product-fact references | Not a semantic proof of every paragraph |
 

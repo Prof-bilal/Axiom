@@ -6,7 +6,7 @@ Phase 0.
 
 | Milestone | Phase | User-visible result |
 | --- | --- | --- |
-| Architecture reset | 0 | Axiom owns the product boundary; Omarchy is historical only. |
+| Architecture reset | 0 | Axiom owns the product boundary; the upstream-derived desktop is removed. |
 | Bootable base | 1 | A minimal Linux image boots and reaches a real graphical target in QEMU. |
 | Graphical session | 2 | Real Wayland applications launch, focus, move and switch workspaces. |
 | Shell MVP | 3 | Axiom panel, dock, launcher, workspace UI, notifications and session controls work. |

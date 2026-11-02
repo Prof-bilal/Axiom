@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 148 148" width="148" height="148" role="img" aria-label="Axiom">
+  <!-- Axiom A-mark: product/application identity. Geometry from
+       axiom-wordmark.svg; counter is a real cut-out (even-odd), not a dark fill,
+       so the mark works on any surface. Cyan leads; orange is the secondary
+       accent on the trailing edge only. -->
+  <defs>
+    <linearGradient id="axiom-mark-fill" x1="0" y1="0" x2="1" y2="0.35">
+      <stop offset="0" stop-color="#37F0EA"/>
+      <stop offset="0.55" stop-color="#20D6D2"/>
+      <stop offset="1" stop-color="#FF9418"/>
+    </linearGradient>
+  </defs>
+  <path fill="url(#axiom-mark-fill)" fill-rule="evenodd"
+        d="M74 4L136 144H109L96 112H52L39 144H12Z M74 42L88 82H60Z"/>
+</svg>

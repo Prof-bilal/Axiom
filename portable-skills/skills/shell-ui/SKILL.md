@@ -7,7 +7,7 @@ description: "Build and test Axiom Shell surfaces against the owned session cont
 
 Use for Axiom Shell work: panel, dock, launcher, workspaces, notifications,
 control center, lock and session surfaces. The shell toolkit is replaceable;
-do not assume Omarchy, Hyprland, KDE or a browser prototype is the product.
+do not assume Hyprland, KDE, GNOME or a browser prototype is the product.
 
 Read [architecture](../../../docs/ARCHITECTURE.md), [design](../../../docs/DESIGN.md),
 [desktop UX](../../../docs/desktop/DESKTOP_UX.md), [Wayland boundaries](../../../docs/desktop/WAYLAND.md)

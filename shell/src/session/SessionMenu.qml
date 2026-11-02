@@ -1,0 +1,43 @@
+import QtQuick
+import qs.src.shared
+import qs.services
+
+// Axiom session menu (panel power button) — real log out / restart / shut
+// down via PowerService (systemd + logind). Each action needs a confirming
+// second click so a stray click cannot end the session. There is no Lock row
+// until Axiom ships a screen locker.
+MenuSurface {
+    id: menu
+
+    open: UiState.sessionMenuOpen
+    alignRight: true
+    layerNamespace: "axiom-session-menu"
+    cardWidth: 230
+
+    MenuSeparator { caption: "Session" }
+
+    MenuItem {
+        text: "Log Out"
+        icon: "logout"
+        confirm: true
+        confirmText: "Click again to log out"
+        onTriggered: { UiState.closeAllOverlays(); PowerService.logout() }
+    }
+
+    MenuItem {
+        text: "Restart"
+        icon: "restart"
+        confirm: true
+        confirmText: "Click again to restart"
+        onTriggered: { UiState.closeAllOverlays(); PowerService.reboot() }
+    }
+
+    MenuItem {
+        text: "Shut Down"
+        icon: "power"
+        destructive: true
+        confirm: true
+        confirmText: "Click again to shut down"
+        onTriggered: { UiState.closeAllOverlays(); PowerService.powerOff() }
+    }
+}

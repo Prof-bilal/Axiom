@@ -1,9 +1,8 @@
 # Axiom implementation phases
 
-Current phase: **Phase 0 — architecture reset (in progress, 2026-10-29)**.
-The former Omarchy-derived Phase 2/3 sequence is superseded. Its build and
-research evidence remains under [`archive/legacy/`](../archive/legacy/) and does
-not advance these gates. Each phase requires retained evidence; code existing
+Current phase: **Phase 3 — Axiom Shell MVP (in progress, 2026-11-01)**.
+The architecture reset is complete; the previous upstream-derived desktop
+direction has been removed. Each phase requires retained evidence; code existing
 in a branch is not an exit criterion.
 
 | Phase | Goal | Exit evidence |
@@ -21,15 +20,14 @@ in a branch is not an exit criterion.
 
 ## Phase 0 — architecture reset
 
-Remove Omarchy as a product/runtime dependency; classify and archive the old
-foundation; define the base-system, display, shell, apps, services, AI and
-security boundaries; select an initial distribution/build strategy; evaluate
-compositor options; and update canonical documentation. No desktop implementation
-or AI feature advances during this phase.
+Remove the upstream-derived desktop dependency; define the base-system, display,
+shell, apps, services, AI and security boundaries; select an initial
+distribution/build strategy; evaluate compositor options; and update canonical
+documentation.
 
-**Exit:** active docs and scripts no longer require Omarchy; the repository has
-one architecture, one ownership model and one recommended next task: build a
-minimal bootable graphical session in QEMU.
+**Exit:** active docs and scripts no longer reference the removed foundation; the
+repository has one architecture, one ownership model and one recommended next
+task.
 
 ## Phase 1 — bootable Axiom base
 
@@ -61,6 +59,37 @@ prototype icons, hardcoded state or screenshot-only components.
 
 **Exit:** Boot → login → Axiom desktop → launch app → switch apps → open
 launcher → use dock → logout/shutdown, all inside QEMU.
+
+### Phase 3 implementation (2026-11-01)
+
+Implemented in this window (see [shell/README](../shell/README.md),
+[ADR-015](decisions/phase3-shell-architecture.md) and
+[research](research/phase3/current-state.md)):
+
+- **Session:** `iso/phase3/` builds a desktop image that autologins unprivileged
+  user `axiom` on tty1, runs `axiom-session` → `dbus-run-session` → `labwc`
+  (temporary harness) → `axiom-shell` → `quickshell -p …/shell`.
+- **Shell surfaces:** top panel (workspaces, clock, tray, status, session
+  route), dock (pinned + running, focus-or-launch), launcher (real XDG desktop
+  entries), notification centre + toasts (`org.freedesktop.Notifications`),
+  control centre (audio/Wi-Fi/power), session menu (logind/systemd).
+- **Boundaries:** all system/compositor access goes through `shell/services/*`;
+  UI performs no privileged operation.
+- **Failure behavior:** `axiom-shell` supervises the single shell process and
+  restarts it with backoff.
+
+**Desktop identity (2026-11-01, revised 2026-11-02):** the compositor harness
+moved from Sway to labwc ([ADR-016](decisions/016-labwc-compositor-harness.md))
+for real window chrome; the top bar, dock and terminal follow the 2026-11-02
+references. the shell, harness and terminal now share
+one Axiom visual system — tokens, panel, penguin menu, dock, window rules,
+Axiom Terminal and greeting — specified in [DESKTOP_DESIGN](DESKTOP_DESIGN.md)
+and exercised in QEMU by `tests/phase3-desktop.py` at 1366×768, 1920×1080 and
+2560×1440 (results in [evidence](research/phase3/evidence.md)).
+
+Phase 1 (bootable base) and Phase 2 (graphical session) are demonstrated by the
+same image reaching a Wayland session with real applications; their evidence is
+folded into the Phase 3 QEMU run rather than recorded as separate milestones.
 
 ## Phase 4 — Axiom core apps
 

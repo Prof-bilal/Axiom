@@ -1,8 +1,8 @@
 # Research and experiment register
 
 Last reset pass: 2026-10-29. “Verified” means the cited behavior was inspected;
-it does not mean Axiom integration works. Historical Omarchy findings remain in
-the archive and are not current architecture.
+it does not mean Axiom integration works. Prior upstream-desktop findings have
+been removed from the repository and are not current architecture.
 
 ## Base system
 

@@ -1,31 +1,44 @@
+# Axiom palette — canonical source for every Axiom surface.
+# Consumers: shell/src/shared/Theme.qml (shell), iso/phase3/airootfs/etc/axiom/sway.conf
+# (compositor harness borders), iso/phase3/airootfs/etc/xdg/foot/foot.ini (terminal).
+# Rules and rationale: docs/DESKTOP_DESIGN.md.
+#
+# Budget: ~80% neutral graphite, ~15% cyan, ~5% orange.
+# Cyan = focus / selected / active. Orange = urgent / destructive / attention.
+
 mode = "dark"
 
-accent = "#64d8c5"
-selection = "#27414a"
-muted = "#7d9199"
+[base]
+background = "#070B0D"
+surface = "#0C1215"
+surface_elevated = "#11191D"
+surface_hover = "#162126"
+border = "#233238"
+border_subtle = "#182328"
+text_primary = "#EDF5F5"
+text_secondary = "#8EA2A5"
+text_disabled = "#4E5E62"
 
-background = "#0b1116"
-dark_background = "#070c10"
-darker_background = "#04070a"
-lighter_background = "#141e24"
+[cyan]
+primary = "#20D6D2"
+bright = "#37F0EA"
+muted = "#126E70"
 
-foreground = "#ecf2f4"
-dark_foreground = "#5b6b73"
-light_foreground = "#d4e0e4"
-bright_foreground = "#ffffff"
+[orange]
+primary = "#FF9418"
+bright = "#FFB348"
+muted = "#804713"
 
-red = "#ff8b8b"
-yellow = "#f3d27a"
-orange = "#f0a46b"
-green = "#64d8c5"
-cyan = "#64d8c5"
-blue = "#6aa9ff"
-magenta = "#b99cff"
-brown = "#8a6a55"
+[translucent]
+panel = "rgba(5, 12, 15, 0.88)"
+panel_border = "rgba(68, 230, 220, 0.10)"
+dock = "rgba(7, 12, 15, 0.82)"
+dock_border = "rgba(80, 235, 220, 0.15)"
+overlay = "rgba(12, 18, 21, 0.97)"
+terminal = "rgba(10, 13, 15, 0.94)"
 
-bright_red = "#ffb0b0"
-bright_yellow = "#ffe7a3"
-bright_green = "#8ff0dd"
-bright_cyan = "#8ff0dd"
-bright_blue = "#9bc4ff"
-bright_magenta = "#d5c4ff"
+[terminal]
+# ANSI 0-7 / 8-15. Red stays red (errors must read as errors); yellow is the
+# Axiom amber so warnings sit in the orange family.
+regular = ["#11191D", "#F2685E", "#7FD99A", "#FFB348", "#5AA9FF", "#C49BFF", "#20D6D2", "#C7D3D4"]
+bright = ["#4E5E62", "#FF8F84", "#9EE6B3", "#FFC978", "#8CC4FF", "#D9BEFF", "#37F0EA", "#EDF5F5"]

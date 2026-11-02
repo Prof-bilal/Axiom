@@ -10,11 +10,11 @@ These are replaceable directions, not claims of an implemented stack. Consult
 | Kernel/boot/init | Upstream Linux + linux-lts, systemd, reviewed bootloader technology | Phase 1; signed/recovery path later |
 | Device/network/audio/graphics | udev, NetworkManager or justified alternative, BlueZ, PipeWire/WirePlumber, Mesa | Reuse upstream services; hardware evidence later |
 | Display | Wayland protocols and client libraries | Phase 1 prerequisites |
-| Compositor/session | Axiom-owned boundary; temporary existing compositor harness, then measured implementation choice | Phase 2 research; no Hyprland/KDE/GNOME product lock-in |
-| Shell | Axiom Shell using a reviewed Qt/QML or equivalent toolkit | Phase 3; toolkit remains replaceable |
+| Compositor/session | Axiom-owned boundary; Phase 3 uses sway (MIT) as a temporary harness behind `WorkspaceService`/`WindowService` adapters | Phase 3 implemented; no Hyprland/KDE/GNOME product lock-in; Axiom compositor still future |
+| Shell | Axiom Shell in Quickshell/QML 0.3.2 (LGPL-3.0-only, dynamically linked) | Phase 3 implemented; toolkit remains replaceable |
 | Apps | Axiom Files, Settings, Terminal integration and Software | Phase 4 |
 | Platform services | Rust where a daemon is justified, D-Bus first, SQLite/FTS5 local metadata | Phase 5; no generic RPC/server DB by default |
-| Packages/image | pacman/PKGBUILD and a reviewed base-image builder | Phase 1/9; old Omarchy flow archived |
+| Packages/image | pacman/PKGBUILD and a reviewed base-image builder | Phase 1/9; old upstream flow removed |
 | Security | Polkit, portals, systemd sandboxing, Linux primitives and future Warden adapter | Phase 6; fail closed, no model authority |
 | AI | Replaceable local/cloud providers, typed tools and context | Phase 7; core desktop works offline |
 | Test/delivery | QEMU/KVM, serial/journal/display evidence, later hardware matrix | Every graphical milestone |

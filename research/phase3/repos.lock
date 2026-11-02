@@ -1,0 +1,17 @@
+# Phase 3 reference repositories (research material, not dependencies).
+#
+# Cloned read-only into research/phase3/repos/ (gitignored). Recorded
+# 2026-11-01. Licenses are audited in docs/research/phase3/licenses.md.
+
+cosmic-panel         https://github.com/pop-os/cosmic-panel          ca20ce3185b3b4404f429d59d429c40b58a2ddef  GPL-3.0-only
+cosmic-launcher      https://github.com/pop-os/cosmic-launcher       528f7a51f8a6144910b3a752318c4147345e9d77  GPL-3.0-only
+cosmic-notifications https://github.com/pop-os/cosmic-notifications  382927dc48964f3b098429ad6b836cc4b7e7ecf2  GPL-3.0-only
+cosmic-workspaces    https://github.com/pop-os/cosmic-workspaces-epoch cb953ea0e6fb45ac8f62f9c52f1347c971388e03 GPL-3.0-only
+cosmic-session       https://github.com/pop-os/cosmic-session        4b0a0a24e98b9e755b6a7146e4cb29539cacda0a  GPL-3.0-only
+cosmic-settings      https://github.com/pop-os/cosmic-settings       d678586a0e62b907e91a1079e73f6c42358185e5  GPL-3.0-only (subscriptions/* MPL-2.0)
+cosmic-greeter       https://github.com/pop-os/cosmic-greeter        84a04d3e5563d242b925022df4d2a39ab84984ec  GPL-3.0-only
+cosmic-comp          https://github.com/pop-os/cosmic-comp           eeca8b09cbe44d767354bc7291b518562b531b0b  GPL-3.0-only
+sway                 https://github.com/swaywm/sway                 1652c54b73f67df17b7b4ab0b0f7048204aa8104  MIT
+wayfire              https://github.com/WayfireWM/wayfire           e268d4e5ecf62bc0667caf23ff631c2806bdf63e  MIT
+hyprland             https://github.com/hyprwm/Hyprland             ecbcfe6e36ab8e510d464bb2e72c550710563093  BSD-3-Clause
+quickshell           https://github.com/quickshell-mirror/quickshell 9b0f339b19057f4731bf3b48293307d7ef241671 LGPL-3.0-only

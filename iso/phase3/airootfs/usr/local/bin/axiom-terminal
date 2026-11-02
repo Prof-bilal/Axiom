@@ -1,0 +1,15 @@
+#!/bin/sh
+# Axiom Terminal launcher.
+#
+# Opens foot at the Axiom default size: 70% x 68% of the usable area of the
+# active output. The compositor harness (labwc) only resizes in absolute
+# pixels, so the size comes from the Axiom Shell, which knows the real output
+# geometry. If the shell is not running, foot opens at its own default size.
+#
+#   axiom-terminal [foot arguments...]
+
+geometry=$(qs ipc -p /usr/local/share/axiom/shell call axiom terminalGeometry 2>/dev/null)
+case "$geometry" in
+  [0-9]*x[0-9]*) exec foot --window-size-pixels="$geometry" "$@" ;;
+  *) exec foot "$@" ;;
+esac

@@ -1,0 +1,14 @@
+[Desktop Entry]
+# Axiom Files: the system PCManFM entry under its Axiom role name and icon
+# (its own Icon=system-file-manager no longer exists in Adwaita). Overrides
+# /usr/share/applications/pcmanfm.desktop via XDG_DATA_DIRS precedence.
+Type=Application
+Icon=axiom-files
+Name=Files
+GenericName=File Manager
+Comment=Browse the file system and manage the files
+Categories=GTK;System;Core;FileTools;FileManager;
+Exec=pcmanfm %U
+StartupNotify=true
+Terminal=false
+MimeType=inode/directory;

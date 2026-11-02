@@ -10,21 +10,44 @@ installed artifact before any distribution.
 
 ## Upstream infrastructure (research / not a current product dependency)
 
-The old Omarchy foundation experiment is archived. These entries are retained
-for provenance only; no current Axiom image is authorized to ship them as a
-product/runtime dependency. Current reuse decisions are made per component
-under [ARCHITECTURE](docs/ARCHITECTURE.md) and [decision 001](docs/decisions/001-remove-omarchy.md).
+The prior upstream-desktop foundation has been removed. Phase 3 research material
+(reference compositors and shell toolkits, see
+[research/phase3/repos](research/phase3/repos)) is read-only reference; no current
+Axiom image is authorized to ship any of it as a product/runtime dependency.
+Current reuse decisions are made per component under
+[ARCHITECTURE](docs/ARCHITECTURE.md), [decision 001](docs/decisions/001-remove-omarchy.md)
+and the Phase 3 [license audit](docs/research/phase3/licenses.md).
 
 | Component | Pinned input | License | Obligation / note |
 | --- | --- | --- | --- |
-| Omarchy | `omacom/omarchy` tag `v4.0.6` `237f1b40` (archived experiment) | MIT | Historical notice only; not an active Axiom input |
-| Omarchy ISO tooling | `omacom/omarchy-iso` `main` `3c36557f` (archived experiment) | MIT | Historical notice only; not an active Axiom input |
-| Omarchy packages | `omacom/omarchy-pkgs` (archived experiment) | MIT (repository metadata) | Verify only if a future decision reopens a component |
-| Hyprland | `hyprwm/Hyprland` (historical evaluation) | BSD-3-Clause | Not an Axiom product dependency; retain notice if a temporary harness uses it |
-| Quickshell | `quickshell-mirror/quickshell` (historical evaluation) | **LGPL-3.0-only** | Not an Axiom product dependency; LGPL obligations apply only if deliberately shipped |
+| Quickshell | `quickshell-mirror/quickshell` (Phase 3 shell toolkit candidate) | **LGPL-3.0-only** | Shared-library relink obligation applies if shipped; see license audit |
+| Sway | `swaywm/sway` (Phase 3 harness candidate) | MIT | Preserve notice if used as a temporary harness |
+| Hyprland | `hyprwm/Hyprland` (research only) | BSD-3-Clause | Not an Axiom dependency; IPC/behavior reference only |
+| Wayfire | `WayfireWM/wayfire` (research) | MIT | Reference only unless adopted |
+| COSMIC components | `pop-os/cosmic-*` (research) | GPL-3.0-only | Reference only; no code reuse without compliance |
 | SDDM (greeter) | Arch package (pin at build) | GPL-2.0-or-later (verify) | Preserve notice; distribution obligations |
 | Plymouth | Arch package (pin at build) | GPL-2.0-or-later (verify) | Preserve notice |
 | Btrfs / Snapper | Arch/SUSE packages | GPL-2.0 | Preserve notices |
+
+## Phase 3 desktop image: fonts and visual dependencies
+
+Installed from Arch `extra` as unmodified packages (not vendored in this
+repository). See [DESKTOP_DESIGN](docs/DESKTOP_DESIGN.md).
+
+| Component | Arch package | License | Use |
+| --- | --- | --- | --- |
+| Inter | `inter-font` 4.1 | OFL-1.1 (Reserved Font Name) | Shell UI and title-bar font |
+| JetBrains Mono | `ttf-jetbrains-mono` 2.304 | OFL-1.1 | Terminal and code font |
+| foot | `foot` 1.28 | MIT | Axiom Terminal (configured, not modified) |
+| labwc | `labwc` 0.20 | GPL-2.0-only | Phase 3 compositor harness (ADR-016); unmodified separate program, Axiom theme/config only |
+| Code - OSS | `code` 1.138 | MIT | Pinned code editor (Arch build of VS Code OSS; no Microsoft branding or marketplace) |
+| GVfs | `gvfs` | LGPL-2.0-or-later | `trash:///` backend for the Trash dock item |
+| Adwaita icon theme | `adwaita-icon-theme`, `adwaita-icon-theme-legacy` | LGPL-3.0 / CC-BY-SA-3.0 | Application icons via the XDG icon theme |
+
+Axiom's panel/menu glyphs (`shell/src/shared/AxiomIcon.qml`) are original
+paths, not copied from an icon font or set. The penguin and A-mark under
+`branding/identity/` are Axiom assets; their provenance review is still a
+release blocker like all of `branding/`.
 
 ## First-party sibling projects (not bundled by default)
 
@@ -38,20 +61,10 @@ under [ARCHITECTURE](docs/ARCHITECTURE.md) and [decision 001](docs/decisions/001
 
 ## Unresolved asset provenance (RESEARCH)
 
-Omarchy bundles artwork and fonts whose upstream license status is incomplete:
-
-- Theme wallpapers under `themes/*/backgrounds/` have **no in-tree attribution or license file**.
-- The custom icon font partially documents glyph provenance (simpleicons/lobehub/vendor
-  favicons); the remainder is untraced.
-- Vendor brand icons (Basecamp, Discord, Google, Zoom, etc.) are third-party trademarks.
-- Sounds were not located in the inspected tree; their existence and licensing are unverified.
-- Theme palettes re-implement known open palettes (Catppuccin, Gruvbox, Nord, Rosé Pine,
-  Tokyo Night, Everforest, Kanagawa, Flexoki); upstream licenses still apply.
-- One ALSA UCM directory ships an HP license file; other hardware data may differ.
-
-No archived Omarchy bundled asset may ship in an Axiom artifact. Axiom's own
-branding must be original or openly licensed with the license text and
-attribution retained.
+Any upstream desktop's bundled artwork, fonts, icons, sounds and palettes may
+carry incomplete licensing. Nothing of that kind may ship in an Axiom artifact.
+Axiom's own branding under `branding/` must be original or openly licensed with
+the license text and attribution retained; validate provenance before shipping.
 
 ## Project-level status
 

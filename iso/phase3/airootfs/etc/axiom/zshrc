@@ -1,0 +1,19 @@
+# Axiom default interactive zsh configuration, installed as ~/.zshrc for the
+# live user by customize_airootfs.sh (grml-zsh-config owns /etc/skel/.zshrc).
+# Edit freely; system defaults live in /etc/zsh/zshrc.
+
+# Axiom Terminal greeting: once per login session by default.
+# Configure with `axiom-greeting --disable` / `--enable`, or
+# ~/.config/axiom/terminal.conf (greeting=session|always|off).
+if [[ -o interactive ]] && (( $+commands[axiom-greeting] )); then
+  AXIOM_SHELL="zsh $ZSH_VERSION" axiom-greeting
+fi
+
+# Axiom prompt: user@host in cyan, path in white, arrow in orange (coral
+# after a failed command).
+if (( $+functions[prompt] )); then
+  prompt off 2>/dev/null
+fi
+setopt PROMPT_SUBST
+PROMPT='%F{#20D6D2}%n@%m%f %F{#EDF5F5}%~%f %(?.%F{#FF9418}.%F{#F2685E})❯%f '
+RPROMPT=''

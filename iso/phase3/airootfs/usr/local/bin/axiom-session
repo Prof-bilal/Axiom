@@ -1,0 +1,45 @@
+#!/bin/sh
+# Axiom session startup (Phase 3).
+#
+# login (agetty/autologin -> logind session) -> axiom-session -> compositor
+# harness (labwc, temporary; ADR-016) -> Axiom Shell (Quickshell), started by
+# /etc/axiom/labwc/autostart.
+#
+# Runs as the unprivileged login user. The compositor is a disposable bring-up
+# harness behind the session adapter, not the Axiom product contract.
+
+export XDG_CURRENT_DESKTOP=Axiom
+export XDG_SESSION_DESKTOP=axiom
+export XDG_SESSION_TYPE=wayland
+export XDG_RUNTIME_DIR="${XDG_RUNTIME_DIR:-/run/user/$(id -u)}"
+export PATH="/usr/local/bin:$PATH"
+# Lets `qs ipc call axiom …` from any session process find the Axiom Shell.
+export QS_CONFIG_PATH=/usr/local/share/axiom/shell
+
+# Software rendering fallback for virtual GPUs (QEMU/KVM, no hardware accel).
+export LIBGL_ALWAYS_SOFTWARE=1
+export WLR_RENDERER="${WLR_RENDERER:-pixman}"
+export MOZ_ENABLE_WAYLAND=1
+export QT_QPA_PLATFORM=wayland
+
+echo "AXIOM_SESSION_START" > /dev/ttyS0 2>/dev/null || true
+
+# Announce shell readiness on the serial console so QEMU can capture evidence
+# of a real graphical session rather than assuming one started.
+(
+  i=0
+  while [ "$i" -lt 120 ]; do
+    if pgrep -x quickshell >/dev/null 2>&1; then
+      sleep 2
+      echo "AXIOM_SHELL_READY" > /dev/ttyS0 2>/dev/null || true
+      break
+    fi
+    i=$((i + 1))
+    sleep 0.5
+  done
+) &
+
+# exec keeps this PID for dbus-run-session, which exits right after the
+# compositor; the shell supervisor uses it to stop when the session is gone.
+export AXIOM_SESSION_PID=$$
+exec dbus-run-session -- labwc -C /etc/axiom/labwc

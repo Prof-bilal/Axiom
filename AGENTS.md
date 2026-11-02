@@ -4,11 +4,11 @@ Build an original AI-native Linux desktop for developers with safe structured
 automation, privacy, recovery and measured performance. The repository is
 project memory; no tool or chat is authoritative over maintained contracts.
 
-**Current development: Phase 0 architecture reset (authorized 2026-10-29).**
-The previous Omarchy-derived Phase 2/3 desktop direction is superseded and
-archived. The next implementation gate is Phase 1: bootable minimal Axiom base
-and graphical-session prerequisites in QEMU. Read [PHASES](docs/PHASES.md), the
-[reset impact report](docs/engineering/ARCHITECTURE_RESET_IMPACT.md) and
+**Current development: Phase 3 Axiom Shell MVP (authorized 2026-11-01).**
+The architecture reset is complete and the previous upstream-derived desktop
+direction has been removed. The implementation gate is a real Axiom Shell on a
+temporary Wayland compositor harness, verified in QEMU. Read [PHASES](docs/PHASES.md),
+the [reset impact report](docs/engineering/ARCHITECTURE_RESET_IMPACT.md) and
 [architecture](docs/ARCHITECTURE.md) before changing direction.
 
 ## Architecture and map
@@ -22,8 +22,6 @@ bring-up, but no upstream desktop project is the product contract. See
 [DECISIONS](docs/DECISIONS.md) and [ROADMAP](docs/ROADMAP.md).
 
 - `docs/`: product, architecture, contracts, research, phases and evidence.
-- `archive/legacy/`: superseded Omarchy foundation and theme material; never an
-  active input.
 - `iso/` and `tests/`: retained Phase 1 archiso/QEMU evidence and harness.
 - `branding/`: reviewed Axiom identity and palette assets, not an upstream
   desktop theme install.

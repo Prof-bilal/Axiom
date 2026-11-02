@@ -1,0 +1,155 @@
+#!/bin/sh
+# Axiom Terminal greeting: penguin art, the Axiom OS logo and a compact system
+# summary, printed when a terminal opens. Every value is read from the running
+# system; nothing is hardcoded.
+#
+# Config: ${XDG_CONFIG_HOME:-~/.config}/axiom/terminal.conf
+#   greeting=session   default: first terminal of each login session
+#   greeting=always    every new interactive shell
+#   greeting=off       never
+#
+#   axiom-greeting            print if the config allows it
+#   axiom-greeting --force    print now, ignoring the config
+#   axiom-greeting --disable  write greeting=off to the config
+#   axiom-greeting --enable   write greeting=session to the config
+#
+# The logo is a sixel image (foot supports sixel); other terminals get a text
+# heading. The caller may pass its shell as AXIOM_SHELL="zsh 5.9".
+
+conf_dir="${XDG_CONFIG_HOME:-$HOME/.config}/axiom"
+conf="$conf_dir/terminal.conf"
+logo=/usr/local/share/axiom/terminal/axiom-logo.six
+
+set_mode() {
+  mkdir -p "$conf_dir" || exit 1
+  if [ -f "$conf" ] && grep -q '^greeting=' "$conf"; then
+    sed -i "s/^greeting=.*/greeting=$1/" "$conf"
+  else
+    printf 'greeting=%s\n' "$1" >> "$conf"
+  fi
+  echo "axiom-greeting: greeting=$1 ($conf)"
+}
+
+case "${1:-}" in
+  --disable) set_mode off; exit 0 ;;
+  --enable) set_mode session; exit 0 ;;
+  --force) mode=always ;;
+  "") mode=session
+      [ -f "$conf" ] && m=$(sed -n 's/^greeting=//p' "$conf" | tail -n 1) && [ -n "$m" ] && mode="$m" ;;
+  *) echo "usage: axiom-greeting [--force|--disable|--enable]" >&2; exit 2 ;;
+esac
+
+case "$mode" in
+  off) exit 0 ;;
+  session)
+    marker="${XDG_RUNTIME_DIR:-/tmp}/axiom-greeted"
+    [ -e "$marker" ] && exit 0
+    : > "$marker" 2>/dev/null ;;
+esac
+
+# --- real values ---
+os=""
+[ -r /etc/os-release ] && os=$(sed -n 's/^PRETTY_NAME="\{0,1\}\([^"]*\)"\{0,1\}$/\1/p' /etc/os-release | head -n 1)
+arch=$(uname -m 2>/dev/null)
+[ -n "$os" ] && [ -n "$arch" ] && os="$os ($arch)"
+kernel=$(cat /proc/sys/kernel/osrelease 2>/dev/null)
+shell_info="${AXIOM_SHELL:-${SHELL##*/}}"
+
+term="$TERM"
+case "$TERM" in
+  foot|foot-*) command -v foot >/dev/null 2>&1 \
+      && term="foot $(foot --version 2>/dev/null | sed -n 's/^foot version: \([^ ]*\).*/\1/p')" ;;
+esac
+
+# Theme: the Axiom palette is dark; report what GTK is actually told to use.
+theme=""
+for f in "${XDG_CONFIG_HOME:-$HOME/.config}/gtk-3.0/settings.ini" /etc/xdg/gtk-3.0/settings.ini; do
+  if [ -r "$f" ]; then
+    v=$(sed -n 's/^gtk-application-prefer-dark-theme *= *//p' "$f" | tail -n 1)
+    case "$v" in
+      1|true) theme="Axiom Dark" ;;
+      0|false) theme="Axiom Light (not yet designed)" ;;
+    esac
+    [ -n "$theme" ] && break
+  fi
+done
+
+up=""
+if read -r secs _ < /proc/uptime 2>/dev/null; then
+  s=${secs%.*}
+  d=$((s / 86400)); h=$((s % 86400 / 3600)); m=$((s % 3600 / 60))
+  if [ "$d" -gt 0 ]; then up="${d}d ${h}h ${m}m"
+  elif [ "$h" -gt 0 ]; then up="${h}h ${m}m"
+  else up="${m}m"; fi
+fi
+
+# --- palette (24-bit) ---
+e=$(printf '\033')
+c="$e[38;2;32;214;210m"      # cyan
+o="$e[38;2;255;148;24m"      # orange
+t="$e[38;2;237;245;245m"     # primary text
+g="$e[38;2;142;162;165m"     # secondary text
+l="$e[38;2;35;50;56m"        # divider
+b="$e[1m"
+r="$e[0m"
+
+# --- penguin (12 rows; cyan dashed outline, orange eyes, beak and feet) ---
+# Rows are padded to a fixed visible width by pad(), so colour codes do not
+# break the column alignment.
+W=22
+pad() {
+  vis=$(printf '%s' "$1" | sed "s/$e\[[0-9;]*m//g")
+  n=$((W - ${#vis})); [ "$n" -lt 0 ] && n=0
+  printf '%s%*s' "$1" "$n" ""
+}
+p1="       ${c}.-~~~~-.${r}"
+p2="     ${c}.'        '.${r}"
+p3="    ${c}:${r}  ${o}(o)${r}  ${o}(o)${r}  ${c}:${r}"
+p4="    ${c}:${r}     ${o}\\/${r}     ${c}:${r}"
+p5="    ${c}:.${r}   ${c}.--.${r}   ${c}.:${r}"
+p6="   ${c}.' :${r} ${c}:${r}    ${c}:${r} ${c}: '.${r}"
+p7="  ${c}:   :${r} ${c}:${r}    ${c}:${r} ${c}:   :${r}"
+p8="  ${c}:   :${r} ${c}:${r}    ${c}:${r} ${c}:   :${r}"
+p9="   ${c}'. :${r}  ${c}'--'${r}  ${c}: .'${r}"
+p10="     ${c}:          :${r}"
+p11="   ${o}__${c}'.________.'${o}__${r}"
+p12="  ${o}(______)  (______)${r}"
+
+div="  ${l}│${r}  "
+sixel=0
+case "$TERM" in foot|foot-*) [ -r "$logo" ] && sixel=1 ;; esac
+
+info() {  # icon label value
+  [ -n "$3" ] && printf '%s%s%s  %s%-9s%s%s:%s  %s%s%s' "$c" "$1" "$r" "$g" "$2" "$r" "$l" "$r" "$t" "$3" "$r"
+}
+
+# Reserve the block first so the logo cannot scroll it away.
+n=12
+printf '\n'
+i=0; while [ "$i" -lt "$n" ]; do printf '\n'; i=$((i + 1)); done
+printf '%s[%dA' "$e" "$n"
+
+if [ "$sixel" -eq 1 ]; then
+  printf '%s7' "$e"              # save cursor
+  printf '%s[%dG' "$e" 28        # logo column (after penguin + divider)
+  cat "$logo"
+  printf '%s8' "$e"              # restore cursor
+  head2=""
+else
+  head2="${b}${t}Axiom ${o}OS${r}"
+fi
+
+printf '%s%s\n' "$(pad "$p1")" "$div"
+printf '%s%s%s\n' "$(pad "$p2")" "$div" "$head2"
+printf '%s%s\n' "$(pad "$p3")" "$div"
+printf '%s%s%s\n' "$(pad "$p4")" "$div" "${c}AI${g}-native Linux for Developers${r}"
+printf '%s%s\n' "$(pad "$p5")" "$div"
+printf '%s%s%s\n' "$(pad "$p6")" "$div" "$(info '▣' 'OS' "$os")"
+printf '%s%s%s\n' "$(pad "$p7")" "$div" "$(info '◈' 'Kernel' "$kernel")"
+printf '%s%s%s\n' "$(pad "$p8")" "$div" "$(info '❯' 'Shell' "$shell_info")"
+printf '%s%s%s\n' "$(pad "$p9")" "$div" "$(info '▤' 'Terminal' "$term")"
+printf '%s%s%s\n' "$(pad "$p10")" "$div" "$(info '◐' 'Theme' "$theme")"
+printf '%s%s%s\n' "$(pad "$p11")" "$div" "$(info '◷' 'Uptime' "$up")"
+printf '%s%s\n' "$(pad "$p12")" "$div"
+printf '\n'
+exit 0

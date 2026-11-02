@@ -269,7 +269,7 @@ example Warden as a required execution layer) is proposed and needs its own deci
 
 **Decision:** C, as a researched direction. Omarchy is upstream infrastructure, never the product. Axiom consumes pinned upstream revisions and replaces identity, shell UX, security behavior and agent integration.
 
-**Evidence:** historical [migration report](../archive/legacy/omarchy-foundation/docs/OMARCHY_MIGRATION.md). Stable upstream pin `omacom/omarchy` `v4.0.6` (`237f1b40`) with `quattro` (`39d56653`) tracked read-only; `omarchy-iso` `main` `3c36557f`; Quickshell `v0.3.2` (`4f508be5`, LGPL-3.0-only); Hyprland `v0.56.2` (BSD-3-Clause). This evidence is retained for the superseded decision only.
+**Evidence:** historical migration report (removed from the repository). Stable upstream pin `omacom/omarchy` `v4.0.6` (`237f1b40`) with `quattro` (`39d56653`) tracked read-only; `omarchy-iso` `main` `3c36557f`; Quickshell `v0.3.2` (`4f508be5`, LGPL-3.0-only); Hyprland `v0.56.2` (BSD-3-Clause). This evidence is retained for the superseded decision only.
 
 **Benefits:** reuse of proven Arch/Hyprland/Quickshell infrastructure; smaller foundation surface to own; an original Axiom Shell rather than Plasma extensions; clear separation between upstream infrastructure and product; upstream update/hardware work can be reviewed and ported deliberately.
 
@@ -306,3 +306,15 @@ apps → system experience → security → AI → hardware → distribution.
 ## Change proposal requirements
 
 Explain why current architecture is insufficient; alternatives and primary evidence; replacement; migration cost; compatibility; security; measured or proposed performance impact; rollback strategy; owner and affected contracts. Independent review is required for trust-boundary changes. [Research](RESEARCH.md) records experiments; [phases](PHASES.md) records gates.
+
+## ADR-015: Phase 3 shell architecture
+
+Quickshell/QML Axiom Shell behind Axiom service adapters, on a temporary
+compositor harness. Full record: [decisions/phase3-shell-architecture.md](decisions/phase3-shell-architecture.md).
+
+## ADR-016: labwc as the Phase 3 compositor harness
+
+labwc replaces Sway so application windows get real Axiom title bars (icon,
+minimize/maximize/close, rounded corners, focus glow); the workspace adapter
+moves to the standard ext-workspace protocol. Full record:
+[decisions/016-labwc-compositor-harness.md](decisions/016-labwc-compositor-harness.md).
