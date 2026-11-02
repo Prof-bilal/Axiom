@@ -48,7 +48,7 @@ Row {
                 anchors.fill: parent
                 hoverEnabled: true
                 cursorShape: Qt.PointingHandCursor
-                onPressed: WorkspaceService.activate(chip.modelData)   // press: see PanelButton
+                onClicked: WorkspaceService.activate(chip.modelData)
             }
         }
     }

@@ -17,9 +17,12 @@ PanelWindow {
     exclusionMode: ExclusionMode.Ignore
     color: Qt.rgba(2 / 255, 5 / 255, 7 / 255, 0.72)
     visible: UiState.activitiesOpen
-    focusable: UiState.activitiesOpen
     WlrLayershell.namespace: "axiom-activities"
     WlrLayershell.layer: WlrLayershell.Overlay
+    // No `focusable:` here: it makes Quickshell request on-demand keyboard
+    // interactivity and overrides the explicit Exclusive mode below, so the
+    // compositor hands the keyboard straight back to the app and Escape never
+    // reaches this overlay.
     WlrLayershell.keyboardFocus: UiState.activitiesOpen ? WlrLayershell.Exclusive : WlrLayershell.None
 
     readonly property var windows: WindowService.list()

@@ -18,10 +18,13 @@ PanelWindow {
     implicitHeight: Math.min(520, history.childrenRect.height + Theme.spacingMd * 2 + 40)
     color: Theme.overlayBackground
     visible: UiState.notificationCenterOpen
-    focusable: UiState.notificationCenterOpen
     exclusionMode: ExclusionMode.Ignore
     WlrLayershell.namespace: "axiom-notification-center"
     WlrLayershell.layer: WlrLayershell.Overlay
+    // No `focusable:` here: it makes Quickshell request on-demand keyboard
+    // interactivity and overrides the explicit Exclusive mode below, so the
+    // compositor hands the keyboard straight back to the app and Escape never
+    // reaches this overlay.
     WlrLayershell.keyboardFocus: UiState.notificationCenterOpen
         ? WlrLayershell.Exclusive : WlrLayershell.None
 

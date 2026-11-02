@@ -18,8 +18,11 @@ PanelWindow {
     visible: UiState.launcherOpen
     WlrLayershell.namespace: "axiom-launcher"
     WlrLayershell.layer: WlrLayershell.Overlay
+    // No `focusable:` here: it makes Quickshell request on-demand keyboard
+    // interactivity and overrides the explicit Exclusive mode below, so the
+    // compositor hands the keyboard straight back to the app and Escape never
+    // reaches this overlay.
     WlrLayershell.keyboardFocus: UiState.launcherOpen ? WlrLayershell.Exclusive : WlrLayershell.None
-    focusable: UiState.launcherOpen
 
     readonly property var results: ApplicationService.search(UiState.launcherQuery)
     property int selected: 0

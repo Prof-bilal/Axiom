@@ -1,6 +1,6 @@
 # Axiom implementation phases
 
-Current phase: **Phase 3 — Axiom Shell MVP (in progress, 2026-11-01)**.
+Current phase: **Phase 3 — Axiom Shell MVP (complete, 2026-11-03; next: Phase 4)**.
 The architecture reset is complete; the previous upstream-derived desktop
 direction has been removed. Each phase requires retained evidence; code existing
 in a branch is not an exit criterion.
@@ -86,6 +86,16 @@ one Axiom visual system — tokens, panel, penguin menu, dock, window rules,
 Axiom Terminal and greeting — specified in [DESKTOP_DESIGN](DESKTOP_DESIGN.md)
 and exercised in QEMU by `tests/phase3-desktop.py` at 1366×768, 1920×1080 and
 2560×1440 (results in [evidence](research/phase3/evidence.md)).
+
+**Completion (2026-11-03):** the exit path (boot → login → desktop → launch app →
+switch apps → launcher → dock → logout/shutdown) passed in QEMU at 1920×1080
+(full run, shutdown confirmed through the UI), 1366×768 and 2560×1440. The two
+open defects were root-caused and fixed (overlay keyboard interactivity;
+polkit authorization for session power actions). Evidence and measurements:
+[evidence](research/phase3/evidence.md), [performance](research/phase3/performance.md).
+Known limits carried forward: logout and restart were not exercised in the
+final runs (logout by UI is not yet covered by an automated check), and the
+numbers are software-rendered KVM baselines.
 
 Phase 1 (bootable base) and Phase 2 (graphical session) are demonstrated by the
 same image reaching a Wayland session with real applications; their evidence is

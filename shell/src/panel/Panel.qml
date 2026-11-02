@@ -99,7 +99,7 @@ PanelWindow {
                 anchors.fill: parent
                 hoverEnabled: true
                 cursorShape: Qt.PointingHandCursor
-                onPressed: UiState.toggleAxiomMenu()   // press: see PanelButton
+                onClicked: UiState.toggleAxiomMenu()
             }
         }
 

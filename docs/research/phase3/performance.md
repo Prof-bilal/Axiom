@@ -1,6 +1,6 @@
 # Phase 3 performance record
 
-Status: **methodology defined; measurements pending the first QEMU session run.**
+Status: **first measured run recorded 2026-11-03** (software-rendered KVM guest).
 Nothing here is a performance claim until a run is recorded with its environment.
 
 ## What to measure (minimum)
@@ -37,13 +37,27 @@ versions, ISO checksum, and whether KVM acceleration was enabled.
 
 ## Results
 
-**Partial (2026-11-01).** A live QEMU/KVM session was observed to boot through
-`getty@tty1` autologin → `axiom-session` → `sway` → `quickshell` and render the
-full desktop (panel, dock, wallpaper, real application windows), with a single
-stable `quickshell` process supervised by `axiom-shell`. See
-[evidence](evidence.md) for the environment and checksum.
+Driver: `tests/phase3-perf.py` (artifacts in `iso/out-phase3/evidence/perf/`,
+not committed). Image SHA-256
+`2a42a06b3ba53286bd99ef922400d46beaaf548b90e958b85e3377c3d4ecdbc7`. QEMU 11.1.2
+with KVM, OVMF UEFI, 2 GiB RAM, 2 vCPU, VGA at 1920×1080, `WLR_RENDERER=pixman`
+(software), labwc 0.20.2, Quickshell 0.3.2, Qt 6.12.0, kernel 7.2.11-arch1-1.
+One run on a loaded developer host; treat figures as a baseline, not a claim.
 
-Numeric results are **not yet recorded**: the readiness markers were not captured
-on that run (the serial socket only records after a client connects), so startup
-time, idle RAM and idle CPU must come from the automated `-serial file:` run.
-Prior `docs/engineering/BENCHMARKS.md` expectations do not apply to this shell.
+| Metric | Result |
+| --- | --- |
+| QEMU start → login prompt | 67.5 s (includes firmware and a systemd job waiting for time sync) |
+| QEMU start → shell IPC ready | 88.9 s |
+| Guest-monotonic start of labwc / quickshell | 45.9 s / 57.8 s after kernel start |
+| Quickshell RSS / PSS (idle ≥ 40 s) | 433 MB / 389 MB |
+| labwc RSS / PSS | 72 MB / 39 MB |
+| Whole guest memory used | 676 MB of 2048 MB |
+| Idle CPU, 20 s window | quickshell 0.00 %, labwc 0.00 % of one core |
+| `qs ipc` toggle round trip (5 runs) | 547, 382, 151, 89, 88 ms (cold start dominates; steady ~90 ms) |
+| `notify-send` to the session notification server (3 runs) | 184, 20, 20 ms |
+
+Caveats: `systemd-analyze` was not usable (boot job still waiting for time sync in
+a no-network guest), so the timeline uses process start times. Latencies are
+measured at the IPC/D-Bus call, not to a rendered frame. Quickshell's 433 MB
+RSS is the largest single cost and is a candidate for later work; no
+optimization claim is made.

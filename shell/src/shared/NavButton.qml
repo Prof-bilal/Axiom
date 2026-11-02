@@ -58,6 +58,6 @@ Item {
         anchors.fill: parent
         hoverEnabled: true
         cursorShape: Qt.PointingHandCursor
-        onPressed: nav.activated()   // press: see PanelButton
+        onClicked: nav.activated()
     }
 }

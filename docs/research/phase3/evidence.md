@@ -54,7 +54,7 @@ Confirmed via the serial console: `loginctl` shows session 1 user `axiom` on
 - Desktop entries discovered (firefox, foot, pcmanfm, mousepad, vim, …).
 - IPC handler registered (`qs ipc call axiom …`).
 
-Visible result (screenshot `research/phase3/screenshots/desktop-phase3-live.png`):
+Visible result (captured in the live session; the screenshot file was not committed, later runs retain screendumps under `iso/out-phase3/evidence/desktop/`):
 top panel (Axiom mark, workspace chip, center clock, right-side status and
 power), bottom dock (terminal highlighted as running, plus editor and browser),
 aurora wallpaper, and three tiled `foot` windows — driven by real input in a
@@ -69,14 +69,6 @@ live session.
 | Serial readiness markers never appeared | `axiom` was not in group `tty`, and `/dev/ttyS0` is `root:tty 0600` | Added `tty` to `axiom` |
 | `-device virtio-vga` boot failed | Not a valid device in this QEMU build | Use `-vga std` |
 | `Keys` attached to a window warning | `Keys` attached to `PanelWindow` (a window, not an `Item`) | Moved Escape handling to a focusable child `Item` |
-
-## Still to record
-
-- The automated headless acceptance run (`tests/qemu-session.sh`) with
-  `screendump` evidence for launcher / terminal / workspace switch / control
-  centre and a clean poweroff — pending because the host had only ~1.3 GB free
-  RAM and one 2 GB guest was already running for interactive inspection.
-  Timing for [performance](performance.md) comes from that run.
 
 ## Desktop identity run (2026-11-02)
 
@@ -146,3 +138,36 @@ compositor defect: it lies in how the shell's overlay windows take and release
 keyboard focus (Quickshell / Qt Wayland). The Axiom-menu keyboard failure is in
 the same area (the launcher, a different surface type, does receive keys).
 Both are the next shell fix.
+
+## Phase 3 gate closure (2026-11-03)
+
+Image `axiom-2026.11.02-x86_64.iso`, SHA-256
+`2a42a06b3ba53286bd99ef922400d46beaaf548b90e958b85e3377c3d4ecdbc7`
+(labwc 0.20.2, Quickshell 0.3.2, Qt 6.12.0, guest kernel 7.2.11-arch1-1,
+QEMU 11.1.2, KVM, OVMF, 2 GiB / 2 vCPU, `-nic none`).
+
+### Root causes of the two open bugs
+
+| Symptom | Cause | Fix |
+| --- | --- | --- |
+| "First panel/dock click after an overlay is lost"; Axiom menu got no keyboard input | Not a lost click. Overlays set `focusable: open` **and** `WlrLayershell.keyboardFocus: Exclusive`. `focusable` makes Quickshell request *on-demand* keyboard interactivity (`set_keyboard_interactivity(1)` then `(2)` in the Wayland trace), so labwc returned keyboard focus to the terminal. Escape never reached the overlay, the menu stayed open, and the next click was consumed by its outside-click handler. | Removed `focusable` from `MenuSurface`, `Launcher`, `ActivitiesOverview`, `NotificationCenter`. Reverted the earlier press-activation workaround (`onPressed`) to `onClicked`. |
+| Confirmed Shut Down never powered off | `systemctl poweroff` as the desktop user returned *Access denied … requires interactive authentication*: any other login session (the serial-console getty) makes logind treat it as a multi-session power-off, which polkit reserves for admins. | `iso/phase3/airootfs/etc/polkit-1/rules.d/50-axiom-session-power.rules` allows only `axiom`, local and active, for `power-off-multiple-sessions` and `reboot-multiple-sessions`. |
+
+The earlier theory that this was a Sway or Qt Wayland press-delivery defect
+was wrong; the compositor and toolkit delivered every press.
+
+### Acceptance runs (`tests/phase3-desktop.py`)
+
+| Resolution | Mode | Result |
+| --- | --- | --- |
+| 1920×1080 | full: Axiom menu + search, terminal, cascade, Files from dock, maximize/minimize, workspace switch by click, status menu, apps grid by dock click, Activities, launcher, session menu, Shut Down armed then confirmed by click | **PASS**, guest powered off cleanly, no QML errors |
+| 1366×768 | short (menu, terminal, launcher, status menu, shell-service poweroff) | **PASS**, clean power-off |
+| 2560×1440 | short | **PASS**, clean power-off |
+
+Driver notes: the confirm row disarms after 4 s, so the driver clicks again if
+the first confirming click arrives late; short-mode power-off runs from the
+open root serial shell (the polkit rule covers the extra session). Firmware
+stalls (exit 3) were retried, as before; they are a host/QEMU flake, not a
+desktop defect.
+
+Measurements are in [performance](performance.md).

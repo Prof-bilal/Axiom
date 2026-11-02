@@ -83,10 +83,6 @@ Item {
         hoverEnabled: true
         enabled: btn.available
         cursorShape: Qt.PointingHandCursor
-        // Act on press, like desktop menu bars. Under the harness, when an
-        // app regains keyboard focus after a shell overlay closes, the
-        // press/release pair can be split and onClicked would never fire,
-        // swallowing the first click.
-        onPressed: btn.clicked()
+        onClicked: btn.clicked()
     }
 }

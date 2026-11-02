@@ -275,9 +275,16 @@ else:
 # --- power off ----------------------------------------------------------------
 # Log root out first: with a second (root) session open, logind treats the
 # request as a multi-session power-off, which polkit reserves for admins.
-ser.sendall(b"exit\n"); time.sleep(3)
+if not SHORT:
+    ser.sendall(b"exit\n"); time.sleep(3)
 if SHORT:
-    ser.sendall(f"su axiom -s /bin/sh -c 'XDG_RUNTIME_DIR=/run/user/1000 {QS} powerOff'\n".encode())
+    # Power off from the still-open root serial shell: the polkit rule in
+    # /etc/polkit-1/rules.d lets the desktop user's active session do so even
+    # though another (root) session exists.
+    # The UART drops bytes when a long line arrives in one burst; pace it.
+    _line = f"su axiom -s /bin/sh -c 'XDG_RUNTIME_DIR=/run/user/1000 {QS} powerOff'\n".encode()
+    for _i in range(0, len(_line), 24):
+        ser.sendall(_line[_i:_i + 24]); time.sleep(0.08)
 else:
     # Session menu is still open: the first click only arms Shut Down.
     shut_down = (W - 8 - 230 + 8 + 115, PANEL_H + 4 + 8 + 28 + 2 * 36 + 17)
@@ -286,7 +293,12 @@ else:
         ok("single click on Shut Down did not power off (confirmation required)")
     else:
         bad("Shut Down fired without confirmation")
-    click(*shut_down, settle=0.5)
+    # The row disarms after 4 s (MenuItem). A screendump plus pointer move can
+    # take that long on a loaded host, so a confirming click that lands after
+    # the timeout only re-arms; click once more, as a user would.
+    click(*shut_down, settle=3.0)
+    if qemu.poll() is None:
+        click(*shut_down, settle=0.5)
 try:
     qemu.wait(timeout=120); ok("guest powered off cleanly")
 except subprocess.TimeoutExpired:

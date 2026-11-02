@@ -23,9 +23,12 @@ PanelWindow {
     exclusionMode: ExclusionMode.Ignore
     color: "transparent"
     visible: open
-    focusable: open
     WlrLayershell.namespace: layerNamespace
     WlrLayershell.layer: WlrLayershell.Overlay
+    // No `focusable:` here: it makes Quickshell request on-demand keyboard
+    // interactivity and overrides the explicit Exclusive mode below, so the
+    // compositor hands the keyboard straight back to the app and Escape never
+    // reaches this overlay.
     WlrLayershell.keyboardFocus: open ? WlrLayershell.Exclusive : WlrLayershell.None
 
     onOpenChanged: if (open) { keys.forceActiveFocus(); surface.opened() }
