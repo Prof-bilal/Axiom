@@ -97,6 +97,64 @@ Canvas {
         "chevron-right": {
             stroke: "M9.5 6l6 6-6 6"
         },
+        "settings": {
+            stroke: "M4 7h9 M17 7h3 M4 12h3 M11 12h9 M4 17h11 M19 17h1 M15 4.5v5 M9 9.5v5 M17 14.5v5"
+        },
+        "arrow-left": {
+            stroke: "M19 12H5 M11 6l-6 6 6 6"
+        },
+        "arrow-right": {
+            stroke: "M5 12h14 M13 6l6 6-6 6"
+        },
+        "arrow-up": {
+            stroke: "M12 19V5 M6 11l6-6 6 6"
+        },
+        "refresh": {
+            stroke: "M19.5 12a7.5 7.5 0 1 1-2.2-5.3 M19.5 4.5v4h-4"
+        },
+        "eye": {
+            stroke: "M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z M12 9.2a2.8 2.8 0 1 0 0 5.6 2.8 2.8 0 0 0 0-5.6z"
+        },
+        "plus": {
+            stroke: "M12 5v14 M5 12h14"
+        },
+        "sort": {
+            stroke: "M8 5v14 M4.5 15.5L8 19l3.5-3.5 M16 19V5 M12.5 8.5L16 5l3.5 3.5"
+        },
+        "home": {
+            stroke: "M3.5 11.5L12 4l8.5 7.5 M6 10v10h12V10 M10 20v-6h4v6"
+        },
+        "download": {
+            stroke: "M12 4v11 M7 10.5l5 5 5-5 M5 20h14"
+        },
+        "disk": {
+            stroke: "M4 14h16v6H4z M4 14l2-9h12l2 9 M16.5 17h.01"
+        },
+        "file": {
+            stroke: "M7 3h7l5 5v12a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z M14 3v5h5"
+        },
+        "document": {
+            stroke: "M7 3h7l5 5v12a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z M14 3v5h5 M9.5 13h6 M9.5 17h6"
+        },
+        "image": {
+            stroke: "M4 5h16a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1z M3 16l5-5 4 4 3-3 6 6",
+            dots: [[15.5, 9.5, 1.3]]
+        },
+        "audio": {
+            stroke: "M9 17.5V6l10-2v11.5 M9 17.5a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0z M19 15.5a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0z"
+        },
+        "video": {
+            stroke: "M3.5 6h11.5v12H3.5z M15 10.5l5.5-3.5v10L15 13.5"
+        },
+        "archive": {
+            stroke: "M4.5 4h15v4h-15z M5.5 8v12h13V8 M10 12h4"
+        },
+        "code": {
+            stroke: "M9 7.5L4 12l5 4.5 M15 7.5l5 4.5-5 4.5"
+        },
+        "broken-link": {
+            stroke: "M10.5 13.5L8 16a3 3 0 0 1-4.2-4.2L6.5 9 M13.5 10.5L16 8a3 3 0 0 1 4.2 4.2L17.5 15 M4 4l16 16"
+        },
         "application": {
             stroke: "M5 4h14a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1z M4 8.5h16",
             dots: [[6.6, 6.3, 0.8], [9, 6.3, 0.8]]

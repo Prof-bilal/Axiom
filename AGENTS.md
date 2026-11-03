@@ -4,10 +4,11 @@ Build an original AI-native Linux desktop for developers with safe structured
 automation, privacy, recovery and measured performance. The repository is
 project memory; no tool or chat is authoritative over maintained contracts.
 
-**Current development: Phase 3 Axiom Shell MVP (authorized 2026-11-01).**
-The architecture reset is complete and the previous upstream-derived desktop
-direction has been removed. The implementation gate is a real Axiom Shell on a
-temporary Wayland compositor harness, verified in QEMU. Read [PHASES](docs/PHASES.md),
+**Current development: Phase 4 Axiom core apps is complete (2026-11-03); Phase 5
+(system experience) needs authorization before work starts.** Phases 3 and 4
+are verified in QEMU: the Axiom Shell on a temporary labwc harness, and
+functional Files, Settings, Terminal integration and a read-only Software Center
+([ADR-017](docs/decisions/017-core-app-runtime.md)). Read [PHASES](docs/PHASES.md),
 the [reset impact report](docs/engineering/ARCHITECTURE_RESET_IMPACT.md) and
 [architecture](docs/ARCHITECTURE.md) before changing direction.
 
@@ -26,7 +27,7 @@ bring-up, but no upstream desktop project is the product contract. See
 - `branding/`: reviewed Axiom identity and palette assets, not an upstream
   desktop theme install.
 - `scripts/`: deterministic repository validation and legacy evidence helpers.
-- Future `system/`, `compositor/`, `shell/`, `apps/`, `services/`, `security/`,
+- `shell/` and `apps/` hold the Axiom Shell and core apps. Future `system/`, `compositor/`, `services/`, `security/`,
   `ai/`, `packages/` and `vm/` appear only when their phase authorizes real
   implementation; do not create empty scaffolds.
 

@@ -33,7 +33,9 @@ versions, ISO checksum, and whether KVM acceleration was enabled.
 - **No animation work yet.** Motion is limited to short hover color fades
   (≤120 ms). This is deliberate: correctness before animation.
 - **Service polling.** Status state is push-based through D-Bus/PipeWire
-  services; the only timer is a 1 s clock update.
+  services; the timers are the 1 s clock update and, only while
+  `~/.config/axiom/settings.json` does not exist, a 1.5 s retry to find it
+  ([ADR-018](../../decisions/018-axiom-settings-store.md)).
 
 ## Results
 

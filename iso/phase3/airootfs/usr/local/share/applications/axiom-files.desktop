@@ -1,0 +1,13 @@
+[Desktop Entry]
+# Axiom Files (Phase 4): the file manager and the default handler for folders.
+Type=Application
+Icon=axiom-files
+Name=Files
+GenericName=File Manager
+Comment=Browse, open and organise your files
+Categories=System;FileTools;FileManager;Core;
+Exec=axiom-app files %U
+StartupWMClass=org.axiom.Files
+StartupNotify=true
+Terminal=false
+MimeType=inode/directory;

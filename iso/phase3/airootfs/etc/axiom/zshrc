@@ -17,3 +17,39 @@ fi
 setopt PROMPT_SUBST
 PROMPT='%F{#20D6D2}%n@%m%f %F{#EDF5F5}%~%f %(?.%F{#FF9418}.%F{#F2685E})❯%f '
 RPROMPT=''
+
+# --- Terminal integration (Phase 4) ------------------------------------------
+# Only inside foot (or another terminal that sets TERM=foot*).
+if [[ -o interactive && $TERM == foot* ]]; then
+  zmodload zsh/datetime
+
+  # OSC 7: report the working directory so a new terminal opened from this one
+  # (foot: ctrl+shift+n) starts in the same place. The path is percent-encoded.
+  _axiom_osc7() {
+    emulate -L zsh
+    local LC_ALL=C c out="" i
+    for (( i = 1; i <= ${#PWD}; i++ )); do
+      c=${PWD[i]}
+      if [[ $c == [A-Za-z0-9/._~-] ]]; then out+=$c
+      else out+=$(printf '%%%02X' "'$c"); fi
+    done
+    printf '\e]7;file://%s%s\e\\' "$HOST" "$out"
+  }
+  chpwd_functions+=(_axiom_osc7)
+  _axiom_osc7
+
+  # OSC 777: a desktop notification when a command that ran for at least
+  # $AXIOM_NOTIFY_AFTER seconds (default 10) finishes. foot shows it only
+  # while the terminal is not focused. Set AXIOM_NOTIFY_AFTER=0 to disable.
+  _axiom_cmd_start() { _axiom_cmd=${1//[[:cntrl:]]/ }; _axiom_t0=$EPOCHSECONDS }
+  _axiom_cmd_end() {
+    local rc=$? dt
+    [[ -n $_axiom_t0 ]] || return
+    (( dt = EPOCHSECONDS - _axiom_t0 )); _axiom_t0=""
+    local after=${AXIOM_NOTIFY_AFTER:-10}
+    (( after > 0 && dt >= after )) || return
+    printf '\e]777;notify;Command finished;%s (exit %d, %ds)\e\\' "${_axiom_cmd[1,60]}" $rc $dt
+  }
+  preexec_functions+=(_axiom_cmd_start)
+  precmd_functions=(_axiom_cmd_end $precmd_functions)
+fi

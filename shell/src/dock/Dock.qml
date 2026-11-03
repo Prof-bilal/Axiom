@@ -16,10 +16,10 @@ PanelWindow {
     property var modelData
     screen: modelData
 
-    // Pinned desktop-entry ids, in role order: terminal, files, browser,
-    // code editor, trash. Ids that are not installed are skipped. A Settings
-    // app is pinned once Axiom ships one (Phase 4).
-    readonly property var pinnedIds: ["foot", "pcmanfm", "firefox", "code-oss", "axiom-trash"]
+    // Pinned desktop-entry ids, in order: the user's Settings choice, or the
+    // defaults (terminal, files, browser, code editor, trash). Ids that are not
+    // installed are skipped.
+    readonly property var pinnedIds: SettingsService.dockPins
 
     readonly property var items: {
         var entries = ApplicationService.all // binding dependency

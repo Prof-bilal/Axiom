@@ -1,10 +1,10 @@
 [Desktop Entry]
-# Axiom Trash: opens the real freedesktop trash (trash:/// via GVfs) in Files.
+# Axiom Trash: opens the real freedesktop trash (trash:/// via GVfs) in Axiom Files.
 Type=Application
 Icon=axiom-trash
 Name=Trash
 Comment=Open deleted files
 Categories=System;FileTools;
-Exec=pcmanfm trash:///
+Exec=axiom-app files trash:///
 StartupNotify=true
 Terminal=false

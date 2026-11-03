@@ -318,3 +318,15 @@ labwc replaces Sway so application windows get real Axiom title bars (icon,
 minimize/maximize/close, rounded corners, focus glow); the workspace adapter
 moves to the standard ext-workspace protocol. Full record:
 [decisions/016-labwc-compositor-harness.md](decisions/016-labwc-compositor-harness.md).
+
+## ADR-017: Core apps as Quickshell/QML apps sharing the shell's config root
+
+Files, Settings, Terminal integration and Software Center run as one Quickshell
+process each, reusing the shell's design tokens and window chrome; no new
+daemon, runtime or toolchain. Full record:
+[decisions/017-core-app-runtime.md](decisions/017-core-app-runtime.md).
+
+## ADR-018: Axiom settings store (proposed)
+
+A per-user JSON file watched by the shell and apps, written only by Settings.
+Full record: [decisions/018-axiom-settings-store.md](decisions/018-axiom-settings-store.md).

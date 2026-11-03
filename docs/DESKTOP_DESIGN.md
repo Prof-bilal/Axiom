@@ -170,8 +170,8 @@ open. Rows (`MenuItem`) share the state language.
 - **Destructive actions are two-step.** The first click arms the row (orange,
   "Click again to shut down"); a second click within four seconds runs it via
   `PowerService` (logind/systemd, authorised by polkit). There is no Lock row
-  until Axiom ships a screen locker, and no Settings row until a Settings app
-  exists (Phase 4).
+  until Axiom ships a screen locker. Software and Settings rows open the
+  Phase 4 core apps.
 
 ## Dock
 
@@ -191,11 +191,29 @@ open. Rows (`MenuItem`) share the state language.
   app (restoring it if minimized, cycling its windows when already focused) or
   launches it; middle click opens a new instance.
 
+## Core apps (Phase 4)
+
+Files, Software and Settings are Quickshell/QML apps ([ADR-017](decisions/017-core-app-runtime.md))
+that use the same tokens, icon set and window chrome as the shell. Rules:
+
+- Windows are normal labwc toplevels (title bar from the compositor); the app
+  draws only its client area on `Theme.background`.
+- Selection is the cyan wash, destructive actions are orange, and nothing is
+  shown that the app cannot do: no placeholder pages, no disabled install
+  buttons. Where a capability needs a later phase the page says so in one line.
+- Keyboard first: every list is navigable with the arrow keys, Files has the
+  usual shortcuts (Ctrl+L path, Ctrl+Shift+N new folder, F2 rename, Ctrl+C/X/V,
+  Delete trash, Ctrl+R restore in Trash, F4 terminal here, Ctrl+H hidden files),
+  a destructive confirmation needs Ctrl+Enter.
+- Text follows the user's text-size setting (`Theme.textScale`); layout sizes do
+  not scale.
+
 ## Terminal (Axiom Terminal)
 
 - foot with the system config in `/etc/xdg/foot/foot.ini` (user overrides in
   `~/.config/foot/foot.ini`); listed as *Terminal* with the Axiom terminal
-  icon. Launched through `axiom-terminal`, which opens it at 70% × 68% of the
+  icon. Launched through `axiom-terminal` (also `--cwd`, `--title`, `--hold`, `--exec`;
+  the apps use it through `TerminalService`), which opens it at 70% × 68% of the
   usable area (asked from the shell, because labwc resizes only in pixels).
 - Title bar (labwc, Axiom theme): terminal icon, *Axiom Terminal*, and working
   minimize, maximize and close; close is orange. 12 px corners; focused window

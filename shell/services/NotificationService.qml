@@ -45,5 +45,12 @@ Singleton {
         bodyMarkupSupported: false
         bodyHyperlinksSupported: false
         persistenceSupported: false
+
+        // Quickshell only retains (and exposes through `trackedNotifications`)
+        // notifications that are explicitly tracked. Without this nothing is
+        // ever shown: no toast and no history entry.
+        onNotification: function (notification) {
+            notification.tracked = true
+        }
     }
 }

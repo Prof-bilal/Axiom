@@ -41,5 +41,21 @@ ignores it). Readiness is verified from inside the guest over the root serial
 console (`qs ipc --any-display … show`): the session's own `AXIOM_SHELL_READY`
 marker never reaches `/dev/ttyS0`, which the serial getty owns with mode 0600,
 and `qs` ignores instances on another display without `--any-display`. Root is
-logged out before the UI shutdown so logind sees a single session. Exit code 3
+logged out before the UI shutdown. The image also carries a polkit rule
+(`/etc/polkit-1/rules.d/50-axiom-session-power.rules`) that lets the active
+desktop session power off while other sessions (such as the serial console)
+exist; without it logind demands administrator authorization. Exit code 3
 means the known firmware-stage stall; retry it.
+
+## Phase 4 entry points
+
+| Test | Command | What it proves |
+| --- | --- | --- |
+| Pure logic (host) | `node --test tests/apps/*.test.mjs` | Files, Software and Settings parsing, sorting, naming and formatting, including hostile file names; no guest needed |
+| QEMU apps | `tests/phase4-apps.py <iso> [outdir] [--res WxH] [--only files,software,...]` | the real apps in a guest: file operations verified on disk, trash and restore, name clashes, hostile names, 10,000 entries, package list equals `pacman -Q`, rendered notification, shell restart, per-app memory |
+
+`tests/qemu_lib.py` is the shared guest-control library (paced serial writes, QMP
+pointer input, screendumps, a root shell and a session-environment user shell).
+Results are checked on disk or in process state over the serial console;
+screenshots are retained as evidence and are never the pass/fail signal. Exit
+code 3 is the same firmware-stage stall as above.

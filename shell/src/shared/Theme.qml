@@ -12,6 +12,7 @@ pragma Singleton
 
 import QtQuick
 import Quickshell
+import qs.services
 
 Singleton {
     id: theme
@@ -107,11 +108,14 @@ Singleton {
     // `extra`. Fontconfig falls back to Noto if either is missing.
     readonly property string fontFamily: "Inter"
     readonly property string fontFamilyMono: "JetBrains Mono"
-    readonly property int fontCaption: 12
-    readonly property int fontBody: 13
-    readonly property int fontLabel: 14
-    readonly property int fontTitle: 16
-    readonly property int fontDisplay: 20
+    // Text sizes follow the user's text-size setting (Settings > Appearance);
+    // layout sizes (panel, dock, row heights) do not scale.
+    readonly property real textScale: SettingsService.textScale
+    readonly property int fontCaption: Math.round(12 * textScale)
+    readonly property int fontBody: Math.round(13 * textScale)
+    readonly property int fontLabel: Math.round(14 * textScale)
+    readonly property int fontTitle: Math.round(16 * textScale)
+    readonly property int fontDisplay: Math.round(20 * textScale)
 
     // --- motion ---
     readonly property int motionFeedback: 110

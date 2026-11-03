@@ -1,0 +1,32 @@
+#!/bin/sh
+# Launch an Axiom core app (Phase 4): one Quickshell process per app, sharing
+# the shell's config root so design tokens are imported, not copied.
+#
+#   axiom-app <name> [path-or-uri]
+#
+# Only the fixed names below are accepted; the name is never used to build a
+# path from untrusted input.
+
+APPS_DIR=/usr/local/share/axiom/shell
+
+case "$1" in
+  files|software|settings) app="$1" ;;
+  *)
+    echo "axiom-app: unknown app '$1' (known: files software settings)" >&2
+    exit 2
+    ;;
+esac
+shift
+
+# One optional argument (a folder path, file:// URI or trash:///) is handed to
+# the app through the environment; Quickshell itself takes no app arguments.
+# An unexpanded desktop-entry field code (%U with no URL) or an empty string is
+# not a location.
+if [ $# -gt 0 ]; then
+  case "$1" in
+    ""|%*) ;;
+    *) AXIOM_APP_ARG=$1; export AXIOM_APP_ARG ;;
+  esac
+fi
+
+exec quickshell -p "$APPS_DIR/$app.qml"

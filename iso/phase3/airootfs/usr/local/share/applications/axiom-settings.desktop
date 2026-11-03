@@ -1,0 +1,13 @@
+[Desktop Entry]
+# Axiom Settings (Phase 4): appearance, dock, default apps, displays, about.
+Type=Application
+Icon=axiom-settings
+Name=Settings
+GenericName=System Settings
+Comment=Change how Axiom looks and which applications it uses
+Categories=Settings;System;
+Keywords=settings;preferences;wallpaper;dock;default;about;
+Exec=axiom-app settings
+StartupWMClass=org.axiom.Settings
+StartupNotify=true
+Terminal=false

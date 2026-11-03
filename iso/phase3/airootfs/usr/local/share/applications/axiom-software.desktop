@@ -1,0 +1,14 @@
+[Desktop Entry]
+# Axiom Software (Phase 4): browse installed applications and packages.
+# Read-only: package changes need Axiom's permission layer (a later phase).
+Type=Application
+Icon=axiom-software
+Name=Software
+GenericName=Software Center
+Comment=Browse the applications and packages installed on this system
+Categories=System;PackageManager;
+Keywords=packages;pacman;apps;software;
+Exec=axiom-app software
+StartupWMClass=org.axiom.Software
+StartupNotify=true
+Terminal=false

@@ -4,7 +4,7 @@ Axiom is an experimental AI-native Linux desktop focused on developer
 workflows, privacy, secure system agents, recovery and a desktop experience
 designed from first principles.
 
-**Status: Phase 3 Axiom Shell MVP (2026-11-01).** Axiom uses standard Linux
+**Status: Phase 4 Axiom core apps complete (2026-11-03); Phase 5 not yet started.** Axiom uses standard Linux
 infrastructure, but the compositor/session boundary, shell, core applications
 and product services are being developed specifically for Axiom. The previous
 upstream-derived desktop direction has been removed and is not an active

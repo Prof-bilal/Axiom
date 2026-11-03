@@ -22,6 +22,14 @@ export WLR_RENDERER="${WLR_RENDERER:-pixman}"
 export MOZ_ENABLE_WAYLAND=1
 export QT_QPA_PLATFORM=wayland
 
+# The freedesktop Trash directories must exist before any GVfs daemon or file
+# manager watches the trash: a GVfs trash daemon that starts while they are
+# missing never notices items trashed afterwards, so the Trash view stays
+# empty until it is restarted (reproduced in QEMU). Created private (0700).
+( umask 077
+  data="${XDG_DATA_HOME:-$HOME/.local/share}"
+  mkdir -p -- "$data/Trash/files" "$data/Trash/info" ) 2>/dev/null || true
+
 echo "AXIOM_SESSION_START" > /dev/ttyS0 2>/dev/null || true
 
 # Announce shell readiness on the serial console so QEMU can capture evidence

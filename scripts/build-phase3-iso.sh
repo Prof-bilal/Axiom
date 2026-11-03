@@ -55,6 +55,9 @@ mkdir -p "$WORK"
 cp -r "$PROFILE_SRC" "$WORK/profile"
 install -d "$WORK/profile/airootfs/usr/local/share/axiom"
 cp -r "$SHELL_SRC" "$WORK/profile/airootfs/usr/local/share/axiom/shell"
+# Core apps (Phase 4): staged as a sibling of the shell; shell/apps is a
+# relative symlink to ../apps, so the apps share the shell's config root.
+cp -r "$ROOT/apps" "$WORK/profile/airootfs/usr/local/share/axiom/apps"
 rm -rf "$WORK/profile/airootfs/usr/local/share/axiom/shell/tests"
 
 # Build a fresh, build-user-owned pacman keyring.

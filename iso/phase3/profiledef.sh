@@ -26,6 +26,7 @@ file_permissions=(
   ["/usr/local/bin/axiom-shell"]="0:0:755"
   ["/usr/local/bin/axiom-greeting"]="0:0:755"
   ["/usr/local/bin/axiom-terminal"]="0:0:755"
+  ["/usr/local/bin/axiom-app"]="0:0:755"
   ["/etc/axiom"]="0:0:755"
   ["/etc/axiom/labwc"]="0:0:755"
   ["/etc/axiom/os-release"]="0:0:644"

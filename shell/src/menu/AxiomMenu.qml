@@ -6,8 +6,7 @@ import qs.services
 // Axiom menu — opened from the penguin at the top-left. The recognisable
 // Axiom entry point: search, core places, recent applications, About, and
 // session actions. Every row performs a real action; rows for applications
-// that are not installed are omitted (there is no Settings app until Phase 4,
-// and no screen locker yet, so neither is offered).
+// that are not installed are omitted (no screen locker exists yet, so none is offered).
 MenuSurface {
     id: menu
 
@@ -19,8 +18,10 @@ MenuSurface {
     property bool aboutOpen: false
     readonly property var results: query.length > 0 ? ApplicationService.search(query).slice(0, 6) : []
     readonly property var recent: open ? ApplicationService.recentEntries() : []
-    readonly property var filesEntry: ApplicationService.entryForAppId("pcmanfm")
+    readonly property var filesEntry: ApplicationService.entryForAppId("axiom-files")
     readonly property var terminalEntry: ApplicationService.entryForAppId("foot")
+    readonly property var softwareEntry: ApplicationService.entryForAppId("axiom-software")
+    readonly property var settingsEntry: ApplicationService.entryForAppId("axiom-settings")
 
     onOpened: {
         query = ""
@@ -174,6 +175,18 @@ MenuSurface {
             icon: "terminal"
             hint: "Super+Enter"
             onTriggered: menu.launch(menu.terminalEntry)
+        }
+        MenuItem {
+            visible: menu.softwareEntry !== null
+            text: "Software"
+            icon: "archive"
+            onTriggered: menu.launch(menu.softwareEntry)
+        }
+        MenuItem {
+            visible: menu.settingsEntry !== null
+            text: "Settings"
+            icon: "settings"
+            onTriggered: menu.launch(menu.settingsEntry)
         }
 
         MenuSeparator { visible: menu.recent.length > 0; caption: "Recent" }

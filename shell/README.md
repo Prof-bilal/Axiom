@@ -35,6 +35,9 @@ services/                     system boundaries (singletons)
   PowerService        logind/systemd session + power actions
   SystemService       audio / network / Bluetooth / power state
   HostService         os-release + /proc identity for "About Axiom"
+  SettingsService     per-user settings file (wallpaper, dock pins, text size), watched
+  TerminalService     "open in terminal" for the apps, through axiom-terminal
+apps/ (symlink)               core apps share this config root: see ../apps/README.md
 assets/                       Axiom identity assets (penguin = OS, A-mark = product, wordmark, wallpaper)
 tests/                        shell-level tests
 ```

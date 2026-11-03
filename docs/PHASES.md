@@ -1,6 +1,6 @@
 # Axiom implementation phases
 
-Current phase: **Phase 3 — Axiom Shell MVP (complete, 2026-11-03; next: Phase 4)**.
+Current phase: **Phase 4 — Axiom core apps (complete, 2026-11-03; Phase 5 is next and not yet authorized)**. Phases 0 to 4 are complete.
 The architecture reset is complete; the previous upstream-derived desktop
 direction has been removed. Each phase requires retained evidence; code existing
 in a branch is not an exit criterion.
@@ -93,7 +93,10 @@ switch apps → launcher → dock → logout/shutdown) passed in QEMU at 1920×1
 open defects were root-caused and fixed (overlay keyboard interactivity;
 polkit authorization for session power actions). Evidence and measurements:
 [evidence](research/phase3/evidence.md), [performance](research/phase3/performance.md).
-Known limits carried forward: logout and restart were not exercised in the
+Errata (2026-11-03): notification toasts and history never rendered during
+Phase 3 (notifications were not tracked); fixed and verified during Phase 4,
+see [Phase 4 evidence](research/phase4/evidence.md). Known limits carried
+forward: logout and restart were not exercised in the
 final runs (logout by UI is not yet covered by an automated check), and the
 numbers are software-rendered KVM baselines.
 
@@ -106,6 +109,42 @@ folded into the Phase 3 QEMU run rather than recorded as separate milestones.
 Implement functional Files, Settings, Terminal integration and Software Center
 before advanced design. Keep package/update mutations behind later permission
 gates and retain offline operation.
+
+**Exit:** in QEMU, Files performs real file tasks (create, rename, copy, trash
+and restore, open with the default app, open a terminal in a folder); the
+Software Center lists, searches and describes real installed packages
+offline and says plainly that repository data and package changes are not
+available yet; Settings changes (wallpaper, dock pins,
+default apps) persist and change the shell live; Terminal integration works
+from the other apps; adversarial file names and failure paths are handled.
+
+### Phase 4 implementation (started 2026-11-03)
+
+Runtime decision: [ADR-017](decisions/017-core-app-runtime.md) (Quickshell/QML
+apps, one process each, sharing the shell's config root; no new daemon).
+Settings store: [ADR-018](decisions/018-axiom-settings-store.md) (proposed).
+
+| Step | Work | Status |
+| --- | --- | --- |
+| 0 | Foundations: ADR-017/018, `apps/`, `axiom-app`, desktop entry, ISO staging | done |
+| 1 | Terminal integration (`--cwd/--exec/--title`, OSC 7, finish notification) | done; also fixed notifications never rendering (Phase 3 gap) |
+| 2 | Axiom Files: find/gio backend, trash and restore, hostile names, 10,000 entries | done |
+| 3 | Software Center (read-only; no package mutation) | done |
+| 4 | Settings (About, Appearance incl. text size, Dock, Default Apps, Displays read-only) | done |
+| 5 | Shell integration: Files cutover from pcmanfm, Axiom menu rows, Trash, settings store | done |
+| 6 | Verification: `tests/phase4-apps.py`, adversarial tests, measurements, evidence | done: 58 checks pass, Phase 3 regression passes |
+
+**Completion (2026-11-03):** the exit evidence is in
+[Phase 4 evidence](research/phase4/evidence.md): `tests/phase4-apps.py` passes
+58 checks on `axiom-2026.11.03-x86_64.iso` (file operations verified on disk
+with hostile names, Trash and restore, name clashes, 10,000 entries, package
+list equal to `pacman -Q`, settings applied live by the shell, rendered
+notification, shell restart, memory), and `tests/phase3-desktop.py` still
+passes. Defects found on the way, including a Phase 3 notification gap and a
+Trash bug on fresh accounts, are fixed and listed there. Limits carried forward:
+the Software Center is read-only (needs the permission layer), reboot
+persistence cannot be shown on the live image, logout/restart are not covered by
+an automated check, and Phase 4 was run at 1920x1080 only.
 
 ## Phase 5 — system experience
 

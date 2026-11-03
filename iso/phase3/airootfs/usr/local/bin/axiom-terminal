@@ -6,10 +6,59 @@
 # pixels, so the size comes from the Axiom Shell, which knows the real output
 # geometry. If the shell is not running, foot opens at its own default size.
 #
-#   axiom-terminal [foot arguments...]
+#   axiom-terminal [--cwd DIR] [--title TEXT] [--hold] [--exec CMD [ARG...]]
+#   axiom-terminal [options] -- [foot arguments...]
+#
+#   --cwd DIR    start in DIR (must be an existing directory)
+#   --title T    window title
+#   --hold       keep the window open after the command exits (with --exec)
+#   --exec ...   run the rest of the command line as the program, as argv
+#                (never through a shell), instead of the login shell
+#
+# This is the single entry point the other Axiom apps use for "open in
+# terminal"; values are passed to foot as argv, never interpolated into a
+# shell string.
+
+die() { echo "axiom-terminal: $*" >&2; exit 2; }
+
+cwd="" title="" hold=0
+while [ $# -gt 0 ]; do
+  case "$1" in
+    --cwd)    [ $# -ge 2 ] || die "--cwd needs a directory"; cwd=$2; shift 2 ;;
+    --cwd=*)  cwd=${1#--cwd=}; shift ;;
+    --title)  [ $# -ge 2 ] || die "--title needs a value"; title=$2; shift 2 ;;
+    --title=*) title=${1#--title=}; shift ;;
+    --hold)   hold=1; shift ;;
+    --exec)   shift; break ;;
+    --)       break ;;
+    *)        die "unknown option '$1' (see the header of $0)" ;;
+  esac
+done
+
+if [ -n "$cwd" ]; then
+  dir=$(cd -- "$cwd" 2>/dev/null && pwd -P) || die "not a directory: $cwd"
+else
+  dir=""
+fi
 
 geometry=$(qs ipc -p /usr/local/share/axiom/shell call axiom terminalGeometry 2>/dev/null)
+
+# Build the foot argument list in the positional parameters, preserving every
+# value exactly. The command (after --exec or --) is kept at the end.
+if [ "$1" = "--" ]; then
+  shift; mode=foot
+else
+  mode=exec
+fi
+if [ "$mode" = exec ] && [ $# -gt 0 ]; then
+  set -- -- "$@"
+fi
+
+if [ "$hold" = 1 ]; then set -- --hold "$@"; fi
+if [ -n "$title" ]; then set -- "--title=$title" "$@"; fi
+if [ -n "$dir" ]; then set -- "--working-directory=$dir" "$@"; fi
 case "$geometry" in
-  [0-9]*x[0-9]*) exec foot --window-size-pixels="$geometry" "$@" ;;
-  *) exec foot "$@" ;;
+  [0-9]*x[0-9]*) set -- "--window-size-pixels=$geometry" "$@" ;;
 esac
+
+exec foot "$@"

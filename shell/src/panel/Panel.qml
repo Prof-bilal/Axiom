@@ -121,12 +121,12 @@ PanelWindow {
 
         NavButton {
             anchors.verticalCenter: parent.verticalCenter
-            visible: ApplicationService.entryForAppId("pcmanfm") !== null
+            visible: ApplicationService.entryForAppId("axiom-files") !== null
             text: "Files"
             icon: "folder"
             onActivated: {
                 UiState.closeAllOverlays()
-                ApplicationService.launchId("pcmanfm")
+                ApplicationService.launchId("axiom-files")
             }
         }
 
