@@ -5,7 +5,7 @@
 # backend) and a wired network. No Wi-Fi or Bluetooth hardware exists in the VM.
 set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-ISO="${1:-$ROOT/iso/out-phase3/axiom-2026.11.03-x86_64.iso}"
+ISO="${1:-$ROOT/iso/out-phase3/axiom-2026.11.06-x86_64.iso}"
 VARS="$(mktemp --suffix=-OVMF_VARS.fd)"
 trap 'rm -f "$VARS"' EXIT
 cp /usr/share/edk2/x64/OVMF_VARS.4m.fd "$VARS"
