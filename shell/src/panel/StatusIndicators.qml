@@ -15,8 +15,8 @@ Row {
         icon: SystemService.networkIcon
         available: SystemService.networkAvailable
         accessibleName: SystemService.networkLabel
-        selected: UiState.controlCenterOpen
-        onClicked: UiState.toggleControlCenter()
+        selected: UiState.controlCenterOpen && UiState.controlCenterSource === "network"
+        onClicked: UiState.toggleControlCenter("network")
     }
 
     PanelButton {
@@ -25,8 +25,8 @@ Row {
         icon: "bluetooth"
         active: SystemService.bluetoothEnabled
         accessibleName: SystemService.bluetoothEnabled ? "Bluetooth on" : "Bluetooth off"
-        selected: UiState.controlCenterOpen
-        onClicked: UiState.toggleControlCenter()
+        selected: UiState.controlCenterOpen && UiState.controlCenterSource === "bluetooth"
+        onClicked: UiState.toggleControlCenter("bluetooth")
     }
 
     PanelButton {
@@ -37,8 +37,8 @@ Row {
         accessibleName: SystemService.audioAvailable
             ? "Volume " + SystemService.audioVolume + "%" + (SystemService.audioMuted ? ", muted" : "")
             : "Audio unavailable"
-        selected: UiState.controlCenterOpen
-        onClicked: UiState.toggleControlCenter()
+        selected: UiState.controlCenterOpen && UiState.controlCenterSource === "audio"
+        onClicked: UiState.toggleControlCenter("audio")
 
         // Scroll to change the output level in 5% steps.
         WheelHandler {
@@ -60,7 +60,7 @@ Row {
             && SystemService.batteryPercent <= 10
         badgeUrgent: true
         accessibleName: "Battery " + SystemService.batteryPercent + "%"
-        selected: UiState.controlCenterOpen
-        onClicked: UiState.toggleControlCenter()
+        selected: UiState.controlCenterOpen && UiState.controlCenterSource === "battery"
+        onClicked: UiState.toggleControlCenter("battery")
     }
 }

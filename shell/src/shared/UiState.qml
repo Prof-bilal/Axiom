@@ -14,6 +14,7 @@ Singleton {
     property bool sessionMenuOpen: false
     property bool notificationCenterOpen: false
     property bool controlCenterOpen: false
+    property string controlCenterSource: "network"   // the indicator that opened it
     property bool axiomMenuOpen: false
     property bool activitiesOpen: false
     property string launcherQuery: ""
@@ -50,9 +51,11 @@ Singleton {
         notificationCenterOpen = next
     }
 
-    function toggleControlCenter() {
-        var next = !controlCenterOpen
+    function toggleControlCenter(source) {
+        var s = source || "network"
+        var next = !(controlCenterOpen && controlCenterSource === s)
         closeAll("control")
+        controlCenterSource = s
         controlCenterOpen = next
     }
 

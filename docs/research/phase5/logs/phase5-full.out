@@ -73,6 +73,7 @@ PASS: security: no account was created
 PASS: security: no Axiom UI process runs as root
 PASS: recovery: the supervised shell restarts after being killed
 PASS: recovery: Power page recovers after power-profiles-daemon restarts
-PASS: memory: measured Pss kB {'shell': 518263, 'settings_network_page': 228046}
+PASS: memory: measured Pss kB {'shell': 460821, 'settings_network_page': 228810}
 
 OK: 0 failure(s)
+EXIT 0

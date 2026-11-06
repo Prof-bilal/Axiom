@@ -182,10 +182,10 @@ def ws_chip(n):            # 4 tiles, 30 px wide, 6 px apart, centred on the out
     x0 = W // 2 - (4 * 30 + 3 * 6) // 2
     return x0 + (n - 1) * 36 + 15, PANEL_Y
 POWER = (W - 8 - 16, PANEL_Y)
-def dock_item(i, count=6):  # Axiom mark + 5 pinned; 48 px items, 4 px gap, 7 px padding, 12 px edge gap
-    width = count * 48 + (count - 1) * 4 + 14
+def dock_item(i, count=6):  # launcher + 5 pinned; 66 px items, 4 px gap, 7 px padding, 12 px edge gap
+    width = count * 66 + (count - 1) * 4 + 14
     x0 = (W - width) // 2 + 7
-    return x0 + i * 52 + 24, H - 12 - (48 + 14) // 2
+    return x0 + i * 70 + 33, H - 12 - (66 + 14) // 2
 
 # --- run ---------------------------------------------------------------------
 # Readiness is checked from inside the guest as root over the serial console:

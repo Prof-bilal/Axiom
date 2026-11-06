@@ -311,10 +311,10 @@ class Guest:
 
     # ---- geometry shared with the Phase 3 drivers ---------------------------------------------
     def dock_item(self, i, count=6):
-        """Centre of dock item i (Axiom mark is 0); 48 px items, 4 px gap, 7 px padding, 12 px edge gap."""
-        width = count * 48 + (count - 1) * 4 + 14
+        """Centre of dock item i (launcher is 0); 66 px items, 4 px gap, 7 px padding, 12 px edge gap."""
+        width = count * 66 + (count - 1) * 4 + 14
         x0 = (self.w - width) // 2 + 7
-        return x0 + i * 52 + 24, self.h - 12 - (48 + 14) // 2
+        return x0 + i * 70 + 33, self.h - 12 - (66 + 14) // 2
 
     def power_off(self, timeout=120):
         self.user(f"{QS} call axiom powerOff", 20)

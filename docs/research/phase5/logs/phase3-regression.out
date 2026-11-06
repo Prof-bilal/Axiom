@@ -20,3 +20,4 @@ PASS: captured 12-shutdown-armed
 PASS: single click on Shut Down did not power off (confirmation required)
 PASS: guest powered off cleanly
 RESULT: PASS
+EXIT 0

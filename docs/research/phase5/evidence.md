@@ -5,7 +5,7 @@ Records what was observed, not what was planned. Companion to
 
 ## Final acceptance run (2026-11-06)
 
-On the rebuilt image `iso/out-phase3/axiom-2026.11.03-x86_64.iso` (built
+On the rebuilt image `iso/out-phase3/axiom-2026.11.06-x86_64.iso` (built
 2026-11-06 with `sudo scripts/build-phase3-iso.sh`):
 
 | Run | Command | Result |
@@ -70,5 +70,7 @@ before the idle time elapsed. They were replaced by the logging probes above.
 - No Bluetooth controller in the VM; only the "no controller" state is verified.
 - Wi-Fi uses simulated radios and a local access point, not real hardware.
 - Displays were checked at 1920x1080 only.
+- The dock launch bounce and busy cursor are in this image but no automated
+  check in this suite covers them.
 - Real hardware (laptop sleep, suspend/resume, multi-monitor, real Wi-Fi and
   Bluetooth) is Phase 8 and is not claimed here.

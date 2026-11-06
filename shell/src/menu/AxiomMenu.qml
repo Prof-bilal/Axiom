@@ -156,7 +156,8 @@ MenuSurface {
 
         MenuItem {
             text: "Applications"
-            icon: "grid"
+            useAppIcon: true
+            iconSource: Quickshell.shellPath("assets/mascots/launcher.png")
             hint: "Super+D"
             onTriggered: {
                 UiState.closeAllOverlays()
@@ -166,26 +167,30 @@ MenuSurface {
         MenuItem {
             visible: menu.filesEntry !== null
             text: "Files"
-            icon: "folder"
+            useAppIcon: true
+            iconSource: ApplicationService.iconFor(menu.filesEntry)
             onTriggered: menu.launch(menu.filesEntry)
         }
         MenuItem {
             visible: menu.terminalEntry !== null
             text: "Terminal"
-            icon: "terminal"
+            useAppIcon: true
+            iconSource: ApplicationService.iconFor(menu.terminalEntry)
             hint: "Super+Enter"
             onTriggered: menu.launch(menu.terminalEntry)
         }
         MenuItem {
             visible: menu.softwareEntry !== null
             text: "Software"
-            icon: "archive"
+            useAppIcon: true
+            iconSource: ApplicationService.iconFor(menu.softwareEntry)
             onTriggered: menu.launch(menu.softwareEntry)
         }
         MenuItem {
             visible: menu.settingsEntry !== null
             text: "Settings"
-            icon: "settings"
+            useAppIcon: true
+            iconSource: ApplicationService.iconFor(menu.settingsEntry)
             onTriggered: menu.launch(menu.settingsEntry)
         }
 

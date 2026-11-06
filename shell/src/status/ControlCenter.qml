@@ -1,4 +1,5 @@
 import QtQuick
+import Quickshell.Services.Pipewire
 import qs.src.shared
 import qs.services
 
@@ -79,7 +80,7 @@ MenuSurface {
             anchors.left: muteButton.right
             anchors.leftMargin: Theme.spacingSm
             anchors.verticalCenter: parent.verticalCenter
-            text: "Audio service unavailable"
+            text: Pipewire.ready ? "No audio device found" : "Audio service unavailable"
             color: Theme.textSecondary
             font.family: Theme.fontFamily
             font.pixelSize: Theme.fontBody

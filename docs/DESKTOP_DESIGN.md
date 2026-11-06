@@ -87,7 +87,7 @@ Budget: roughly **80% neutral, 15% cyan, 5% orange**.
 | Cyan primary / bright / muted | `cyan`, `cyanBright`, `cyanMuted` | `#20D6D2`, `#37F0EA`, `#126E70` |
 | Orange primary / bright / muted | `orange`, `orangeBright`, `orangeMuted` | `#FF9418`, `#FFB348`, `#804713` |
 | Panel | `panelBackground` / `panelBorder` | `rgba(5,12,15,.88)` / `rgba(68,230,220,.10)` |
-| Dock | `dockBackground` / `dockBorder` | `rgba(7,12,15,.82)` / `rgba(80,235,220,.15)` |
+| Dock | `dockBackground` / `dockBorder` | `rgba(255,255,255,.9)` / `rgba(0,0,0,.1)` |
 | Menus | `overlayBackground` / `overlayBorder` | `rgba(12,18,21,.97)` / `rgba(80,235,220,.14)` |
 | Terminal background | foot `alpha` + `background` | `#0A0D0F` at 94% |
 
@@ -119,9 +119,9 @@ fonts are bundled.
 ## Spacing, radius, metrics
 
 4 px grid (`2, 4, 8, 12, 16, 24`). Radii: 6 controls, 10 surfaces/dock items,
-12 menus and windows, 16 dock container. Panel 40 px high, 17 px status
+12 menus and windows, 22 dock container. Panel 40 px high, 17 px status
 icons, 26 px penguin, 30×26 px workspace tiles, 28 px navigation buttons.
-Dock items 48 px with 36 px icons, 7 px padding, 12 px gap from the screen
+Dock items 66 px with 54 px icons, 7 px padding, 12 px gap from the screen
 edge. Compositor gap 10 px.
 
 ## Top panel
@@ -160,7 +160,7 @@ open. Rows (`MenuItem`) share the state language.
   open window (live preview where the compositor allows capture, app icon
   otherwise), with workspace tiles. Click a window to focus it; its × sends a
   normal close request.
-- **Apps (panel "Apps", dock Axiom mark):** grid of installed applications;
+- **Apps (panel "Apps", dock penguin):** grid of installed applications;
   type to filter, arrows to move, Enter to launch. The search icon and Super+D
   open the same results as a list.
 - **Status menu (network/volume/battery, Super+C):** network state and Wi-Fi
@@ -257,8 +257,8 @@ graphite and the image itself is low-key. The launcher alone adds a transient
 | Asset | Role | Canonical file |
 | --- | --- | --- |
 | Axiom penguin | **OS / session identity**: top-panel "Axiom OS" button, Axiom menu header, terminal greeting art | `branding/identity/axiom-penguin.png` (512 px) → `shell/assets/axiom-penguin.png` (96 px) |
-| Axiom A-mark | **Product identity**: dock launcher, terminal logo |
-| Axiom app icons | Terminal, Files, Trash | `iso/phase3/airootfs/usr/local/share/icons/hicolor/scalable/apps/axiom-{terminal,files,trash}.svg` | `branding/identity/axiom-mark.svg` → `shell/assets/axiom-mark.svg` |
+| Axiom A-mark | **Product identity**: terminal logo |
+| Axiom app icons | Files, Settings, Software, Terminal use the mascot art (Phase 5); Trash keeps its SVG | `iso/phase3/airootfs/usr/local/share/icons/hicolor/{256x256,64x64}/apps/axiom-{files,settings,software,terminal}.png` (plus `org.axiom.*` and `foot` aliases for window title bars), `.../scalable/apps/axiom-trash.svg` |
 | Axiom wordmark | Documents, boot/installer branding | `branding/identity/axiom-wordmark.svg` |
 | System icons | Panel/menu glyphs | `shell/src/shared/AxiomIcon.qml` (original 24-unit paths) |
 
@@ -268,8 +268,28 @@ panel) and the new reviewed penguin (`branding/theme/walllpaper/toppanel.png`).
 The reviewed penguin is canonical; the old SVG is retained only as history and
 is no longer shipped in the shell. The penguin sits next to "Axiom OS" in the
 top panel (product owner, 2026-11-02) and in the Axiom menu header; the A-mark
-is the product mark in the dock and terminal logo. The penguin is never an app
-icon.
+is the product mark in the terminal logo; the dock launcher uses the launcher mascot.
+
+### Mascot system (2026-11-04)
+
+`branding/mascots/mascotss.png` is the reviewed mascot sheet; the ten states are
+cropped to `branding/mascots/mascot-<name>.png` (512 px, rounded tile that keeps
+the sheet's dark backdrop; background removal is not applied because the
+penguin's near-black body cannot be separated from the backdrop reliably).
+Shipped copies are 256 px (`shell/assets/mascots/`, hicolor icons) and 64 px.
+
+| Mascot | Used for | Where |
+| --- | --- | --- |
+| launcher | Axiom menu header | `shell/src/menu/AxiomMenu.qml` |
+| notification | Notification toast | `shell/src/notifications/NotificationCard.qml` (toast only) |
+| shutdown | Session menu header | `shell/src/session/SessionMenu.qml` |
+| showcase | Settings > About | `apps/settings/AboutPage.qml` |
+| sleeping | Settings > Power | `apps/settings/PowerPage.qml` |
+| files, settings, software, terminal | App icons (dock, launcher, title bar) | hicolor icon theme |
+| editor | Reserved: no Axiom Editor exists yet | not shipped in the UI |
+
+The top-panel penguin stays the older reviewed penguin (a 26 px rounded tile
+would read as a box on the panel).
 
 ## Responsive rules
 

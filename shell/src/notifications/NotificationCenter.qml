@@ -15,7 +15,7 @@ PanelWindow {
     margins.top: Theme.panelHeight + Theme.spacingSm
     margins.right: Theme.spacingSm
     implicitWidth: 380
-    implicitHeight: Math.min(520, history.childrenRect.height + Theme.spacingMd * 2 + 40)
+    implicitHeight: Math.min(520, content.implicitHeight + Theme.spacingMd * 2)
     color: Theme.overlayBackground
     visible: UiState.notificationCenterOpen
     exclusionMode: ExclusionMode.Ignore
@@ -41,6 +41,7 @@ PanelWindow {
         ? NotificationService.tracked.values.slice().reverse() : []
 
     Column {
+        id: content
         anchors.fill: parent
         anchors.margins: Theme.spacingMd
         spacing: Theme.spacingSm

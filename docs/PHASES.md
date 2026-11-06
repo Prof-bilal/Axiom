@@ -154,7 +154,7 @@ services and truthful unsupported states.
 
 **Completion (2026-11-06):** the exit evidence is in
 [Phase 5 evidence](research/phase5/evidence.md): `tests/phase5-system.py` passes
-76 checks on the rebuilt `axiom-2026.11.03-x86_64.iso`, including Wi-Fi join
+76 checks on the rebuilt `axiom-2026.11.06-x86_64.iso`, including Wi-Fi join
 with the right password and rejection of a wrong one, display scale with revert
 and Keep, power profiles, and the idle screen-off that works on a real boot
 after the `Repeater` to `Instantiator` fix in `IdleBlank.qml`. Security checks

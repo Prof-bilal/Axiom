@@ -31,7 +31,7 @@ PASS: files: restoring onto an existing name is refused; the new file and the tr
 PASS: terminal: F4 in Files opens a terminal in the folder being viewed
 PASS: files: no QML errors after the whole run
 PASS: files: an unreadable folder is handled without errors or a crash
-PASS: files: 10,000 entries listed in 219 ms (parse 66, sort 136, selection 17)
+PASS: files: 10,000 entries listed in 273 ms (parse 88, sort 163, selection 22)
 PASS: files: the last folder is saved
 PASS: files: reopening without an argument returns to the saved folder
 PASS: software: launched
@@ -47,36 +47,37 @@ PASS: settings: removing a pin saves a custom dock without it
 PASS: settings: Reset to defaults restores the default dock
 PASS: settings: Default apps > Text editor > Vim changes the system default
 PASS: settings: ...and back to Mousepad
-PASS: settings: the shell applied the new wallpaper live (brightness 0.130 -> 0.327)
+PASS: settings: the shell applied the new wallpaper live (brightness 0.138 -> 0.331)
 PASS: toast: a notification renders on screen (region brightness 0.046 -> 0.094)
 PASS: recovery: the supervised shell restarts after being killed and serves IPC again
-PASS: recovery: the chosen wallpaper is still applied after the shell restarted (0.327 vs 0.327)
-PASS: memory: files PSS 173 MiB (gate 256 MiB)
-PASS: memory: software PSS 178 MiB (gate 256 MiB)
+PASS: recovery: the chosen wallpaper is still applied after the shell restarted (0.331 vs 0.331)
+PASS: memory: files PSS 195 MiB (gate 256 MiB)
+PASS: memory: software PSS 169 MiB (gate 256 MiB)
 PASS: memory: settings PSS 159 MiB (gate 256 MiB)
-PASS: memory: guest uses 1278 MiB of 2048 MiB with the shell and all three apps open
+PASS: memory: guest uses 1327 MiB of 2048 MiB with the shell and all three apps open
 PASS: guest powered off cleanly
 {
   "resolution": "1920x1080",
-  "iso": "axiom-2026.11.03-x86_64.iso",
+  "iso": "axiom-2026.11.06-x86_64.iso",
   "files_10000_ms": {
-    "parse": 66,
-    "sort_and_apply": 136,
-    "selection": 17
+    "parse": 88,
+    "sort_and_apply": 163,
+    "selection": 22
   },
-  "pss_kb_files_10000": 282711,
-  "pss_kb_software": 234965,
-  "pss_kb_settings": 252887,
+  "pss_kb_files_10000": 204881,
+  "pss_kb_software": 245156,
+  "pss_kb_settings": 271052,
   "wallpaper_brightness": {
-    "default": 0.13,
-    "chosen": 0.327
+    "default": 0.138,
+    "chosen": 0.331
   },
   "pss_kb_all_open": {
-    "shell": 406941,
-    "files": 177697,
-    "software": 183089,
-    "settings": 163781
+    "shell": 405100,
+    "files": 200246,
+    "software": 173094,
+    "settings": 163098
   },
-  "guest_memory_used_kb_all_open": 1308732
+  "guest_memory_used_kb_all_open": 1359792
 }
 RESULT: PASS
+EXIT 0

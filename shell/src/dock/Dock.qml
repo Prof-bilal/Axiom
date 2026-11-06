@@ -79,31 +79,23 @@ PanelWindow {
     readonly property var pinnedItems: items.filter(function (i) { return i.pinned })
     readonly property var runningItems: items.filter(function (i) { return !i.pinned })
 
-    // The surface is larger than the visible dock by `glow` on each side so the
-    // soft edge glow can be drawn; only the dock body takes input, and only
-    // the body's height is reserved from the work area.
-    readonly property int glow: 10
+    // The surface is larger than the visible dock by `shadow` on each side so a
+    // soft shadow can be drawn; only the dock body takes input, and only the
+    // body's height is reserved from the work area.
+    readonly property int shadow: 10
 
     anchors { bottom: true }
-    margins.bottom: Theme.dockEdgeGap - glow
-    implicitHeight: body.height + glow * 2
-    implicitWidth: body.width + glow * 2
-    exclusiveZone: body.height + Theme.dockEdgeGap - glow
+    margins.bottom: Theme.dockEdgeGap - shadow
+    implicitHeight: body.height + shadow * 2
+    implicitWidth: body.width + shadow * 2
+    exclusiveZone: body.height + Theme.dockEdgeGap - shadow
     color: "transparent"
     mask: Region { item: body }
     WlrLayershell.namespace: "axiom-dock"
     WlrLayershell.layer: WlrLayershell.Top
     WlrLayershell.keyboardFocus: WlrLayershell.None
 
-    // Edge gradient: Axiom cyan leading into a warm orange trailing edge.
-    component EdgeGradient: Gradient {
-        orientation: Gradient.Horizontal
-        GradientStop { position: 0.0; color: Theme.cyan }
-        GradientStop { position: 0.55; color: Theme.cyanMuted }
-        GradientStop { position: 1.0; color: Theme.orange }
-    }
-
-    // Soft glow: a few widening, fading copies of the edge behind the body.
+    // Soft shadow: a few widening, fading copies of the body.
     Repeater {
         model: 4
         delegate: Rectangle {
@@ -113,36 +105,21 @@ PanelWindow {
             width: body.width + spread * 2
             height: body.height + spread * 2
             radius: Theme.radiusDock + spread
-            opacity: 0.10 - index * 0.022
-            gradient: EdgeGradient {}
+            color: "black"
+            opacity: 0.14 - index * 0.03
         }
     }
 
-    // Body: 1 px gradient edge around a graphite glass fill.
+    // Body: a white surface with a hairline edge.
     Rectangle {
         id: body
         anchors.centerIn: parent
         width: row.implicitWidth + Theme.dockPadding * 2
         height: Theme.dockItemSize + Theme.dockPadding * 2
         radius: Theme.radiusDock
-        gradient: EdgeGradient {}
-
-        Rectangle {
-            anchors.fill: parent
-            anchors.margins: 1
-            radius: Theme.radiusDock - 1
-            color: Qt.rgba(7 / 255, 11 / 255, 14 / 255, 0.94)
-
-            // Faint top highlight so the edge reads as a surface, not a hole.
-            Rectangle {
-                anchors { left: parent.left; right: parent.right; top: parent.top }
-                anchors.leftMargin: Theme.radiusDock
-                anchors.rightMargin: Theme.radiusDock
-                anchors.topMargin: 1
-                height: 1
-                color: Qt.rgba(1, 1, 1, 0.05)
-            }
-        }
+        color: Theme.dockBackground
+        border.width: 1
+        border.color: Theme.dockBorder
     }
 
     Row {
@@ -153,7 +130,7 @@ PanelWindow {
         DockItem {
             launcher: true
             name: "Applications"
-            iconSource: Quickshell.shellPath("assets/axiom-mark.svg")
+            iconSource: Quickshell.shellPath("assets/mascots/launcher.png")
             focused: UiState.launcherOpen && UiState.launcherMode === "grid"
         }
 
@@ -174,7 +151,7 @@ PanelWindow {
                 anchors.centerIn: parent
                 width: 1
                 height: Theme.dockIconSize * 0.7
-                color: Theme.border
+                color: Theme.dockBorder
             }
         }
 
