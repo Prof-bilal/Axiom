@@ -56,6 +56,7 @@ ShellRoot {
     NotificationCenter {}
     SessionMenu {}
     ControlCenter {}
+    IdleBlank {}
 
     // Surface control for compositor keybindings, plus session actions so the
     // same PowerService path is reachable from a keybinding or a script. The

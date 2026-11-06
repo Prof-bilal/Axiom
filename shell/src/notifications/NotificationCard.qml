@@ -35,6 +35,19 @@ Rectangle {
             Layout.fillWidth: true
             spacing: Theme.spacingSm
 
+            // Mascot on toasts only; the history list stays compact.
+            Image {
+                visible: card.toast
+                source: Quickshell.shellPath("assets/mascots/notification.png")
+                sourceSize.width: 80
+                sourceSize.height: 80
+                Layout.preferredWidth: 40
+                Layout.preferredHeight: 40
+                fillMode: Image.PreserveAspectFit
+                smooth: true
+                mipmap: true
+            }
+
             Image {
                 visible: card.notification && card.notification.appIcon
                 source: card.notification

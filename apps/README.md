@@ -15,7 +15,8 @@ shell/apps -> ../apps     symlink: apps/ is part of the same config root
 apps/shared/              AppWindow, AppButton, SearchField, ContextMenu, CommandRunner
 apps/files/               Axiom Files    (files.js: pure logic, FileBackend.qml: all I/O)
 apps/software/            Axiom Software (software.js, PackageBackend.qml)
-apps/settings/            Axiom Settings (settings.js, one page per file)
+apps/settings/            Axiom Settings (settings.js, one page per file; Phase 5 adds Network, Bluetooth,
+                          Sound, Displays (writable), Power, Notifications, Keyboard, Date & time, Users)
 ```
 
 Launched with `axiom-app <files|software|settings> [path-or-uri]`
@@ -29,7 +30,7 @@ and do system work through argv-array processes (`find`, `gio`, `pacman`,
 | --- | --- | --- |
 | Files | browse, search, create, rename, copy/cut/paste, trash, restore, permanent delete with confirmation, properties, open with the default app, terminal here, remembers its last folder | drag and drop, thumbnails, mounting devices, undo (restore from Trash is the recovery path) |
 | Software | installed applications and packages, search, filters, details, files, open in terminal | install, remove, update (need the permission layer), repository search (needs a database refresh) |
-| Settings | About, Appearance (text size, wallpaper), Dock pins, Default apps, Displays (read-only) | Wi-Fi, Bluetooth, sound, power, users (Phase 5) |
+| Settings | About, Appearance (text size, wallpaper), Dock pins, Default apps; Phase 5: Network (Wi-Fi join/forget), Bluetooth, Sound, Displays (mode, scale, rotation with auto-revert), Power (profile, idle screen-off), Notifications (Do Not Disturb, per-app mute), Keyboard layouts, Date & time, Users (list) | create/remove users and change passwords (needs the Phase 6 privileged helper), live keyboard-layout switch (applies at next login) |
 
 ## Tests
 

@@ -51,7 +51,7 @@ MenuSurface {
                 anchors.verticalCenter: parent.verticalCenter
                 width: 34
                 height: 34
-                source: Quickshell.shellPath("assets/axiom-penguin.png")
+                source: Quickshell.shellPath("assets/mascots/launcher.png")
                 sourceSize.width: 68
                 sourceSize.height: 68
                 smooth: true

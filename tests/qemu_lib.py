@@ -38,7 +38,8 @@ KEYNAMES = {" ": "spc", "-": "minus", ".": "dot", "/": "slash", "\n": "ret", ";"
 
 
 class Guest:
-    def __init__(self, iso, outdir, res="1920x1080", mem=2048, smp=2):
+    def __init__(self, iso, outdir, res="1920x1080", mem=2048, smp=2, extra=()):
+        self.extra = list(extra)
         self.iso, self.out, self.res, self.mem, self.smp = iso, outdir, res, mem, smp
         self.w, self.h = (int(v) for v in res.split("x"))
         os.makedirs(outdir, exist_ok=True)
@@ -82,7 +83,7 @@ class Guest:
             "-serial", f"unix:{self.p('serial.sock')},server,nowait",
             "-monitor", f"unix:{self.p('mon.sock')},server,nowait",
             "-qmp", f"unix:{self.p('qmp.sock')},server,nowait",
-        ], stdout=open(self.p("qemu.out"), "wb"), stderr=subprocess.STDOUT)
+        ] + self.extra, stdout=open(self.p("qemu.out"), "wb"), stderr=subprocess.STDOUT)
         for _ in range(400):
             if os.path.exists(self.p("serial.sock")):
                 try:
@@ -207,8 +208,8 @@ class Guest:
         import base64
         b = base64.b64encode(content.encode()).decode()
         self.sh(f"rm -f /tmp/put.b64; mkdir -p $(dirname {shlex.quote(path)})", 15)
-        for i in range(0, len(b), 300):
-            self.sh(f"printf %s '{b[i:i + 300]}' >> /tmp/put.b64", 20)
+        for i in range(0, len(b), 1500):
+            self.sh(f"printf %s '{b[i:i + 1500]}' >> /tmp/put.b64", 40)
         self.sh(f"base64 -d /tmp/put.b64 > {shlex.quote(path)}; chmod {mode} {shlex.quote(path)}", 20)
 
     def shell_ready(self, timeout=330):

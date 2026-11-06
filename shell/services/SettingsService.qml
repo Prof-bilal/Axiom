@@ -31,6 +31,13 @@ Singleton {
     // Multiplier for every text size in the shell and the apps (1.0 default).
     readonly property real textScale: Math.max(0.9, Math.min(1.5, store.textScale))
 
+    // Do Not Disturb: toasts are suppressed (critical ones still show); history keeps everything.
+    readonly property bool dnd: store.dnd
+    // Application names whose toasts are muted (history still lists them).
+    readonly property var mutedApps: store.mutedApps
+    // Minutes of inactivity before the screen blanks; 0 = never.
+    readonly property int idleBlankMinutes: Math.max(0, Math.min(120, store.idleBlankMinutes))
+
     // "" when the file loaded (or does not exist yet); otherwise why it did not.
     property string loadError: ""
 
@@ -50,6 +57,17 @@ Singleton {
         store.textScale = scale
         save()
     }
+
+    function setDnd(on) { store.dnd = on; save() }
+
+    function setAppMuted(name, muted) {
+        var list = store.mutedApps.filter(function (n) { return n !== name })
+        if (muted) list.push(name)
+        store.mutedApps = list
+        save()
+    }
+
+    function setIdleBlankMinutes(minutes) { store.idleBlankMinutes = minutes; save() }
 
     function resetDock() {
         store.dockPins = []
@@ -100,6 +118,9 @@ Singleton {
             property bool dockCustom: false
             property var dockPins: []
             property real textScale: 1.0
+            property bool dnd: false
+            property var mutedApps: []
+            property int idleBlankMinutes: 0
         }
     }
 }

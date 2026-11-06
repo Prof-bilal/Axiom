@@ -287,7 +287,8 @@ if SHORT:
         ser.sendall(_line[_i:_i + 24]); time.sleep(0.08)
 else:
     # Session menu is still open: the first click only arms Shut Down.
-    shut_down = (W - 8 - 230 + 8 + 115, PANEL_H + 4 + 8 + 28 + 2 * 36 + 17)
+    # Row y follows the 88 px mascot above the menu rows (see 12-shutdown-armed.png).
+    shut_down = (W - 8 - 230 + 8 + 115, 261)
     click(*shut_down, settle=1.0); shot("12-shutdown-armed")
     if qemu.poll() is None:
         ok("single click on Shut Down did not power off (confirmation required)")

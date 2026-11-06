@@ -6,6 +6,7 @@ pragma Singleton
 // inventing values; surfaces hide or grey indicators that have no backend.
 
 import Quickshell
+import Quickshell.Io
 import Quickshell.Services.Pipewire
 import Quickshell.Services.UPower
 import Quickshell.Networking
@@ -43,6 +44,35 @@ Singleton {
     readonly property int batteryPercent: powerDevice
         ? Math.round(powerDevice.percentage * 100) : -1
 
+    // --- power profile (power-profiles-daemon through UPower's PowerProfiles) ---
+    // The singleton exists even without the daemon, so probe the bus name
+    // (bus activation starts the daemon if it is installed).
+    property bool profilesAvailable: false
+    Process {
+        id: profilesProbe
+        running: true
+        command: ["busctl", "--system", "--no-pager", "introspect", "org.freedesktop.UPower.PowerProfiles", "/org/freedesktop/UPower/PowerProfiles"]
+        onExited: function (code) { system.profilesAvailable = code === 0 }
+    }
+    readonly property int powerProfile: PowerProfiles.profile
+    readonly property bool hasPerformanceProfile: PowerProfiles.hasPerformanceProfile
+    // Quickshell's own PowerProfiles.profile write is refused by the daemon
+    // (AccessDenied, switch-profile) while the same write from a session process
+    // succeeds, so set it with busctl (argv, no shell), like the other services.
+    readonly property var profileNames: ({ [PowerProfile.PowerSaver]: "power-saver", [PowerProfile.Balanced]: "balanced", [PowerProfile.Performance]: "performance" })
+    Process {
+        id: profileSetter
+        property string target: ""
+        command: ["busctl", "--system", "--no-pager", "set-property", "org.freedesktop.UPower.PowerProfiles",
+                  "/org/freedesktop/UPower/PowerProfiles", "org.freedesktop.UPower.PowerProfiles", "ActiveProfile", "s", target]
+    }
+    function setPowerProfile(p) {
+        var name = system.profileNames[p]
+        if (!name || profileSetter.running) return
+        profileSetter.target = name
+        profileSetter.running = true
+    }
+
     // --- network ---
     readonly property bool networkAvailable: Networking.backend !== NetworkBackendType.None
     readonly property bool wifiEnabled: Networking.wifiEnabled
@@ -75,6 +105,29 @@ Singleton {
 
     function setWifi(enabled) {
         Networking.wifiEnabled = enabled
+    }
+
+    // --- brightness (backlight class devices, through brightnessctl/logind) ---
+    property int brightnessPercent: -1       // -1 = no controllable backlight
+    readonly property bool brightnessAvailable: brightnessPercent >= 0
+    function refreshBrightness() { brightnessProbe.running = false; brightnessProbe.running = true }
+    function setBrightness(percent) {
+        var p = Math.max(1, Math.min(100, Math.round(percent)))
+        brightnessPercent = p
+        Quickshell.execDetached(["brightnessctl", "-q", "set", p + "%"])
+    }
+    Process {
+        id: brightnessProbe
+        running: true
+        command: ["brightnessctl", "-m", "-c", "backlight", "info"]
+        stdout: StdioCollector {
+            onStreamFinished: {
+                // machine format: device,class,current,percent%,max
+                var f = text.trim().split(",")
+                system.brightnessPercent = f.length >= 5 ? parseInt(f[3]) : -1
+            }
+        }
+        onExited: function (code) { if (code !== 0) system.brightnessPercent = -1 }
     }
 
     // --- bluetooth ---

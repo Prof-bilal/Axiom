@@ -165,3 +165,13 @@ firefox
 libnotify
 xdg-utils
 glib2
+# --- Axiom Phase 5 system experience (ADR-019) ---
+bluez
+bluez-utils
+power-profiles-daemon
+upower
+wlr-randr
+brightnessctl
+xkeyboard-config
+# test fixture only: simulated access point on mac80211_hwsim for the Wi-Fi tests
+hostapd

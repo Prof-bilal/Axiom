@@ -1,0 +1,42 @@
+{
+ "network.connect": [
+  948,
+  284
+ ],
+ "network.password_join": [
+  603,
+  340
+ ],
+ "sound.mute": [
+  960,
+  193
+ ],
+ "sound.slider": [
+  800,
+  193
+ ],
+ "displays.scale2": [
+  967,
+  294
+ ],
+ "displays.scale15": [
+  918,
+  294
+ ],
+ "displays.keep": [
+  1637,
+  338
+ ],
+ "power.saver": [
+  743,
+  445
+ ],
+ "power.balanced": [
+  838,
+  445
+ ],
+ "power.idle5": [
+  753,
+  539
+ ]
+}

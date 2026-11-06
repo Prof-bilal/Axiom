@@ -1,0 +1,82 @@
+PASS: session ready at 1920x1080
+PASS: test dataset created (hostile names, 10,000 files, unreadable folder)
+PASS: image: Axiom Files is the default for folders
+PASS: image: axiom-files.desktop installed
+PASS: image: axiom-software.desktop installed
+PASS: image: axiom-settings.desktop installed
+PASS: image: axiom-trash.desktop installed
+PASS: image: pcmanfm is no longer installed
+PASS: image: Files and Trash entries launch axiom-app
+PASS: image: axiom-app rejects unknown app names
+PASS: dock: clicking Files launches Axiom Files
+PASS: dock: no stray argument (such as an unexpanded %U) reaches the app
+PASS: dock: Trash opens Axiom Files at trash:///
+PASS: files: launched at a path argument
+PASS: files: no QML errors at startup
+PASS: files: Ctrl+Shift+N creates a folder
+PASS: files: F2 renames it
+PASS: files: copy/paste of every entry (spaces, quotes, newline, leading dash, $(), *, links) is exact
+PASS: files: copied file content is identical
+PASS: files: Delete moves the selection to the Trash
+PASS: files: Trash gained entries (0 -> 18)
+PASS: files: Ctrl+R in Trash restores everything to its original place
+PASS: files: Trash is back to its earlier count after restore
+PASS: files: copies trashed again
+PASS: files: plain Enter does not permanently delete
+PASS: files: Ctrl+Enter confirms permanent delete and empties the Trash
+PASS: files: renaming onto an existing name is refused and nothing is lost
+PASS: files: Enter opens a file in the default application (Mousepad)
+PASS: files: x1.txt trashed
+PASS: files: restoring onto an existing name is refused; the new file and the trashed one both survive
+PASS: terminal: F4 in Files opens a terminal in the folder being viewed
+PASS: files: no QML errors after the whole run
+PASS: files: an unreadable folder is handled without errors or a crash
+PASS: files: 10,000 entries listed in 219 ms (parse 66, sort 136, selection 17)
+PASS: files: the last folder is saved
+PASS: files: reopening without an argument returns to the saved folder
+PASS: software: launched
+PASS: software: no QML errors at startup
+PASS: software: lists exactly the 688 installed packages
+PASS: settings: launched
+PASS: settings: no QML errors at startup
+PASS: settings: About page opened (os-release reports Axiom Linux)
+PASS: settings: Text size > Larger is saved (textScale 1.25)
+PASS: settings: Text size > Default is saved (textScale back to 1, not 1.25)
+PASS: settings: choosing a picture saves its path
+PASS: settings: removing a pin saves a custom dock without it
+PASS: settings: Reset to defaults restores the default dock
+PASS: settings: Default apps > Text editor > Vim changes the system default
+PASS: settings: ...and back to Mousepad
+PASS: settings: the shell applied the new wallpaper live (brightness 0.130 -> 0.327)
+PASS: toast: a notification renders on screen (region brightness 0.046 -> 0.094)
+PASS: recovery: the supervised shell restarts after being killed and serves IPC again
+PASS: recovery: the chosen wallpaper is still applied after the shell restarted (0.327 vs 0.327)
+PASS: memory: files PSS 173 MiB (gate 256 MiB)
+PASS: memory: software PSS 178 MiB (gate 256 MiB)
+PASS: memory: settings PSS 159 MiB (gate 256 MiB)
+PASS: memory: guest uses 1278 MiB of 2048 MiB with the shell and all three apps open
+PASS: guest powered off cleanly
+{
+  "resolution": "1920x1080",
+  "iso": "axiom-2026.11.03-x86_64.iso",
+  "files_10000_ms": {
+    "parse": 66,
+    "sort_and_apply": 136,
+    "selection": 17
+  },
+  "pss_kb_files_10000": 282711,
+  "pss_kb_software": 234965,
+  "pss_kb_settings": 252887,
+  "wallpaper_brightness": {
+    "default": 0.13,
+    "chosen": 0.327
+  },
+  "pss_kb_all_open": {
+    "shell": 406941,
+    "files": 177697,
+    "software": 183089,
+    "settings": 163781
+  },
+  "guest_memory_used_kb_all_open": 1308732
+}
+RESULT: PASS

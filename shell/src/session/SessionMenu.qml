@@ -1,4 +1,5 @@
 import QtQuick
+import Quickshell
 import qs.src.shared
 import qs.services
 
@@ -13,6 +14,18 @@ MenuSurface {
     alignRight: true
     layerNamespace: "axiom-session-menu"
     cardWidth: 230
+
+    Image {
+        anchors.horizontalCenter: parent.horizontalCenter
+        width: 88
+        height: 88
+        source: Quickshell.shellPath("assets/mascots/shutdown.png")
+        sourceSize.width: 176
+        sourceSize.height: 176
+        fillMode: Image.PreserveAspectFit
+        smooth: true
+        mipmap: true
+    }
 
     MenuSeparator { caption: "Session" }
 

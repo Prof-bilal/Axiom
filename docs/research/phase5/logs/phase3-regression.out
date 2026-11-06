@@ -1,0 +1,22 @@
+PASS: session ready at 1920x1080 (shell config loaded)
+PASS: captured 01-empty-desktop
+PASS: captured 02-axiom-menu
+PASS: captured 03-axiom-menu-search
+PASS: captured 04-terminal-focused
+PASS: captured 05-two-terminals-cascade
+PASS: captured 06-files-from-dock-terminal-unfocused
+PASS: captured 07-maximized
+PASS: captured 07b-minimized
+PASS: captured 08-workspace-2-by-click
+PASS: captured 09-status-menu
+PASS: captured 10-apps-grid
+PASS: captured 10b-activities
+PASS: captured 10c-launcher-search
+PASS: captured 11-session-menu
+PASS: no QML errors in the shell log
+PASS: os-release reports Axiom Linux
+PASS: Inter and JetBrains Mono installed
+PASS: captured 12-shutdown-armed
+PASS: single click on Shut Down did not power off (confirmation required)
+PASS: guest powered off cleanly
+RESULT: PASS

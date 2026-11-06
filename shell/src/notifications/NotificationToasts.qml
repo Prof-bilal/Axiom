@@ -22,8 +22,7 @@ PanelWindow {
     WlrLayershell.layer: WlrLayershell.Overlay
     WlrLayershell.keyboardFocus: WlrLayershell.None
 
-    readonly property var items: NotificationService.tracked
-        ? NotificationService.tracked.values.slice(-4).reverse() : []
+    readonly property var items: NotificationService.toastItems
 
     Column {
         id: toastColumn

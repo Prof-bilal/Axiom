@@ -1,6 +1,6 @@
 # Axiom implementation phases
 
-Current phase: **Phase 4 — Axiom core apps (complete, 2026-11-03; Phase 5 is next and not yet authorized)**. Phases 0 to 4 are complete.
+Current phase: **Phase 5 — system experience (complete, 2026-11-06; Phase 6 is next and not yet authorized)**. Phases 0 to 5 are complete.
 The architecture reset is complete; the previous upstream-derived desktop
 direction has been removed. Each phase requires retained evidence; code existing
 in a branch is not an exit criterion.
@@ -151,6 +151,18 @@ an automated check, and Phase 4 was run at 1920x1080 only.
 Integrate notifications, quick settings, Bluetooth, Wi-Fi, audio, display,
 power, user accounts, keyboard and appearance controls with the real Linux
 services and truthful unsupported states.
+
+**Completion (2026-11-06):** the exit evidence is in
+[Phase 5 evidence](research/phase5/evidence.md): `tests/phase5-system.py` passes
+76 checks on the rebuilt `axiom-2026.11.03-x86_64.iso`, including Wi-Fi join
+with the right password and rejection of a wrong one, display scale with revert
+and Keep, power profiles, and the idle screen-off that works on a real boot
+after the `Repeater` to `Instantiator` fix in `IdleBlank.qml`. Security checks
+show the desktop user cannot set the clock, change the hostname, add users or
+stop system services. `tests/phase4-apps.py` (58 checks) and
+`tests/phase3-desktop.py` (21 checks) also pass on the same image. Limits carried
+forward: the VM has no backlight or Bluetooth controller, Wi-Fi is simulated, and
+checks ran at 1920x1080 only. Real hardware is Phase 8.
 
 ## Phase 6 — security layer
 

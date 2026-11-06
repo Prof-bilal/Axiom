@@ -33,7 +33,7 @@ PageFrame {
         Image {
             width: 72
             height: 72
-            source: Quickshell.shellPath("assets/axiom-penguin.png")
+            source: Quickshell.shellPath("assets/mascots/showcase.png")
             sourceSize.width: 144
             sourceSize.height: 144
             fillMode: Image.PreserveAspectFit

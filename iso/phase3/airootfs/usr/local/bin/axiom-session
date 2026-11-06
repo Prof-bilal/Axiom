@@ -30,6 +30,17 @@ export QT_QPA_PLATFORM=wayland
   data="${XDG_DATA_HOME:-$HOME/.local/share}"
   mkdir -p -- "$data/Trash/files" "$data/Trash/info" ) 2>/dev/null || true
 
+# Keyboard layout chosen in Settings (Phase 5). labwc reads XKB_* only at start,
+# so it is applied here. Only strictly shaped values are accepted; anything else
+# in the file is ignored.
+kb="${XDG_CONFIG_HOME:-$HOME/.config}/axiom/keyboard.env"
+if [ -r "$kb" ]; then
+  layout=$(sed -n 's/^XKB_DEFAULT_LAYOUT=\([a-z0-9_]\{2,12\}\(,[a-z0-9_]\{2,12\}\)\{0,1\}\)$/\1/p' "$kb" | head -n 1)
+  opts=$(sed -n 's/^XKB_DEFAULT_OPTIONS=\(grp:alt_shift_toggle\)$/\1/p' "$kb" | head -n 1)
+  [ -n "$layout" ] && export XKB_DEFAULT_LAYOUT="$layout"
+  [ -n "$opts" ] && export XKB_DEFAULT_OPTIONS="$opts"
+fi
+
 echo "AXIOM_SESSION_START" > /dev/ttyS0 2>/dev/null || true
 
 # Announce shell readiness on the serial console so QEMU can capture evidence

@@ -22,6 +22,27 @@ Singleton {
         return false
     }
 
+    // Toasts: newest first, minus muted apps, and nothing at all under Do Not
+    // Disturb except critical notifications. The history list uses `tracked`.
+    readonly property var toastItems: {
+        if (!tracked) return []
+        var out = []
+        var items = tracked.values
+        for (var i = items.length - 1; i >= 0 && out.length < 4; i--) {
+            var n = items[i]
+            var critical = n.urgency === NotificationUrgency.Critical
+            if (critical || (!SettingsService.dnd && SettingsService.mutedApps.indexOf(n.appName) < 0)) out.push(n)
+        }
+        return out
+    }
+
+    // Distinct application names currently in the history, for the mute list.
+    readonly property var appNames: {
+        var seen = {}
+        if (tracked) tracked.values.forEach(function (n) { if (n.appName) seen[n.appName] = true })
+        return Object.keys(seen).sort()
+    }
+
     function dismiss(notification) {
         if (notification) notification.dismiss()
     }

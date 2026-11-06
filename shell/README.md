@@ -27,7 +27,8 @@ src/
   notifications/ NotificationCard, NotificationCenter
   session/    SessionMenu
   status/     ControlCenter (status menu)
-services/                     system boundaries (singletons)
+services/                     system boundaries (singletons); Phase 5 adds DisplayService, TimeService,
+                              AccountService, KeyboardService (see ADR-019)
   ApplicationService  XDG desktop entries + launch
   WindowService       wlr-foreign-toplevel window state/actions
   WorkspaceService    workspaces via ext-workspace-v1 (Quickshell.WindowManager)

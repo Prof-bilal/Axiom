@@ -1,0 +1,27 @@
+// Axiom Phase 5 system settings (ADR-019).
+//
+// The Settings app and the shell run as the unprivileged desktop user and call
+// system services; each action is authorised here by polkit, never by the UI.
+// Allowed for that user only, and only while the session is local and active:
+//   - network configuration (join/forget Wi-Fi), Wi-Fi and network enable/disable
+//   - time zone and NTP (systemd-timedated)
+//   - power profile switch (power-profiles-daemon)
+// Everything else keeps its stock policy: no user, power-off, package or
+// hostname change is granted here.
+polkit.addRule(function (action, subject) {
+    if (subject.user != "axiom" || !subject.local || !subject.active) {
+        return;
+    }
+    var allowed = {
+        "org.freedesktop.NetworkManager.settings.modify.system": true,
+        "org.freedesktop.NetworkManager.network-control": true,
+        "org.freedesktop.NetworkManager.enable-disable-wifi": true,
+        "org.freedesktop.NetworkManager.wifi.scan": true,
+        "org.freedesktop.timedate1.set-timezone": true,
+        "org.freedesktop.timedate1.set-ntp": true,
+        "org.freedesktop.UPower.PowerProfiles.switch-profile": true
+    };
+    if (allowed[action.id]) {
+        return polkit.Result.YES;
+    }
+});

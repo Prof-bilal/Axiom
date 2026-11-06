@@ -1,0 +1,78 @@
+PASS: session ready at 1920x1080
+PASS: image: NetworkManager service is up/enabled
+PASS: image: bluetooth service is up/enabled
+PASS: image: polkit service is up/enabled
+PASS: image: systemd-networkd and iwd are no longer enabled (one network manager)
+PASS: image: power-profiles-daemon answers on the system bus
+PASS: image: wlr-randr installed
+PASS: image: brightnessctl installed
+PASS: image: bluetoothctl installed
+PASS: image: nmcli installed
+PASS: image: timedatectl installed
+PASS: image: wpctl installed
+PASS: image: Phase 5 polkit rule installed
+PASS: image: xkeyboard-config layout database present
+PASS: mascots: files app icon installed
+PASS: mascots: settings app icon installed
+PASS: mascots: software app icon installed
+PASS: mascots: terminal app icon installed
+PASS: mascots: shell mascot launcher installed
+PASS: mascots: shell mascot notification installed
+PASS: mascots: shell mascot shutdown installed
+PASS: mascots: shell mascot showcase installed
+PASS: mascots: shell mascot sleeping installed
+PASS: mascots: Settings About (showcase mascot) loads without QML errors
+PASS: network: two simulated Wi-Fi radios appear (mac80211_hwsim)
+PASS: network: simulated access point 'AxiomLab' is running
+PASS: network: NetworkManager manages the Wi-Fi device wlan0
+PASS: network: the shell user sees the AxiomLab network
+PASS: network: Settings > Network loads without QML errors
+PASS: network: a wrong password does not connect
+PASS: network: joining AxiomLab with the right password connects
+PASS: network: the Wi-Fi password is not written to the app log or the journal files
+PASS: network: wlan0 received an IPv4 address
+PASS: bluetooth: BlueZ service is enabled
+PASS: bluetooth: with no controller bluetoothd is correctly not started (start condition unmet), and the page reports no adapter
+PASS: bluetooth: Settings > Bluetooth loads without QML errors
+PASS: sound: PipeWire exposes an audio sink
+PASS: sound: Settings > Sound loads without QML errors
+PASS: sound: Mute in Settings mutes the default output
+PASS: sound: Unmute restores output
+PASS: sound: clicking the slider changes the volume (Volume: 0.17)
+PASS: displays: Settings > Displays loads without QML errors
+PASS: displays: the compositor reports outputs through wlr-randr
+PASS: displays: choosing 2× scale changes the output scale
+PASS: displays: an unconfirmed change reverts automatically
+PASS: displays: Keep makes the change stick
+PASS: power: Settings > Power loads without QML errors
+PASS: power: choosing Power saver switches the real profile
+PASS: power: choosing Balanced switches it back
+PASS: power: choosing 5 min saves the idle screen-off time
+PASS: power: no backlight in the VM, and the UI shows that instead of a fake slider
+PASS: power: the screen turns off after the idle time
+PASS: power: input wakes the screen
+PASS: notifications: Settings > Notifications loads without QML errors
+PASS: keyboard: Settings > Keyboard loads without QML errors
+PASS: keyboard: the session restarts after logout
+PASS: keyboard: the next session starts with the chosen layouts (XKB_DEFAULT_LAYOUT=de,us XKB_DEFAULT_OPTIONS=grp:alt_shift_toggle)
+PASS: keyboard: session restarts again
+PASS: keyboard: a malformed layout value is ignored and nothing is executed
+PASS: datetime: Settings > Date & time loads without QML errors
+PASS: datetime/polkit: the running shell session is authorised for org.freedesktop.timedate1.set-timezone
+PASS: datetime/polkit: the running shell session is authorised for org.freedesktop.timedate1.set-ntp
+PASS: datetime/polkit: the running shell session is authorised for org.freedesktop.NetworkManager.settings.modify.system
+PASS: datetime/polkit: setting the clock itself is not granted to the shell session
+PASS: datetime: timedated applies a time zone change
+PASS: users: Settings > Users loads without QML errors
+PASS: users: the current account exists in the user database
+PASS: security: the desktop user cannot set the clock
+PASS: security: the desktop user cannot change the hostname
+PASS: security: the desktop user cannot add a user
+PASS: security: the desktop user cannot stop a system service
+PASS: security: no account was created
+PASS: security: no Axiom UI process runs as root
+PASS: recovery: the supervised shell restarts after being killed
+PASS: recovery: Power page recovers after power-profiles-daemon restarts
+PASS: memory: measured Pss kB {'shell': 518263, 'settings_network_page': 228046}
+
+OK: 0 failure(s)

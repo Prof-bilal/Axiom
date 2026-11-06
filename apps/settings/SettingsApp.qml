@@ -4,11 +4,11 @@ import qs.src.shared
 import qs.services
 import qs.apps.shared
 
-// Axiom Settings. Only pages that change something real are listed: About
-// reads the system, Appearance and Dock write the shared settings store that
-// the shell watches, Default apps use the system MIME defaults, Displays
-// shows what the compositor reports. Wi-Fi, Bluetooth, sound and power arrive
-// with their services in a later phase, so they are not shown here.
+// Axiom Settings. System pages (Network, Bluetooth, Sound, Displays, Power,
+// Notifications, Keyboard, Date & time, Users) drive real services and say
+// plainly when a service or adapter is missing; Appearance and Dock write the
+// shared settings store that the shell watches; Default apps use the system
+// MIME defaults.
 AppWindow {
     id: root
 
@@ -16,7 +16,8 @@ AppWindow {
     implicitWidth: 1020
     implicitHeight: 660
 
-    property string page: "about"
+    // `axiom-app settings <page>` opens that page; anything unknown opens About.
+    property string page: components.hasOwnProperty(Quickshell.env("AXIOM_APP_ARG") || "") ? Quickshell.env("AXIOM_APP_ARG") : "about"
     property var menuCallback: null
 
     readonly property var pages: [
@@ -24,8 +25,22 @@ AppWindow {
         { key: "appearance", label: "Appearance", icon: "image" },
         { key: "dock", label: "Dock", icon: "application" },
         { key: "apps", label: "Default apps", icon: "grid" },
-        { key: "displays", label: "Displays", icon: "window" }
+        { key: "displays", label: "Displays", icon: "window" },
+        { key: "network", label: "Network", icon: "network-wireless" },
+        { key: "bluetooth", label: "Bluetooth", icon: "bluetooth" },
+        { key: "sound", label: "Sound", icon: "volume-high" },
+        { key: "power", label: "Power", icon: "battery" },
+        { key: "notifications", label: "Notifications", icon: "bell" },
+        { key: "keyboard", label: "Keyboard", icon: "terminal" },
+        { key: "datetime", label: "Date & time", icon: "refresh" },
+        { key: "users", label: "Users", icon: "home" }
     ]
+    readonly property var components: ({
+        network: networkPage, bluetooth: bluetoothPage, sound: soundPage, displays: displaysPage,
+        power: powerPage, notifications: notificationsPage, keyboard: keyboardPage,
+        datetime: dateTimePage, users: usersPage, appearance: appearancePage,
+        dock: dockPage, apps: appsPage, about: aboutPage
+    })
 
     function showMenu(x, y, items, callback) {
         menuCallback = callback
@@ -120,10 +135,7 @@ AppWindow {
             anchors.bottom: parent.bottom
             anchors.left: sidebar.right
             anchors.right: parent.right
-            sourceComponent: root.page === "about" ? aboutPage
-                           : root.page === "appearance" ? appearancePage
-                           : root.page === "dock" ? dockPage
-                           : root.page === "apps" ? appsPage : displaysPage
+            sourceComponent: root.components[root.page]
         }
 
         Component { id: aboutPage; AboutPage {} }
@@ -131,6 +143,14 @@ AppWindow {
         Component { id: dockPage; DockPage {} }
         Component { id: appsPage; DefaultAppsPage {} }
         Component { id: displaysPage; DisplaysPage {} }
+        Component { id: networkPage; NetworkPage {} }
+        Component { id: bluetoothPage; BluetoothPage {} }
+        Component { id: soundPage; SoundPage {} }
+        Component { id: powerPage; PowerPage {} }
+        Component { id: notificationsPage; NotificationsPage {} }
+        Component { id: keyboardPage; KeyboardPage {} }
+        Component { id: dateTimePage; DateTimePage {} }
+        Component { id: usersPage; UsersPage {} }
 
         Connections {
             target: loader.item
