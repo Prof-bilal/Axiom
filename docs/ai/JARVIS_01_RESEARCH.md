@@ -3,7 +3,7 @@
 **Status:** RESEARCH DOCUMENT - Comprehensive Analysis for Axiom's AI-Native Layer  
 **Author:** Axiom AI Research Team  
 **Date:** 2026-11-06  
-**Phase:** Pre-Phase 7 (AI-native layer) - Strategic Research  
+**Phase:** Pre-Phase 12 (AI-native layer) - Strategic Research  
 **Version:** 0.1.0  
 
 ---
@@ -502,14 +502,14 @@ Result Validation → Audit → Return to User
 
 | # | Child | Purpose | Default Class | Sandbox | Status |
 |---|-------|---------|---------------|---------|--------|
-| 1 | **Research** | Deep research with verification, cross-checking | OBSERVE | none | Phase 7 |
-| 2 | **Code** | Coding assistance, review, debugging | NORMAL | required | Phase 7 |
-| 3 | **Marketing** | Content creation, campaign analysis | NORMAL | none | Phase 7 |
-| 4 | **Security** | Adversarial review, vulnerability scanning | OBSERVE | required | Phase 7 |
-| 5 | **Automation** | Workflow automation, task orchestration | SENSITIVE | required | Phase 7 |
-| 6 | **Content** | Multi-modal content creation | NORMAL | none | Phase 7 |
-| 7 | **Data** | Analytics, insights, visualization | OBSERVE | none | Phase 7 |
-| 8 | **User** | Custom user-defined agents | NORMAL+ | varies | Phase 8 |
+| 1 | **Research** | Deep research with verification, cross-checking | OBSERVE | none | Phase 12 |
+| 2 | **Code** | Coding assistance, review, debugging | NORMAL | required | Phase 12 |
+| 3 | **Marketing** | Content creation, campaign analysis | NORMAL | none | Phase 12 |
+| 4 | **Security** | Adversarial review, vulnerability scanning | OBSERVE | required | Phase 12 |
+| 5 | **Automation** | Workflow automation, task orchestration | SENSITIVE | required | Phase 12 |
+| 6 | **Content** | Multi-modal content creation | NORMAL | none | Phase 12 |
+| 7 | **Data** | Analytics, insights, visualization | OBSERVE | none | Phase 12 |
+| 8 | **User** | Custom user-defined agents | NORMAL+ | varies | Phase 12+ advanced |
 
 ### 9.4 User Agent Definition (SKILL.md Format)
 
@@ -581,7 +581,7 @@ author: user@axiom
 
 ## 10. Implementation Roadmap
 
-### Phase 7: AI-Native Layer (Target: Q1 2027)
+### Phase 12: AI-Native Layer (target date superseded by docs/PHASES.md)
 
 #### Milestone 7.1: Foundation
 - [ ] Parent orchestrator (assistantd) skeleton
@@ -602,7 +602,7 @@ author: user@axiom
 - [ ] Automation agent with workflow orchestration
 - [ ] Bypass matrix validation
 
-### Phase 8: Advanced Capabilities (Target: Q2 2027)
+### Phase 12+ advanced: Advanced Capabilities (target date superseded by docs/PHASES.md)
 
 #### Milestone 8.1: Reversible State Agents
 - [ ] Dependency agent for package management
@@ -621,7 +621,7 @@ author: user@axiom
 - [ ] Routine validation and approval
 - [ ] Routine audit and rollback
 
-### Phase 9+: Production & Scale (Target: Q3 2027+)
+### Phase 13+: Production & Scale (target date superseded by docs/PHASES.md)
 
 - [ ] Multi-model optimization
 - [ ] Cost tracking and budgeting
@@ -717,7 +717,7 @@ Axiom can deliver a truly unique and strong AI infrastructure that empowers user
 
 **Next Steps:**
 1. Review and approve this research document
-2. Begin Phase 7 implementation with parent orchestrator
+2. Begin Phase 12 implementation with parent orchestrator
 3. Develop capability-based policy engine
 4. Integrate Warden sandboxing
 5. Build first read-only agents (research, security, context)

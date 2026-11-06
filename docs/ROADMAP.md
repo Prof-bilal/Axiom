@@ -12,10 +12,14 @@ Phase 0.
 | Shell MVP | 3 | Axiom panel, dock, launcher, workspace UI, notifications and session controls work. |
 | Core apps | 4 | Files, Settings, Terminal and Software are functional. |
 | System experience | 5 | Device and session controls use real system services. |
-| Security layer | 6 | Capabilities, scopes, audit and recovery boundaries are enforced. |
-| AI-native layer | 7 | Optional agents and contextual workflows use typed, user-approved tools. |
-| Hardware/stability | 8 | Declared hardware and power/connectivity matrix is measured. |
-| Distribution | 9 | Installer, signed updates, recovery and release checks are usable. |
+| Installable system | 6 | Axiom installs to disk, reboots and keeps settings. |
+| Packages and updates | 7 | Software Center installs and updates packages; bad updates roll back. |
+| Daily-driver | 8 | Printing, media, capture, lock, i18n, accessibility, firewall work. |
+| Developer edition | 9 | Curated toolchains and optional security-tools sets. |
+| Hardware/stability | 10 | Declared hardware and power/connectivity matrix is measured. |
+| Security layer | 11 | Capabilities, scopes, audit and recovery boundaries are enforced. |
+| AI-native layer | 12 | Optional agents and contextual workflows use typed, user-approved tools. |
+| Distribution | 13 | Signed updates, release channels and recovery media are usable. |
 
 The immediate engineering target is **a bootable minimal Axiom graphical session
 inside QEMU**, not a polished desktop rebuild. Axiom will reuse the kernel,

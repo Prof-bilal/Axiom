@@ -15,8 +15,8 @@ These are replaceable directions, not claims of an implemented stack. Consult
 | Apps | Axiom Files, Settings, Terminal integration and Software | Phase 4 |
 | Platform services | Rust where a daemon is justified, D-Bus first, SQLite/FTS5 local metadata | Phase 5; no generic RPC/server DB by default |
 | Packages/image | pacman/PKGBUILD and a reviewed base-image builder | Phase 1/9; old upstream flow removed |
-| Security | Polkit, portals, systemd sandboxing, Linux primitives and future Warden adapter | Phase 6; fail closed, no model authority |
-| AI | Replaceable local/cloud providers, typed tools and context | Phase 7; core desktop works offline |
+| Security | Polkit, portals, systemd sandboxing, Linux primitives and future Warden adapter | Phase 11; fail closed, no model authority |
+| AI | Replaceable local/cloud providers, typed tools and context | Phase 12; core desktop works offline |
 | Test/delivery | QEMU/KVM, serial/journal/display evidence, later hardware matrix | Every graphical milestone |
 
 No custom kernel, libc, init, package manager, terminal emulator, server

@@ -2,7 +2,7 @@
 
 **Date:** 2026-11-06  
 **Status:** RESEARCH & DESIGN COMPLETE  
-**Phase:** Pre-Phase 7 (AI-native layer)  
+**Phase:** Pre-Phase 12 (AI-native layer)  
 **Version:** 1.0.0
 
 ---
@@ -208,7 +208,7 @@ MAX DEPTH: 3 | AUTHORITY: Strictly narrows each level
 
 ## 🚀 Implementation Roadmap
 
-### Phase 7: AI-Native Layer Foundation (Q1 2027)
+### Phase 12: AI-Native Layer Foundation (date superseded by docs/PHASES.md)
 
 #### Milestone 7.1: Core Infrastructure (Month 1-2)
 - [ ] **Round 1 Implementation:** Discovery & Decomposition
@@ -255,7 +255,7 @@ MAX DEPTH: 3 | AUTHORITY: Strictly narrows each level
 - [ ] Performance optimization
 - [ ] Security hardening
 
-### Phase 8: Advanced Capabilities (Q2 2027)
+### Phase 12+ advanced: Advanced Capabilities (date superseded by docs/PHASES.md)
 
 #### Milestone 8.1: User Customization (Month 5-6)
 - [ ] SKILL.md parser
@@ -347,7 +347,7 @@ MAX DEPTH: 3 | AUTHORITY: Strictly narrows each level
 - [ ] **Review all documents** (8 files, ~212KB total)
 - [ ] **Discuss and approve** 4-round framework design
 - [ ] **Resolve any questions** about hierarchical spawning
-- [ ] **Plan implementation** sprint for Phase 7
+- [ ] **Plan implementation** sprint for Phase 12
 
 ### Short Term (This Month)
 - [ ] **Set up development environment**
@@ -356,13 +356,13 @@ MAX DEPTH: 3 | AUTHORITY: Strictly narrows each level
 - [ ] **Implement sandbox profiles**
 
 ### Medium Term (Next Quarter)
-- [ ] **Complete Phase 7** (Core Infrastructure)
+- [ ] **Complete Phase 12** (Core Infrastructure)
 - [ ] **Deliver first built-in agents**
 - [ ] **Integrate Warden sandboxing**
 - [ ] **Begin user testing**
 
 ### Long Term (6-12 Months)
-- [ ] **Complete Phase 8** (Advanced Capabilities)
+- [ ] **Complete Phase 12+ advanced** (Advanced Capabilities)
 - [ ] **Enable user customization**
 - [ ] **Production deployment**
 - [ ] **Community adoption**
@@ -408,7 +408,7 @@ MAX DEPTH: 3 | AUTHORITY: Strictly narrows each level
 - **Status:** ✅ RESEARCH & DESIGN COMPLETE
 - **Date:** 2026-11-06
 - **Version:** 1.0.0
-- **Phase:** Pre-Phase 7 (AI-native layer)
+- **Phase:** Pre-Phase 12 (AI-native layer)
 - **Author:** Axiom AI Research Team
 - **Next Review:** 2026-11-20
 

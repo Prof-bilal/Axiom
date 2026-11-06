@@ -1,6 +1,6 @@
 # AI architecture
 
-Status: V1 design, no runtime exists. Phase 6 mutation handlers stay disabled until Phase 7 authorization/audit gates pass. Last verified: 2026-10-18.
+Status: V1 design, no runtime exists. Phase 11 mutation handlers stay disabled until Phase 12 authorization/audit gates pass. Last verified: 2026-10-18.
 
 ```mermaid
 flowchart LR

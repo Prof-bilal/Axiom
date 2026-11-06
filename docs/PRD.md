@@ -12,7 +12,7 @@ Status: Phase 0 proposal; no release or hardware promise.
 | R06 | Recover eligible system changes honestly | Btrfs/update/recovery evidence with exclusions |
 | R07 | Add optional local/cloud AI without changing OS authority | Adapter conformance and permission tests |
 | R08 | Measure responsiveness and resource cost | Controlled baseline/candidate reports with uncertainty |
-| R09 | Publish only after installer, hardware, license and update gates pass | Phase 9 release checklist |
+| R09 | Publish only after installer, hardware, license and update gates pass | Phase 13 release checklist |
 
 Nonfunctional requirements: readable and accessible UI, visible focus,
 reduced-motion support, no secret leakage, no unrestricted agent shell, standard

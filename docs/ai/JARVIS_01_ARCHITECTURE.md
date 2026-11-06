@@ -3,7 +3,7 @@
 **Status:** PROPOSAL - Architecture Design for Axiom's AI-Native Layer  
 **Version:** 0.2.0  
 **Date:** 2026-11-06  
-**Phase:** Pre-Phase 7 (AI-native layer)  
+**Phase:** Pre-Phase 12 (AI-native layer)  
 **Author:** Axiom AI Architecture Team  
 
 ---
@@ -934,7 +934,7 @@ routine:
 
 ## 8. Implementation Phases
 
-### Phase 7: AI-Native Layer Foundation
+### Phase 12: AI-Native Layer Foundation
 
 #### 7.1 Core Infrastructure (Month 1-2)
 - [ ] assistantd daemon skeleton
@@ -967,7 +967,7 @@ routine:
 - [ ] Sandbox security tests
 - [ ] Bypass matrix validation
 
-### Phase 8: Advanced Capabilities
+### Phase 12+ advanced: Advanced Capabilities
 
 #### 8.1 Code & Automation Agents (Month 5-6)
 - [ ] Code agent with sandboxed execution
@@ -989,7 +989,7 @@ routine:
 - [ ] Routine validation
 - [ ] Routine audit
 
-### Phase 9: Production & Scale
+### Phase 13: Production & Scale
 
 #### 9.1 Optimization (Month 8-9)
 - [ ] Multi-model optimization
@@ -1270,7 +1270,7 @@ Properties:
    - Degraded functionality?
 
 4. **Cross-Device Sync:** When to implement ContextGit?
-   - Phase 7 or later?
+   - Phase 12 or later?
    - Only for specific use cases?
 
 5. **Enterprise Features:** What enterprise features are needed?
@@ -1296,7 +1296,7 @@ The phased implementation approach ensures that we can deliver value incremental
 **Next Steps:**
 1. Review and refine this architecture
 2. Resolve open questions
-3. Begin Phase 7 implementation
+3. Begin Phase 12 implementation
 4. Establish testing and validation processes
 
 ---

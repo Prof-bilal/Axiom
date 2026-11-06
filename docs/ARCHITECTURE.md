@@ -45,8 +45,8 @@ flowchart TB
 | Axiom Shell | Qt/QML or another reviewed UI toolkit | Panel, dock, launcher, workspace UI, window decorations, notifications, Control Center, lock/login/session UX | Phase 3 |
 | Core apps | Toolkit and standard Linux APIs | Files, Settings, Terminal integration, Software Center and their information architecture | Phase 4 |
 | Platform services | systemd/D-Bus/SQLite primitives | Search/indexing, app/update contracts, permissions, secrets, audit and recovery orchestration | Phase 5 |
-| AI platform | Replaceable local/cloud providers and model libraries | Agent lifecycle, context, typed tools, consent and offline degradation | Phase 7 |
-| Security platform | Kernel namespaces, Landlock/seccomp where proven, Polkit, portals and systemd sandboxing | Capability policy, Warden adapter boundary, scopes, audit and fail-closed behavior | Phase 6 |
+| AI platform | Replaceable local/cloud providers and model libraries | Agent lifecycle, context, typed tools, consent and offline degradation | Phase 12 |
+| Security platform | Kernel namespaces, Landlock/seccomp where proven, Polkit, portals and systemd sandboxing | Capability policy, Warden adapter boundary, scopes, audit and fail-closed behavior | Phase 11 |
 
 The UI never runs as root. Privileged operations use narrow versioned D-Bus
 interfaces or existing authorized services. Models and tools propose typed

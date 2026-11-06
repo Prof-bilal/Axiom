@@ -2,7 +2,7 @@
 
 **Date:** 2026-11-06  
 **Status:** RESEARCH COMPLETE  
-**Phase:** Pre-Phase 7 (AI-native layer)  
+**Phase:** Pre-Phase 12 (AI-native layer)  
 
 ---
 
@@ -186,7 +186,7 @@ Result Validation → Audit → Return to User
 6. **User Empowerment** — Custom agents with bounded capabilities
 7. **Security First** — All execution sandboxed
 
-### Built-in Agent Catalogue (Phase 7)
+### Built-in Agent Catalogue (Phase 12)
 
 | Agent | Purpose | Class | Sandbox |
 |-------|---------|-------|---------|
@@ -246,7 +246,7 @@ You are a research assistant that performs deep, verifiable research...
 
 ## 🚀 Implementation Roadmap
 
-### Phase 7: AI-Native Layer Foundation (Q1 2027)
+### Phase 12: AI-Native Layer Foundation (date superseded by docs/PHASES.md)
 
 **Month 1-2: Core Infrastructure**
 - [ ] assistantd daemon skeleton
@@ -279,7 +279,7 @@ You are a research assistant that performs deep, verifiable research...
 - [ ] Sandbox security tests
 - [ ] Bypass matrix validation
 
-### Phase 8: Advanced Capabilities (Q2 2027)
+### Phase 12+ advanced: Advanced Capabilities (date superseded by docs/PHASES.md)
 
 **Month 5-6: Code & Automation**
 - [ ] Code agent with sandboxed execution
@@ -297,7 +297,7 @@ You are a research assistant that performs deep, verifiable research...
 - [ ] Time-based triggers
 - [ ] Event-based triggers
 
-### Phase 9+: Production & Scale (Q3 2027+)
+### Phase 13+: Production & Scale (date superseded by docs/PHASES.md)
 
 - [ ] Multi-model optimization
 - [ ] Cost tracking and budgeting
@@ -420,19 +420,19 @@ You are a research assistant that performs deep, verifiable research...
 - [ ] Approve architecture direction
 
 ### Short Term (This Month)
-- [ ] Finalize Phase 7 scope
+- [ ] Finalize Phase 12 scope
 - [ ] Set up development environment
 - [ ] Begin assistantd implementation
 - [ ] Design policy engine
 
 ### Medium Term (Next Quarter)
-- [ ] Complete Phase 7 (Core Infrastructure)
+- [ ] Complete Phase 12 (Core Infrastructure)
 - [ ] Deliver first built-in agents
 - [ ] Integrate Warden sandboxing
 - [ ] Begin user testing
 
 ### Long Term (6-12 Months)
-- [ ] Complete Phase 8 (Advanced Capabilities)
+- [ ] Complete Phase 12+ advanced (Advanced Capabilities)
 - [ ] Enable user customization
 - [ ] Production deployment
 - [ ] Community adoption

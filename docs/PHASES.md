@@ -1,6 +1,9 @@
 # Axiom implementation phases
 
 Current phase: **Phase 5 — system experience (complete, 2026-11-06; Phase 6 is next and not yet authorized)**. Phases 0 to 5 are complete.
+Phases 6 onward were re-ordered on 2026-11-06: a complete, installable core
+distro (installer, packages, daily-driver, developer edition, hardware) comes
+before the security and AI layers.
 The architecture reset is complete; the previous upstream-derived desktop
 direction has been removed. Each phase requires retained evidence; code existing
 in a branch is not an exit criterion.
@@ -13,10 +16,14 @@ in a branch is not an exit criterion.
 | 3 | Axiom Shell MVP | Real panel, dock, launcher, workspaces, tray, notifications and session controls work in QEMU. |
 | 4 | Axiom core apps | Files, Settings, Terminal integration and Software Center perform useful tasks. |
 | 5 | System experience | Notifications, quick settings, Wi-Fi/Bluetooth/audio/display/power/user controls work through real services. |
-| 6 | Security layer | Capability permissions, filesystem/network scopes, secret protection, audit and Warden disposition are evidence-backed. |
-| 7 | AI-native layer | Optional agent runtime, contextual search and safe automation operate through typed permissions. |
-| 8 | Hardware and stability | Declared Intel/AMD/NVIDIA, power, suspend, multi-monitor, HiDPI, input, connectivity and audio matrix passes. |
-| 9 | Installer and distribution | Installer, ISO, first-run, signed updates, recovery, rollback and release channels pass disposable-target gates. |
+| 6 | Installable system | Installer, optional disk encryption, bootloader, user creation, first-run, login manager and lock screen; blank QEMU disk installs, reboots and keeps settings. |
+| 7 | Package management and updates | Software Center installs, updates and removes packages through a narrow polkit-gated helper; snapshots roll back a bad update. |
+| 8 | Daily-driver completeness | Printing, removable media, screenshots/recording, clipboard, idle lock, input methods/i18n, accessibility, default firewall and baseline hardening pass on the installed system. |
+| 9 | Developer edition | Curated toolchains, git, containers, editors and optional security-tools sets; a clean install builds and runs sample projects. |
+| 10 | Hardware and stability | Declared Intel/AMD/NVIDIA, power, suspend, multi-monitor, HiDPI, input, connectivity and audio matrix passes on the installed system. |
+| 11 | Security layer | Capability permissions, filesystem/network scopes, secret protection, audit and Warden disposition are evidence-backed. |
+| 12 | AI-native layer | Optional agent runtime, contextual search and safe automation operate through typed permissions. |
+| 13 | Distribution | Signed updates, release repository, channels and recovery media pass disposable-target gates (signature rejection, interruption). |
 
 ## Phase 0 — architecture reset
 
@@ -162,32 +169,65 @@ show the desktop user cannot set the clock, change the hostname, add users or
 stop system services. `tests/phase4-apps.py` (58 checks) and
 `tests/phase3-desktop.py` (21 checks) also pass on the same image. Limits carried
 forward: the VM has no backlight or Bluetooth controller, Wi-Fi is simulated, and
-checks ran at 1920x1080 only. Real hardware is Phase 8.
+checks ran at 1920x1080 only. Real hardware is Phase 10.
 
-## Phase 6 — security layer
+## Phase 6 — installable system
+
+Make Axiom installable, not just a live ISO: installer (archinstall or Calamares,
+chosen by ADR), disk layout with optional LUKS, bootloader, user creation,
+first-run, login manager and lock screen, and no autologin on installed systems.
+Closes the Phase 4/5 reboot-persistence limit.
+
+**Exit:** a blank QEMU disk installs, reboots, logs in and keeps Settings.
+
+## Phase 7 — package management and updates
+
+Make the Software Center writable through a narrow polkit-gated helper (caller,
+operation and target authorized independently), mirrors, system updates, btrfs
+snapshots with rollback, and a Flatpak decision recorded in an ADR.
+
+**Exit:** install, update and remove a package from the UI; roll back after a
+bad update.
+
+## Phase 8 — daily-driver completeness
+
+Printing, removable-media automount, screenshots and screen recording, clipboard
+history, suspend and idle lock, input methods and i18n, accessibility, a default
+firewall and baseline hardening (the full capability layer stays in Phase 11).
+
+**Exit:** an everyday-task checklist passes on the installed system.
+
+## Phase 9 — developer edition
+
+Curated toolchains, git, containers, editors and terminal workflow, plus an
+optional Kali-style security-tools package set.
+
+**Exit:** a clean install builds and runs sample projects in several languages.
+
+## Phase 10 — hardware and stability
+
+Test Intel, AMD and NVIDIA where practical; laptop power states, suspend/resume,
+multi-monitor, HiDPI, touchpad, Bluetooth, Wi-Fi, audio and USB devices. Record
+supported, unsupported and untested states instead of broad claims.
+
+## Phase 11 — security layer
 
 Define and enforce app permissions, agent filesystem scopes, network permissions,
 secret protection, capability-based execution, sensitive-file protection and
 audit logs. Evaluate Warden only against verified behavior; it never grants
 intent or replaces Axiom policy.
 
-## Phase 7 — AI-native layer
+## Phase 12 — AI-native layer
 
 Add the optional system agent, natural-language launcher, contextual search,
 developer workflows, automation, project awareness and local/cloud adapters.
 Core OS functionality remains independent of AI and network providers.
 
-## Phase 8 — hardware and stability
+## Phase 13 — distribution
 
-Test Intel, AMD and NVIDIA where practical; laptop power states, suspend/resume,
-multi-monitor, HiDPI, touchpad, Bluetooth, Wi-Fi, audio and USB devices. Record
-supported, unsupported and untested states instead of broad claims.
-
-## Phase 9 — installer and distribution
-
-Only after Axiom is usable, build the installer, ISO, first-run experience,
-signed update mechanism, recovery/rollback and release channels. Test disposable
-disks, interruption, signature rejection and recovery before publishing.
+Signed update mechanism, release repository, channels and recovery media. Test
+disposable disks, interruption, signature rejection and recovery before
+publishing.
 
 Security review, privacy, license provenance and measured performance apply to
 every phase. No phase creates a reason to rewrite mature Linux infrastructure or

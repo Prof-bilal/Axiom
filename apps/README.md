@@ -30,7 +30,7 @@ and do system work through argv-array processes (`find`, `gio`, `pacman`,
 | --- | --- | --- |
 | Files | browse, search, create, rename, copy/cut/paste, trash, restore, permanent delete with confirmation, properties, open with the default app, terminal here, remembers its last folder | drag and drop, thumbnails, mounting devices, undo (restore from Trash is the recovery path) |
 | Software | installed applications and packages, search, filters, details, files, open in terminal | install, remove, update (need the permission layer), repository search (needs a database refresh) |
-| Settings | About, Appearance (text size, wallpaper), Dock pins, Default apps; Phase 5: Network (Wi-Fi join/forget), Bluetooth, Sound, Displays (mode, scale, rotation with auto-revert), Power (profile, idle screen-off), Notifications (Do Not Disturb, per-app mute), Keyboard layouts, Date & time, Users (list) | create/remove users and change passwords (needs the Phase 6 privileged helper), live keyboard-layout switch (applies at next login) |
+| Settings | About, Appearance (text size, wallpaper), Dock pins, Default apps; Phase 5: Network (Wi-Fi join/forget), Bluetooth, Sound, Displays (mode, scale, rotation with auto-revert), Power (profile, idle screen-off), Notifications (Do Not Disturb, per-app mute), Keyboard layouts, Date & time, Users (list) | create/remove users and change passwords (needs the Phase 7 privileged helper), live keyboard-layout switch (applies at next login) |
 
 ## Tests
 
