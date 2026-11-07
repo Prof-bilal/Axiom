@@ -6,6 +6,7 @@ import path from "node:path";
 // Next walks the parent (iso/, docs/, worktrees) and the dev server can spin.
 const config: NextConfig = {
   output: "export",
+  trailingSlash: true,
   reactStrictMode: true,
   turbopack: { root: path.resolve(import.meta.dirname) },
 };

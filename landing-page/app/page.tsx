@@ -1,139 +1,61 @@
-import { galleries, hero, limits, measured, owned, phases, reused, rules } from "@/lib/data";
-
-const nav = [["Idea", "#idea"], ["Rules", "#rules"], ["Progress", "#progress"], ["Screens", "#screens"], ["Roadmap", "#roadmap"], ["Limits", "#limits"]];
-
-function Head({ n, title, lead }: { n: string; title: string; lead?: string }) {
-  return (
-    <header className="head">
-      <span className="mono dim">{n}</span>
-      <h2>{title}</h2>
-      {lead && <p className="lead">{lead}</p>}
-    </header>
-  );
-}
+import Link from "next/link";
+import { HeroExperience, PageReveals } from "@/components/hero-experience";
+import { ImageCarousel } from "@/components/image-carousel";
+import { aiRules, gallerySlides, owned, proof, questions, reused, showcase } from "@/lib/home";
 
 export default function Page() {
-  const done = phases.filter((p) => p.status === "done");
-  const ahead = phases.filter((p) => p.status !== "done");
-  return (
-    <>
-      <nav className="nav" aria-label="Primary">
-        <a className="brand" href="#top"><img src="/penguin.png" alt="" width={32} height={32} /> <span>Axiom</span></a>
-        <ul>{nav.map(([l, h]) => <li key={h}><a href={h}>{l}</a></li>)}</ul>
-      </nav>
+  return <main id="main" className="home">
+    <PageReveals />
+    <HeroExperience />
 
-      <main id="main">
-        <section id="top" className="hero wrap">
-          <p className="mono status"><i aria-hidden /> pre-alpha · live image · 6 of 14 phases done</p>
-          <h1>A calm Linux workspace<br />for developers.</h1>
-          <p className="lead">
-            Axiom owns the session, the shell, the apps and the line where AI is allowed to act.
-            Everything underneath is mature Linux, reused on purpose.
-          </p>
-          <p className="cta">
-            <a className="btn primary" href="#progress">See what works</a>
-            <a className="btn" href="#roadmap">Read the plan</a>
-            <span className="mono dim">No download yet. Redistribution is not authorized.</span>
-          </p>
-          <figure className="frame">
-            <img src={hero.src} width={hero.w} height={hero.h} alt={hero.alt} fetchPriority="high" />
-            <figcaption className="mono dim">Captured from QEMU at 1920×1080 on 2026-11-06. A real session, not a mockup.</figcaption>
-          </figure>
-        </section>
+    <section className="intro-band" id="introduction" aria-labelledby="intro-title">
+      <div className="wrap intro-layout">
+        <div className="intro-story">
+          <h2 id="intro-title">Your computer. Your possibilities.<span className="intro-caret" aria-hidden="true" /></h2>
+          <p>Your best ideas deserve a place to take shape. Axiom is a Linux desktop for developers and curious minds, bringing your apps, files and everyday tools into one thoughtful workspace.</p>
+          <p>It’s a place to find your focus, make the details your own, and move naturally between the things you do every day. Familiar where it matters, considered all the way through.</p>
+          <p>And as Axiom grows, we imagine AI that can lend a hand while you stay in charge. Optional assistance. Your boundaries. A computer that still feels like <em>your computer.</em></p>
+        </div>
+        <aside className="intro-statement" aria-label="The Axiom philosophy">
+          <span className="statement-mark" aria-hidden="true">↗</span>
+          <p className="statement-copy">The tools should feel connected.<br />The space should feel personal.<br /><span>The possibilities should feel yours.</span></p>
+          <div className="statement-signature"><img src="/penguin.png" width={46} height={46} alt="" /><div><strong>The Axiom idea</strong><span>A little more intention. A lot more you.</span></div></div>
+        </aside>
+      </div>
+    </section>
 
-        <section id="idea" className="wrap">
-          <Head n="01" title="The idea" lead="Most Linux desktops are a pile of parts with a theme on top. Axiom is one product with a clear owner for every behaviour, so a developer can say which layer is responsible when something happens." />
-          <div className="split">
-            <div>
-              <h3>Reused, not rewritten</h3>
-              <ul className="tags">{reused.map((r) => <li key={r} className="mono">{r}</li>)}</ul>
-              <p className="dim">Replacing mature infrastructure needs research, an ADR and a rollback plan. It does not happen opportunistically.</p>
-            </div>
-            <div>
-              <h3>Owned by Axiom</h3>
-              <dl className="owned">{owned.map(([k, v]) => <div key={k}><dt>{k}</dt><dd>{v}</dd></div>)}</dl>
-            </div>
-          </div>
-          <p className="aim">
-            <span className="mono dim">Aim</span> A complete, installable core distribution first, in the way Kali and Omarchy are
-            complete, and only then the security and AI layers on top of it.
-          </p>
-        </section>
+    <section className="x-proof" aria-label="Project status"><div className="wrap x-proof-grid">
+      {proof.map(([n, l]) => <div key={l}><strong>{n}</strong><span>{l}</span></div>)}
+    </div></section>
 
-        <section id="rules" className="wrap">
-          <Head n="02" title="Rules that do not bend" lead="These are written into the repository’s agent instructions and gate every phase." />
-          <ol className="rules">{rules.map(([t, d]) => <li key={t}><strong>{t}</strong> <span>{d}</span></li>)}</ol>
-        </section>
+    <section className="wrap x-sec" aria-labelledby="apps-title">
+      <div className="x-head"><p className="eyebrow">INSIDE THE DESKTOP</p><h2 id="apps-title">Real apps. Running today.</h2><p>Every screen below is a capture from Axiom booting in a virtual machine. No mockups.</p></div>
+      <div className="x-bento">{showcase.map((s) => <article className={`x-tile x-${s.size}`} key={s.title}><img src={s.src} alt={s.alt} loading="lazy" /><div><span className="mono accent">{s.tag}</span><h3>{s.title}</h3><p>{s.text}</p></div></article>)}</div>
+    </section>
 
-        <section id="progress" className="wrap">
-          <Head n="03" title="Progress, with evidence" lead="A phase counts as done when a retained QEMU run passes. Code sitting in a branch does not count." />
-          <ul className="ledger">
-            {done.map((p) => (
-              <li key={p.n}>
-                <span className="mono n">{String(p.n).padStart(2, "0")}</span>
-                <div>
-                  <h3>{p.name} {p.date && <span className="mono dim">{p.date}</span>}</h3>
-                  <p>{p.summary}</p>
-                  {p.evidence && <p className="mono ev">{p.evidence}</p>}
-                </div>
-              </li>
-            ))}
-          </ul>
+    <section className="x-sec x-stack-sec" aria-labelledby="stack-title"><div className="wrap">
+      <div className="x-head"><p className="eyebrow">HOW IT’S BUILT</p><h2 id="stack-title">Proven Linux underneath.<br />Axiom on top.</h2><p>We reuse what already works and build only the experience layer.</p></div>
+      <div className="x-stack">
+        <div className="x-layer x-own"><span className="mono accent">AXIOM BUILDS</span><ul>{owned.map((o) => <li key={o}>{o}</li>)}</ul></div>
+        <div className="x-layer"><span className="mono">LINUX PROVIDES</span><ul>{reused.map((o) => <li key={o}>{o}</li>)}</ul></div>
+      </div>
+    </div></section>
 
-          <h3 className="sub">Measured so far</h3>
-          <div className="tablewrap">
-            <table>
-              <caption className="sr">First recorded run, software-rendered KVM guest, 2 GiB RAM, 2 vCPU</caption>
-              <thead><tr><th scope="col">Metric</th><th scope="col">Result</th><th scope="col">Note</th></tr></thead>
-              <tbody>{measured.map(([m, r, n]) => <tr key={m}><th scope="row">{m}</th><td className="mono">{r}</td><td className="dim">{n}</td></tr>)}</tbody>
-            </table>
-          </div>
-          <p className="dim small">One run on a loaded developer machine, with software rendering. A baseline to improve on, not a performance claim.</p>
-        </section>
+    <section className="x-sec" aria-labelledby="ai-title"><div className="wrap x-ai">
+      <div><p className="eyebrow">LOOKING A LITTLE FURTHER</p><h2 id="ai-title">AI, when it helps.<br /><em>Always your call.</em></h2><p className="x-note">A vision, not a feature. AI is not available yet.</p><Link className="text-link" href="/roadmap/">See what’s ahead <span aria-hidden="true">↗</span></Link></div>
+      <div className="x-rules">{aiRules.map(([t, d]) => <div key={t}><h3>{t}</h3><p>{d}</p></div>)}</div>
+    </div></section>
 
-        <section id="screens" className="wrap">
-          <Head n="04" title="Screens, by phase" lead="Every image is a capture from a retained QEMU run. Click one for full size. Phases 1 and 2 were shown by the same image reaching a session, so they share the Phase 3 captures. Phase 0 is documents, and Phases 6 and up have nothing to show because nothing is built yet." />
-          {galleries.map((g) => (
-            <div key={g.n} className="gallery">
-              <h3 className="sub"><span className="mono ph">Phase {String(g.n).padStart(2, "0")}</span> {g.title} <span className="mono dim note">{g.note}</span></h3>
-              <div className="shots">
-                {g.items.map((s) => (
-                  <figure key={s.src} className="frame">
-                    <a href={s.src} target="_blank" rel="noreferrer"><img src={s.src} width={s.w} height={s.h} alt={s.alt} loading="lazy" /></a>
-                    <figcaption className="mono dim">{s.cap}</figcaption>
-                  </figure>
-                ))}
-              </div>
-            </div>
-          ))}
-        </section>
+    <section className="wrap gallery-section" aria-labelledby="gallery-title">
+      <div className="gallery-heading"><div><p className="eyebrow">A FIRST LOOK AT AXIOM</p><h2 id="gallery-title">Come on in.</h2></div><p>The desktop is taking shape.<br />Here’s a little look around.</p></div>
+      <ImageCarousel slides={gallerySlides} />
+    </section>
 
-        <section id="roadmap" className="wrap">
-          <Head n="05" title="Roadmap" lead="The order changed on 2026-11-06: a complete, installable core distro comes before the security and AI layers. Dependency order, not dates." />
-          <ol className="road">
-            {ahead.map((p) => (
-              <li key={p.n} data-status={p.status}>
-                <span className="mono n">{String(p.n).padStart(2, "0")}</span>
-                <div>
-                  <h3>{p.name} {p.status === "next" && <span className="mono pill">next · not yet authorized</span>}</h3>
-                  <p>{p.summary}</p>
-                  {p.evidence && <p className="mono ev">{p.evidence}</p>}
-                </div>
-              </li>
-            ))}
-          </ol>
-        </section>
+    <section className="wrap x-sec" aria-labelledby="faq-title">
+      <div className="x-head"><p className="eyebrow">QUESTIONS</p><h2 id="faq-title">Straight answers.</h2></div>
+      <div className="x-faq">{questions.map(([q, a]) => <details key={q}><summary>{q}</summary><p>{a}</p></details>)}</div>
+    </section>
 
-        <section id="limits" className="wrap">
-          <Head n="06" title="What does not work yet" lead="Published on purpose. If a claim is missing from the progress section, assume it is on this list." />
-          <ul className="limits">{limits.map((l) => <li key={l}>{l}</li>)}</ul>
-        </section>
-      </main>
-
-      <footer className="wrap foot">
-        <span className="mono dim">Axiom OS · pre-alpha · source is private for now</span>
-        <span className="mono dim">Figures from the project’s own evidence files, last updated 2026-11-06.</span>
-      </footer>
-    </>
-  );
+    <section className="closing-band" aria-labelledby="closing-title"><div className="closing-inner"><p className="eyebrow">EARLY DAYS. BIG IDEAS.</p><h2 id="closing-title">Axiom is just<br />getting started.</h2><p>A new Linux desktop is taking shape for people who love to make things.</p><div className="x-cta"><Link className="btn primary" href="/progress/">See the evidence <span aria-hidden="true">↗</span></Link><Link className="btn" href="/roadmap/">Read the roadmap</Link></div><span className="mono closing-status">In development · No public download yet</span></div></section>
+  </main>;
 }
