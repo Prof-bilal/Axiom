@@ -26,7 +26,7 @@ export const proof = [
   ["5", "development phases complete"],
   ["QEMU", "every milestone boots a real system"],
   ["0", "cloud services needed to use it"],
-  ["Open", "repository, docs and evidence"],
+  ["76", "automated checks passed in the latest phase"],
 ];
 
 export const showcase = [
