@@ -4,8 +4,10 @@ Build an original AI-native Linux desktop for developers with safe structured
 automation, privacy, recovery and measured performance. The repository is
 project memory; no tool or chat is authoritative over maintained contracts.
 
-**Current development: Phase 4 Axiom core apps is complete (2026-11-03); Phase 5
-(system experience) needs authorization before work starts.** Phases 3 and 4
+**Current development: Phases 0 to 6 are complete; Phase 6 (installable system)
+is verified in QEMU with Phases 3 to 5 regression-tested on the same ISO
+([ADR-020](docs/decisions/020-installable-system.md),
+[ADR-021](docs/decisions/021-installer-and-developer-hub.md)).** Phases 3 and 4
 are verified in QEMU: the Axiom Shell on a temporary labwc harness, and
 functional Files, Settings, Terminal integration and a read-only Software Center
 ([ADR-017](docs/decisions/017-core-app-runtime.md)). Read [PHASES](docs/PHASES.md),

@@ -9,6 +9,7 @@ import Quickshell
 Singleton {
     id: ui
 
+    signal lockRequested()
     property bool launcherOpen: false
     property string launcherMode: "search"   // "search" (list) | "grid" (Apps)
     property bool sessionMenuOpen: false

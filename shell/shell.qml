@@ -57,6 +57,7 @@ ShellRoot {
     SessionMenu {}
     ControlCenter {}
     IdleBlank {}
+    LockScreen { id: lockScreen }
 
     // Surface control for compositor keybindings, plus session actions so the
     // same PowerService path is reachable from a keybinding or a script. The
@@ -71,6 +72,8 @@ ShellRoot {
         function toggleNotificationCenter(): void { UiState.toggleNotificationCenter() }
         function toggleControlCenter(): void { UiState.toggleControlCenter() }
         function closeOverlays(): void { UiState.closeAllOverlays() }
+        function lock(): void { lockScreen.lock() }
+        function isLocked(): bool { return lockScreen.locked }
 
         // Axiom Terminal default size ("WxH" in pixels): 70% x 68% of the
         // usable area of the primary output. Used by /usr/local/bin/axiom-terminal

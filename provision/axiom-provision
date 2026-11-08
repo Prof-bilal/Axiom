@@ -1,0 +1,174 @@
+#!/usr/bin/env python3
+"""Axiom first-boot provisioning (Phase 6, ADR-021). Python stdlib only.
+
+Runs once as root from axiom-provision.service. The profile only *selects* item
+ids; package names, images and ports come from the root-owned catalogue, so a
+profile cannot inject a package or a command. Each item is isolated, verified and
+recorded; a re-run only repairs what is not applied. Offline defers (exit 75).
+"""
+import argparse
+import json
+import os
+import pwd
+import re
+import secrets
+import subprocess
+import sys
+import urllib.request
+
+ENV = {"PATH": "/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin", "LC_ALL": "C.UTF-8"}
+ID_RE = re.compile(r"^[a-z0-9][a-z0-9._-]{0,63}$")
+PKG_RE = re.compile(r"^[a-z0-9@._+-]+$")
+IMG_RE = re.compile(r"^[a-z0-9./_-]+:[A-Za-z0-9._-]+$")
+EXIT_DEFER = 75
+
+
+def run(cmd, **kw):
+    return subprocess.run(cmd, env=ENV, capture_output=True, text=True, **kw)
+
+
+def online():
+    try:
+        urllib.request.urlopen("https://geo.mirror.pkgbuild.com/", timeout=8).close()
+        return True
+    except Exception:
+        return False
+
+
+def load(path):
+    with open(path) as fh:
+        return json.load(fh)
+
+
+def resolve(profile, catalog):
+    """Selected ids -> ordered catalogue items (requirements first). Unknown ids are reported, not run."""
+    by_id = {i["id"]: i for i in catalog["items"]}
+    order, unknown = [], []
+
+    def add(iid):
+        if iid in order:
+            return
+        it = by_id.get(iid)
+        if it is None:
+            unknown.append(iid)
+            return
+        for r in it.get("requires", []):
+            add(r)
+        order.append(iid)
+    for iid in profile.get("hub", []):
+        if ID_RE.match(str(iid)):
+            add(iid)
+        else:
+            unknown.append(str(iid))
+    return [by_id[i] for i in order], unknown
+
+
+def verify(item, user, runner=run):
+    if item["method"] == "pacman":
+        return all(runner(["pacman", "-Qi", p]).returncode == 0 for p in item["packages"])
+    if item["method"] == "podman":
+        return runner(["runuser", "-u", user, "--", "podman", "image", "exists", item["image"]]).returncode == 0 \
+            and os.path.exists(quadlet_path(item, user))
+    return False
+
+
+def quadlet_path(item, user):
+    return os.path.join(pwd.getpwnam(user).pw_dir, ".config/containers/systemd", f"axiom-{item['id']}.container")
+
+
+def apply_item(item, user, runner=run):
+    if item["method"] == "pacman":
+        if not all(PKG_RE.match(p) for p in item["packages"]):
+            return "failed", "invalid package name in catalogue"
+        r = runner(["pacman", "-S", "--needed", "--noconfirm"] + item["packages"])
+        return ("ok", "") if r.returncode == 0 else ("failed", (r.stderr or r.stdout)[-300:])
+    if item["method"] == "podman":
+        if not IMG_RE.match(item["image"]) or not isinstance(item.get("port"), int):
+            return "failed", "invalid container definition in catalogue"
+        pw = pwd.getpwnam(user)
+        r = runner(["runuser", "-u", user, "--", "podman", "pull", "-q", item["image"]])
+        if r.returncode:
+            return "failed", (r.stderr or r.stdout)[-300:]
+        cfg = os.path.join(pw.pw_dir, ".config/axiom/hub")
+        os.makedirs(cfg, mode=0o700, exist_ok=True)
+        os.chown(cfg, pw.pw_uid, pw.pw_gid)
+        env = os.path.join(cfg, f"{item['id']}.env")
+        if not os.path.exists(env):
+            key = "POSTGRES_PASSWORD" if "postgres" in item["image"] else "VALKEY_PASSWORD"
+            fd = os.open(env, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+            with os.fdopen(fd, "w") as fh:
+                fh.write(f"{key}={secrets.token_urlsafe(24)}\n")
+            os.chown(env, pw.pw_uid, pw.pw_gid)
+        q = quadlet_path(item, user)
+        os.makedirs(os.path.dirname(q), exist_ok=True)
+        cmd = "\nExec=valkey-server --requirepass ${VALKEY_PASSWORD}" if "valkey" in item["image"] else ""
+        with open(q, "w") as fh:
+            fh.write(f"[Unit]\nDescription=Axiom Developer Hub: {item['name']}\n\n[Container]\n"
+                     f"Image={item['image']}\nPublishPort=127.0.0.1:{item['port']}:{item['port']}\n"
+                     f"EnvironmentFile={env}{cmd}\nVolume=axiom-{item['id']}:/data:Z\n\n"
+                     f"[Service]\nRestart=on-failure\n\n[Install]\nWantedBy=default.target\n")
+        for p in (q, os.path.dirname(q), os.path.dirname(os.path.dirname(q))):
+            os.chown(p, pw.pw_uid, pw.pw_gid)
+        return "ok", ""
+    return "failed", "unsupported method"
+
+
+def provision(profile, catalog, state_path, runner=run, is_online=online):
+    state = load(state_path) if os.path.exists(state_path) else {"items": {}}
+    items, unknown = resolve(profile, catalog)
+    user = profile["user"]
+    results = state["items"]
+    for u in unknown:
+        results[u] = {"status": "skipped", "message": "not in catalogue"}
+    pending = [i for i in items if not (results.get(i["id"], {}).get("status") == "ok" and verify(i, user, runner))]
+    if pending and not is_online():
+        state.update(state="deferred", message="no network; will retry")
+        write(state_path, state)
+        return EXIT_DEFER
+    state["state"] = "running"
+    write(state_path, state)
+    failed = False
+    for it in pending:
+        status, msg = apply_item(it, user, runner)
+        if status == "ok" and not verify(it, user, runner):
+            status, msg = "failed", "verification failed"
+        results[it["id"]] = {"status": status, "message": msg}
+        failed |= status == "failed"
+        write(state_path, state)
+    state["state"] = "partial" if failed else "done"
+    write(state_path, state)
+    return 1 if failed else 0
+
+
+def write(path, data):
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    tmp = path + ".tmp"
+    with open(tmp, "w") as fh:
+        json.dump(data, fh, indent=2)
+    os.replace(tmp, path)
+
+
+def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--profile", default="/var/lib/axiom/profile.json")
+    ap.add_argument("--catalog", default="/usr/local/share/axiom/catalog/developer-hub.json")
+    ap.add_argument("--state", default="/var/lib/axiom/provision-state.json")
+    ap.add_argument("--status", action="store_true")
+    a = ap.parse_args()
+    if a.status:
+        st = load(a.state) if os.path.exists(a.state) else {"state": "pending", "items": {}}
+        print(f"Developer Hub: {st['state']}")
+        for k, v in st["items"].items():
+            print(f"  {k}: {v['status']} {v['message']}".rstrip())
+        return 0
+    if os.geteuid() != 0:
+        sys.exit("axiom-provision must run as root")
+    prof = load(a.profile)
+    if not prof.get("hub"):
+        write(a.state, {"state": "done", "items": {}})
+        return 0
+    return provision(prof, load(a.catalog), a.state)
+
+
+if __name__ == "__main__":
+    sys.exit(main())

@@ -1,0 +1,4 @@
+#%PAM-1.0
+# Axiom screen lock (shell/src/session/LockScreen.qml): same checks as a console login.
+auth      include   system-auth
+account   include   system-auth
