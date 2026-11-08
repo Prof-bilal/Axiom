@@ -288,7 +288,7 @@ if SHORT:
 else:
     # Session menu is still open: the first click only arms Shut Down.
     # Row y follows the 88 px mascot above the menu rows (see 12-shutdown-armed.png).
-    shut_down = (W - 8 - 230 + 8 + 115, 261)
+    shut_down = (W - 8 - 230 + 8 + 115, 297)  # Phase 6 added a Lock Screen row (36 px pitch)
     click(*shut_down, settle=1.0); shot("12-shutdown-armed")
     if qemu.poll() is None:
         ok("single click on Shut Down did not power off (confirmation required)")

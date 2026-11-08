@@ -59,3 +59,22 @@ pointer input, screendumps, a root shell and a session-environment user shell).
 Results are checked on disk or in process state over the serial console;
 screenshots are retained as evidence and are never the pass/fail signal. Exit
 code 3 is the same firmware-stage stall as above.
+
+## Phase 6 installer tests
+
+- `python3 -m unittest discover -s tests/installer -v`: backend validation, disk
+  guard, archinstall config, secret handling and the first-boot job (no root, no QEMU).
+- `tests/phase6-install.py ISO OUTDIR --stage install|installed|provision [--luks]`:
+  boots the ISO in installer mode (`axiom.installer=1`) and drives the real TUI with
+  key events, reading the screen back from `/dev/vcs1`. The `install` stage covers
+  validation errors, cancel (disk stays blank), a killed install (retryable, nothing
+  mounted) and a full install; `installed` boots the installed disk offline (greeter,
+  wrong/right login, session, Settings persistence across reboot, lock screen,
+  no-autologin, root locked, no secrets in logs, provisioning deferred); `provision`
+  boots it with network (first-boot job converges and is idempotent, loopback only).
+  The ISO is booted with `-kernel/-initrd` extracted from it so the installer option
+  needs no boot-menu keystrokes; the installed disk keeps the install stage's OVMF
+  variables (real NVRAM boot entry). Evidence: serial log, command transcript,
+  `target-inspection.txt`, screenshots in `OUTDIR`.
+- The installed boot gets a serial console only because the installer copies the
+  live medium's `console=` options into the boot entries.

@@ -34,7 +34,7 @@ OVMF_VARS = "/usr/share/edk2/x64/OVMF_VARS.4m.fd"
 QS = "qs ipc --any-display -p /usr/local/share/axiom/shell"
 ANSI = re.compile(r"\x1b\[[0-9;?]*[A-Za-z]|\x1b[()][A-Z0-9]|\x1b[=>]|\x1b\][^\x07\x1b]*(?:\x07|\x1b\\)|\r")
 KEYNAMES = {" ": "spc", "-": "minus", ".": "dot", "/": "slash", "\n": "ret", ";": "semicolon",
-            "=": "equal", ":": "shift-semicolon", "_": "shift-minus", ",": "comma", "~": "shift-grave"}
+            "=": "equal", "@": "shift-2", "!": "shift-1", "#": "shift-3", "+": "shift-equal", ":": "shift-semicolon", "_": "shift-minus", ",": "comma", "~": "shift-grave"}
 
 
 class Guest:
@@ -51,6 +51,7 @@ class Guest:
         self._n = itertools.count(1)
         self._qmp = None
         self.failures = []
+        self.duser = "axiom"  # desktop account (installed systems use the installer-created user)
         self._transcript = None
 
     # ---- results ------------------------------------------------------------
@@ -71,7 +72,7 @@ class Guest:
             if os.path.exists(self.p(n)):
                 os.unlink(self.p(n))
         vars_copy = self.p("OVMF_VARS.fd")
-        subprocess.run(["cp", OVMF_VARS, vars_copy], check=True)
+        subprocess.run(["cp", getattr(self, "vars_src", None) or OVMF_VARS, vars_copy], check=True)
         self.qemu = subprocess.Popen([
             "qemu-system-x86_64", "-enable-kvm", "-machine", "q35", "-cpu", "host",
             "-m", str(self.mem), "-smp", str(self.smp),
@@ -79,7 +80,8 @@ class Guest:
             "-drive", f"if=pflash,format=raw,file={vars_copy}",
             "-vga", "none", "-device", f"VGA,edid=on,xres={self.w},yres={self.h}",
             "-device", "qemu-xhci", "-device", "usb-tablet", "-display", "none",
-            "-cdrom", self.iso, "-boot", "order=d", "-nic", "none",
+        ] + (["-cdrom", self.iso, "-boot", "order=d"] if self.iso else []) + [
+            "-nic", "none",
             "-serial", f"unix:{self.p('serial.sock')},server,nowait",
             "-monitor", f"unix:{self.p('mon.sock')},server,nowait",
             "-qmp", f"unix:{self.p('qmp.sock')},server,nowait",
@@ -201,7 +203,7 @@ class Guest:
     def user(self, cmd, timeout=30, shell="/bin/sh"):
         """Run cmd as the desktop user, in the session environment."""
         inner = f". /tmp/axiom-env.sh; {cmd}"
-        return self.sh(f"su axiom -s {shell} -c {shlex.quote(inner)}", timeout)
+        return self.sh(f"su {self.duser} -s {shell} -c {shlex.quote(inner)}", timeout)
 
     def put_file(self, path, content, mode="644"):
         """Create a small file in the guest (base64 in chunks over the serial console)."""

@@ -1,0 +1,187 @@
+#!/usr/bin/env python3
+"""Axiom login screen: a curses greeter for greetd (Phase 6, ADR-020).
+
+greetd runs this as the unprivileged `greeter` user. It only forwards what the
+user types to greetd (create_session -> PAM -> start_session); it never reads or
+stores the password itself beyond that one reply, and shows no user hints other
+than local human accounts.
+"""
+import curses
+import json
+import os
+import pwd
+import socket
+import struct
+import subprocess
+import sys
+
+SESSION_CMD = ["/usr/local/bin/axiom-session"]
+SESSION_ENV = ["XDG_SESSION_TYPE=wayland", "XDG_SESSION_DESKTOP=axiom", "XDG_CURRENT_DESKTOP=Axiom"]
+LOGO = ["  ▄▄▄  ▄▄ ▄▄ ▄▄ ▄▄▄  ▄▄   ▄▄",
+        " ██▀██ ▀█▄█▀ ██ ██▀██ ███▄███",
+        " ██▀██ ▄█▀█▄ ██ ██▄██ ██ ▀ ██"]
+
+
+def human_users():
+    return [p.pw_name for p in pwd.getpwall()
+            if 1000 <= p.pw_uid < 60000 and not p.pw_shell.endswith(("nologin", "false"))]
+
+
+def _read(s, n):
+    buf = b""
+    while len(buf) < n:
+        chunk = s.recv(n - len(buf))
+        if not chunk:
+            raise ConnectionError("greetd closed the connection")
+        buf += chunk
+    return buf
+
+
+def rpc(s, msg):
+    data = json.dumps(msg).encode()
+    s.sendall(struct.pack("=I", len(data)) + data)
+    return json.loads(_read(s, struct.unpack("=I", _read(s, 4))[0]))
+
+
+def authenticate(user, ask, show):
+    """Drive greetd's PAM conversation. Returns None on success or an error string."""
+    s = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+    s.connect(os.environ["GREETD_SOCK"])
+    try:
+        r = rpc(s, {"type": "create_session", "username": user})
+        while r["type"] == "auth_message":
+            kind = r["auth_message_type"]
+            if kind in ("secret", "visible"):
+                answer = ask(r["auth_message"], kind == "secret")
+                if answer is None:
+                    rpc(s, {"type": "cancel_session"})
+                    return "cancelled"
+                r = rpc(s, {"type": "post_auth_message_response", "response": answer})
+            else:
+                show(r["auth_message"])
+                r = rpc(s, {"type": "post_auth_message_response", "response": None})
+        if r["type"] != "success":
+            rpc(s, {"type": "cancel_session"})
+            return "Login incorrect"
+        r = rpc(s, {"type": "start_session", "cmd": SESSION_CMD, "env": SESSION_ENV})
+        return None if r["type"] == "success" else "Could not start the session"
+    finally:
+        s.close()
+
+
+class Screen:
+    def __init__(self, scr):
+        self.s = scr
+        curses.curs_set(0)
+        curses.use_default_colors()
+        curses.init_pair(1, curses.COLOR_CYAN, -1)
+        curses.init_pair(2, curses.COLOR_BLACK, curses.COLOR_CYAN)
+        curses.init_pair(3, curses.COLOR_RED, -1)
+        self.cy, self.sel, self.red = curses.color_pair(1), curses.color_pair(2) | curses.A_BOLD, curses.color_pair(3)
+
+    def put(self, y, x, t, a=0):
+        h, w = self.s.getmaxyx()
+        if 0 <= y < h and 0 <= x < w:
+            try:
+                self.s.addnstr(y, x, t, w - x - 1, a)
+            except curses.error:
+                pass
+
+    def center(self, y, t, a=0):
+        self.put(y, max(0, (self.s.getmaxyx()[1] - len(t)) // 2), t, a)
+
+    def draw(self, user, secret_len, prompt, msg, hint):
+        self.s.erase()
+        h, w = self.s.getmaxyx()
+        top = max(1, h // 2 - 8)
+        for i, l in enumerate(LOGO):
+            self.center(top + i, l, self.cy | curses.A_BOLD)
+        self.center(top + 4, "AI-Native Linux", self.cy)
+        self.center(top + 6, f"{prompt}  ({user})" if user else prompt)
+        box = "[ " + "*" * secret_len + " " * max(0, 30 - secret_len) + " ]" if secret_len >= 0 else "[ " + " " * 30 + " ]"
+        self.center(top + 8, box, self.cy)
+        self.center(top + 10, "[ Enter ]", self.sel)
+        if msg:
+            self.center(top + 12, msg, self.red)
+        self.center(h - 2, hint, self.cy)
+        self.s.refresh()
+
+    def line(self, user, prompt, secret, msg):
+        buf = ""
+        hint = "[F1 Help]   [F2 Switch User]   [F10 Power]"
+        while True:
+            self.draw(user, len(buf) if secret else -1, prompt, msg, hint)
+            if not secret:
+                self.put(self.s.getmaxyx()[0] // 2 - 8 + 8, self.s.getmaxyx()[1] // 2 - 14, buf[-28:], curses.A_BOLD)
+                self.s.refresh()
+            k = self.s.getch()
+            if k in (10, 13, curses.KEY_ENTER):
+                return buf
+            if k in (curses.KEY_BACKSPACE, 127, 8):
+                buf = buf[:-1]
+            elif k == curses.KEY_F2 or k == 27:
+                return None if k == 27 else "\x02switch"
+            elif k == curses.KEY_F1:
+                msg = "Type your password and press Enter. F2 changes user, F10 opens power options."
+            elif k == curses.KEY_F10 or k == 274:
+                self.power()
+            elif 32 <= k < 127:
+                buf += chr(k)
+
+    def power(self):
+        items = ["Cancel", "Reboot", "Power off"]
+        i = 0
+        while True:
+            self.s.erase()
+            self.center(6, "Power", self.cy | curses.A_BOLD)
+            for n, t in enumerate(items):
+                self.center(8 + n, (" > " if n == i else "   ") + t.ljust(12), self.sel if n == i else 0)
+            self.s.refresh()
+            k = self.s.getch()
+            if k == curses.KEY_UP:
+                i = max(0, i - 1)
+            elif k == curses.KEY_DOWN:
+                i = min(2, i + 1)
+            elif k in (10, 13):
+                if i:
+                    subprocess.run(["systemctl", "reboot" if i == 1 else "poweroff"], check=False)
+                return
+            elif k == 27:
+                return
+
+
+def main(scr):
+    ui = Screen(scr)
+    scr.keypad(True)
+    users = human_users()
+    user = users[0] if len(users) == 1 else ""
+    msg = ""
+    while True:
+        if not user:
+            u = ui.line("", "Username", False, msg)
+            if u is None or u == "\x02switch":
+                continue
+            user, msg = u.strip(), ""
+            continue_loop = not user
+            if continue_loop:
+                continue
+        state = {"msg": msg}
+
+        def ask(prompt, secret):
+            r = ui.line(user, prompt.strip().rstrip(":") or "Password", secret, state["msg"])
+            return None if r == "\x02switch" else r
+
+        def show(text):
+            state["msg"] = text
+        res = authenticate(user, ask, show)
+        if res is None:
+            return
+        if res == "cancelled":
+            user, msg = "", ""
+        else:
+            msg = res
+
+
+if __name__ == "__main__":
+    os.environ.setdefault("ESCDELAY", "50")
+    curses.wrapper(main)

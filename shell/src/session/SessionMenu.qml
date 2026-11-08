@@ -5,8 +5,7 @@ import qs.services
 
 // Axiom session menu (panel power button) — real log out / restart / shut
 // down via PowerService (systemd + logind). Each action needs a confirming
-// second click so a stray click cannot end the session. There is no Lock row
-// until Axiom ships a screen locker.
+// second click so a stray click cannot end the session. Lock is immediate.
 MenuSurface {
     id: menu
 
@@ -28,6 +27,12 @@ MenuSurface {
     }
 
     MenuSeparator { caption: "Session" }
+
+    MenuItem {
+        text: "Lock Screen"
+        icon: "lock"
+        onTriggered: { UiState.closeAllOverlays(); UiState.lockRequested() }
+    }
 
     MenuItem {
         text: "Log Out"

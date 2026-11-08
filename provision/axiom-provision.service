@@ -1,0 +1,18 @@
+[Unit]
+Description=Axiom Developer Hub first-boot provisioning
+Documentation=file:///usr/local/share/axiom/catalog/developer-hub.json
+ConditionPathExists=/var/lib/axiom/profile.json
+After=network-online.target
+Wants=network-online.target
+StartLimitIntervalSec=0
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/axiom-provision
+# Exit 75 = offline: retry later. Exit 1 = some items failed: reported, not retried until next boot.
+Restart=on-failure
+RestartSec=120
+RestartPreventExitStatus=1
+
+[Install]
+WantedBy=multi-user.target

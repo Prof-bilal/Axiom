@@ -1,0 +1,40 @@
+{
+  "schema": 1,
+  "categories": {
+    "editors": "Editors and IDEs",
+    "languages": "Languages and toolchains",
+    "containers": "Containers",
+    "datastores": "Datastores (rootless containers, loopback only)",
+    "cloud": "Cloud and infrastructure CLIs",
+    "shell": "Shell and terminal",
+    "ai": "AI tools"
+  },
+  "items": [
+    {"id": "git", "name": "Git + GitHub CLI", "category": "shell", "method": "pacman", "packages": ["git", "github-cli"], "class": "NORMAL", "undo": "remove packages", "default": true},
+    {"id": "zsh-tools", "name": "tmux + starship prompt", "category": "shell", "method": "pacman", "packages": ["tmux", "starship"], "class": "NORMAL", "undo": "remove packages"},
+    {"id": "fish", "name": "fish shell", "category": "shell", "method": "pacman", "packages": ["fish"], "class": "NORMAL", "undo": "remove package; chsh back to zsh"},
+    {"id": "vscode", "name": "VS Code (Code - OSS)", "category": "editors", "method": "pacman", "packages": ["code"], "class": "NORMAL", "undo": "remove package"},
+    {"id": "neovim", "name": "Neovim", "category": "editors", "method": "pacman", "packages": ["neovim"], "class": "NORMAL", "undo": "remove package"},
+    {"id": "zed", "name": "Zed", "category": "editors", "method": "pacman", "packages": ["zed"], "class": "NORMAL", "undo": "remove package"},
+    {"id": "nodejs", "name": "Node.js + npm", "category": "languages", "method": "pacman", "packages": ["nodejs", "npm"], "class": "NORMAL", "undo": "remove packages"},
+    {"id": "python", "name": "Python tooling (pip, venv, uv)", "category": "languages", "method": "pacman", "packages": ["python-pip", "python-virtualenv", "uv"], "class": "NORMAL", "undo": "remove packages"},
+    {"id": "go", "name": "Go", "category": "languages", "method": "pacman", "packages": ["go"], "class": "NORMAL", "undo": "remove package"},
+    {"id": "rust", "name": "Rust (rustup)", "category": "languages", "method": "pacman", "packages": ["rustup"], "class": "NORMAL", "undo": "remove package"},
+    {"id": "podman", "name": "Podman (rootless containers)", "category": "containers", "method": "pacman", "packages": ["podman", "netavark", "aardvark-dns", "slirp4netns", "fuse-overlayfs"], "class": "SENSITIVE", "undo": "remove packages; volumes are data", "default": false},
+    {"id": "postgres", "name": "PostgreSQL 18 container", "category": "datastores", "method": "podman", "requires": ["podman"], "image": "docker.io/library/postgres:18", "port": 5432, "class": "SENSITIVE", "undo": "podman rm; deleting the volume destroys data"},
+    {"id": "valkey", "name": "Valkey (Redis-compatible) container", "category": "datastores", "method": "podman", "requires": ["podman"], "image": "docker.io/valkey/valkey:9", "port": 6379, "class": "SENSITIVE", "undo": "podman rm; deleting the volume destroys data"},
+    {"id": "kubectl", "name": "kubectl + Helm", "category": "cloud", "method": "pacman", "packages": ["kubectl", "helm"], "class": "NORMAL", "undo": "remove packages"},
+    {"id": "terraform", "name": "OpenTofu", "category": "cloud", "method": "pacman", "packages": ["opentofu"], "class": "NORMAL", "undo": "remove package"},
+    {"id": "awscli", "name": "AWS CLI v2", "category": "cloud", "method": "pacman", "packages": ["aws-cli-v2"], "class": "NORMAL", "undo": "remove package"},
+    {"id": "azure-cli", "name": "Azure CLI", "category": "cloud", "method": "pacman", "packages": ["azure-cli"], "class": "NORMAL", "undo": "remove package"},
+    {"id": "ollama", "name": "Ollama (local models)", "category": "ai", "method": "pacman", "packages": ["ollama"], "class": "NORMAL", "undo": "remove package; models in ~/.ollama are data"}
+  ],
+  "presets": {
+    "backend": ["git", "neovim", "vscode", "go", "python", "podman", "postgres", "valkey", "kubectl"],
+    "frontend": ["git", "vscode", "nodejs", "podman"],
+    "data-ml": ["git", "vscode", "python", "podman", "postgres", "ollama"],
+    "systems": ["git", "neovim", "zed", "rust", "go", "podman"],
+    "minimal": ["git"]
+  },
+  "not_in_v1": {"google-cloud-cli": "AUR only", "jetbrains-toolbox": "AUR only", "redis": "not in official repos; valkey is the supported equivalent"}
+}

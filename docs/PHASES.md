@@ -1,6 +1,6 @@
 # Axiom implementation phases
 
-Current phase: **Phase 5 — system experience (complete, 2026-11-06; Phase 6 is next and not yet authorized)**. Phases 0 to 5 are complete.
+Current phase: **Phase 6 — installable system (complete, 2026-11-08; see [ADR-020](decisions/020-installable-system.md))**. Phases 0 to 6 are complete.
 Phases 6 onward were re-ordered on 2026-11-06: a complete, installable core
 distro (installer, packages, daily-driver, developer edition, hardware) comes
 before the security and AI layers.
@@ -179,6 +179,15 @@ first-run, login manager and lock screen, and no autologin on installed systems.
 Closes the Phase 4/5 reboot-persistence limit.
 
 **Exit:** a blank QEMU disk installs, reboots, logs in and keeps Settings.
+
+**Implementation (see [ADR-020](decisions/020-installable-system.md) and
+[ADR-021](decisions/021-installer-and-developer-hub.md)):** a terminal installer
+(`installer/`, started by `axiom-installer.service` when the kernel option
+`axiom.installer=1` is set) drives archinstall; `greeter/` is the greetd login
+screen; the shell's lock screen is `shell/src/session/LockScreen.qml`;
+`provision/` plus `catalog/developer-hub.json` is the Developer Hub first-boot
+job. Acceptance is `tests/phase6-install.py` (real key events in QEMU, evidence in
+`iso/out-phase6/`) plus `tests/installer/` unit tests.
 
 ## Phase 7 — package management and updates
 

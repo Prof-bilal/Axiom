@@ -59,6 +59,17 @@ cp -r "$SHELL_SRC" "$WORK/profile/airootfs/usr/local/share/axiom/shell"
 # relative symlink to ../apps, so the apps share the shell's config root.
 cp -r "$ROOT/apps" "$WORK/profile/airootfs/usr/local/share/axiom/apps"
 rm -rf "$WORK/profile/airootfs/usr/local/share/axiom/shell/tests"
+# Installer (Phase 6): backend, TUI and the Developer Hub catalogue.
+install -d "$WORK/profile/airootfs/usr/local/lib/axiom-installer"
+cp "$ROOT"/installer/axiom_install.py "$ROOT"/installer/axiom-installer "$WORK/profile/airootfs/usr/local/lib/axiom-installer/"
+cp -r "$ROOT/catalog" "$WORK/profile/airootfs/usr/local/lib/axiom-installer/catalog"
+ln -sf /usr/local/lib/axiom-installer/axiom-installer "$WORK/profile/airootfs/usr/local/bin/axiom-installer"
+install -d "$WORK/profile/airootfs/usr/local/lib/axiom-greeter"
+cp "$ROOT/greeter/axiom-greeter" "$WORK/profile/airootfs/usr/local/lib/axiom-greeter/"
+install -d "$WORK/profile/airootfs/usr/local/lib/axiom-provision" "$WORK/profile/airootfs/usr/local/share/axiom/catalog"
+cp "$ROOT"/provision/axiom-provision "$ROOT"/provision/axiom-provision.service "$WORK/profile/airootfs/usr/local/lib/axiom-provision/"
+cp "$ROOT/catalog/developer-hub.json" "$WORK/profile/airootfs/usr/local/share/axiom/catalog/"
+ln -sf /usr/local/lib/axiom-provision/axiom-provision "$WORK/profile/airootfs/usr/local/bin/axiom-provision"
 
 # Build a fresh, build-user-owned pacman keyring.
 #

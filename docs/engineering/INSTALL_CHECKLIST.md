@@ -1,6 +1,6 @@
 # Developer install checklist
 
-Status: design proposal. Installer and first-run implementation are Phase 9
+Status: design proposal; Phase 6 implementation follows [ADR-021](../decisions/021-installer-and-developer-hub.md). Installer and first-run implementation were Phase 9
 work. The doctrine below is grounded in Axiom's permission, recovery and
 developer-environment contracts; installer-specific profile formats and first-
 boot behavior must be verified before implementation. Last updated: 2026-10-29.

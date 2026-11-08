@@ -1,0 +1,371 @@
+#!/usr/bin/env python3
+"""Axiom boot installer (Phase 6, ADR-020/021): a curses TUI over axiom_install.
+
+Runs as root on the live medium. It only collects and validates input; every
+write is done by axiom_install (argv-only, re-validated target). Esc goes back.
+"""
+import curses
+import json
+import os
+import subprocess
+import sys
+
+HERE = os.path.dirname(os.path.realpath(__file__))
+sys.path.insert(0, HERE)
+import axiom_install as ai  # noqa: E402
+
+CATALOG = next((p for p in (os.path.join(HERE, "catalog", "developer-hub.json"),
+                            "/usr/local/share/axiom/catalog/developer-hub.json",
+                            os.path.join(HERE, "..", "catalog", "developer-hub.json")) if os.path.exists(p)), None)
+LOGO = ["  ▄▄▄  ▄▄ ▄▄ ▄▄ ▄▄▄  ▄▄   ▄▄",
+        " ██▀██ ▀█▄█▀ ██ ██▀██ ███▄███",
+        " ██▀██ ▄█▀█▄ ██ ██▄██ ██ ▀ ██"]
+TAG = "AI-Native Linux - Boot Installer"
+COMMON_TZ = ["UTC", "Europe/London", "Europe/Berlin", "Europe/Paris", "America/New_York", "America/Chicago",
+             "America/Los_Angeles", "Asia/Karachi", "Asia/Kolkata", "Asia/Dubai", "Asia/Tokyo", "Australia/Sydney"]
+
+
+class Back(Exception):
+    pass
+
+
+class UI:
+    def __init__(self, scr):
+        self.s = scr
+        curses.curs_set(0)
+        curses.use_default_colors()
+        curses.init_pair(1, curses.COLOR_CYAN, -1)
+        curses.init_pair(2, curses.COLOR_BLACK, curses.COLOR_CYAN)
+        curses.init_pair(3, curses.COLOR_RED, -1)
+        curses.init_pair(4, curses.COLOR_GREEN, -1)
+        self.cy, self.sel, self.err, self.ok = (curses.color_pair(1), curses.color_pair(2) | curses.A_BOLD,
+                                                curses.color_pair(3) | curses.A_BOLD, curses.color_pair(4))
+
+    def put(self, y, x, text, attr=0):
+        h, w = self.s.getmaxyx()
+        if 0 <= y < h and x < w:
+            try:
+                self.s.addnstr(y, x, text, max(0, w - x - 1), attr)
+            except curses.error:
+                pass
+
+    def frame(self, title, footer):
+        """Clear, draw the banner and return the first free row."""
+        self.s.erase()
+        h, w = self.s.getmaxyx()
+        y = 0
+        if h >= 30:
+            for line in LOGO:
+                self.put(y, max(0, (w - len(line)) // 2), line, self.cy | curses.A_BOLD)
+                y += 1
+        else:
+            self.put(y, 2, "AXIOM", self.cy | curses.A_BOLD)
+            y += 1
+        self.put(y, max(0, (w - len(TAG)) // 2), TAG, self.cy)
+        self.put(y + 1, 2, title, curses.A_BOLD)
+        self.put(h - 1, 2, footer, self.cy)
+        return y + 3
+
+    def key(self):
+        return self.s.getch()
+
+    def text_box(self, y, label, value, focus, secret=False, width=34):
+        shown = ("*" * len(value)) if secret else value
+        self.put(y, 4, f"{label:<22}", curses.A_BOLD if focus else 0)
+        self.put(y, 27, "[" + shown[-width:].ljust(width) + "]", self.sel if focus else self.cy)
+
+
+def read_form(ui, title, intro, fields, validate=None, footer="Up/Down move   Enter next   Esc back"):
+    """fields: dict(key,label,kind=text|password|toggle|choice,value,choices,hint,show=callable)."""
+    idx, err = 0, ""
+    while True:
+        vis = [f for f in fields if f.get("show", lambda: True)()]
+        idx = min(idx, len(vis))
+        y = ui.frame(title, footer)
+        for i, line in enumerate(intro.split("\n")):
+            ui.put(y + i, 2, line)
+        y += len(intro.split("\n")) + 1
+        for i, f in enumerate(vis):
+            kind, foc = f.get("kind", "text"), i == idx
+            if kind in ("text", "password"):
+                ui.text_box(y + i, f["label"], f["value"], foc, kind == "password")
+            elif kind == "toggle":
+                ui.put(y + i, 4, f"{f['label']:<22}", curses.A_BOLD if foc else 0)
+                ui.put(y + i, 27, "[x] yes" if f["value"] else "[ ] no", ui.sel if foc else ui.cy)
+            else:
+                ui.put(y + i, 4, f"{f['label']:<22}", curses.A_BOLD if foc else 0)
+                ui.put(y + i, 27, "< " + str(f["value"]) + " >", ui.sel if foc else ui.cy)
+            if foc and f.get("hint"):
+                ui.put(y + len(vis) + 2, 4, f["hint"], ui.cy)
+        ui.put(y + len(vis) + 1, 27, "[ Next ]", ui.sel if idx == len(vis) else ui.cy)
+        if err:
+            ui.put(y + len(vis) + 4, 4, err, ui.err)
+        ui.s.refresh()
+        k = ui.key()
+        f = vis[idx] if idx < len(vis) else None
+        if k == 27:
+            raise Back()
+        elif k in (curses.KEY_UP, 16) and idx > 0:
+            idx -= 1
+        elif k in (curses.KEY_DOWN, 9):
+            idx = min(idx + 1, len(vis))
+        elif k in (10, 13, curses.KEY_ENTER):
+            if idx < len(vis):
+                idx += 1
+            if idx >= len(vis) and (f is None or True) and (k in (10, 13, curses.KEY_ENTER)) and idx == len(vis):
+                try:
+                    if validate:
+                        validate()
+                    return
+                except ai.FormError as e:
+                    err = str(e)
+                    idx = 0
+        elif f is not None:
+            kind = f.get("kind", "text")
+            if kind in ("text", "password"):
+                if k in (curses.KEY_BACKSPACE, 127, 8):
+                    f["value"] = f["value"][:-1]
+                elif 32 <= k < 127:
+                    f["value"] += chr(k)
+            elif kind == "toggle" and k == 32:
+                f["value"] = not f["value"]
+            elif kind == "choice" and k in (curses.KEY_LEFT, curses.KEY_RIGHT, 32):
+                ch = f["choices"]
+                i = ch.index(f["value"]) if f["value"] in ch else 0
+                f["value"] = ch[(i + (-1 if k == curses.KEY_LEFT else 1)) % len(ch)]
+                if f.get("on_change"):
+                    f["on_change"]()
+            err = ""
+
+
+def menu(ui, title, items, intro=""):
+    i = 0
+    while True:
+        y = ui.frame(title, "Up/Down move   Enter confirm   Esc back / quit")
+        if intro:
+            for n, line in enumerate(intro.split("\n")):
+                ui.put(y + n, 2, line)
+            y += len(intro.split("\n")) + 1
+        for n, it in enumerate(items):
+            ui.put(y + n, 6, (" > " if n == i else "   ") + it, ui.sel if n == i else 0)
+        ui.s.refresh()
+        k = ui.key()
+        if k in (curses.KEY_UP,) and i > 0:
+            i -= 1
+        elif k == curses.KEY_DOWN and i < len(items) - 1:
+            i += 1
+        elif k in (10, 13, curses.KEY_ENTER):
+            return i
+        elif k == 27:
+            raise Back()
+
+
+def load_catalog():
+    try:
+        return json.load(open(CATALOG))
+    except (OSError, TypeError, ValueError):
+        return {"items": [], "presets": {}}
+
+
+def hub_screen(ui, form, catalog):
+    items = catalog["items"]
+    chosen = set(form.get("hub") or [i["id"] for i in items if i.get("default")])
+    pos, top = 0, 0
+    presets = ["custom"] + list(catalog.get("presets", {}))
+    pi = 0
+    while True:
+        y = ui.frame("Developer Hub - choose what to set up", "Up/Down move   Space select   p preset   Enter continue   Esc back")
+        h = ui.s.getmaxyx()[0]
+        ui.put(y, 2, "Nothing installs until you confirm. These install on first boot, in your user account.")
+        ui.put(y + 1, 2, f"Preset: {presets[pi]}   ({len(chosen)} selected)", ui.cy)
+        rows = h - (y + 3) - 2
+        top = min(max(top, pos - rows + 1), pos) if rows > 0 else 0
+        for n, it in enumerate(items[top:top + max(rows, 1)], start=top):
+            box = "[x]" if it["id"] in chosen else "[ ]"
+            ui.put(y + 3 + n - top, 4, f"{' >' if n == pos else '  '} {box} {it['name']:<38} {it['category']}", ui.sel if n == pos else 0)
+        ui.s.refresh()
+        k = ui.key()
+        if k == curses.KEY_UP and pos > 0:
+            pos -= 1
+        elif k == curses.KEY_DOWN and pos < len(items) - 1:
+            pos += 1
+        elif k == 32 and items:
+            iid = items[pos]["id"]
+            if iid in chosen:
+                chosen.discard(iid)
+                chosen -= {i["id"] for i in items if iid in i.get("requires", [])}
+            else:
+                chosen.add(iid)
+                chosen |= set(items[pos].get("requires", []))
+        elif k in (ord("p"), ord("P")):
+            pi = (pi + 1) % len(presets)
+            if presets[pi] != "custom":
+                chosen = set(catalog["presets"][presets[pi]])
+        elif k in (10, 13, curses.KEY_ENTER):
+            form["hub"] = [i["id"] for i in items if i["id"] in chosen]
+            return
+        elif k == 27:
+            raise Back()
+
+
+def run_install(ui, form, disk):
+    payload = dict(form, disk=disk["path"], disk_bytes=disk["size"])
+    proc = subprocess.Popen([sys.executable, os.path.join(HERE, "axiom_install.py")], stdin=subprocess.PIPE,
+                            stdout=subprocess.PIPE, text=True, env={**os.environ, **ai.ENV})
+    proc.stdin.write(json.dumps(payload))
+    proc.stdin.close()
+    pct, name, msg = 0, "starting", ""
+    for line in proc.stdout:
+        try:
+            ev = json.loads(line)
+        except ValueError:
+            continue
+        pct, name = ev.get("pct", pct), ev.get("name", name)
+        msg = ev.get("message", msg)
+        y = ui.frame("Installing Axiom - do not power off", "Please wait")
+        ui.put(y, 4, f"Step: {name}")
+        ui.put(y + 2, 4, "[" + "#" * (pct * 40 // 100) + "-" * (40 - pct * 40 // 100) + f"] {pct}%", ui.cy)
+        ui.s.refresh()
+    rc = proc.wait()
+    y = ui.frame("Installation " + ("complete" if rc == 0 else "failed"), "Enter to continue")
+    if rc == 0:
+        ui.put(y, 4, "Axiom is installed. Remove the install medium, then press Enter to reboot.", ui.ok)
+    else:
+        ui.put(y, 4, msg or "The installer failed; see /var/log/axiom-installer.log", ui.err)
+    ui.s.refresh()
+    while ui.key() not in (10, 13, curses.KEY_ENTER):
+        pass
+    return rc == 0
+
+
+def start_setup(ui):
+    catalog = load_catalog()
+    tz = os.environ.get("AXIOM_TZ", "UTC")
+    f = {"fullname": "", "username": "", "hostname": "axiom", "password": "", "password2": "", "timezone": tz,
+         "keyboard": "us", "locale": "en_US", "git_name": "", "git_email": "", "luks": False, "luks_passphrase": "",
+         "hub": []}
+    disk_choice = {"value": ""}
+    step = 0
+    while True:
+        try:
+            if step == 0:
+                fs = [{"key": "locale", "label": "Language (locale)", "value": f["locale"]},
+                      {"key": "keyboard", "label": "Keyboard layout", "value": f["keyboard"]},
+                      {"key": "timezone", "label": "Timezone", "value": f["timezone"],
+                       "hint": "e.g. " + ", ".join(COMMON_TZ[:4])}]
+                read_form(ui, "1/6  Language, keyboard and timezone", "These can be changed later in Settings.", fs,
+                          lambda: [ai.validate_form(dict(_probe(f), **{x["key"]: x["value"] for x in fs}))])
+                f.update({x["key"]: x["value"] for x in fs})
+            elif step == 1:
+                disks = ai.list_disks()
+                if not disks:
+                    read_form(ui, "2/6  Disk", "No safe install target found (removable, mounted and read-only disks are hidden).",
+                              [], lambda: (_ for _ in ()).throw(ai.FormError("no usable disk")))
+                labels = [f"{d['path']}  {d['size'] / 2**30:.1f} GiB  {d['model']}" for d in disks]
+                fs = [{"key": "disk", "label": "Install to", "kind": "choice", "choices": labels,
+                       "value": disk_choice["value"] if disk_choice["value"] in labels else labels[0]},
+                      {"key": "luks", "label": "Encrypt disk (LUKS)", "kind": "toggle", "value": f["luks"]},
+                      {"key": "luks_passphrase", "label": "Passphrase", "kind": "password", "value": f["luks_passphrase"],
+                       "show": lambda: fs[1]["value"]}]
+
+                def v_disk():
+                    if disks[labels.index(fs[0]["value"])]["size"] < 10 * 2**30:
+                        raise ai.FormError("disk is too small (need at least 10 GiB)")
+                    if fs[1]["value"]:
+                        ai.check_password(fs[2]["value"])
+                read_form(ui, "2/6  Disk", "The whole selected disk will be erased.", fs, v_disk)
+                disk_choice["value"] = fs[0]["value"]
+                f["luks"], f["luks_passphrase"] = fs[1]["value"], fs[2]["value"] if fs[1]["value"] else ""
+                f["_disk"] = disks[labels.index(fs[0]["value"])]
+            elif step == 2:
+                fs = [{"key": "fullname", "label": "Full name", "value": f["fullname"]},
+                      {"key": "username", "label": "Username", "value": f["username"], "hint": "lowercase letters, digits, - and _"},
+                      {"key": "hostname", "label": "Computer name", "value": f["hostname"]},
+                      {"key": "password", "label": "Password", "kind": "password", "value": f["password"],
+                       "hint": "at least 10 characters, not a common password"},
+                      {"key": "password2", "label": "Repeat password", "kind": "password", "value": f["password2"]}]
+
+                def v_acct():
+                    d = {x["key"]: x["value"] for x in fs}
+                    if d["password"] != d["password2"]:
+                        raise ai.FormError("passwords do not match")
+                    ai.validate_form(dict(_probe(f), **d))
+                read_form(ui, "3/6  Your account", "This account gets administrator rights through sudo. Root is locked.", fs, v_acct)
+                f.update({x["key"]: x["value"] for x in fs})
+            elif step == 3:
+                fs = [{"key": "git_name", "label": "Git name", "value": f["git_name"]},
+                      {"key": "git_email", "label": "Git email", "value": f["git_email"],
+                       "hint": "used for commits; leave both empty to skip"}]
+                read_form(ui, "4/6  Git identity", "Optional. GitHub sign-in happens after first boot, never here.", fs,
+                          lambda: ai.validate_form(dict(_probe(f), **{x["key"]: x["value"] for x in fs})))
+                f.update({x["key"]: x["value"] for x in fs})
+            elif step == 4:
+                hub_screen(ui, f, catalog)
+            elif step == 5:
+                d = f["_disk"]
+                rows = [f"Disk:       {d['path']}  {d['size'] / 2**30:.1f} GiB  {d['model']}  (WILL BE ERASED)",
+                        f"Encryption: {'LUKS2' if f['luks'] else 'none'}",
+                        f"Account:    {f['fullname']} ({f['username']})  host {f['hostname']}",
+                        f"Locale:     {f['locale']}  keyboard {f['keyboard']}  timezone {f['timezone']}",
+                        f"Git:        {f['git_name'] or '-'} <{f['git_email'] or '-'}>",
+                        f"Hub:        {', '.join(f['hub']) or 'nothing'}"]
+                fs = [{"key": "confirm", "label": "Type ERASE to confirm", "value": ""}]
+
+                def v_confirm():
+                    if fs[0]["value"] != "ERASE":
+                        raise ai.FormError("type ERASE (capitals) to confirm")
+                read_form(ui, "5/6  Review", "\n".join(rows), fs, v_confirm, "Enter install   Esc back")
+                payload = {k: v for k, v in f.items() if k != "_disk"}
+                ai.validate_form(payload)
+                return run_install(ui, payload, f["_disk"])
+            step += 1
+        except Back:
+            if step == 0:
+                return False
+            step -= 1
+
+
+def _probe(f):
+    """A fully valid base so single-screen validation checks only the fields it owns."""
+    return {"username": f["username"] or "probe", "fullname": f["fullname"] or "Probe", "hostname": f["hostname"],
+            "password": f["password"] or "probe-password-1", "timezone": f["timezone"], "keyboard": f["keyboard"],
+            "locale": f["locale"], "git_name": f["git_name"], "git_email": f["git_email"]}
+
+
+def shell(ui, banner):
+    curses.endwin()
+    os.system("clear")
+    print(banner)
+    subprocess.call(["/bin/zsh" if os.path.exists("/bin/zsh") else "/bin/sh"], env={**os.environ, **ai.ENV})
+    ui.s.refresh()
+
+
+def main(scr):
+    ui = UI(scr)
+    scr.keypad(True)
+    while True:
+        try:
+            i = menu(ui, "Welcome to Axiom!",
+                     ["Start setup", "Recovery tools", "Open shell", "Reboot"],
+                     "This installer runs before your first login and will install Axiom to this machine.\n"
+                     "You will set up: your account, system settings, developer apps, and the disk.")
+        except Back:
+            continue
+        if i == 0:
+            if start_setup(ui):
+                curses.endwin()
+                os.execvp("systemctl", ["systemctl", "reboot"])
+        elif i == 1:
+            shell(ui, "Axiom recovery shell. Useful: lsblk, cryptsetup open, mount, btrfs, arch-chroot. exit to return.")
+        elif i == 2:
+            shell(ui, "Axiom live shell. exit to return to the installer.")
+        else:
+            curses.endwin()
+            os.execvp("systemctl", ["systemctl", "reboot"])
+
+
+if __name__ == "__main__":
+    os.environ.setdefault("ESCDELAY", "50")
+    if os.geteuid() != 0:
+        sys.exit("axiom-installer must run as root on the install medium")
+    curses.wrapper(main)

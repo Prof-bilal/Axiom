@@ -1,6 +1,6 @@
 # Installation design
 
-Status: Phase 9 research; no installer implementation is authorized. Axiom
+Status: Phase 6 design ([ADR-020](../decisions/020-installable-system.md), [ADR-021](../decisions/021-installer-and-developer-hub.md)); implementation starts at milestone M1. Axiom
 will own the target-disk plan, identity, update/recovery semantics and first-run
 experience while reusing a proven Linux installer technology when its behavior
 and license are verified. The removed upstream installer path is not a
@@ -21,3 +21,21 @@ requirements, user creation failure, interruption, reboot without media,
 package consistency, fallback boot and snapshot/recovery limits on disposable
 disks only. The developer stack checklist is recorded separately and is not
 silently applied during installation.
+
+## Implementation (Phase 6)
+
+| Piece | Path | Notes |
+| --- | --- | --- |
+| Backend | `installer/axiom_install.py` | stdlib; validates the form, builds archinstall `--config`/`--creds`, runs it with argv only, applies the Axiom overlay, writes the Hub profile, cleans up after failure. |
+| UI | `installer/axiom-installer` | curses TUI; Welcome → locale/keyboard/timezone → disk (+LUKS) → account → git identity → Developer Hub → review (type `ERASE`) → install. Esc goes back; nothing is written before the review confirmation. |
+| Mode switch | `axiom-installer.service`, UEFI entry `00-axiom-installer.conf` | kernel option `axiom.installer=1` replaces the live desktop autologin on tty1. |
+| Login | `greeter/axiom-greeter`, greetd | no autologin on installed systems; password goes only to greetd/PAM. |
+| Lock | `shell/src/session/LockScreen.qml`, `/etc/pam.d/axiom-lock` | `ext-session-lock-v1` + PAM; `qs ipc call axiom lock`. |
+| Hub | `catalog/developer-hub.json`, `provision/axiom-provision` | profile selects ids; root-owned catalogue names packages/images. |
+
+Target guard: only whole, non-removable, read-write disks with nothing mounted are
+offered, and the same check re-runs immediately before writing. A failed or killed
+run kills leftover processes under `/mnt`, unmounts it and closes LUKS so the
+machine is retryable. Secrets: password hash and LUKS passphrase live in 0600 files
+on `/run` for the duration of the run; the profile and logs never contain them
+(tested). Evidence and the exact commands are in [TESTING](../TESTING.md).
