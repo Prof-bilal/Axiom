@@ -18,8 +18,8 @@ export const phases: Phase[] = [
   { n: 3, name: "Shell MVP", status: "done", date: "2026-11-03", summary: "Top panel, dock, launcher, workspaces, tray, notifications and session controls on real session state.", evidence: "21 automated checks; boot to shutdown through the UI at 1920×1080" },
   { n: 4, name: "Core apps", status: "done", date: "2026-11-03", summary: "Files, Settings, Terminal integration and a read-only Software Center.", evidence: "58 automated checks; hostile file names, 10,000-entry folders" },
   { n: 5, name: "System experience", status: "done", date: "2026-11-06", summary: "Wi-Fi, Bluetooth, sound, display, power, keyboard, date and users controls through real services.", evidence: "76 automated checks; wrong Wi-Fi password rejected, display change reverts" },
-  { n: 6, name: "Installable system", status: "next", summary: "Installer, optional disk encryption, bootloader, first-run, login manager and lock screen. Closes the no-reboot-persistence gap.", evidence: "Exit: a blank QEMU disk installs, reboots and keeps Settings" },
-  { n: 7, name: "Packages and updates", status: "planned", summary: "Software Center installs, updates and removes through a narrow polkit-gated helper; snapshots roll back a bad update." },
+  { n: 6, name: "Installable system", status: "done", date: "2026-11-08", summary: "Terminal installer, greetd login screen, lock screen and a Developer Hub first-boot job. Closes the no-reboot-persistence gap.", evidence: "Verified in QEMU: blank disk installs, reboots and logs in (real key events); installer unit tests" },
+  { n: 7, name: "Packages and updates", status: "next", summary: "Software Center installs, updates and removes through a narrow polkit-gated helper; snapshots roll back a bad update." },
   { n: 8, name: "Daily-driver completeness", status: "planned", summary: "Printing, removable media, screenshots and recording, clipboard, idle lock, input methods, accessibility, a default firewall." },
   { n: 9, name: "Developer edition", status: "planned", summary: "Curated toolchains, git, containers, editors, and an optional Kali-style security-tools set." },
   { n: 10, name: "Hardware and stability", status: "planned", summary: "Intel, AMD and NVIDIA, laptop power, suspend, multi-monitor, HiDPI. Supported, unsupported and untested are recorded, not claimed." },
@@ -89,8 +89,8 @@ export const galleries: { n: number; title: string; note: string; items: Shot[] 
 ];
 
 export const limits = [
-  "Not installable. Axiom is a live image; nothing persists across a reboot yet.",
-  "No public release, and no root licence. Redistribution is not authorized.",
+  "Installation is verified on a blank QEMU disk only, not on real hardware. There is no public release.",
+ "No root licence. Redistribution is not authorized.",
   "Verified in QEMU only, at 1920×1080. Real hardware is Phase 10.",
   "Wi-Fi was simulated and the VM has no backlight or Bluetooth controller.",
   "The Software Center is read-only. It cannot install or update anything.",

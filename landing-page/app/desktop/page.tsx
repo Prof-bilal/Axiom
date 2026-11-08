@@ -21,7 +21,7 @@ export default function Page() {
       </figure>)}</div>
     </section>)}
 
-    <p className="wrap d-foot dim small">Phases 1 and 2 reached the same session, so they share the Phase 3 captures. Phase 0 is documents, and Phase 6 onward has nothing to show because nothing is built yet.</p>
+    <p className="wrap d-foot dim small">Phases 1 and 2 reached the same session, so they share the Phase 3 captures. Phase 0 is documents. Phase 6 (installer, login and lock screen) has no captures on this page yet, and Phase 7 onward is not built.</p>
     <div className="wrap page-next"><Link href="/">← Back to Axiom</Link><Link href="/progress/">Explore progress →</Link></div>
   </main>;
 }

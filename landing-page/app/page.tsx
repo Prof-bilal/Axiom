@@ -1,7 +1,14 @@
 import Link from "next/link";
 import { HeroExperience, PageReveals } from "@/components/hero-experience";
-import { ImageCarousel } from "@/components/image-carousel";
-import { aiRules, gallerySlides, owned, proof, questions, reused, showcase } from "@/lib/home";
+import { AiPipeline } from "@/components/ai-pipeline";
+import { FaqChat } from "@/components/faq-chat";
+import { Foundation } from "@/components/foundation";
+import { DevJourney } from "@/components/dev-journey";
+import { Agents, BuildYourOwn } from "@/components/agents";
+import { IdeaStage } from "@/components/idea-stage";
+import { DotField } from "@/components/dot-field";
+import { CapabilityGrid, LocalFirst, Pillars, PhaseTimeline } from "@/components/idea-sections";
+import { questions } from "@/lib/home";
 
 export default function Page() {
   return <main id="main" className="home">
@@ -24,38 +31,58 @@ export default function Page() {
       </div>
     </section>
 
-    <section className="x-proof" aria-label="Project status"><div className="wrap x-proof-grid">
-      {proof.map(([n, l]) => <div key={l}><strong>{n}</strong><span>{l}</span></div>)}
+    <section className="x-sec" aria-labelledby="idea-title"><div className="wrap">
+      <div className="x-head"><p className="eyebrow">THE IDEA</p><h2 id="idea-title">AI proposes.<br /><em>You decide.</em></h2><p>Axiom is designed around AI, with the limits built in first. This is the design. The AI layer is not shipped yet.</p></div>
+      <IdeaStage />
+      <Pillars />
     </div></section>
 
-    <section className="wrap x-sec" aria-labelledby="apps-title">
-      <div className="x-head"><p className="eyebrow">INSIDE THE DESKTOP</p><h2 id="apps-title">Real apps. Running today.</h2><p>Every screen below is a capture from Axiom booting in a virtual machine. No mockups.</p></div>
-      <div className="x-bento">{showcase.map((s) => <article className={`x-tile x-${s.size}`} key={s.title}><img src={s.src} alt={s.alt} loading="lazy" /><div><span className="mono accent">{s.tag}</span><h3>{s.title}</h3><p>{s.text}</p></div></article>)}</div>
-    </section>
-
-    <section className="x-sec x-stack-sec" aria-labelledby="stack-title"><div className="wrap">
-      <div className="x-head"><p className="eyebrow">HOW IT’S BUILT</p><h2 id="stack-title">Proven Linux underneath.<br />Axiom on top.</h2><p>We reuse what already works and build only the experience layer.</p></div>
-      <div className="x-stack">
-        <div className="x-layer x-own"><span className="mono accent">AXIOM BUILDS</span><ul>{owned.map((o) => <li key={o}>{o}</li>)}</ul></div>
-        <div className="x-layer"><span className="mono">LINUX PROVIDES</span><ul>{reused.map((o) => <li key={o}>{o}</li>)}</ul></div>
-      </div>
+    <section className="x-sec" aria-labelledby="travel-title"><div className="wrap">
+      <div className="x-head"><p className="eyebrow">HOW IT WORKS</p><h2 id="travel-title">How an AI request travels.</h2><p>Six steps, and the model is never the one in charge. Pick a step to see what it does, and what it can never do.</p></div>
+      <AiPipeline />
     </div></section>
 
-    <section className="x-sec" aria-labelledby="ai-title"><div className="wrap x-ai">
-      <div><p className="eyebrow">LOOKING A LITTLE FURTHER</p><h2 id="ai-title">AI, when it helps.<br /><em>Always your call.</em></h2><p className="x-note">A vision, not a feature. AI is not available yet.</p><Link className="text-link" href="/roadmap/">See what’s ahead <span aria-hidden="true">↗</span></Link></div>
-      <div className="x-rules">{aiRules.map(([t, d]) => <div key={t}><h3>{t}</h3><p>{d}</p></div>)}</div>
+    <section className="x-sec" aria-labelledby="caps-title"><div className="wrap">
+      <div className="x-head"><p className="eyebrow">THE LIMITS</p><h2 id="caps-title">Ten things AI can do.<br /><em>Nothing else.</em></h2><p>Everything AI can ever do is on this list. Each one is checked on its own, and anything risky asks you first. Below it, what stays locked for good.</p></div>
+      <CapabilityGrid />
     </div></section>
 
-    <section className="wrap gallery-section" aria-labelledby="gallery-title">
-      <div className="gallery-heading"><div><p className="eyebrow">A FIRST LOOK AT AXIOM</p><h2 id="gallery-title">Come on in.</h2></div><p>The desktop is taking shape.<br />Here’s a little look around.</p></div>
-      <ImageCarousel slides={gallerySlides} />
-    </section>
+    <section className="x-sec" aria-labelledby="agents-title"><div className="wrap">
+      <div className="x-head"><p className="eyebrow">THE AGENTS</p><h2 id="agents-title">Meet the <em>agents.</em></h2><p>Choose an agent, ask it to do something, and watch how Axiom keeps it in bounds. It is a scripted demo of the design: no model and no agent runtime exist yet.</p></div>
+      <Agents />
+    </div></section>
+
+    <section className="x-sec" aria-labelledby="byo-title"><div className="wrap">
+      <div className="x-head"><p className="eyebrow">YOUR OWN</p><h2 id="byo-title">Build your <em>own agent.</em></h2><p>Snap blocks together, like a workflow tool. You choose how it starts, what it thinks with, and what it may do. It only ever gets what you approve.</p></div>
+      <BuildYourOwn />
+    </div></section>
+
+    <section className="x-sec" aria-labelledby="dev-title"><div className="wrap">
+      <div className="x-head"><p className="eyebrow">FOR DEVELOPERS</p><h2 id="dev-title">Built for people who build.</h2><p>Watch a blank disk become a working workspace. The first two layers already boot in QEMU; the rest are on the roadmap.</p></div>
+      <DevJourney />
+    </div></section>
+
+    <section className="x-sec" aria-labelledby="local-title"><div className="wrap">
+      <div className="x-head"><p className="eyebrow">PRIVACY</p><h2 id="local-title">Yours. <em>Local-first.</em></h2><p>Your data stays on your machine by default. A model provider is something you may add, never something you need.</p></div>
+      <LocalFirst />
+    </div></section>
+
+    <section className="x-sec" aria-labelledby="stack-title"><div className="wrap">
+      <div className="x-head"><p className="eyebrow">FOUNDATION</p><h2 id="stack-title">Proven Linux underneath.<br />Axiom on top.</h2><p>Pick any layer to see what it does and why Axiom reuses it or builds it. We build only the experience, session and safety layers.</p></div>
+      <Foundation />
+    </div></section>
+
+    <section className="x-sec" aria-labelledby="status-title"><div className="wrap">
+      <div className="x-head"><p className="eyebrow">STATUS</p><h2 id="status-title">Built. Booted. Verified.</h2><p>Phases 0 to 6 are complete, each booted in a real virtual machine. Phase 5 alone passed 76 automated checks. AI and security come later, in order.</p></div>
+      <PhaseTimeline />
+      <p className="x-links"><Link className="text-link" href="/progress/">See the evidence <span aria-hidden="true">↗</span></Link><Link className="text-link" href="/roadmap/">Read the roadmap <span aria-hidden="true">↗</span></Link></p>
+    </div></section>
 
     <section className="wrap x-sec" aria-labelledby="faq-title">
-      <div className="x-head"><p className="eyebrow">QUESTIONS</p><h2 id="faq-title">Straight answers.</h2></div>
-      <div className="x-faq">{questions.map(([q, a]) => <details key={q}><summary>{q}</summary><p>{a}</p></details>)}</div>
+      <div className="x-head"><p className="eyebrow">QUESTIONS</p><h2 id="faq-title">Straight answers.</h2><p>Pick a question. The answers are short and honest, including what isn’t built yet.</p></div>
+      <FaqChat items={questions} />
     </section>
 
-    <section className="closing-band" aria-labelledby="closing-title"><div className="closing-inner"><p className="eyebrow">EARLY DAYS. BIG IDEAS.</p><h2 id="closing-title">Axiom is just<br />getting started.</h2><p>A new Linux desktop is taking shape for people who love to make things.</p><div className="x-cta"><Link className="btn primary" href="/progress/">See the evidence <span aria-hidden="true">↗</span></Link><Link className="btn" href="/roadmap/">Read the roadmap</Link></div><span className="mono closing-status">In development · No public download yet</span></div></section>
+    <section className="closing-band" aria-labelledby="closing-title"><DotField /><div className="closing-inner"><p className="eyebrow">EARLY DAYS. BIG IDEAS.</p><h2 id="closing-title">Axiom is just<br />getting started.</h2><p>A new Linux desktop is taking shape for people who love to make things.</p><div className="x-cta"><Link className="btn primary" href="/progress/">See the evidence <span aria-hidden="true">↗</span></Link><Link className="btn" href="/roadmap/">Read the roadmap</Link></div><span className="mono closing-status">In development · No public download yet</span></div></section>
   </main>;
 }
