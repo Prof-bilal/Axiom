@@ -150,14 +150,25 @@ class Guest:
         return self.wait_for("login:", 240)
 
     def login_root(self):
-        self._write("root\n")
-        time.sleep(3)
-        self._write("exec sh\n")
-        time.sleep(2)
-        self._write("stty -echo; PS1=; PS2=\n")
-        time.sleep(1.5)
-        rc, _ = self.sh("true", 15)
-        return rc == 0
+        """Log in on the serial console. Retries when the first attempt lands on a 'Password:' prompt
+        (the prompt can appear if login starts before the system is fully up)."""
+        for _ in range(3):
+            mark = len(self.raw)
+            self._write("root\n")
+            time.sleep(3)
+            if "Password:" in self._text(mark):
+                self._write("\n")  # empty password fails; getty offers a fresh login prompt
+                self.wait_for("login:", 30, mark)
+                time.sleep(2)
+                continue
+            self._write("exec sh\n")
+            time.sleep(2)
+            self._write("stty -echo; PS1=; PS2=\n")
+            time.sleep(1.5)
+            rc, _ = self.sh("true", 15)
+            if rc == 0:
+                return True
+        return False
 
     def sh(self, cmd, timeout=30):
         """Run cmd in the root serial shell; return (exit code, output) or (None, partial).

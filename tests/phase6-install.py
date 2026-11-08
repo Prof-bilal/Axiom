@@ -79,6 +79,8 @@ def refresh_installer(g):
              ("catalog/developer-hub.json", "/usr/local/share/axiom/catalog/developer-hub.json", "644"),
              ("provision/axiom-provision", "/usr/local/lib/axiom-provision/axiom-provision", "755"),
              ("provision/axiom-provision.service", "/usr/local/lib/axiom-provision/axiom-provision.service", "644"),
+             ("tui/axiom_tui.py", "/usr/local/lib/axiom-tui/axiom_tui.py", "644"),
+             ("tui/penguin_art.py", "/usr/local/lib/axiom-tui/penguin_art.py", "644"),
              ("greeter/axiom-greeter", "/usr/local/lib/axiom-greeter/axiom-greeter", "755"))
     for rel, dst, mode in files:
         push(g, dst, open(os.path.join(REPO, rel), "rb").read(), mode)
@@ -120,10 +122,10 @@ class Tui:
 
 def fill_form(g, t, luks=False):
     """Walk steps 1-5 with real keys up to (not including) the ERASE confirmation."""
-    t.enter()  # Start setup
-    g.check(t.wait("Language, keyboard and timezone"), "step 1 (language/keyboard/timezone) shown")
+    t.enter()  # Install Axiom
+    g.check(t.wait("Language and time"), "step 1 (language and time) shown")
     t.enter(3)
-    g.check(t.wait("2/6  Disk", 20), "step 2 (disk) shown")
+    g.check(t.wait("Choose a disk", 20), "step 2 (disk) shown")
     scr = t.last
     g.check("/dev/vda" in scr, "installer offers the blank virtio disk")
     g.check("/dev/sr0" not in scr and "loop0" not in scr, "live medium and loop devices are not offered")
@@ -131,35 +133,34 @@ def fill_form(g, t, luks=False):
         g.key("down", 0.4); g.key("spc", 0.5); g.key("down", 0.4)
         t.say(LUKS_PW)
     t.enter(2 if not luks else 1)
-    g.check(t.wait("Your account", 20), "step 3 (account) shown")
+    g.check(t.wait("Create your account", 20), "step 3 (account) shown")
     t.say("Dev User"); t.enter()
     t.say("root"); t.enter()  # reserved username
     t.enter()                 # hostname stays "axiom"
     t.say("short"); t.enter()
     t.say("short"); t.enter()
-    g.check(t.wait("invalid or reserved username", 15), "reserved username 'root' is rejected")
+    g.check(t.wait("can't be used", 15), "reserved username 'root' is rejected with a plain explanation")
     t.enter()                 # field 0 -> username
     t.wipe(); t.say(USER); t.enter()
     t.wipe(); t.say("axiom-test"); t.enter()
     t.wipe(); t.say(PW); t.enter()
     t.wipe(); t.say(PW + "x"); t.enter()
-    g.check(t.wait("passwords do not match", 15), "mismatched passwords are rejected")
+    g.check(t.wait("two passwords are different", 15), "mismatched passwords are rejected")
     t.enter(3)
     t.wipe(); t.say(PW); t.enter()
     t.wipe(); t.say(PW); t.enter()
     g.check(t.wait("Git identity", 30), "valid account accepted")
     t.say(GIT_NAME); t.enter()
     t.say(GIT_EMAIL); t.enter()
-    g.check(t.wait("Developer Hub", 20), "step 5 (Developer Hub) shown")
+    g.check(t.wait("Choose your tools", 20), "step 5 (tools) shown")
     scr = t.last
     g.check("Git + GitHub CLI" in scr and "Neovim" in scr, "Hub lists catalogue items")
-    for _ in range(4):
-        g.key("down", 0.4)
-    g.key("spc", 0.5)  # Neovim
+    g.key("down", 0.4)
+    g.key("spc", 0.5)  # Neovim (second editor)
     t.enter()
-    g.check(t.wait("5/6  Review", 20), "review screen shown")
+    g.check(t.wait("Check and install", 20), "review screen shown")
     scr = t.last
-    g.check("WILL BE ERASED" in scr and "/dev/vda" in scr, "review shows the destructive plan with the target")
+    g.check("will be erased" in scr and "/dev/vda" in scr, "review shows the destructive plan with the target")
     g.check(PW not in scr and LUKS_PW not in scr, "review does not echo secrets")
     g.check("neovim" in scr and "git" in scr, "review lists the selected Hub items")
 
@@ -216,15 +217,16 @@ def stage_install(iso, out, luks=False):
         t = Tui(g)
         g.check(t.wait("Welcome to Axiom!", 60), "welcome screen shown on tty1")
         scr = t.last
-        g.check("Start setup" in scr and "Recovery tools" in scr and "Open shell" in scr, "welcome menu entries present")
+        g.check("Install Axiom" in scr and "Advanced options" in scr, "welcome menu entries present")
         g.check(g.sh("systemctl is-active axiom-installer", 15)[1].strip() == "active", "installer service owns tty1")
+        g.check(80 <= int(g.sh("stty -F /dev/tty1 size", 10)[1].split()[-1]) <= 130, "large console font is active (about 120 columns at 1920x1080; the default font gives 240)")
         g.check(g.sh("! pgrep -x axiom-session && ! pgrep -x quickshell", 10)[0] == 0,
                 "no desktop session in installer mode")
 
         # 1) validation + cancel path
         fill_form(g, t, luks)
         t.say("erase"); t.enter()
-        g.check(t.wait("type ERASE", 10), "lowercase confirmation is rejected")
+        g.check(t.wait("capital letters", 10), "lowercase confirmation is rejected")
         for _ in range(8):
             g.key("esc", 0.7)
         g.check(t.wait("Welcome to Axiom!", 20), "Esc walks back to the welcome menu")
@@ -244,7 +246,7 @@ def stage_install(iso, out, luks=False):
         g.check(ok, "archinstall is running")
         time.sleep(40)
         g.sh("pkill -9 -f '[b]in/archinstall'; true", 10)
-        g.check(t.wait("Installation failed", 60), "killed install is reported as failed")
+        g.check(t.wait("did not finish", 60), "killed install is reported as failed")
         g.sh("cp /var/log/axiom-installer.log /root/axiom-installer.interrupted.log", 10)
         t.enter()
         g.check(t.wait("Welcome to Axiom!", 20), "installer returns to the menu after failure")
@@ -255,14 +257,29 @@ def stage_install(iso, out, luks=False):
         t.say("ERASE"); t.enter()
         g.check(t.wait("Installing Axiom", 30), "retry install started")
         t0 = time.monotonic()
-        done = False
+        done, seen, shots = False, [], []
         while time.monotonic() - t0 < 2400:
             scr = t.screen()
-            if "Installation complete" in scr or "Installation failed" in scr:
-                done = "Installation complete" in scr
+            seen.append(scr)
+            m = re.findall(r"(?m)^\s*(\d{1,3})%\s*$", scr)
+            if m and 30 <= int(m[-1]) <= 70 and not shots:
+                g.shot("installing-penguin")
+                shots.append(1)
+            if "Axiom is ready" in scr or "did not finish" in scr:
+                g.shot("install-finished")
+                done = "Axiom is ready" in scr
                 break
             time.sleep(20)
         g.check(done, f"install completed through the TUI ({int(time.monotonic() - t0)} s)")
+        pcts = []
+        for scr in seen:
+            m = re.findall(r"(?m)^\s*(\d{1,3})%\s*$", scr)
+            if m:
+                pcts.append(int(m[-1]))
+        g.check(len(set(pcts)) >= 6 and pcts == sorted(pcts), f"progress moved smoothly and never went backwards ({sorted(set(pcts))[:12]}...)")
+        text = "\n".join(seen)
+        g.check("Downloading Axiom" in text and "Installing the system" in text, "progress screen names the real stages (download, install)")
+        g.check(bool(re.search(r"Package \d+ of \d+", text)) and bool(re.search(r"MiB downloaded", text)), "progress shows package counts and download size")
         g.sh("cp /var/log/axiom-installer.log /root/axiom-installer.final.log", 10)
         if not done:  # keep the evidence of why it failed (progress bars filtered out)
             open(os.path.join(out, "installer-failure.log"), "w").write(
@@ -330,7 +347,7 @@ def relogin(g, mark, luks):
 
 
 def greeter_login(g, t, password):
-    g.check(t.wait("AI-Native Linux", 120), "greeter is on tty1")
+    g.check(t.wait("Welcome back", 120), "greeter is on tty1")
     time.sleep(1)
     t.say(password)
     t.enter()
@@ -360,12 +377,14 @@ def stage_installed(out, disk, vars_src, luks=False):
         g.check(g.sh("systemctl is-enabled NetworkManager bluetooth power-profiles-daemon axiom-provision | sort -u", 15)[1].strip() == "enabled",
                 "services enabled: NetworkManager, bluetooth, power-profiles-daemon, axiom-provision")
         # greeter: wrong password, then right password
-        g.check(t.wait("AI-Native Linux", 120), "greeter drawn on tty1")
+        g.check(t.wait("Welcome back", 120), "greeter drawn on tty1")
         scr = t.last
-        g.check("Enter" in scr and "F10" in scr and "F2" in scr, "greeter shows password box and F-key hints")
+        g.check("Sign in" in scr and "F10" in scr and "Not you?" in scr and "Dev User" in scr, "greeter shows the user, a password box and plain-language hints")
+        g.check(80 <= int(g.sh("stty -F /dev/tty1 size", 10)[1].split()[-1]) <= 130, "installed system uses the large console font (vconsole.conf)")
+        g.shot("greeter-login")
         start = len(g.raw)
         t.say("wrong-password-1"); t.enter()
-        g.check(t.wait("Login incorrect", 30), "wrong password is rejected by the greeter")
+        g.check(t.wait("didn't work", 30), "wrong password is rejected with a plain message")
         t.say(PW); t.enter()
         g.check(inst.wait_ready(start, 240), "graphical session started from the greeter (AXIOM_SHELL_READY)")
         g.check(g.sh(f"loginctl list-sessions --no-legend | grep -c ' {USER} '", 15)[1].strip() != "0", "logind session exists for the user")

@@ -14,6 +14,7 @@ import shutil
 import subprocess
 import sys
 import tempfile
+import time
 import uuid
 
 TARGET = "/mnt"
@@ -39,14 +40,14 @@ BASE_PACKAGES = [
     "ttf-jetbrains-mono", "adwaita-icon-theme", "hicolor-icon-theme", "foot", "mousepad", "firefox",
     "libnotify", "xdg-utils", "glib2", "bluez", "bluez-utils", "power-profiles-daemon", "upower",
     "wlr-randr", "brightnessctl", "xkeyboard-config", "greetd", "python", "linux-firmware",
-    "qemu-guest-agent", "mkinitcpio", "intel-ucode", "amd-ucode",
+    "qemu-guest-agent", "mkinitcpio", "intel-ucode", "amd-ucode", "kbd",
 ]
 SERVICES = ["NetworkManager", "bluetooth", "power-profiles-daemon", "systemd-timesyncd", "qemu-guest-agent"]
 # Axiom-owned files copied from the live medium into the target (nothing else).
 OVERLAY = [
     "/etc/axiom", "/etc/polkit-1/rules.d/50-axiom-session-power.rules",
     "/etc/polkit-1/rules.d/51-axiom-system-settings.rules", "/etc/xdg/foot", "/etc/xdg/gtk-3.0",
-    "/etc/xdg/gtk-4.0", "/etc/xdg/mimeapps.list", "/etc/pam.d/axiom-lock", "/usr/local/lib/axiom-greeter", "/usr/local/lib/axiom-provision",
+    "/etc/xdg/gtk-4.0", "/etc/xdg/mimeapps.list", "/etc/pam.d/axiom-lock", "/usr/local/lib/axiom-greeter", "/usr/local/lib/axiom-tui", "/usr/local/lib/axiom-provision",
     "/usr/local/bin/axiom-provision",
     "/etc/systemd/system/power-profiles-daemon.service.d",
     "/usr/local/bin/axiom-app", "/usr/local/bin/axiom-greeting", "/usr/local/bin/axiom-session",
@@ -66,13 +67,13 @@ def emit(event, **kw):
 # ---- validation ----------------------------------------------------------------
 def check_password(pw, username=""):
     if len(pw) < 10:
-        raise FormError("password must be at least 10 characters")
+        raise FormError("Use at least 10 characters.")
     if pw.lower() in COMMON_PW or (username and pw.lower() == username.lower()):
-        raise FormError("password is too common or equals the username")
+        raise FormError("That password is too easy to guess. Try a longer one.")
     if len(set(pw)) < 4:
-        raise FormError("password needs at least 4 different characters")
+        raise FormError("Use a few different characters, not just repeats.")
     if "\n" in pw or "\x00" in pw:
-        raise FormError("password contains control characters")
+        raise FormError("The password has a character that is not allowed.")
 
 
 def validate_form(f, zoneinfo="/usr/share/zoneinfo"):
@@ -80,34 +81,34 @@ def validate_form(f, zoneinfo="/usr/share/zoneinfo"):
     out = {}
     user = f.get("username", "")
     if not USER_RE.match(user) or user in RESERVED:
-        raise FormError("invalid or reserved username")
+        raise FormError("That username can't be used. Use lowercase letters, numbers, - or _, starting with a letter.")
     out["username"] = user
     name = f.get("fullname", "").strip()
     if not name or len(name) > 64 or re.search(r"[\x00-\x1f:,=]", name):
-        raise FormError("invalid full name")
+        raise FormError("Please enter your name (without : or , characters).")
     out["fullname"] = name
     host = f.get("hostname", "")
     if not HOST_RE.match(host):
-        raise FormError("invalid hostname")
+        raise FormError("The computer name can only use lowercase letters, numbers and -.")
     out["hostname"] = host
     check_password(f.get("password", ""), user)
     out["password"] = f["password"]
     tz = f.get("timezone", "")
     if not re.match(r"^[A-Za-z0-9_+-]+(/[A-Za-z0-9_+-]+){0,2}$", tz) or not os.path.isfile(os.path.join(zoneinfo, tz)):
-        raise FormError("unknown timezone")
+        raise FormError("Unknown time zone. Example: Asia/Karachi or Europe/London.")
     out["timezone"] = tz
     if not LAYOUT_RE.match(f.get("keyboard", "us")):
-        raise FormError("invalid keyboard layout")
+        raise FormError("Use a keyboard code like us, uk or de.")
     out["keyboard"] = f.get("keyboard", "us")
     if not LOCALE_RE.match(f.get("locale", "en_US")):
-        raise FormError("invalid locale")
+        raise FormError("Use a language code like en_US.")
     out["locale"] = f.get("locale", "en_US")
     gname, gmail = f.get("git_name", "").strip(), f.get("git_email", "").strip()
     if gname or gmail:
         if not gname or re.search(r"[\x00-\x1f<>]", gname) or len(gname) > 100:
-            raise FormError("invalid git name")
+            raise FormError("Enter both a name and an email for Git, or leave both empty.")
         if not EMAIL_RE.match(gmail):
-            raise FormError("invalid git email")
+            raise FormError("That email address does not look right.")
     out["git_name"], out["git_email"] = gname, gmail
     out["luks"] = bool(f.get("luks"))
     if out["luks"]:
@@ -147,7 +148,7 @@ def check_target(path, size, disks=None):
     for d in (disks if disks is not None else list_disks()):
         if d["path"] == path and d["size"] == size:
             return d
-    raise FormError("target disk is not a safe, unchanged disk")
+    raise FormError("That disk is not available any more. Go back and choose again.")
 
 
 # ---- archinstall config -----------------------------------------------------------
@@ -158,7 +159,7 @@ def _size(unit, value):
 def build_config(f, disk_path, disk_bytes):
     root_mib = disk_bytes // (1024 * 1024) - ESP_MIB - 2
     if root_mib < 8 * 1024:
-        raise FormError("disk is too small (need at least 10 GiB)")
+        raise FormError("This disk is too small. Axiom needs at least 10 GB.")
     root_id, esp_id = str(uuid.uuid4()), str(uuid.uuid4())
     subvols = [("@", "/"), ("@home", "/home"), ("@log", "/var/log"), ("@pkg", "/var/cache/pacman/pkg"),
                ("@snapshots", "/.snapshots")]
@@ -206,6 +207,99 @@ def build_profile(f):
             "hub": f["hub"], "applied": {}}
 
 
+class ProgressTracker:
+    """Turns archinstall/pacman output into (percent, stage, detail). Percent never goes backwards.
+
+    archinstall runs pacstrap in two rounds (base system, then the Axiom packages); each round has
+    a download phase ("Total (a/b) ... NN%") and an install phase ("(n/N) installing pkg"). Fixed
+    windows per phase keep the bar moving smoothly without knowing the totals in advance.
+    """
+    DL = {1: (8, 28), 2: (48, 66)}
+    INST = {1: (28, 48), 2: (66, 84)}
+    RE_TOTAL = re.compile(r"Total \(\s*(\d+)/(\d+)\)\s+([\d.]+)\s+([KMGT]?i?B)\s+([\d.]+)\s+([KMGT]?i?B)/s\s.*?(\d+)%")
+    RE_INST = re.compile(r"\(\s*(\d+)/(\d+)\)\s+installing\s+(\S+)")
+    # Markers of the real boot-setup step only; package names such as mkinitcpio or systemd-boot also
+    # appear in pacman's package list and must not move the bar.
+    BOOT = ("==> Building image", "==> Starting build", "Installed systemd-boot", "bootctl --esp-path",
+            "Created /boot/loader")
+    DISK = ("formatting", "mkfs", "luks2", "partition")
+
+    def __init__(self):
+        self.round = 0
+        self.pct = 2.0
+        self.stage = "Preparing the disk"
+        self.detail = ""
+
+    def _set(self, pct, stage, detail=""):
+        self.pct = max(self.pct, min(pct, 99.0))
+        self.stage, self.detail = stage, detail
+
+    def feed(self, text):
+        """Consume a chunk of output; returns True if the visible state changed."""
+        before = (round(self.pct), self.stage, self.detail)
+        for line in re.split(r"[\r\n]+", text):
+            if "Retrieving packages" in line:
+                self.round += 1
+                self._set(self.DL[min(self.round, 2)][0], "Downloading Axiom")
+                continue
+            m = self.RE_INST.search(line)
+            if m:
+                n, total = int(m.group(1)), max(1, int(m.group(2)))
+                lo, hi = self.INST[min(max(self.round, 1), 2)]
+                self._set(lo + (hi - lo) * n / total, "Installing the system", f"Package {n} of {total}: {m.group(3)}")
+                continue
+            m = self.RE_TOTAL.search(line)
+            if m:
+                lo, hi = self.DL[min(max(self.round, 1), 2)]
+                self._set(lo + (hi - lo) * int(m.group(7)) / 100, "Downloading Axiom",
+                          f"{m.group(3)} {m.group(4)} downloaded at {m.group(5)} {m.group(6)}/s")
+                continue
+            if self.round >= 1 and any(k in line for k in self.BOOT):
+                self._set(max(self.pct, 85), "Setting up startup")
+            elif self.round == 0 and any(k in line for k in self.DISK):
+                self._set(min(self.pct + 1, 7), "Preparing the disk")
+        return (round(self.pct), self.stage, self.detail) != before
+
+
+def eta_minutes(pct, elapsed_s):
+    """Rough minutes left from the average pace so far; None until there is enough data."""
+    if pct < 12 or elapsed_s < 30:
+        return None
+    return max(1, round(elapsed_s * (100 - pct) / pct / 60))
+
+
+def progress(pct, stage, detail="", started=None):
+    ev = {"pct": int(pct), "stage": stage, "detail": detail}
+    if started is not None:
+        eta = eta_minutes(pct, time.monotonic() - started)
+        if eta is not None:
+            ev["eta_min"] = eta
+    emit("progress", **ev)
+
+
+def run_archinstall(cmd, log_path, started):
+    """Run archinstall with its output in log_path while reporting progress from that log."""
+    tracker, pos = ProgressTracker(), 0
+    progress(tracker.pct, tracker.stage, "", started)
+    with open(log_path, "ab") as log:
+        proc = subprocess.Popen(cmd, env=ENV, stdout=log, stderr=subprocess.STDOUT)
+        last = 0.0
+        while True:
+            done = proc.poll() is not None
+            with open(log_path, "rb") as rd:
+                rd.seek(pos)
+                chunk = rd.read()
+                pos += len(chunk)
+            if chunk and tracker.feed(chunk.decode("utf-8", "replace")) and time.monotonic() - last > 0.25:
+                progress(tracker.pct, tracker.stage, tracker.detail, started)
+                last = time.monotonic()
+            if done:
+                break
+            time.sleep(0.4)
+    if proc.returncode != 0:
+        raise subprocess.CalledProcessError(proc.returncode, cmd)
+
+
 # ---- install --------------------------------------------------------------------------------
 def run(cmd, **kw):
     return subprocess.run(cmd, check=True, env=ENV, **kw)
@@ -240,12 +334,12 @@ def propagate_console(target=TARGET, cmdline="/proc/cmdline"):
         open(path, "w").write("\n".join(lines) + "\n")
 
 
-def post_install(f, target=TARGET):
-    emit("step", name="overlay", pct=80)
+def post_install(f, target=TARGET, started=None):
+    progress(88, "Adding the Axiom desktop", "", started)
     apply_overlay(target)
     shutil.copy2("/etc/axiom/os-release", os.path.join(target, "etc/os-release")) if os.path.exists(
         "/etc/axiom/os-release") else None
-    emit("step", name="account", pct=88)
+    progress(93, "Creating your account", "", started)
     home = os.path.join(target, "home", f["username"])
     chroot = ["arch-chroot", target]
     run(chroot + ["usermod", "-c", f["fullname"], "-s", "/usr/bin/zsh", f["username"]])
@@ -271,6 +365,18 @@ def post_install(f, target=TARGET):
     os.makedirs(os.path.join(target, "etc/greetd"), exist_ok=True)
     with open(os.path.join(target, "etc/greetd/config.toml"), "w") as fh:
         fh.write('[terminal]\nvt = 1\n\n[default_session]\ncommand = "/usr/local/lib/axiom-greeter/axiom-greeter"\nuser = "greeter"\n')
+    # Large console font for the login screen and early boot text (the font ships in kbd). archinstall
+    # already wrote FONT=default8x16, so replace the line rather than only adding one.
+    vc = os.path.join(target, "etc/vconsole.conf")
+    lines = [l for l in (open(vc).read().splitlines() if os.path.exists(vc) else []) if not l.startswith("FONT=")]
+    open(vc, "w").write("\n".join(lines + ["FONT=latarcyrheb-sun32"]) + "\n")
+    # The login screen runs as an unprivileged user and cannot change the console font itself, and the
+    # framebuffer console resets the font when it takes over at boot: set it as root, right after greetd has
+    # started (the greeter redraws when the console resizes).
+    dropin = os.path.join(target, "etc/systemd/system/greetd.service.d")
+    os.makedirs(dropin, exist_ok=True)
+    with open(os.path.join(dropin, "axiom-font.conf"), "w") as fh:
+        fh.write("[Service]\nExecStartPost=-/usr/local/lib/axiom-tui/axiom-setfont\n")
     run(chroot + ["systemctl", "enable", "greetd.service"])
     shutil.copy2("/usr/local/lib/axiom-provision/axiom-provision.service", os.path.join(target, "etc/systemd/system/axiom-provision.service"))
     run(chroot + ["systemctl", "enable", "axiom-provision.service"])
@@ -279,7 +385,7 @@ def post_install(f, target=TARGET):
         fh.write("%wheel ALL=(ALL:ALL) ALL\n")
     os.chmod(os.path.join(target, "etc/sudoers.d/10-wheel"), 0o440)
     propagate_console(target)
-    emit("step", name="post-install-done", pct=95)
+    progress(97, "Finishing up", "", started)
 
 
 def kill_users(target=TARGET, proc="/proc", kill=os.kill):
@@ -326,12 +432,11 @@ def install(f, disk_path, disk_bytes, target=TARGET):
             fd = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
             with os.fdopen(fd, "w") as fh:
                 json.dump(data, fh)
-        emit("step", name="archinstall", pct=5)
-        log = open("/var/log/axiom-installer.log", "ab")
+        started = time.monotonic()
         try:
-            run(["archinstall", "--config", cp, "--creds", kp, "--silent", "--skip-version-check",
-                 "--skip-wkd", "--mountpoint", target], stdout=log, stderr=subprocess.STDOUT)
-            post_install(f, target)
+            run_archinstall(["archinstall", "--config", cp, "--creds", kp, "--silent", "--skip-version-check",
+                             "--skip-wkd", "--mountpoint", target], "/var/log/axiom-installer.log", started)
+            post_install(f, target, started)
             subprocess.run(["sync"], env=ENV)
             cleanup(target)  # flushed and unmounted: safe to remove the medium and reboot
         except BaseException:
@@ -349,7 +454,7 @@ def main(argv):
         emit("error", message=str(e))
         return 2
     except subprocess.CalledProcessError as e:
-        emit("error", message=f"{e.cmd[0]} failed with exit {e.returncode}; see /var/log/axiom-installer.log")
+        emit("error", message=f"The installation stopped before it was finished (error {e.returncode}).")
         return 1
     return 0
 

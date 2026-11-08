@@ -154,5 +154,66 @@ class Cleanup(unittest.TestCase):
         self.assertEqual(sorted(hit), [(101, 9), (102, 9)])
 
 
+class Progress(unittest.TestCase):
+    # Lines copied from real archinstall/pacman output (including carriage-return redraws).
+    DL1 = "\r Total (  3/159)       329.6 MiB  2012 KiB/s 03:04 [##########------------]  47%"
+    DL1_END = " Total (150/159)       838.0 MiB  2.10 MiB/s 00:01 [#####################-]  99%"
+    INST1 = "(111/159) installing cryptsetup                    [######################] 100%"
+
+    def test_two_rounds_move_forward_smoothly(self):
+        tr = ai.ProgressTracker()
+        seen = [tr.pct]
+        for chunk in (":: Retrieving packages...\n" + self.DL1, self.DL1_END, self.INST1,
+                      ":: Retrieving packages...\n Total (  0/324)         0.0   B  0.00   B/s 00:00 [---]   0%",
+                      "(200/324) installing firefox   [####] 100%", "==> Building image from preset: default"):
+            tr.feed(chunk)
+            seen.append(tr.pct)
+        self.assertEqual(seen, sorted(seen), "percent must never go backwards")
+        self.assertGreater(seen[-1], 80)
+        self.assertLess(seen[-1], 100)
+
+    def test_package_names_in_the_listing_do_not_move_the_bar(self):
+        tr = ai.ProgressTracker()
+        tr.feed("Packages (324) mkinitcpio-39-1  mkinitcpio-busybox-0.2-1  systemd-boot-1  linux-firmware-2026")
+        tr.feed(":: Retrieving packages...\n" + self.DL1)
+        self.assertLess(tr.pct, 40)
+        self.assertEqual(tr.stage, "Downloading Axiom")
+
+    def test_real_boot_step_markers_do_move_it(self):
+        tr = ai.ProgressTracker()
+        tr.feed(":: Retrieving packages...\n" + self.INST1)
+        tr.feed("==> Building image from preset: /etc/mkinitcpio.d/linux.preset: 'default'")
+        self.assertGreaterEqual(tr.pct, 85)
+        self.assertEqual(tr.stage, "Setting up startup")
+
+    def test_stage_and_detail_text(self):
+        tr = ai.ProgressTracker()
+        tr.feed(":: Retrieving packages...\n" + self.DL1)
+        self.assertEqual(tr.stage, "Downloading Axiom")
+        self.assertIn("329.6 MiB downloaded at 2012 KiB/s", tr.detail)
+        tr.feed(self.INST1)
+        self.assertEqual(tr.stage, "Installing the system")
+        self.assertEqual(tr.detail, "Package 111 of 159: cryptsetup")
+
+    def test_disk_phase_is_capped_before_downloads(self):
+        tr = ai.ProgressTracker()
+        for _ in range(30):
+            tr.feed("luks2 formatting mapper dev: /dev/mapper/root")
+        self.assertLessEqual(tr.pct, 7)
+        self.assertEqual(tr.stage, "Preparing the disk")
+
+    def test_garbage_is_ignored_and_never_reaches_100(self):
+        tr = ai.ProgressTracker()
+        self.assertFalse(tr.feed("\x00\xff random \r\r\n noise (a/b) installing"))
+        tr.feed("(999/999) installing x")
+        self.assertLess(tr.pct, 100)
+
+    def test_eta(self):
+        self.assertIsNone(ai.eta_minutes(5, 600))
+        self.assertIsNone(ai.eta_minutes(50, 10))
+        self.assertEqual(ai.eta_minutes(50, 300), 5)
+        self.assertGreaterEqual(ai.eta_minutes(99, 3000), 1)
+
+
 if __name__ == "__main__":
     unittest.main()

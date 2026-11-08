@@ -78,3 +78,13 @@ code 3 is the same firmware-stage stall as above.
   `target-inspection.txt`, screenshots in `OUTDIR`.
 - The installed boot gets a serial console only because the installer copies the
   live medium's `console=` options into the boot entries.
+
+## Console UI experiments (Phase 6 redesign)
+
+Run in QEMU on the live ISO with screenshots (`iso/out-phase6/ui/`): the Terminus console fonts
+(`ter-v*`) draw only the full block and some shades (`▀ ▄` show as `#`); `latarcyrheb-sun32` has `▀ ▄ █`
+and `░ ▒ ▓` and gives 100x28 cells at 1600x900 (120x33 at 1920x1080); palette redefinition through
+`ESC ] P rrggbb` works on the fbcon in QEMU. `installer/axiom-installer --demo-progress` (with
+`AXIOM_DEMO_PCT=35 AXIOM_DEMO_HOLD=6`) and `greeter/axiom-greeter --preview` draw the screens with
+fake data for screenshots; neither writes anything. Unit tests: `tests/installer/test_tui.py`,
+`test_greeter.py` (fake greetd on a unix socket) and the progress-tracker tests in `test_backend.py`.
