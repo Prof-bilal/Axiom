@@ -1,0 +1,53 @@
+name: Bug report
+description: Something in Axiom doesn't work as expected
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Security problems go through SECURITY.md (private reporting), not here.
+        Remove passwords, tokens and personal data from any logs you paste.
+  - type: input
+    id: version
+    attributes:
+      label: ISO date or commit
+      placeholder: axiom-2026.11.08-x86_64.iso, or commit 0150c22
+    validations:
+      required: true
+  - type: dropdown
+    id: where
+    attributes:
+      label: Where did it happen?
+      options:
+        - QEMU / virtual machine
+        - Real hardware
+        - Host-side test or build only
+    validations:
+      required: true
+  - type: input
+    id: machine
+    attributes:
+      label: VM settings or hardware
+      placeholder: QEMU q35, 2 GB RAM, 1920x1080; or laptop model, GPU
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Boot the ISO
+        2. Open Files
+        3. ...
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What you expected, and what happened instead
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs
+      description: Serial log, `journalctl -b` or shell output, if you have it.
+      render: text
