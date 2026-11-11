@@ -21,7 +21,7 @@ PALETTE = ["070B0D", "FF5C5C", "3DDC97", "FF9418", "2A3A40", "EDF5F5", "20D6D2",
            "4E5E62", "FF8A8A", "7CF0BE", "FFB348", "5F7A82", "FFFFFF", "37F0EA", "EDF5F5"]
 BG, RED, GREEN, ORANGE, GHOST, WHITE, CYAN, TEXT = range(8)
 FONT = "latarcyrheb-sun32"
-CLASS_COLOR = {"b": CYAN, "w": WHITE, "o": ORANGE}
+CLASS_COLOR = {"b": CYAN, "w": WHITE, "o": ORANGE, "k": GHOST}  # dark slate, the reference body (a background-safe slot)
 LOGO = ["  ▄▄▄  ▄▄ ▄▄ ▄▄ ▄▄▄  ▄▄   ▄▄",
         " ██▀██ ▀█▄█▀ ██ ██▀██ ███▄███",
         " ██▀██ ▄█▀█▄ ██ ██▄██ ██ ▀ ██"]
@@ -72,17 +72,29 @@ def apply_font(out, attempts=6):
     return False
 
 
-def setup_console(out=None):
-    """On a Linux VT: UTF-8 mode, Axiom palette and (as root, on a big enough screen) the large font."""
+_palette_set = False  # a preview in an ordinary terminal changed its palette and must reset it
+
+
+def setup_console(out=None, bg=None, preview=False):
+    """On a Linux VT: UTF-8 mode, Axiom palette (background slot 0 replaced by bg, if given) and
+    (as root, on a big enough screen) the large font. preview=True also sets the palette in an
+    ordinary terminal (OSC 4), so a preview shows the Axiom colours; restore_console undoes it."""
+    global _palette_set
     out = out or sys.stdout
+    palette = PALETTE if bg is None else [bg] + PALETTE[1:]
+    if preview and os.environ.get("TERM") != "linux":
+        out.write("".join(f"\033]4;{i};#{c}\033\\" for i, c in enumerate(palette)) + "\033[2J\033[H")
+        out.flush()
+        _palette_set = True
+        return True
     if os.environ.get("TERM") != "linux":
         return False
     try:
-        out.write("\033%G" + "".join(f"\033]P{i:X}{c}" for i, c in enumerate(PALETTE)) + "\033[0m\033[2J\033[H")
+        out.write("\033%G" + "".join(f"\033]P{i:X}{c}" for i, c in enumerate(palette)) + "\033[0m\033[2J\033[H")
         out.flush()
         if os.geteuid() == 0 and wait_fb_height() >= 700:
             apply_font(out)
-            out.write("".join(f"\033]P{i:X}{c}" for i, c in enumerate(PALETTE)) + "\033[2J\033[H")  # takeover may reset it
+            out.write("".join(f"\033]P{i:X}{c}" for i, c in enumerate(palette)) + "\033[2J\033[H")  # takeover may reset it
             out.flush()
     except OSError:
         return False
@@ -90,10 +102,15 @@ def setup_console(out=None):
 
 
 def restore_console(out=None):
+    global _palette_set
     out = out or sys.stdout
     if os.environ.get("TERM") == "linux":
         out.write("\033]R\033[0m\033[2J\033[H")
         out.flush()
+    elif _palette_set:
+        out.write("\033]104\033\\\033[0m\033[2J\033[H")  # OSC 104: back to the terminal's own colours
+        out.flush()
+        _palette_set = False
 
 
 # ---- pure helpers (unit-tested) -------------------------------------------------------------------
@@ -128,7 +145,8 @@ def penguin_cells(art, fill):
                     px.append(BG)
                     continue
                 is_filled = (h - 1 - y) < filled
-                px.append(CLASS_COLOR[c] if is_filled else GHOST)
+                # the unfilled body is background-dark, so the rising fill shows on it
+                px.append(CLASS_COLOR[c] if is_filled else (BG if c == "k" else GHOST))
                 glow = glow or (is_filled and (h - 1 - y) >= filled - 2 and filled < h)
             top, bot = px
             if top == bot:
@@ -137,6 +155,22 @@ def penguin_cells(art, fill):
                 row.append(("▀", top, bot, glow))
         out.append(row)
     return out
+
+
+BIG = {  # 5x5 pixel letters; '#' is one pixel, drawn as one block (two cells at scale 2: square pixels)
+    "A": [" ### ", "#   #", "#####", "#   #", "#   #"],
+    "X": ["#   #", " # # ", "  #  ", " # # ", "#   #"],
+    "I": ["#####", "  #  ", "  #  ", "  #  ", "#####"],
+    "O": [" ### ", "#   #", "#   #", "#   #", " ### "],
+    "M": ["#   #", "## ##", "# # #", "#   #", "#   #"],
+}
+
+
+def big_rows(text, scale=2):
+    """Block-letter banner rows for text (A-Z letters in BIG), letters separated by one pixel."""
+    gap = " " * scale
+    return [gap.join("".join("█" * scale if px == "#" else " " * scale for px in BIG[ch][r]) for ch in text)
+            for r in range(5)]
 
 
 def capslock_on():

@@ -1,18 +1,26 @@
 #!/usr/bin/env python3
-"""Axiom login screen: a console greeter for greetd (Phase 6, ADR-020).
+"""Axiom login screen (Phase 6): graphical greeter over greetd, curses fallback.
 
-greetd runs this as the unprivileged `greeter` user. It only forwards what the user types to greetd
-(create_session -> PAM -> start_session); the password is never stored, logged or echoed. Only local
-human accounts are listed. The look comes from axiom_tui (shared with the installer).
+greetd runs this as the unprivileged `greeter` user. It starts the Quickshell greeter under labwc
+(ADR-024); if that cannot start, the curses screen below still gives a usable login. Both only
+forward what the user types to greetd (create_session -> PAM -> start_session); the password is
+never stored, logged or echoed. Only local human accounts are listed.
+
+The curses look comes from axiom_tui (shared with the installer). `--curses`, `--preview` and
+AXIOM_GREETER_TUI=1 skip the graphical path, which is also the rollback if Wayland is broken.
 """
 import curses
 import json
 import os
 import pwd
+import shutil
+import signal
 import socket
+import stat
 import struct
 import subprocess
 import sys
+import tempfile
 import time
 
 HERE = os.path.dirname(os.path.realpath(__file__))
@@ -25,12 +33,16 @@ from axiom_tui import BG, CYAN, GHOST, GREEN, RED, TEXT, WHITE  # noqa: E402
 SESSION_CMD = ["/usr/local/bin/axiom-session"]
 SESSION_ENV = ["XDG_SESSION_TYPE=wayland", "XDG_SESSION_DESKTOP=axiom", "XDG_CURRENT_DESKTOP=Axiom"]
 WRONG = "That password didn't work. Try again."
+LOGIN_BG = "0B3B32"  # deep green, the landing page background
 ENTER = (10, 13, curses.KEY_ENTER)
+GRAPHICAL = os.path.join(HERE, "axiom-greeter-graphical")
+USERS_FILE = "axiom-greeter-users.json"
 
 
 # ---- accounts and greetd protocol -----------------------------------------------------------------
-def human_users():
-    return [p for p in pwd.getpwall() if 1000 <= p.pw_uid < 60000 and not p.pw_shell.endswith(("nologin", "false"))]
+def human_users(entries=None):
+    return [p for p in (pwd.getpwall() if entries is None else entries)
+            if 1000 <= p.pw_uid < 60000 and not p.pw_shell.endswith(("nologin", "false"))]
 
 
 def display_name(p):
@@ -86,40 +98,136 @@ def friendly(text):
     return WRONG
 
 
+# ---- graphical greeter lifecycle -------------------------------------------------------------------
+def users_payload(users=None):
+    """The only account data the QML greeter gets: login name and display name."""
+    return [{"name": p.pw_name, "display": display_name(p)} for p in (human_users() if users is None else users)]
+
+
+def write_users_file(users, directory):
+    """Write the account snapshot for the QML greeter; readable only by the greeter user."""
+    path = os.path.join(directory, USERS_FILE)
+    fd = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600)
+    with os.fdopen(fd, "w") as fh:
+        json.dump(users_payload(users), fh)
+        fh.write("\n")
+    return path
+
+
+def _usable_runtime(path):
+    try:
+        st = os.stat(path)
+    except OSError:
+        return False
+    return stat.S_ISDIR(st.st_mode) and st.st_uid == os.getuid() and os.access(path, os.W_OK)
+
+
+def graphical_env(users, base=None):
+    """Environment for labwc/Quickshell. Returns (env, temporary_dir_or_None)."""
+    env = dict(os.environ if base is None else base)
+    runtime = env.get("XDG_RUNTIME_DIR", "")
+    temporary = None
+    if not _usable_runtime(runtime):
+        runtime = temporary = tempfile.mkdtemp(prefix="axiom-greeter-")
+        os.chmod(runtime, 0o700)
+        env["XDG_RUNTIME_DIR"] = runtime
+    env["AXIOM_GREETER_USERS"] = write_users_file(users, runtime)
+    env["AXIOM_GREETER_READY"] = os.path.join(runtime, "axiom-greeter-ready")
+    for key, value in (("XDG_SESSION_TYPE", "wayland"), ("XDG_SESSION_DESKTOP", "axiom"),
+                       ("XDG_CURRENT_DESKTOP", "Axiom"), ("QT_QPA_PLATFORM", "wayland")):
+        env.setdefault(key, value)
+    return env, temporary
+
+
+def run_graphical(users=None, env=None, popen=subprocess.Popen):
+    """Run labwc + Quickshell. Returns its exit status; 0 means the greeter ran.
+
+    A greetd SIGTERM (it ends the greeter after start_session) is forwarded to the
+    compositor so the seat is released, and is not reported as a launch failure.
+    """
+    if users is None:
+        users = human_users()
+    env, temporary = graphical_env(users, env)
+    ready = env["AXIOM_GREETER_READY"]
+    try:
+        os.unlink(ready)  # a marker from an earlier greeter run must not count
+    except OSError:
+        pass
+    state = {"stopping": False}
+    try:
+        proc = popen([GRAPHICAL], env=env)
+    except OSError:
+        if temporary:
+            shutil.rmtree(temporary, ignore_errors=True)
+        return 127
+
+    def forward(_signum, _frame):
+        state["stopping"] = True
+        proc.terminate()
+
+    handlers = {}
+    try:
+        for sig in (signal.SIGTERM, signal.SIGINT):
+            try:
+                handlers[sig] = signal.signal(sig, forward)
+            except (ValueError, OSError):
+                pass
+        rc = proc.wait()
+        # labwc exits 0 when its primary client exits, so a crashed QML would
+        # look successful. The QML writes this marker once it has loaded.
+        started = state["stopping"] or os.path.exists(ready)
+    finally:
+        for sig, handler in handlers.items():
+            signal.signal(sig, handler)
+        if temporary:
+            shutil.rmtree(temporary, ignore_errors=True)
+    return 0 if started else (rc or 1)
+
+
+def run(preview=False, graphical=None, setup=None, wrap=None):
+    """Curses login by default. AXIOM_GREETER_GRAPHICAL=1 tries the QML greeter first (ADR-024)."""
+    graphical = graphical or run_graphical
+    setup = setup or (lambda: tui.setup_console(bg=LOGIN_BG))
+    wrap = wrap or curses.wrapper
+    if os.environ.get("AXIOM_GREETER_GRAPHICAL") == "1":
+        try:
+            started = graphical(human_users())
+        except OSError:
+            started = None
+        if started == 0:
+            return 0
+    setup()
+    wrap(preview if preview else main)
+    return 0
+
+
 # ---- screen ---------------------------------------------------------------------------------------
 class Login:
     def __init__(self, scr):
         self.ui = tui.UI(scr)
-        self.host = socket.gethostname()
         self.msg, self.msg_color = "", TEXT
         self.dx = 0
 
     def draw(self, account, typed, prompt="Password", secret=True):
+        """Green background, big AXIOM wordmark, one bordered input field and the message line."""
         ui = self.ui
         ui.s.erase()
         h, w = ui.h, ui.w
-        art = tui.pick_penguin(h - 15)
-        y = 1
-        if art:
-            y += ui.draw_penguin(y, art, 1.0) + 1
-        cx = (w - 1) // 2 + self.dx
-        def c(row, text, **kw):
-            ui.put(row, max(0, cx - len(text) // 2), text, **kw)
-        c(y, "Welcome back" if account else "Sign in", fg=CYAN, bold=True)
-        if account:
-            c(y + 1, display_name(account), fg=WHITE, bold=True)
-            c(y + 2, f"{account.pw_name} @ {self.host}", fg=TEXT)
-        bw = min(34, w - 8)
-        shown = ("*" * len(typed) if secret else typed)[-(bw - 4):] + "_"
-        c(y + 4, prompt, fg=TEXT)
-        ui.put(y + 5, cx - bw // 2, " " + shown.ljust(bw - 1), fg=BG, bg=CYAN, bold=True)
-        c(y + 7, " Sign in ", fg=CYAN, bold=True)
+        rows = tui.big_rows("AXIOM", 2 if w >= 64 else 1)
+        top = max(0, (h - len(rows) - 8) // 2)
+        for i, line in enumerate(rows):
+            ui.center(top + i, line, fg=GREEN, bold=True)
+        y = top + len(rows) + 2
+        bw = min(44, w - 8)
+        x = (w - bw) // 2 + self.dx
+        ui.box(y, x, 3, bw, fg=GREEN)
+        if typed:
+            text, fg = ("*" * len(typed) if secret else typed)[-(bw - 4):], WHITE
+        else:
+            text, fg = prompt, GHOST
+        ui.put(y + 1, x + 2, text.ljust(bw - 4), fg=fg)
         if self.msg:
-            c(y + 9, self.msg, fg=self.msg_color, bold=True)
-        elif tui.capslock_on():
-            c(y + 9, "Caps Lock is on", fg=RED, bold=True)
-        ui.center(h - 3, time.strftime("%A, %d %B   %H:%M"), fg=TEXT)
-        ui.center(h - 1, "F2  Not you?        F10  Restart or shut down", fg=TEXT)
+            ui.center(y + 4, self.msg, fg=self.msg_color, bold=True)
         ui.s.refresh()
 
     def shake(self, account):
@@ -263,5 +371,12 @@ def preview(scr):
 
 if __name__ == "__main__":
     os.environ.setdefault("ESCDELAY", "50")
-    tui.setup_console()
-    curses.wrapper(preview if "--preview" in sys.argv else main)
+    if "--preview" in sys.argv or "--curses" in sys.argv or os.environ.get("AXIOM_GREETER_TUI") == "1":
+        is_preview = "--preview" in sys.argv
+        tui.setup_console(bg=LOGIN_BG, preview=is_preview)
+        try:
+            curses.wrapper(preview if is_preview else main)
+        finally:
+            tui.restore_console()
+    else:
+        sys.exit(run())

@@ -25,7 +25,19 @@ CATALOG = next((p for p in (os.path.join(HERE, "catalog", "developer-hub.json"),
                             "/usr/local/share/axiom/catalog/developer-hub.json",
                             os.path.join(HERE, "..", "catalog", "developer-hub.json")) if os.path.exists(p)), None)
 ENTER = (10, 13, curses.KEY_ENTER)
-HINT_FORM = "Up/Down  move      Enter  continue      Esc  go back"
+HINT_FORM = "Up/Down  move      Left/Right  change      Enter  continue      Esc  go back"
+# Curated pick-lists: arrow-key choices only, never free text. Every entry passes axiom_install's checks
+# (LAYOUT_RE has no hyphen, so the Brazilian layout is "br", not "br-abnt2").
+LOCALES = ["en_US", "en_GB", "de_DE", "fr_FR", "es_ES", "it_IT", "pt_BR", "nl_NL", "pl_PL", "ru_RU", "tr_TR",
+           "ja_JP", "zh_CN"]
+KEYMAPS = ["us", "uk", "de", "fr", "es", "it", "br"]
+# Full names shown in the pick-lists; the stored values (locale and keymap codes) stay unchanged.
+LOCALE_NAMES = {"en_US": "English (United States)", "en_GB": "English (United Kingdom)", "de_DE": "German",
+                "fr_FR": "French", "es_ES": "Spanish", "it_IT": "Italian", "pt_BR": "Portuguese (Brazil)",
+                "nl_NL": "Dutch", "pl_PL": "Polish", "ru_RU": "Russian", "tr_TR": "Turkish",
+                "ja_JP": "Japanese", "zh_CN": "Chinese (Simplified)"}
+KEYMAP_NAMES = {"us": "English (US)", "uk": "English (UK)", "de": "German", "fr": "French", "es": "Spanish",
+                "it": "Italian", "br": "Portuguese (Brazil)"}
 
 
 class Back(Exception):
@@ -70,7 +82,7 @@ def form(ui, step, total, title, intro, fields, validate=None, footer=HINT_FORM)
             elif kind == "toggle":
                 shown = ("[x] Yes" if f["value"] else "[ ] No").ljust(box_w)
             else:
-                shown = ("<  " + str(f["value"]) + "  >").ljust(box_w)
+                shown = ("<  " + str(f.get("names", {}).get(f["value"], f["value"])) + "  >").ljust(box_w)
             ui.put(row, box_x, " " + shown[:box_w - 1], fg=fg, bg=bg, bold=foc)
         y += len(vis) * step_rows
         ui.put(y, box_x, " Continue ", fg=BG if idx == len(vis) else CYAN, bg=CYAN if idx == len(vis) else BG,
@@ -117,7 +129,55 @@ def form(ui, step, total, title, intro, fields, validate=None, footer=HINT_FORM)
                 ch = f["choices"]
                 i = ch.index(f["value"]) if f["value"] in ch else 0
                 f["value"] = ch[(i + (-1 if k == curses.KEY_LEFT else 1)) % len(ch)]
+                if f.get("on_change"):
+                    f["on_change"]()
             err = ""
+
+
+def tz_groups():
+    """Every zone the live medium knows, grouped by region: {"Europe": ["Berlin", ...], "UTC": ["UTC"]}."""
+    try:
+        out = subprocess.run(["timedatectl", "list-timezones"], capture_output=True, text=True, env=ai.ENV).stdout
+    except (OSError, subprocess.SubprocessError):
+        out = ""
+    groups = {}
+    for zone in out.split():
+        region, _, city = zone.partition("/")
+        groups.setdefault(region, []).append(city or region)
+    if not groups:
+        groups = {"UTC": ["UTC"]}
+    return {region: sorted(cities) for region, cities in groups.items()}
+
+
+def tz_split(zone, groups):
+    """(region, city) for a zone name; an unknown or stale AXIOM_TZ falls back to the first zone."""
+    region, _, city = zone.partition("/")
+    city = city or region
+    if city not in groups.get(region, ()):  # list-timezones is authoritative, not the environment
+        region = sorted(groups)[0]
+        city = groups[region][0]
+    return region, city
+
+
+def tz_name(region, city):
+    """The zone name handed to axiom_install: "UTC" stays flat, everything else is "Region/City"."""
+    return region if city == region else f"{region}/{city}"
+
+
+def tz_fields(groups, zone):
+    """Region then City choices; changing the region rebuilds the city list through on_change."""
+    region, city = tz_split(zone, groups)
+    fs = [{"key": "region", "label": "Region", "kind": "choice", "choices": sorted(groups), "value": region,
+           "hint": "Left/Right change. Pick the part of the world you are in."},
+          {"key": "city", "label": "Time zone", "kind": "choice", "choices": groups[region], "value": city,
+           "hint": "Left/Right change. Pick the city closest to you."}]
+
+    def sync():
+        fs[1]["choices"] = groups[fs[0]["value"]]
+        if fs[1]["value"] not in fs[1]["choices"]:
+            fs[1]["value"] = fs[1]["choices"][0]
+    fs[0]["on_change"] = sync
+    return fs
 
 
 def menu(ui, title, items, intro="", penguin_fill=1.0):
@@ -312,14 +372,19 @@ def start_setup(ui):
     while True:
         try:
             if step == 1:
-                fs = [{"key": "locale", "label": "Language", "value": f["locale"], "hint": "Example: en_US for English"},
-                      {"key": "keyboard", "label": "Keyboard", "value": f["keyboard"], "hint": "Example: us, uk, de, fr"},
-                      {"key": "timezone", "label": "Time zone", "value": f["timezone"],
-                       "hint": "Example: Asia/Karachi, Europe/London, America/New_York"}]
+                fs = [{"key": "locale", "label": "Language", "kind": "choice", "choices": LOCALES, "names": LOCALE_NAMES,
+                       "value": f["locale"], "hint": "Left/Right change. You can change this later in Settings."},
+                      {"key": "keyboard", "label": "Keyboard", "kind": "choice", "choices": KEYMAPS, "names": KEYMAP_NAMES,
+                       "value": f["keyboard"], "hint": "Left/Right change. Pick the layout printed on your keys."}]
+                fs += tz_fields(tz_groups(), f["timezone"])
+
+                def v_when():
+                    ai.validate_form(dict(probe(f), locale=fs[0]["value"], keyboard=fs[1]["value"],
+                                          timezone=tz_name(fs[2]["value"], fs[3]["value"])))
                 form(ui, step, total, "Language and time", "Tell Axiom how you type and where you are. "
-                     "You can change these later in Settings.", fs,
-                     lambda: ai.validate_form(dict(probe(f), **{x["key"]: x["value"] for x in fs})))
-                f.update({x["key"]: x["value"] for x in fs})
+                     "You can change these later in Settings.", fs, v_when)
+                f["locale"], f["keyboard"] = fs[0]["value"], fs[1]["value"]
+                f["timezone"] = tz_name(fs[2]["value"], fs[3]["value"])
             elif step == 2:
                 disks = ai.list_disks()
                 if not disks:
@@ -472,7 +537,7 @@ if __name__ == "__main__":
     os.environ.setdefault("ESCDELAY", "50")
     if os.geteuid() != 0:
         sys.exit("axiom-installer must run as root on the install medium")
-    tui.setup_console()
+    tui.setup_console(preview="--demo-progress" in sys.argv or "--demo-install" in sys.argv)
     try:
         curses.wrapper(demo_install if "--demo-install" in sys.argv else
                        demo_progress if "--demo-progress" in sys.argv else main)

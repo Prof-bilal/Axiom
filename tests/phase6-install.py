@@ -124,7 +124,26 @@ def fill_form(g, t, luks=False):
     """Walk steps 1-5 with real keys up to (not including) the ERASE confirmation."""
     t.enter()  # Install Axiom
     g.check(t.wait("Language and time"), "step 1 (language and time) shown")
-    t.enter(3)
+    scr = t.last
+    g.check("<  English (United States)" in scr and "<  English (US)" in scr and scr.count("<  UTC") == 2,
+            "step 1 opens on the old defaults (en_US, us, UTC)")
+    t.say("x")
+    g.check("<  English (United States)" in t.screen(), "typing a letter is ignored on Language")
+    g.key("right", 0.6)
+    g.check("<  English (United Kingdom)" in t.screen(), "Left/Right changes Language")
+    g.key("left", 0.6)
+    g.key("down", 0.6)
+    t.say("x")
+    g.check("<  English (US)" in t.screen(), "typing a letter is ignored on Keyboard")
+    g.key("right", 0.6)
+    g.check("<  English (UK)" in t.screen(), "Left/Right changes Keyboard")
+    g.key("left", 0.6)
+    g.key("down", 0.6)
+    g.key("right", 0.8)
+    g.check("<  UTC" not in t.screen(), "Left/Right changes Region and rebuilds the City list")
+    g.key("left", 0.8)
+    g.check(t.screen().count("<  UTC") == 2, "Region cycles back to UTC and City follows")
+    t.enter(2)  # city, then continue with the defaults
     g.check(t.wait("Choose a disk", 20), "step 2 (disk) shown")
     scr = t.last
     g.check("/dev/vda" in scr, "installer offers the blank virtio disk")

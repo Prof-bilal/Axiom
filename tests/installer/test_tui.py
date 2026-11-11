@@ -17,7 +17,7 @@ class Penguin(unittest.TestCase):
         for a in (art.LARGE, art.MEDIUM, art.SMALL):
             self.assertEqual(len(a) % 2, 0, "half blocks need an even number of pixel rows")
             self.assertEqual(len({len(r) for r in a}), 1)
-            self.assertTrue(set("".join(a)) <= set(".bwo"))
+            self.assertTrue(set("".join(a)) <= set(".bwok"))
 
     def test_empty_is_all_ghost(self):
         cells = t.penguin_cells(art.MEDIUM, 0.0)
@@ -25,7 +25,7 @@ class Penguin(unittest.TestCase):
 
     def test_full_uses_brand_colours_only(self):
         cells = t.penguin_cells(art.MEDIUM, 1.0)
-        self.assertEqual(glyph_colors(cells) - {t.BG}, {t.CYAN, t.WHITE, t.ORANGE})
+        self.assertEqual(glyph_colors(cells) - {t.BG}, {t.CYAN, t.WHITE, t.ORANGE, t.GHOST})
 
     def test_fill_rises_from_the_feet(self):
         cells = t.penguin_cells(art.MEDIUM, 0.5)
