@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<!-- Minimal labwc configuration for the Axiom greeter.
+     A greeter is not a desktop: no keybinds, no menu, no window decorations.
+     Quickshell draws one full-screen layer-shell surface. -->
+<labwc_config>
+  <core>
+    <gap>0</gap>
+  </core>
+  <keyboard>
+    <default/>
+  </keyboard>
+</labwc_config>

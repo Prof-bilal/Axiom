@@ -28,12 +28,23 @@ disposable QEMU guest with retained evidence.
 | Axiom Shell: panel, dock, launcher, workspaces, tray, notifications, session controls (Phase 3) | Done | 21 automated checks, boot to shutdown through the UI |
 | Core apps: Files, Settings, Terminal integration, read-only Software Center (Phase 4) | Done | 58 automated checks, hostile file names, 10,000-entry folders |
 | System experience: Wi-Fi, Bluetooth, sound, display, power, keyboard, date, users (Phase 5) | Done | 76 automated checks |
-| Installable system: terminal installer, optional disk encryption, greetd login, lock screen, Developer Hub first-boot job (Phase 6) | Done | `tests/phase6-install.py` with real key events in QEMU, plus installer unit tests ([ADR-020](docs/decisions/020-installable-system.md), [ADR-021](docs/decisions/021-installer-and-developer-hub.md)) |
+| Installable system: installer with optional disk encryption, greetd login, lock screen, Developer Hub first-boot job (Phase 6) | Done | `tests/phase6-install.py` with real key events in QEMU, plus installer unit tests ([ADR-020](docs/decisions/020-installable-system.md), [ADR-021](docs/decisions/021-installer-and-developer-hub.md)) |
+| Installer and login screens drawn as pixels, with the penguin mascot and a DRM display path ([ADR-027](docs/decisions/027-framebuffer-renderer.md)) | In QEMU, on the installer welcome screen; the rest is verified by unit tests and previews | `tests/installer/test_fbdraw.py`, `test_hardening.py`; screenshots below |
 
 Known limits: verified in QEMU only (real hardware is Phase 10), the Software Center
 is read-only, Wi-Fi and Bluetooth were simulated or absent in the VM, and all timings
 are software-rendered baselines, not hardware figures. The full list is in
 [PHASES](docs/PHASES.md) and on the project site's Progress page.
+
+## Screenshots
+
+These are rendered by the Axiom pixel renderer (`scripts/preview-ui.sh`), so they show the
+layout and colours of the installer and login screens. They are not captures of a full
+QEMU run; the QEMU runs are recorded in [TESTING](docs/TESTING.md).
+
+| Installer welcome | Installer progress | Login |
+| --- | --- | --- |
+| ![Installer welcome](docs/screenshots/installer-welcome.png) | ![Installer progress](docs/screenshots/installer-progress.png) | ![Login](docs/screenshots/login-screen.png) |
 
 ## What Axiom reuses and owns
 
@@ -60,8 +71,9 @@ These are stated in full in [AGENTS.md](AGENTS.md) and [SECURITY](docs/SECURITY.
 | `docs/` | Product, architecture, contracts, ADRs, research, phases and evidence. |
 | `shell/` | The Axiom Shell and core app windows (Quickshell/QML). |
 | `apps/` | Files, Settings and Software Center logic. |
-| `installer/` | The terminal installer (`axiom_install.py` backend and the curses UI). |
-| `greeter/` | The greetd login screen. |
+| `installer/` | The installer (`axiom_install.py` backend and the installer screens). |
+| `tui/` | The shared screen code: the pixel renderer (`fbdraw.py`, DRM first), the console UI, penguin art and the mascot image. |
+| `greeter/` | The greetd login screen (pixel renderer, curses fallback). |
 | `provision/`, `catalog/` | The Developer Hub first-boot job and its catalog. |
 | `iso/` | archiso profiles: `profile/` (Phase 1 legacy) and `phase3/` (graphical image). |
 | `tests/` | QEMU acceptance tests and installer unit tests. |
@@ -97,8 +109,11 @@ scripts/run-vm.sh path/to/axiom-*.iso
 ## Tests
 
 ```sh
-# Installer unit tests (no VM)
+# Installer and renderer unit tests (no VM)
 python3 -m unittest discover -s tests/installer
+
+# Preview the installer and login screens as PNG files (no VM, no root)
+scripts/preview-ui.sh
 
 # Phase 6: install onto a blank QEMU disk through the real installer, boot, log in
 tests/phase6-install.py ISO OUTDIR --stage install|installed|provision|all [--luks]

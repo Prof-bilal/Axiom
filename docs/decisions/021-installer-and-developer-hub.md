@@ -105,6 +105,27 @@ archinstall, mise and Podman are upstream.
   Redis (Valkey is the supported equivalent) are listed in the catalogue's
   `not_in_v1`.
 
+## Amendment 2: console UI redesign (2026-11-08)
+
+Owner feedback: the first UI was small, left-aligned and jargon-heavy. Redesign, researched on the
+Linux virtual console (16 colours, 256/512 glyphs; see TESTING for the experiments):
+
+- **Shared toolkit `tui/axiom_tui.py`** for the installer and the login screen. At start it switches
+  the VT to the kernel font `latarcyrheb-sun32` (16x32 cells; Terminus `ter-v*` lacks the half blocks),
+  turns on UTF-8 and redefines the 16-colour palette to the Axiom colours (`ESC ] P`). Bold maps to
+  slot n+8, so each bright slot is the brighter twin of the one below; backgrounds only use slots 0-7.
+- **Penguin progress:** `tui/penguin_art.py` is pixel art generated from `shell/assets/axiom-penguin.png`
+  (`scripts/gen-penguin-art.py`, Pillow, dev-time only), drawn with half blocks. An outline ghost fills
+  with brand colours from the feet up; the leading edge glows. Three sizes, chosen from the rows free.
+- **Real progress:** `ProgressTracker` reads archinstall/pacman output (two pacstrap rounds, each
+  download then install) into a monotonic percentage with stage, detail and an ETA.
+- **Plain language:** one task per screen, step bars, no tool names, errors say what to do.
+- **Login screen** uses the same look: penguin, full name, `user @ host`, plain error text, Caps Lock
+  warning, clock, F2 "Not you?" and F10 Restart/Shut down. The font comes from `/etc/vconsole.conf`
+  (`FONT=latarcyrheb-sun32`, package `kbd`) because the greeter user cannot change the console font.
+- Rejected: Terminus (no half blocks), sextant/braille art (not in console fonts), a graphical
+  installer (option B, deferred).
+
 ## Milestones and acceptance (QEMU + OVMF, disposable disks, retained evidence)
 
 | ID | Milestone | Done when |

@@ -26,6 +26,7 @@ silently applied during installation.
 
 | Piece | Path | Notes |
 | --- | --- | --- |
+| Look and feel | `tui/axiom_tui.py`, `tui/fbdraw.py`, `tui/penguin_art.py`, `tui/penguin_image.bin` | shared by installer and login screen: big console font, Axiom palette, centred cards, penguin that fills with progress. |
 | Backend | `installer/axiom_install.py` | stdlib; validates the form, builds archinstall `--config`/`--creds`, runs it with argv only, applies the Axiom overlay, writes the Hub profile, cleans up after failure. |
 | UI | `installer/axiom-installer` | curses TUI; Welcome → locale/keyboard/timezone → disk (+LUKS) → account → git identity → Developer Hub → review (type `ERASE`) → install. Esc goes back; nothing is written before the review confirmation. |
 | Mode switch | `axiom-installer.service`, UEFI entry `00-axiom-installer.conf` | kernel option `axiom.installer=1` replaces the live desktop autologin on tty1. |

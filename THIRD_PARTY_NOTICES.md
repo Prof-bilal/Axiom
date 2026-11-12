@@ -1,9 +1,9 @@
 # Third-party notices and license inventory
 
 Status: **incomplete — redistribution is not authorized.** This file begins the inventory
-required by the [release gate](docs/engineering/RELEASE.md). Axiom has no root `LICENSE`, and
-project licensing/trademark review is unresolved (see [README](README.md)). Nothing here grants
-a license, and listing a component here does not complete the release inventory.
+required by the [release gate](docs/engineering/RELEASE.md). Axiom's own code is licensed
+Apache-2.0 ([LICENSE](LICENSE)); the name and logo are covered by [TRADEMARKS](TRADEMARKS.md).
+Listing a component here does not complete the release inventory.
 
 Recorded 2026-10-27 from repository and release metadata. Verify every item against the actual
 installed artifact before any distribution.
@@ -68,6 +68,8 @@ the license text and attribution retained; validate provenance before shipping.
 
 ## Project-level status
 
-- No root `LICENSE` exists; no license grant is inferred from documentation.
+- Axiom's own code: Apache-2.0 (root `LICENSE`, adopted 2026-11-09). Exception: the
+  archiso-derived files under `iso/` with a `GPL-3.0-or-later` SPDX header keep that license.
+  Branding is excluded (see `TRADEMARKS.md`).
 - Redistribution, trademark and asset review remain release blockers.
 - This file must be updated with exact versions and hashes when a pinned image is built.

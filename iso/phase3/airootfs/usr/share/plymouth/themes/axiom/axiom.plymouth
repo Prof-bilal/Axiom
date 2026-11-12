@@ -1,0 +1,8 @@
+[Plymouth Theme]
+Name=Axiom
+Description=Axiom boot splash: animated penguin and real boot progress.
+ModuleName=script
+
+[script]
+ImageDir=/usr/share/plymouth/themes/axiom
+ScriptFile=/usr/share/plymouth/themes/axiom/axiom.script

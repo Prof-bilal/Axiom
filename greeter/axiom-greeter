@@ -1,30 +1,52 @@
 #!/usr/bin/env python3
-"""Axiom login screen: a curses greeter for greetd (Phase 6, ADR-020).
+"""Axiom login screen (Phase 6): graphical greeter over greetd, curses fallback.
 
-greetd runs this as the unprivileged `greeter` user. It only forwards what the
-user types to greetd (create_session -> PAM -> start_session); it never reads or
-stores the password itself beyond that one reply, and shows no user hints other
-than local human accounts.
+greetd runs this as the unprivileged `greeter` user. It starts the Quickshell greeter under labwc
+(ADR-024); if that cannot start, the curses screen below still gives a usable login. Both only
+forward what the user types to greetd (create_session -> PAM -> start_session); the password is
+never stored, logged or echoed. Only local human accounts are listed.
+
+The curses look comes from axiom_tui (shared with the installer). `--curses`, `--preview` and
+AXIOM_GREETER_TUI=1 skip the graphical path, which is also the rollback if Wayland is broken.
 """
 import curses
 import json
 import os
 import pwd
+import shutil
+import signal
 import socket
+import stat
 import struct
 import subprocess
 import sys
+import tempfile
+import time
+
+HERE = os.path.dirname(os.path.realpath(__file__))
+for p in ("/usr/local/lib/axiom-tui", os.path.join(HERE, "..", "tui")):
+    if os.path.isdir(p):
+        sys.path.insert(0, p)
+import axiom_tui as tui  # noqa: E402
+from axiom_tui import BG, CYAN, GHOST, GREEN, RED, TEXT, WHITE  # noqa: E402
 
 SESSION_CMD = ["/usr/local/bin/axiom-session"]
 SESSION_ENV = ["XDG_SESSION_TYPE=wayland", "XDG_SESSION_DESKTOP=axiom", "XDG_CURRENT_DESKTOP=Axiom"]
-LOGO = ["  ▄▄▄  ▄▄ ▄▄ ▄▄ ▄▄▄  ▄▄   ▄▄",
-        " ██▀██ ▀█▄█▀ ██ ██▀██ ███▄███",
-        " ██▀██ ▄█▀█▄ ██ ██▄██ ██ ▀ ██"]
+WRONG = "That password didn't work. Try again."
+LOGIN_BG = "070B0D"  # the shell theme background (lock screen)
+ENTER = (10, 13, curses.KEY_ENTER)
+GRAPHICAL = os.path.join(HERE, "axiom-greeter-graphical")
+USERS_FILE = "axiom-greeter-users.json"
 
 
-def human_users():
-    return [p.pw_name for p in pwd.getpwall()
+# ---- accounts and greetd protocol -----------------------------------------------------------------
+def human_users(entries=None):
+    return [p for p in (pwd.getpwall() if entries is None else entries)
             if 1000 <= p.pw_uid < 60000 and not p.pw_shell.endswith(("nologin", "false"))]
+
+
+def display_name(p):
+    return (p.pw_gecos.split(",")[0] or p.pw_name) if p else ""
 
 
 def _read(s, n):
@@ -44,15 +66,14 @@ def rpc(s, msg):
 
 
 def authenticate(user, ask, show):
-    """Drive greetd's PAM conversation. Returns None on success or an error string."""
+    """Drive greetd's PAM conversation. Returns None on success, 'cancelled', or a message to show."""
     s = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
     s.connect(os.environ["GREETD_SOCK"])
     try:
         r = rpc(s, {"type": "create_session", "username": user})
         while r["type"] == "auth_message":
-            kind = r["auth_message_type"]
-            if kind in ("secret", "visible"):
-                answer = ask(r["auth_message"], kind == "secret")
+            if r["auth_message_type"] in ("secret", "visible"):
+                answer = ask(r["auth_message"], r["auth_message_type"] == "secret")
                 if answer is None:
                     rpc(s, {"type": "cancel_session"})
                     return "cancelled"
@@ -62,126 +83,305 @@ def authenticate(user, ask, show):
                 r = rpc(s, {"type": "post_auth_message_response", "response": None})
         if r["type"] != "success":
             rpc(s, {"type": "cancel_session"})
-            return "Login incorrect"
+            return friendly(r.get("description", ""))
         r = rpc(s, {"type": "start_session", "cmd": SESSION_CMD, "env": SESSION_ENV})
-        return None if r["type"] == "success" else "Could not start the session"
+        return None if r["type"] == "success" else "Could not start your session. Try again."
     finally:
         s.close()
 
 
-class Screen:
-    def __init__(self, scr):
-        self.s = scr
-        curses.curs_set(0)
-        curses.use_default_colors()
-        curses.init_pair(1, curses.COLOR_CYAN, -1)
-        curses.init_pair(2, curses.COLOR_BLACK, curses.COLOR_CYAN)
-        curses.init_pair(3, curses.COLOR_RED, -1)
-        self.cy, self.sel, self.red = curses.color_pair(1), curses.color_pair(2) | curses.A_BOLD, curses.color_pair(3)
+def friendly(text):
+    """Turn PAM's wording into plain language; lock-out messages from faillock pass through."""
+    low = (text or "").lower()
+    if "lock" in low or "too many" in low or "temporar" in low:
+        return "Too many wrong tries. Please wait a few minutes and try again."
+    return WRONG
 
-    def put(self, y, x, t, a=0):
-        h, w = self.s.getmaxyx()
-        if 0 <= y < h and 0 <= x < w:
+
+# ---- graphical greeter lifecycle -------------------------------------------------------------------
+def users_payload(users=None):
+    """The only account data the QML greeter gets: login name and display name."""
+    return [{"name": p.pw_name, "display": display_name(p)} for p in (human_users() if users is None else users)]
+
+
+def write_users_file(users, directory):
+    """Write the account snapshot for the QML greeter; readable only by the greeter user."""
+    path = os.path.join(directory, USERS_FILE)
+    fd = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600)
+    with os.fdopen(fd, "w") as fh:
+        json.dump(users_payload(users), fh)
+        fh.write("\n")
+    return path
+
+
+def _usable_runtime(path):
+    try:
+        st = os.stat(path)
+    except OSError:
+        return False
+    return stat.S_ISDIR(st.st_mode) and st.st_uid == os.getuid() and os.access(path, os.W_OK)
+
+
+def graphical_env(users, base=None):
+    """Environment for labwc/Quickshell. Returns (env, temporary_dir_or_None)."""
+    env = dict(os.environ if base is None else base)
+    runtime = env.get("XDG_RUNTIME_DIR", "")
+    temporary = None
+    if not _usable_runtime(runtime):
+        runtime = temporary = tempfile.mkdtemp(prefix="axiom-greeter-")
+        os.chmod(runtime, 0o700)
+        env["XDG_RUNTIME_DIR"] = runtime
+    env["AXIOM_GREETER_USERS"] = write_users_file(users, runtime)
+    env["AXIOM_GREETER_READY"] = os.path.join(runtime, "axiom-greeter-ready")
+    for key, value in (("XDG_SESSION_TYPE", "wayland"), ("XDG_SESSION_DESKTOP", "axiom"),
+                       ("XDG_CURRENT_DESKTOP", "Axiom"), ("QT_QPA_PLATFORM", "wayland")):
+        env.setdefault(key, value)
+    return env, temporary
+
+
+def run_graphical(users=None, env=None, popen=subprocess.Popen):
+    """Run labwc + Quickshell. Returns its exit status; 0 means the greeter ran.
+
+    A greetd SIGTERM (it ends the greeter after start_session) is forwarded to the
+    compositor so the seat is released, and is not reported as a launch failure.
+    """
+    if users is None:
+        users = human_users()
+    env, temporary = graphical_env(users, env)
+    ready = env["AXIOM_GREETER_READY"]
+    try:
+        os.unlink(ready)  # a marker from an earlier greeter run must not count
+    except OSError:
+        pass
+    state = {"stopping": False}
+    try:
+        proc = popen([GRAPHICAL], env=env)
+    except OSError:
+        if temporary:
+            shutil.rmtree(temporary, ignore_errors=True)
+        return 127
+
+    def forward(_signum, _frame):
+        state["stopping"] = True
+        proc.terminate()
+
+    handlers = {}
+    try:
+        for sig in (signal.SIGTERM, signal.SIGINT):
             try:
-                self.s.addnstr(y, x, t, w - x - 1, a)
-            except curses.error:
+                handlers[sig] = signal.signal(sig, forward)
+            except (ValueError, OSError):
                 pass
+        rc = proc.wait()
+        # labwc exits 0 when its primary client exits, so a crashed QML would
+        # look successful. The QML writes this marker once it has loaded.
+        started = state["stopping"] or os.path.exists(ready)
+    finally:
+        for sig, handler in handlers.items():
+            signal.signal(sig, handler)
+        if temporary:
+            shutil.rmtree(temporary, ignore_errors=True)
+    return 0 if started else (rc or 1)
 
-    def center(self, y, t, a=0):
-        self.put(y, max(0, (self.s.getmaxyx()[1] - len(t)) // 2), t, a)
 
-    def draw(self, user, secret_len, prompt, msg, hint):
-        self.s.erase()
-        h, w = self.s.getmaxyx()
-        top = max(1, h // 2 - 8)
-        for i, l in enumerate(LOGO):
-            self.center(top + i, l, self.cy | curses.A_BOLD)
-        self.center(top + 4, "AI-Native Linux", self.cy)
-        self.center(top + 6, f"{prompt}  ({user})" if user else prompt)
-        box = "[ " + "*" * secret_len + " " * max(0, 30 - secret_len) + " ]" if secret_len >= 0 else "[ " + " " * 30 + " ]"
-        self.center(top + 8, box, self.cy)
-        self.center(top + 10, "[ Enter ]", self.sel)
-        if msg:
-            self.center(top + 12, msg, self.red)
-        self.center(h - 2, hint, self.cy)
-        self.s.refresh()
+def run(preview=False, graphical=None, setup=None, wrap=None):
+    """Curses login by default. AXIOM_GREETER_GRAPHICAL=1 tries the QML greeter first (ADR-024)."""
+    graphical = graphical or run_graphical
+    setup = setup or (lambda: tui.setup_console(bg=LOGIN_BG))
+    wrap = wrap or tui.run
+    if os.environ.get("AXIOM_GREETER_GRAPHICAL") == "1":
+        try:
+            started = graphical(human_users())
+        except OSError:
+            started = None
+        if started == 0:
+            return 0
+    setup()
+    wrap(preview if preview else main)
+    return 0
 
-    def line(self, user, prompt, secret, msg):
-        buf = ""
-        hint = "[F1 Help]   [F2 Switch User]   [F10 Power]"
-        while True:
-            self.draw(user, len(buf) if secret else -1, prompt, msg, hint)
-            if not secret:
-                self.put(self.s.getmaxyx()[0] // 2 - 8 + 8, self.s.getmaxyx()[1] // 2 - 14, buf[-28:], curses.A_BOLD)
-                self.s.refresh()
-            k = self.s.getch()
-            if k in (10, 13, curses.KEY_ENTER):
-                return buf
-            if k in (curses.KEY_BACKSPACE, 127, 8):
-                buf = buf[:-1]
-            elif k == curses.KEY_F2 or k == 27:
-                return None if k == 27 else "\x02switch"
-            elif k == curses.KEY_F1:
-                msg = "Type your password and press Enter. F2 changes user, F10 opens power options."
-            elif k == curses.KEY_F10 or k == 274:
-                self.power()
-            elif 32 <= k < 127:
-                buf += chr(k)
 
-    def power(self):
-        items = ["Cancel", "Reboot", "Power off"]
+# ---- screen ---------------------------------------------------------------------------------------
+class Login:
+    def __init__(self, scr):
+        self.ui = tui.UI(scr)
+        self.msg, self.msg_color = "", TEXT
+        self.dx = 0
+
+    def draw(self, account, typed, prompt="Password", secret=True):
+        """Lock-screen proportions: a small penguin, a smaller AXIOM wordmark, a narrow input and the message line."""
+        ui = self.ui
+        ui.s.erase()
+        h, w = ui.h, ui.w
+        art = tui.penguin_art.SMALL  # the lock screen's 120 px penguin, not the large one
+        rows = tui.big_rows("AXIOM", 1)  # single-pixel letters: half the width of the big banner
+        pen = len(art) // 2 + 2
+        block = pen + len(rows) + 2 + 3 + 2
+        top = max(0, (h - block) // 2)
+        ui.draw_penguin(top, art, 1.0)
+        y0 = top + pen
+        for i, line in enumerate(rows):
+            ui.center(y0 + i, line, fg=GREEN, bold=True)
+        y = y0 + len(rows) + 2
+        bw = min(22, w - 8)
+        x = (w - bw) // 2 + self.dx
+        ui.box(y, x, 3, bw, fg=CYAN)
+        if typed:
+            text, fg = ("*" * len(typed) if secret else typed)[-(bw - 4):], WHITE
+        else:
+            text, fg = prompt, TEXT
+        ui.put(y + 1, x + 2, text.ljust(bw - 4), fg=fg)
+        if self.msg:
+            ui.center(y + 4, self.msg, fg=self.msg_color, bold=True)
+        ui.s.refresh()
+
+    def shake(self, account):
+        for dx in (3, -3, 2, -2, 0):
+            self.dx = dx
+            self.draw(account, "")
+            time.sleep(0.05)
+
+    def read(self, account, prompt="Password", secret=True):
+        """Returns the text, None for Esc, or 'switch' for F2."""
+        typed = ""
+        self.ui.s.timeout(500)  # lets the clock and Caps Lock warning refresh
+        try:
+            while True:
+                self.draw(account, typed, prompt, secret)
+                k = self.ui.s.getch()
+                if k == -1:
+                    continue
+                self.msg = "" if self.msg_color != GREEN else self.msg
+                if k in ENTER:
+                    return typed
+                if k in (curses.KEY_BACKSPACE, 127, 8):
+                    typed = typed[:-1]
+                elif k == 27:
+                    return None
+                elif k == curses.KEY_F2:
+                    return "switch"
+                elif k == curses.KEY_F1:
+                    self.msg, self.msg_color = "Type your password and press Enter.", TEXT
+                elif k in (curses.KEY_F10, 274):
+                    self.power()
+                elif tui.typed_char(k):
+                    typed += tui.typed_char(k)
+        finally:
+            self.ui.s.timeout(-1)
+
+    def pick_user(self, users):
+        """F2: choose another local account (or type a name)."""
+        names = [(display_name(p), p) for p in users]
+        items = names + [("Someone else...", None)]
         i = 0
         while True:
-            self.s.erase()
-            self.center(6, "Power", self.cy | curses.A_BOLD)
-            for n, t in enumerate(items):
-                self.center(8 + n, (" > " if n == i else "   ") + t.ljust(12), self.sel if n == i else 0)
-            self.s.refresh()
-            k = self.s.getch()
+            ui = self.ui
+            ui.s.erase()
+            ui.center(3, "Who is signing in?", fg=CYAN, bold=True)
+            for n, (label, _) in enumerate(items):
+                ui.center(6 + n * 2, ("  " + label + "  ").center(30), fg=BG if n == i else WHITE,
+                          bg=CYAN if n == i else BG, bold=True)
+            ui.center(ui.h - 1, "Up/Down  move      Enter  choose      Esc  back", fg=TEXT)
+            ui.s.refresh()
+            k = ui.s.getch()
+            if k == curses.KEY_UP:
+                i = max(0, i - 1)
+            elif k == curses.KEY_DOWN:
+                i = min(len(items) - 1, i + 1)
+            elif k in ENTER:
+                return items[i][1] if items[i][1] is not None else "other"
+            elif k == 27:
+                return None
+
+    def power(self):
+        items = [("Cancel", None), ("Restart", "reboot"), ("Shut down", "poweroff")]
+        i = 0
+        while True:
+            ui = self.ui
+            ui.s.erase()
+            ui.center(5, "Power", fg=CYAN, bold=True)
+            for n, (label, _) in enumerate(items):
+                ui.center(8 + n * 2, ("  " + label + "  ").center(24), fg=BG if n == i else WHITE,
+                          bg=CYAN if n == i else BG, bold=True)
+            ui.center(ui.h - 1, "Up/Down  move      Enter  choose      Esc  back", fg=TEXT)
+            ui.s.refresh()
+            k = ui.s.getch()
             if k == curses.KEY_UP:
                 i = max(0, i - 1)
             elif k == curses.KEY_DOWN:
                 i = min(2, i + 1)
-            elif k in (10, 13):
-                if i:
-                    subprocess.run(["systemctl", "reboot" if i == 1 else "poweroff"], check=False)
+            elif k in ENTER:
+                if items[i][1]:
+                    subprocess.run(["systemctl", items[i][1]], check=False)
                 return
             elif k == 27:
                 return
 
 
 def main(scr):
-    ui = Screen(scr)
-    scr.keypad(True)
+    app = Login(scr)
     users = human_users()
-    user = users[0] if len(users) == 1 else ""
-    msg = ""
+    account = users[0] if len(users) == 1 else None
     while True:
-        if not user:
-            u = ui.line("", "Username", False, msg)
-            if u is None or u == "\x02switch":
+        if account is None:
+            choice = app.pick_user(users) if users else "other"
+            if choice == "other":
+                name = app.read(None, "Username", False)
+                if not name or name == "switch":
+                    continue
+                account = _fake(name)
+            elif choice is None:
                 continue
-            user, msg = u.strip(), ""
-            continue_loop = not user
-            if continue_loop:
-                continue
-        state = {"msg": msg}
+            else:
+                account = choice
+        state = {"switch": False}
 
         def ask(prompt, secret):
-            r = ui.line(user, prompt.strip().rstrip(":") or "Password", secret, state["msg"])
-            return None if r == "\x02switch" else r
+            text = app.read(account, (prompt.strip().rstrip(":") or "Password"), secret)
+            if text == "switch":
+                state["switch"] = True
+                return None
+            return text
 
         def show(text):
-            state["msg"] = text
-        res = authenticate(user, ask, show)
+            app.msg, app.msg_color = text, TEXT
+        res = authenticate(account.pw_name, ask, show)
         if res is None:
+            app.msg, app.msg_color = "Signing in...", GREEN
+            app.draw(account, "")
             return
-        if res == "cancelled":
-            user, msg = "", ""
+        if state["switch"] or res == "cancelled":
+            account, app.msg = None, ""
         else:
-            msg = res
+            app.msg, app.msg_color = res, RED
+            app.shake(account)
+
+
+class _fake:
+    """Minimal stand-in for a passwd entry when someone types an unlisted username."""
+    def __init__(self, name):
+        self.pw_name, self.pw_gecos = name, name
+
+
+def preview(scr):
+    """Visual check only (no greetd, no login): draws the screen in its normal and error states."""
+    app = Login(scr)
+    acct = type("A", (), {"pw_name": "abdullah", "pw_gecos": "Abdullah"})
+    app.draw(acct, "hunter22")
+    time.sleep(float(os.environ.get("AXIOM_PREVIEW_HOLD", "4")))
+    app.msg, app.msg_color = WRONG, RED
+    app.draw(acct, "")
+    time.sleep(float(os.environ.get("AXIOM_PREVIEW_HOLD", "4")))
 
 
 if __name__ == "__main__":
     os.environ.setdefault("ESCDELAY", "50")
-    curses.wrapper(main)
+    if "--preview" in sys.argv or "--curses" in sys.argv or os.environ.get("AXIOM_GREETER_TUI") == "1":
+        is_preview = "--preview" in sys.argv
+        tui.setup_console(bg=LOGIN_BG, preview=is_preview)
+        try:
+            tui.run(preview if is_preview else main)
+        finally:
+            tui.restore_console()
+    else:
+        sys.exit(run())

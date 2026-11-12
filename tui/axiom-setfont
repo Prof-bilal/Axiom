@@ -1,0 +1,12 @@
+#!/usr/bin/env python3
+"""Load the large console font on VT1 and verify it stuck (runs as root before the login screen)."""
+import os
+import sys
+
+sys.path.insert(0, os.path.dirname(os.path.realpath(__file__)))
+import axiom_tui as tui  # noqa: E402
+
+if tui.wait_fb_height() < 700:
+    sys.exit(0)  # small or no framebuffer: keep the default font
+with open("/dev/tty1", "w") as out:
+    sys.exit(0 if tui.apply_font(out, attempts=15) else 1)
