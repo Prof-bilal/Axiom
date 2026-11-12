@@ -1,0 +1,26 @@
+#!/bin/sh
+# Start the Axiom QML greeter under a minimal labwc compositor.
+#
+# Called by /usr/local/lib/axiom-greeter/axiom-greeter as the unprivileged
+# `greeter` user. Exits non-zero when the compositor could not start; the
+# caller then falls back to the curses login screen, so a broken Wayland stack
+# never locks the user out.
+set -u
+
+HERE=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
+
+export XDG_SESSION_TYPE=wayland
+export XDG_SESSION_DESKTOP=axiom
+export XDG_CURRENT_DESKTOP=Axiom
+export QT_QPA_PLATFORM=wayland
+
+# XDG_RUNTIME_DIR is set by greetd's PAM session. axiom-greeter creates a
+# private one before calling this script if PAM did not provide it.
+if [ -z "${XDG_RUNTIME_DIR:-}" ] || [ ! -d "$XDG_RUNTIME_DIR" ]; then
+    echo "axiom-greeter: no XDG_RUNTIME_DIR" >&2
+    exit 1
+fi
+
+# -S makes labwc exit when Quickshell does (after Greetd.launch, or on error),
+# which is what tells greetd the greeter has finished.
+exec labwc -C "$HERE/labwc" -S "/usr/bin/qs -p $HERE/qml"

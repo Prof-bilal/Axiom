@@ -175,3 +175,4 @@ brightnessctl
 xkeyboard-config
 # test fixture only: simulated access point on mac80211_hwsim for the Wi-Fi tests
 hostapd
+plymouth

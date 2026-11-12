@@ -38,9 +38,10 @@ KEYNAMES = {" ": "spc", "-": "minus", ".": "dot", "/": "slash", "\n": "ret", ";"
 
 
 class Guest:
-    def __init__(self, iso, outdir, res="1920x1080", mem=2048, smp=2, extra=()):
+    def __init__(self, iso, outdir, res="1920x1080", mem=2048, smp=2, extra=(), display="none"):
         self.extra = list(extra)
         self.iso, self.out, self.res, self.mem, self.smp = iso, outdir, res, mem, smp
+        self.display = display
         self.w, self.h = (int(v) for v in res.split("x"))
         os.makedirs(outdir, exist_ok=True)
         self.p = lambda n: os.path.join(outdir, n)
@@ -79,7 +80,7 @@ class Guest:
             "-drive", f"if=pflash,format=raw,readonly=on,file={OVMF_CODE}",
             "-drive", f"if=pflash,format=raw,file={vars_copy}",
             "-vga", "none", "-device", f"VGA,edid=on,xres={self.w},yres={self.h}",
-            "-device", "qemu-xhci", "-device", "usb-tablet", "-display", "none",
+            "-device", "qemu-xhci", "-device", "usb-tablet", "-display", self.display,
         ] + (["-cdrom", self.iso, "-boot", "order=d"] if self.iso else []) + [
             "-nic", "none",
             "-serial", f"unix:{self.p('serial.sock')},server,nowait",
