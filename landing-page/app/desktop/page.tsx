@@ -1,14 +1,14 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { galleries, hero } from "@/lib/data";
-export const metadata: Metadata = { title: "Desktop | Axiom OS", description: "A real Wayland desktop with its own shell, Files, Settings and Terminal integration. Explore captures from the running system." };
+export const metadata: Metadata = { title: "Desktop | Axiom OS", description: "A real Wayland desktop with its own shell, Files, Settings and Terminal integration. Explore captures from the running system and previews of the installer." };
 const pad = (n: number) => String(n).padStart(2, "0");
 export default function Page() {
   return <main id="main" className="d-page">
     <header className="wrap d-hero">
       <p className="eyebrow">DESKTOP</p>
       <h1>Meet your workspace.</h1>
-      <p className="lead">A real Wayland desktop with its own shell, Files, Settings and Terminal integration. Every image here is a capture from a retained QEMU run.</p>
+      <p className="lead">A real Wayland desktop with its own shell, Files, Settings and Terminal integration. The Phase 3 to 5 images are captures from retained QEMU runs; the Phase 6 images are renderer previews and are labelled as such.</p>
       <nav className="d-chips" aria-label="Jump to a phase">{galleries.map((g) => <a key={g.n} href={`#phase-${g.n}`}><span className="mono">P{pad(g.n)}</span> {g.title}</a>)}</nav>
       <figure className="d-hero-shot"><img src={hero.src} width={hero.w} height={hero.h} alt={hero.alt} /></figure>
     </header>
@@ -21,7 +21,7 @@ export default function Page() {
       </figure>)}</div>
     </section>)}
 
-    <p className="wrap d-foot dim small">Phases 1 and 2 reached the same session, so they share the Phase 3 captures. Phase 0 is documents. Phase 6 (installer, login and lock screen) has no captures on this page yet, and Phase 7 onward is not built.</p>
+    <p className="wrap d-foot dim small">Phases 1 and 2 reached the same session, so they share the Phase 3 captures. Phase 0 is documents. The Phase 6 images are renderer previews, not captures of a live install. Phase 7 onward is not built.</p>
     <div className="wrap page-next"><Link href="/">← Back to Axiom</Link><Link href="/progress/">Explore progress →</Link></div>
   </main>;
 }

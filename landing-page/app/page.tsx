@@ -7,7 +7,7 @@ import { DevJourney } from "@/components/dev-journey";
 import { Agents, BuildYourOwn } from "@/components/agents";
 import { IdeaStage } from "@/components/idea-stage";
 import { DotField } from "@/components/dot-field";
-import { CapabilityGrid, LocalFirst, Pillars, PhaseTimeline } from "@/components/idea-sections";
+import { CapabilityGrid, LocalFirst, Pillars, PhaseTimeline, Positioning, Differentiators } from "@/components/idea-sections";
 import { questions } from "@/lib/home";
 
 export default function Page() {
@@ -76,6 +76,16 @@ export default function Page() {
       <div className="x-head"><p className="eyebrow">STATUS</p><h2 id="status-title">Built. Booted. Verified.</h2><p>Phases 0 to 6 are complete, each booted in a real virtual machine. Phase 5 alone passed 76 automated checks. AI and security come later, in order.</p></div>
       <PhaseTimeline />
       <p className="x-links"><Link className="text-link" href="/progress/">See the evidence <span aria-hidden="true">↗</span></Link><Link className="text-link" href="/roadmap/">Read the roadmap <span aria-hidden="true">↗</span></Link></p>
+    </div></section>
+
+    <section className="x-sec" aria-labelledby="yours-title"><div className="wrap">
+      <div className="x-head"><p className="eyebrow">MAKE IT YOURS</p><h2 id="yours-title">A desktop you can<br /><em>make your own.</em></h2><p>Your look, your workflow, your tools. Changeable without editing fragile config, and without trusting a theme that runs code.</p></div>
+      <Positioning />
+    </div></section>
+
+    <section className="x-sec" aria-labelledby="after-title"><div className="wrap">
+      <div className="x-head"><p className="eyebrow">AFTER THE CORE</p><h2 id="after-title">What comes after<br /><em>the core.</em></h2><p>A usable, installable system comes first. These are the differentiators that follow it, in order, each with its own evidence gate. None of them are built yet.</p></div>
+      <Differentiators />
     </div></section>
 
     <section className="wrap x-sec" aria-labelledby="faq-title">

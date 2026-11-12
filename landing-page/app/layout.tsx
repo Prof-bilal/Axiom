@@ -28,7 +28,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <nav aria-label="Explore"><h2 className="mono">EXPLORE</h2><Link href="/">Home</Link><Link href="/desktop/">Desktop</Link><Link href="/approach/">Approach</Link></nav>
             <nav aria-label="Project"><h2 className="mono">PROJECT</h2><Link href="/progress/">Progress</Link><Link href="/progress/#limits">Current limitations</Link><Link href="/roadmap/">Roadmap</Link></nav>
           </div>
-          <div className="sf-base mono"><span>© 2026 Axiom OS</span><span>No public release yet. Nothing here is a hardware or release promise.</span></div>
+          <div className="sf-base mono"><span>© 2026 Axiom OS · Code under Apache-2.0</span><span>No public release yet. Nothing here is a hardware or release promise.</span></div>
         </div></footer>
       </body>
     </html>

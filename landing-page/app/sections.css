@@ -312,3 +312,23 @@
 @keyframes faq-dot { 0%, 60%, 100% { opacity: .25; transform: none; } 30% { opacity: 1; transform: translateY(-4px); } }
 @media (max-width: 900px) { .faq-body { grid-template-columns: 1fr; } .faq-chat { position: static; min-height: 0; } }
 @media (prefers-reduced-motion: reduce) { .faq-list button { transition: none; } .faq-list button[aria-pressed="true"] { transform: none; } .faq-answer { animation: none; } .faq-typing i { animation: none; } }
+
+/* positioning (ADR-022 direction) */
+.posn-line { margin: 0 0 2.4rem; max-width: 52rem; font-size: clamp(1.35rem, 2.6vw, 1.9rem); line-height: 1.35; letter-spacing: -.02em; }
+.posn-split { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--border); border: 1px solid var(--border); }
+.posn-split > div { padding: 1.8rem 1.6rem; background: var(--bg); }
+.posn-split .mono { display: block; margin-bottom: .9rem; font-size: .62rem; letter-spacing: .08em; }
+.posn-split p { margin: 0; color: var(--text2); font-size: .95rem; }
+.posn-note { margin: 1.4rem 0 0; color: var(--text3); font-size: .68rem; letter-spacing: .04em; }
+
+/* phase D strip */
+.diffs ol { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--border); }
+.diffs li { display: grid; grid-template-columns: 3.2rem 1fr auto; align-items: start; gap: 1.2rem; padding: 1.3rem 0; border-bottom: 1px solid var(--hair); }
+.diffs-k { color: var(--orange); font-size: .72rem; letter-spacing: .06em; padding-top: .2rem; }
+.diffs li h3 { margin: 0 0 .3rem; font-size: 1rem; font-weight: 600; }
+.diffs li p { margin: 0; color: var(--text2); font-size: .9rem; max-width: 46rem; }
+.diffs li .tag { align-self: center; }
+.diffs-note { margin: 1.4rem 0 0; color: var(--text3); font-size: .68rem; letter-spacing: .04em; }
+
+@media (max-width: 900px) { .posn-split { grid-template-columns: 1fr; } }
+@media (max-width: 560px) { .diffs li { grid-template-columns: 2.6rem 1fr; } .diffs li .tag { grid-column: 2; justify-self: start; } }

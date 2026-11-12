@@ -1,4 +1,4 @@
-import { phases } from "@/lib/data";
+import { phases, positioning, differentiators } from "@/lib/data";
 
 // Every status tag below follows docs/PHASES.md, docs/SECURITY.md and docs/ai/*.
 // "designed" means a written design with no runtime; nothing here claims shipped AI.
@@ -64,5 +64,30 @@ export function PhaseTimeline() {
   return <div className="phases">
     <ol aria-label="Phases 0 to 13">{phases.map(p => <li key={p.n} className={`ph-${p.status}`} title={`Phase ${p.n}: ${p.name}`}><span className="mono">{String(p.n).padStart(2, "0")}</span><i /></li>)}</ol>
     <div className="phases-legend mono"><span className="lg-done">Built and verified in QEMU</span><span className="lg-next">Next</span><span className="lg-planned">Planned</span></div>
+  </div>;
+}
+
+// Positioning: direction only, from ADR-022 and the Track 4 synthesis.
+// Nothing in this section is built, so it carries no "built" tag.
+export function Positioning() {
+  return <div className="posn">
+    <p className="posn-line">{positioning.line}</p>
+    <div className="posn-split">
+      <div><span className="mono accent">WHO IT IS FOR</span><p>{positioning.who}</p></div>
+      <div><span className="mono accent">WHAT IS MISSING</span><p>{positioning.gap}</p></div>
+    </div>
+    <p className="posn-note mono">Direction, not a feature list. The work below is Phase D, after the usable core.</p>
+  </div>;
+}
+
+// Phase D strip. Source: docs/PHASES.md. Every entry is Planned.
+export function Differentiators() {
+  return <div className="diffs">
+    <ol>{differentiators.map(([k, t, d]) => <li key={k}>
+      <span className="mono diffs-k">{k}</span>
+      <div><h3>{t}</h3><p>{d}</p></div>
+      <Tag s="planned" />
+    </li>)}</ol>
+    <p className="diffs-note mono">Phase D starts after Phase 10. Each step gets its own evidence gate before it is claimed.</p>
   </div>;
 }

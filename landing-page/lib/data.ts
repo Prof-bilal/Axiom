@@ -86,14 +86,43 @@ export const galleries: { n: number; title: string; note: string; items: Shot[] 
       { src: "/shots/p5-power.webp", w: 1100, h: 620, alt: "Settings, Power: power-saver profile selected, with “No battery detected” and “No controllable backlight”.", cap: "Power profiles from power-profiles-daemon. Missing hardware is stated." },
     ],
   },
+  {
+    n: 6, title: "Install and first login", note: "Renderer previews from the ADR-027 pixel renderer, 2026-11-12. The progress screen uses demo data; these are not live-install captures.",
+    items: [
+      { src: "/shots/p6-installer-welcome.webp", w: 1600, h: 900, alt: "The installer welcome screen: “Welcome to Axiom!” with Install Axiom and Advanced options, and the line “Let’s get your computer ready.”", cap: "Installer welcome. Two choices: install, or the recovery and terminal tools." },
+      { src: "/shots/p6-installer-progress.webp", w: 1600, h: 900, alt: "The install progress screen: the penguin mascot above “54%”, “Downloading Axiom”, “340 MiB downloaded at 2.9 MiB/s” and “About 6 minutes left”.", cap: "Progress with real percentages and transfer rate. The 54% figure is demo data." },
+      { src: "/shots/p6-login.webp", w: 1600, h: 900, alt: "The login screen: the penguin above a pixel-drawn AXIOM wordmark, with a password field below.", cap: "The greetd login screen, drawn with the same pixel renderer as the installer." },
+    ],
+  },
 ];
 
 export const limits = [
   "Installation is verified on a blank QEMU disk only, not on real hardware. There is no public release.",
- "No root licence. Redistribution is not authorized.",
+  "The code is Apache-2.0, but no download is authorized: the third-party licence inventory is incomplete and the branding review is a release blocker.",
   "Verified in QEMU only, at 1920×1080. Real hardware is Phase 10.",
   "Wi-Fi was simulated and the VM has no backlight or Bluetooth controller.",
   "The Software Center is read-only. It cannot install or update anything.",
   "Logout and restart are not covered by an automated check.",
   "All timings are software-rendered KVM baselines from a loaded host, not hardware figures.",
+];
+
+// Source: docs/decisions/022-differentiation-direction.md and
+// docs/research/track-4-synthesis.md (section 1). Direction only: every item
+// below is Phase D, which starts after Phase 10. Nothing here is built.
+export const positioning = {
+  line: "The developer desktop you can make your own, with AI you can trust, and tools that help you ship.",
+  who: "Developers and indie makers first. Windows switchers are a second on-ramp, not the audience.",
+  gap: "What is missing is one you can safely make your own: no fragile dotfile editing, no themes that run code, no root by default, and no AI you cannot switch off.",
+};
+
+// Source: docs/PHASES.md, "Phase D — differentiators (after the usable line)".
+// Ordered as recorded there. All Planned: Phase D starts after Phase 10.
+export const differentiators = [
+  ["D1", "Profiles: the look", "Colours and fonts come from the active profile. Three built-in looks, one-click undo. Profiles are data, never code."],
+  ["D2", "Launcher+ and typed actions", "One catalogue of typed actions shared by the launcher, automation and the AI layer, with a validator in front of every call."],
+  ["D3", "Zones", "Saved window regions, generated through the compositor adapter rather than hand-edited config."],
+  ["D4", "Capture", "Annotate, OCR and record, with the recording indicator impossible to hide and uploads only on your click."],
+  ["D5", "Axiom Projects", "A small CLI over plain files for the project you are on today. Every git call goes through one locked-down runner."],
+  ["D6", "Connections", "SSH and SFTP over your existing config, key-based only, with strict field schemas."],
+  ["D7", "Creator profile", "Demo video and launch-kit pipelines for the things you make. Recommended tools, never bundled."],
 ];

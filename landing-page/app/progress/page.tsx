@@ -1,14 +1,14 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { phases, measured, limits } from "@/lib/data";
-export const metadata: Metadata = { title: "Progress | Axiom OS", description: "What works today, how it was tested, and the limitations still ahead. Axiom is currently a pre-alpha live image." };
+export const metadata: Metadata = { title: "Progress | Axiom OS", description: "What works today, how it was tested, and the limitations still ahead. Axiom is currently a pre-alpha installable image." };
 export default function Page() {
   const done = phases.filter((p) => p.status === "done");
   return <main id="main" className="p-page">
     <header className="wrap d-hero">
       <p className="eyebrow">PROGRESS</p>
       <h1>Built. Booted. Verified.</h1>
-      <p className="lead">What works today, how it was tested, and the limitations still ahead. Axiom is currently a pre-alpha live image.</p>
+      <p className="lead">What works today, how it was tested, and the limitations still ahead. Axiom is currently a pre-alpha installable image.</p>
     </header>
 
     <section id="progress" className="wrap x-sec" aria-labelledby="done-title">
