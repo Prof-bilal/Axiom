@@ -40,7 +40,7 @@ BASE_PACKAGES = [
     "ttf-jetbrains-mono", "adwaita-icon-theme", "hicolor-icon-theme", "foot", "mousepad", "firefox",
     "libnotify", "xdg-utils", "glib2", "bluez", "bluez-utils", "power-profiles-daemon", "upower",
     "wlr-randr", "brightnessctl", "xkeyboard-config", "greetd", "python", "linux-firmware",
-    "qemu-guest-agent", "mkinitcpio", "intel-ucode", "amd-ucode", "kbd",
+    "qemu-guest-agent", "mkinitcpio", "intel-ucode", "amd-ucode", "kbd", "plymouth",
 ]
 SERVICES = ["NetworkManager", "bluetooth", "power-profiles-daemon", "systemd-timesyncd", "qemu-guest-agent"]
 # Axiom-owned files copied from the live medium into the target (nothing else).
@@ -48,7 +48,7 @@ OVERLAY = [
     "/etc/axiom", "/etc/polkit-1/rules.d/50-axiom-session-power.rules",
     "/etc/polkit-1/rules.d/51-axiom-system-settings.rules", "/etc/xdg/foot", "/etc/xdg/gtk-3.0",
     "/etc/xdg/gtk-4.0", "/etc/xdg/mimeapps.list", "/etc/pam.d/axiom-lock", "/usr/local/lib/axiom-greeter", "/usr/local/lib/axiom-tui", "/usr/local/lib/axiom-provision",
-    "/usr/local/bin/axiom-provision",
+    "/usr/local/bin/axiom-provision", "/usr/share/plymouth/themes/axiom",
     "/etc/systemd/system/power-profiles-daemon.service.d",
     "/usr/local/bin/axiom-app", "/usr/local/bin/axiom-greeting", "/usr/local/bin/axiom-session",
     "/usr/local/bin/axiom-shell", "/usr/local/bin/axiom-terminal", "/usr/local/share/axiom",
@@ -279,7 +279,8 @@ def progress(pct, stage, detail="", started=None):
 
 def run_archinstall(cmd, log_path, started):
     """Run archinstall with its output in log_path while reporting progress from that log."""
-    tracker, pos = ProgressTracker(), 0
+    tracker = ProgressTracker()
+    pos = os.path.getsize(log_path) if os.path.exists(log_path) else 0  # a retry appends: skip the earlier run's text
     progress(tracker.pct, tracker.stage, "", started)
     with open(log_path, "ab") as log:
         proc = subprocess.Popen(cmd, env=ENV, stdout=log, stderr=subprocess.STDOUT)
@@ -315,6 +316,38 @@ def apply_overlay(target=TARGET, paths=OVERLAY):
             shutil.copytree(p, dst, symlinks=True, dirs_exist_ok=True)
         else:
             shutil.copy2(p, dst)
+
+
+def boot_splash(target=TARGET):
+    """Axiom splash: hide the boot menu, quiet kernel log, Plymouth theme in the initramfs.
+
+    Soft failure by design: if Plymouth cannot be set up, the system still boots to the text console
+    (the splash is cosmetic; the LUKS prompt falls back to the plain prompt).
+    """
+    loader = os.path.join(target, "boot/loader/loader.conf")
+    keep = [l for l in (open(loader).read().splitlines() if os.path.exists(loader) else [])
+            if l.split()[:1] not in (["timeout"], ["editor"])]
+    os.makedirs(os.path.dirname(loader), exist_ok=True)
+    open(loader, "w").write("\n".join(keep + ["timeout 0", "editor no"]) + "\n")
+    entries = os.path.join(target, "boot/loader/entries")
+    if os.path.isdir(entries):
+        for name in os.listdir(entries):
+            path = os.path.join(entries, name)
+            lines = open(path).read().splitlines()
+            out = [(l.rstrip() + " quiet splash") if l.startswith("options") and "splash" not in l else l
+                   for l in lines]
+            open(path, "w").write("\n".join(out) + "\n")
+    mkinit = os.path.join(target, "etc/mkinitcpio.conf")
+    if os.path.exists(mkinit):
+        text = open(mkinit).read()
+        if "plymouth" not in text:  # shortcut: naive HOOKS edit; upgrade to a parsed edit if the default layout changes
+            text = re.sub(r"^HOOKS=\((.*?)\bkms\b", r"HOOKS=(\1kms plymouth", text, count=1, flags=re.M)
+            open(mkinit, "w").write(text)
+    try:
+        subprocess.run(["arch-chroot", target, "plymouth-set-default-theme", "-R", "axiom"],
+                       check=True, env=ENV, capture_output=True)
+    except (OSError, subprocess.CalledProcessError) as e:
+        emit("log", message=f"Plymouth splash not set up; text boot used: {e}")
 
 
 def propagate_console(target=TARGET, cmdline="/proc/cmdline"):
@@ -365,6 +398,10 @@ def post_install(f, target=TARGET, started=None):
     os.makedirs(os.path.join(target, "etc/greetd"), exist_ok=True)
     with open(os.path.join(target, "etc/greetd/config.toml"), "w") as fh:
         fh.write('[terminal]\nvt = 1\n\n[default_session]\ncommand = "/usr/local/lib/axiom-greeter/axiom-greeter"\nuser = "greeter"\n')
+    # The login screen draws through /dev/dri (group video); without it the greeter falls back to the text console.
+    soft = subprocess.run(chroot + ["usermod", "-aG", "video", "greeter"], env=ENV, capture_output=True, text=True)
+    if soft.returncode != 0:
+        print(f"warning: could not add greeter to the video group: {soft.stderr.strip()}", file=sys.stderr)
     # Large console font for the login screen and early boot text (the font ships in kbd). archinstall
     # already wrote FONT=default8x16, so replace the line rather than only adding one.
     vc = os.path.join(target, "etc/vconsole.conf")
@@ -385,6 +422,7 @@ def post_install(f, target=TARGET, started=None):
         fh.write("%wheel ALL=(ALL:ALL) ALL\n")
     os.chmod(os.path.join(target, "etc/sudoers.d/10-wheel"), 0o440)
     propagate_console(target)
+    boot_splash(target)
     progress(97, "Finishing up", "", started)
 
 
@@ -406,8 +444,22 @@ def kill_users(target=TARGET, proc="/proc", kill=os.kill):
     return killed
 
 
-def cleanup(target=TARGET):
-    """Leave the machine retryable after a failed run: no stragglers, nothing mounted, LUKS closed."""
+def mappers_on(disk):
+    """Names under /dev/mapper whose LUKS device is a partition of `disk` (cryptsetup status shows `device:`)."""
+    names = []
+    if disk and os.path.isdir("/dev/mapper"):
+        for name in os.listdir("/dev/mapper"):
+            if name == "control":
+                continue
+            out = subprocess.run(["cryptsetup", "status", name], env=ENV, capture_output=True, text=True).stdout
+            dev = next((l.split(":", 1)[1].strip() for l in out.splitlines() if l.strip().startswith("device:")), "")
+            if dev.startswith(disk):
+                names.append(name)
+    return names
+
+
+def cleanup(target=TARGET, disk=None):
+    """Leave the machine retryable after a failed run: no stragglers, nothing mounted, the target's LUKS closed."""
     import time
     kill_users(target)
     for _ in range(5):
@@ -416,10 +468,14 @@ def cleanup(target=TARGET):
             break
         kill_users(target)
         time.sleep(1)
-    if os.path.isdir("/dev/mapper"):
-        for name in os.listdir("/dev/mapper"):
-            if name != "control":
-                subprocess.run(["cryptsetup", "close", name], env=ENV, capture_output=True)
+    for name in mappers_on(disk):  # only the installer's own mapper, never another encrypted disk's
+        subprocess.run(["cryptsetup", "close", name], env=ENV, capture_output=True)
+
+
+def check_installed(target=TARGET):
+    """archinstall can exit 0 without installing anything (for example with no network). Say so clearly."""
+    if not os.path.ismount(target) or not os.path.exists(os.path.join(target, "etc/os-release")):
+        raise FormError("Axiom could not download its packages. Check the internet connection and try again.")
 
 
 def install(f, disk_path, disk_bytes, target=TARGET):
@@ -435,12 +491,13 @@ def install(f, disk_path, disk_bytes, target=TARGET):
         started = time.monotonic()
         try:
             run_archinstall(["archinstall", "--config", cp, "--creds", kp, "--silent", "--skip-version-check",
-                             "--skip-wkd", "--mountpoint", target], "/var/log/axiom-installer.log", started)
+                             "--skip-wkd", "--skip-wifi-check", "--mountpoint", target], "/var/log/axiom-installer.log", started)
+            check_installed(target)  # archinstall 4.x exits 0 without installing when offline
             post_install(f, target, started)
             subprocess.run(["sync"], env=ENV)
-            cleanup(target)  # flushed and unmounted: safe to remove the medium and reboot
+            cleanup(target, disk_path)  # flushed and unmounted: safe to remove the medium and reboot
         except BaseException:
-            cleanup(target)  # leave the machine retryable: nothing mounted, LUKS closed
+            cleanup(target, disk_path)  # leave the machine retryable: nothing mounted, LUKS closed
             raise
     emit("done", pct=100)
 

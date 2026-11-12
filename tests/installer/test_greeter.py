@@ -196,14 +196,14 @@ class Fallback(unittest.TestCase):
 
         app = g.Login.__new__(g.Login)
         app.ui = g.tui.UI.__new__(g.tui.UI)
-        app.ui.s, app.ui._pairs = Screen(), {}
+        app.ui.s, app.ui._pairs, app.ui.fb = Screen(), {}, False
         app.msg, app.msg_color, app.dx = "", 0, 0
         app.ui.pair = lambda fg, bg=0: 0
         acs = {k: 0 for k in ("ACS_HLINE", "ACS_VLINE", "ACS_ULCORNER", "ACS_URCORNER", "ACS_LLCORNER", "ACS_LRCORNER")}
         with mock.patch.multiple(g.curses, create=True, **acs):
             app.draw(None, "")
         text = "\n".join(drawn)
-        self.assertIn(g.tui.big_rows("AXIOM", 2)[0].rstrip(), text)
+        self.assertIn(g.tui.big_rows("AXIOM", 1)[0].rstrip(), text)
         self.assertIn("Password", text)  # placeholder inside the input box while empty
         for word in ("Welcome", "Sign in", "F2", "F10", "Caps", "@"):
             self.assertNotIn(word, text)

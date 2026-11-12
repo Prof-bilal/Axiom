@@ -13,6 +13,7 @@ import textwrap
 import time
 
 sys.path.insert(0, os.path.dirname(os.path.realpath(__file__)))
+import fbdraw  # noqa: E402
 import penguin_art  # noqa: E402
 
 # Slots 0-7 are the pixel/background colours; 8-15 are brighter text variants (bold maps there).
@@ -72,6 +73,14 @@ def apply_font(out, attempts=6):
     return False
 
 
+_screen_palette = list(PALETTE)  # colours the pixel renderer uses (the login screen replaces slot 0)
+
+
+def _set_palette(palette):
+    global _screen_palette
+    _screen_palette = list(palette)
+
+
 _palette_set = False  # a preview in an ordinary terminal changed its palette and must reset it
 
 
@@ -82,6 +91,9 @@ def setup_console(out=None, bg=None, preview=False):
     global _palette_set
     out = out or sys.stdout
     palette = PALETTE if bg is None else [bg] + PALETTE[1:]
+    if os.environ.get("AXIOM_FB_PNG"):
+        _set_palette(palette)  # the pixel renderer takes its colours from here
+        return False
     if preview and os.environ.get("TERM") != "linux":
         out.write("".join(f"\033]4;{i};#{c}\033\\" for i, c in enumerate(palette)) + "\033[2J\033[H")
         out.flush()
@@ -89,6 +101,7 @@ def setup_console(out=None, bg=None, preview=False):
         return True
     if os.environ.get("TERM") != "linux":
         return False
+    _set_palette(palette)
     try:
         out.write("\033%G" + "".join(f"\033]P{i:X}{c}" for i, c in enumerate(palette)) + "\033[0m\033[2J\033[H")
         out.flush()
@@ -184,6 +197,26 @@ def capslock_on():
 
 
 # ---- curses surface -------------------------------------------------------------------------------
+def typed_char(k):
+    """The character a key code types, or None: printable ASCII, or a UTF-8 character from the pixel screen."""
+    if 32 <= k < 127:
+        return chr(k)
+    if k >= fbdraw.UNICODE_BASE:
+        return chr(k - fbdraw.UNICODE_BASE)
+    return None
+
+
+def run(fn):
+    """curses.wrapper replacement: the framebuffer renderer when it can start, curses otherwise."""
+    return fbdraw.run(fn, _screen_palette)
+
+
+def endwin():
+    """Leave the screen for a shell or a reboot (framebuffer or curses)."""
+    if not fbdraw.release():
+        curses.endwin()
+
+
 class UI:
     def __init__(self, scr):
         try:
@@ -191,15 +224,19 @@ class UI:
         except locale.Error:
             pass
         self.s = scr
-        for call, arg in ((curses.curs_set, (0,)), (curses.use_default_colors, ())):
-            try:
-                call(*arg)
-            except curses.error:
-                pass
+        self.fb = getattr(scr, "is_fb", False)
+        if not self.fb:
+            for call, arg in ((curses.curs_set, (0,)), (curses.use_default_colors, ())):
+                try:
+                    call(*arg)
+                except curses.error:
+                    pass
         self._pairs = {}
         self.s.keypad(True)
 
     def pair(self, fg, bg=BG):
+        if self.fb:
+            return fg << 8 | bg << 12  # the pixel screen decodes colours straight from the attribute
         key = (fg, bg)
         if key not in self._pairs:
             curses.init_pair(len(self._pairs) + 1, fg, bg)
@@ -227,6 +264,13 @@ class UI:
         self.put(y, max(0, (self.w - len(text)) // 2), text, **kw)
 
     def box(self, y, x, h, w, fg=GHOST):
+        if self.fb:
+            self.put(y, x, "┌" + "─" * (w - 2) + "┐", fg=fg)
+            for j in range(1, h - 1):
+                self.put(y + j, x, "│", fg=fg)
+                self.put(y + j, x + w - 1, "│", fg=fg)
+            self.put(y + h - 1, x, "└" + "─" * (w - 2) + "┘", fg=fg)
+            return
         a = self.pair(fg)
         for i in range(1, w - 1):
             self._ch(y, x + i, curses.ACS_HLINE, a)
@@ -246,6 +290,8 @@ class UI:
                 pass
 
     def draw_penguin(self, top, art, fill):
+        if self.fb and self.s.mascot(len(art) // 2, top, fill):
+            return len(art) // 2  # the real mascot image takes the same rows as the pixel-art face
         rows = penguin_cells(art, fill)
         x0 = max(0, (self.w - len(art[0])) // 2)
         for j, row in enumerate(rows):

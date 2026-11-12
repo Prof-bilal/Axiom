@@ -121,8 +121,8 @@ def form(ui, step, total, title, intro, fields, validate=None, footer=HINT_FORM)
             if kind in ("text", "password"):
                 if k in (curses.KEY_BACKSPACE, 127, 8):
                     f["value"] = f["value"][:-1]
-                elif 32 <= k < 127:
-                    f["value"] += chr(k)
+                elif tui.typed_char(k):
+                    f["value"] += tui.typed_char(k)
             elif kind == "toggle" and k in (32, curses.KEY_LEFT, curses.KEY_RIGHT):
                 f["value"] = not f["value"]
             elif kind == "choice" and k in (curses.KEY_LEFT, curses.KEY_RIGHT, 32):
@@ -294,9 +294,11 @@ def draw_progress(ui, pct, stage, detail, eta):
     ui.s.refresh()
 
 
-def run_install(ui, form_data, disk):
+def run_install(ui, form_data, disk, backend=None):
+    """Run the install engine. backend is a fake engine command and is passed only by demo_install."""
+    if backend is None and os.environ.get("AXIOM_FB_PNG") and os.geteuid() != 0:
+        raise SystemExit("a preview run draws only; it cannot install")
     payload = dict(form_data, disk=disk["path"], disk_bytes=disk["size"])
-    backend = os.environ.get("AXIOM_BACKEND_CMD")  # test seam: a fake backend that prints JSON events
     cmd = backend.split() if backend else [sys.executable, os.path.join(HERE, "axiom_install.py")]
     proc = subprocess.Popen(cmd, stdin=subprocess.PIPE,
                             stdout=subprocess.PIPE, text=True, env={**os.environ, **ai.ENV})
@@ -468,7 +470,7 @@ def start_setup(ui):
 
 
 def shell(ui, banner):
-    curses.endwin()
+    tui.endwin()
     tui.restore_console()
     os.system("clear")
     print(banner)
@@ -489,7 +491,7 @@ def main(scr):
             continue
         if i == 0:
             if start_setup(ui):
-                curses.endwin()
+                tui.endwin()
                 os.execvp("systemctl", ["systemctl", "reboot"])
         else:
             try:
@@ -505,14 +507,14 @@ def main(scr):
             elif j == 1:
                 shell(ui, "Axiom live shell. Type exit to return to the installer.")
             else:
-                curses.endwin()
+                tui.endwin()
                 os.execvp("systemctl", ["systemctl", "reboot"])
 
 
 def demo_install(scr):
-    """Test seam: the real install screen driven by AXIOM_BACKEND_CMD (no disk is touched)."""
+    """Test seam (--demo-install): the real install screen driven by AXIOM_BACKEND_CMD (no disk is touched)."""
     ui = tui.UI(scr)
-    run_install(ui, {"demo": True}, {"path": "/dev/null", "size": 0})
+    run_install(ui, {"demo": True}, {"path": "/dev/null", "size": 0}, backend=os.environ.get("AXIOM_BACKEND_CMD"))
 
 
 def demo_progress(scr):
@@ -535,11 +537,11 @@ def demo_progress(scr):
 
 if __name__ == "__main__":
     os.environ.setdefault("ESCDELAY", "50")
-    if os.geteuid() != 0:
+    if os.geteuid() != 0 and not os.environ.get("AXIOM_FB_PNG"):  # PNG previews draw only, no install
         sys.exit("axiom-installer must run as root on the install medium")
     tui.setup_console(preview="--demo-progress" in sys.argv or "--demo-install" in sys.argv)
     try:
-        curses.wrapper(demo_install if "--demo-install" in sys.argv else
-                       demo_progress if "--demo-progress" in sys.argv else main)
+        tui.run(demo_install if "--demo-install" in sys.argv else
+                demo_progress if "--demo-progress" in sys.argv else main)
     finally:
         tui.restore_console()

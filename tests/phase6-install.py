@@ -11,7 +11,7 @@ Each stage runs in a disposable guest (OVMF, retained serial/transcript/screen e
              provisioning deferred
   provision  boot with network: first-boot job converges, re-run is idempotent, loopback only
 
-The installer is driven with key events and read back from the VT (/dev/vcs1); nothing is stubbed.
+The installer is driven with key events and read back from the screen-text file the pixel renderer writes (/dev/vcs1 as a fallback); nothing is stubbed.
 """
 import argparse
 import base64
@@ -33,6 +33,9 @@ DISK_GB = 24
 REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 HUB_SELECT = ["git", "neovim"]  # git is a default; neovim is ticked in the UI
 CONSOLE = "console=ttyS0,115200"
+# The pixel renderer bypasses /dev/vcs1, so the guest also writes the screen's characters to this file.
+FB_TEXT = "/run/axiom-screen.txt"
+LIVE_CMDLINE = f"{CONSOLE} systemd.setenv=AXIOM_FB_TEXT={FB_TEXT}"
 NO_REFRESH = False
 
 
@@ -71,6 +74,42 @@ def push(g, path, data, mode="644"):
     g.sh(f"base64 -d /tmp/p.b64 | gunzip > {path}; chmod {mode} {path}", 20)
 
 
+def screen_colours(g, name, targets, tol=40, step=4):
+    """Screendump the guest and count (sampled) pixels near each target colour: the pixel-drawn login has no
+    text in /dev/vcs, so its state is read from colours. Returns {name: count}."""
+    ppm = g.p(name + ".ppm")
+    if os.path.exists(ppm):
+        os.unlink(ppm)
+    g.monitor(f"screendump {ppm}", settle=1.2)
+    if not os.path.exists(ppm) or os.path.getsize(ppm) == 0:
+        return {k: 0 for k in targets}
+    data = open(ppm, "rb").read()
+    os.unlink(ppm)
+    head = data.split(b"\n", 3)
+    w, h = (int(v) for v in head[1].split())
+    px = head[3]
+    counts = {k: 0 for k in targets}
+    for i in range(0, w * h * 3, 3 * step):
+        r, gr, b = px[i], px[i + 1], px[i + 2]
+        for k, (tr, tg, tb) in targets.items():
+            if abs(r - tr) < tol and abs(gr - tg) < tol and abs(b - tb) < tol:
+                counts[k] += 1
+    return counts
+
+
+LOGIN_COLOURS = {"wordmark": (0x7C, 0xF0, 0xBE), "box": (0x20, 0xD6, 0xD2), "error": (0xFF, 0x8A, 0x8A)}
+
+
+def wait_login_screen(g, timeout=120, want="wordmark", at_least=300):
+    """True once the pixel login is on screen (its mint wordmark or, with want='error', its red message)."""
+    end = time.monotonic() + timeout
+    while time.monotonic() < end:
+        if screen_colours(g, "login-probe", LOGIN_COLOURS)[want] >= at_least:
+            return True
+        time.sleep(4)
+    return False
+
+
 def refresh_installer(g):
     """Overlay the working-tree installer files onto the live medium and restart the TUI."""
     files = (("installer/axiom_install.py", "/usr/local/lib/axiom-installer/axiom_install.py", "755"),
@@ -80,12 +119,15 @@ def refresh_installer(g):
              ("provision/axiom-provision", "/usr/local/lib/axiom-provision/axiom-provision", "755"),
              ("provision/axiom-provision.service", "/usr/local/lib/axiom-provision/axiom-provision.service", "644"),
              ("tui/axiom_tui.py", "/usr/local/lib/axiom-tui/axiom_tui.py", "644"),
+             ("tui/fbdraw.py", "/usr/local/lib/axiom-tui/fbdraw.py", "644"),
              ("tui/penguin_art.py", "/usr/local/lib/axiom-tui/penguin_art.py", "644"),
+             ("tui/penguin_image.bin", "/usr/local/lib/axiom-tui/penguin_image.bin", "644"),
              ("greeter/axiom-greeter", "/usr/local/lib/axiom-greeter/axiom-greeter", "755"))
     for rel, dst, mode in files:
         push(g, dst, open(os.path.join(REPO, rel), "rb").read(), mode)
     g.sh("ln -sf /usr/local/lib/axiom-installer/axiom-installer /usr/local/bin/axiom-installer; "
          "ln -sf /usr/local/lib/axiom-provision/axiom-provision /usr/local/bin/axiom-provision; "
+         f"systemctl set-environment AXIOM_FB_TEXT={FB_TEXT}; "
          "systemctl reset-failed axiom-installer; systemctl restart axiom-installer", 20)
 
 
@@ -96,7 +138,8 @@ class Tui:
         self.g, self.last = g, ""
 
     def screen(self):
-        rc, out = self.g.sh("c=$(stty -F /dev/tty1 size | cut -d' ' -f2); fold -w $c /dev/vcs1 2>&1", 20)
+        rc, out = self.g.sh(f"cat {FB_TEXT} 2>/dev/null || "
+                            "{ c=$(stty -F /dev/tty1 size | cut -d' ' -f2); fold -w $c /dev/vcs1 2>&1; }", 20)
         self.last = "\n".join(l.rstrip() for l in (out or "").splitlines() if l.strip())
         return self.last
 
@@ -207,7 +250,7 @@ def stage_inspect(iso, out, luks=False):
     g.vars_src = os.path.join(inst, "OVMF_VARS.fd")
     g.extra = [*disk_args(os.path.join(inst, "disk.qcow2")), "-kernel", os.path.join(inst, "vmlinuz"),
                "-initrd", os.path.join(inst, "initramfs.img"), "-append",
-               f"archisobasedir=axiom archisodevice=/dev/sr0 {CONSOLE}"]
+               f"archisobasedir=axiom archisodevice=/dev/sr0 {LIVE_CMDLINE}"]
     g.start()
     g.check(g.wait_login(), "live medium booted for inspection")
     time.sleep(20)
@@ -222,7 +265,7 @@ def stage_install(iso, out, luks=False):
     disk = mk_disk(out)
     kern, initrd = live_kernel(iso, out)
     g.extra = ["-nic", "user,model=virtio-net-pci", *disk_args(disk), "-kernel", kern, "-initrd", initrd,
-               "-append", f"archisobasedir=axiom archisodevice=/dev/sr0 axiom.installer=1 {CONSOLE}"]
+               "-append", f"archisobasedir=axiom archisodevice=/dev/sr0 axiom.installer=1 {LIVE_CMDLINE}"]
     g.start()
     try:
         if not g.check(g.wait_login(), "live medium booted in installer mode"):
@@ -237,6 +280,7 @@ def stage_install(iso, out, luks=False):
         g.check(t.wait("Welcome to Axiom!", 60), "welcome screen shown on tty1")
         scr = t.last
         g.check("Install Axiom" in scr and "Advanced options" in scr, "welcome menu entries present")
+        g.check("pixel renderer: drm" in g.sh("cat /run/axiom-ui.log 2>&1", 10)[1], "installer draws through DRM (pixel renderer), not the text-console fallback")
         g.check(g.sh("systemctl is-active axiom-installer", 15)[1].strip() == "active", "installer service owns tty1")
         g.check(80 <= int(g.sh("stty -F /dev/tty1 size", 10)[1].split()[-1]) <= 130, "large console font is active (about 120 columns at 1920x1080; the default font gives 240)")
         g.check(g.sh("! pgrep -x axiom-session && ! pgrep -x quickshell", 10)[0] == 0,
@@ -366,7 +410,7 @@ def relogin(g, mark, luks):
 
 
 def greeter_login(g, t, password):
-    g.check(t.wait("Welcome back", 120), "greeter is on tty1")
+    g.check(wait_login_screen(g), "greeter is on screen")
     time.sleep(1)
     t.say(password)
     t.enter()
@@ -396,14 +440,16 @@ def stage_installed(out, disk, vars_src, luks=False):
         g.check(g.sh("systemctl is-enabled NetworkManager bluetooth power-profiles-daemon axiom-provision | sort -u", 15)[1].strip() == "enabled",
                 "services enabled: NetworkManager, bluetooth, power-profiles-daemon, axiom-provision")
         # greeter: wrong password, then right password
-        g.check(t.wait("Welcome back", 120), "greeter drawn on tty1")
-        scr = t.last
-        g.check("Sign in" in scr and "F10" in scr and "Not you?" in scr and "Dev User" in scr, "greeter shows the user, a password box and plain-language hints")
+        g.check(wait_login_screen(g), "greeter drawn: the AXIOM wordmark is on screen")
+        cols = screen_colours(g, "login-check", LOGIN_COLOURS)
+        g.check(cols["wordmark"] >= 300 and cols["box"] >= 100, f"greeter shows the wordmark and the password box ({cols})")
+        g.check(g.sh("journalctl -u greetd --no-pager | grep -c 'pixel renderer: drm'", 20)[1].strip() not in ("", "0"),
+                "the greeter draws through DRM (pixel renderer), not the text-console fallback")
         g.check(80 <= int(g.sh("stty -F /dev/tty1 size", 10)[1].split()[-1]) <= 130, "installed system uses the large console font (vconsole.conf)")
         g.shot("greeter-login")
         start = len(g.raw)
         t.say("wrong-password-1"); t.enter()
-        g.check(t.wait("didn't work", 30), "wrong password is rejected with a plain message")
+        g.check(wait_login_screen(g, 30, want="error"), "wrong password is rejected with a plain message")
         t.say(PW); t.enter()
         g.check(inst.wait_ready(start, 240), "graphical session started from the greeter (AXIOM_SHELL_READY)")
         g.check(g.sh(f"loginctl list-sessions --no-legend | grep -c ' {USER} '", 15)[1].strip() != "0", "logind session exists for the user")

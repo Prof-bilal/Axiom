@@ -33,7 +33,7 @@ from axiom_tui import BG, CYAN, GHOST, GREEN, RED, TEXT, WHITE  # noqa: E402
 SESSION_CMD = ["/usr/local/bin/axiom-session"]
 SESSION_ENV = ["XDG_SESSION_TYPE=wayland", "XDG_SESSION_DESKTOP=axiom", "XDG_CURRENT_DESKTOP=Axiom"]
 WRONG = "That password didn't work. Try again."
-LOGIN_BG = "0B3B32"  # deep green, the landing page background
+LOGIN_BG = "070B0D"  # the shell theme background (lock screen)
 ENTER = (10, 13, curses.KEY_ENTER)
 GRAPHICAL = os.path.join(HERE, "axiom-greeter-graphical")
 USERS_FILE = "axiom-greeter-users.json"
@@ -188,7 +188,7 @@ def run(preview=False, graphical=None, setup=None, wrap=None):
     """Curses login by default. AXIOM_GREETER_GRAPHICAL=1 tries the QML greeter first (ADR-024)."""
     graphical = graphical or run_graphical
     setup = setup or (lambda: tui.setup_console(bg=LOGIN_BG))
-    wrap = wrap or curses.wrapper
+    wrap = wrap or tui.run
     if os.environ.get("AXIOM_GREETER_GRAPHICAL") == "1":
         try:
             started = graphical(human_users())
@@ -209,22 +209,27 @@ class Login:
         self.dx = 0
 
     def draw(self, account, typed, prompt="Password", secret=True):
-        """Green background, big AXIOM wordmark, one bordered input field and the message line."""
+        """Lock-screen proportions: a small penguin, a smaller AXIOM wordmark, a narrow input and the message line."""
         ui = self.ui
         ui.s.erase()
         h, w = ui.h, ui.w
-        rows = tui.big_rows("AXIOM", 2 if w >= 64 else 1)
-        top = max(0, (h - len(rows) - 8) // 2)
+        art = tui.penguin_art.SMALL  # the lock screen's 120 px penguin, not the large one
+        rows = tui.big_rows("AXIOM", 1)  # single-pixel letters: half the width of the big banner
+        pen = len(art) // 2 + 2
+        block = pen + len(rows) + 2 + 3 + 2
+        top = max(0, (h - block) // 2)
+        ui.draw_penguin(top, art, 1.0)
+        y0 = top + pen
         for i, line in enumerate(rows):
-            ui.center(top + i, line, fg=GREEN, bold=True)
-        y = top + len(rows) + 2
-        bw = min(44, w - 8)
+            ui.center(y0 + i, line, fg=GREEN, bold=True)
+        y = y0 + len(rows) + 2
+        bw = min(22, w - 8)
         x = (w - bw) // 2 + self.dx
-        ui.box(y, x, 3, bw, fg=GREEN)
+        ui.box(y, x, 3, bw, fg=CYAN)
         if typed:
             text, fg = ("*" * len(typed) if secret else typed)[-(bw - 4):], WHITE
         else:
-            text, fg = prompt, GHOST
+            text, fg = prompt, TEXT
         ui.put(y + 1, x + 2, text.ljust(bw - 4), fg=fg)
         if self.msg:
             ui.center(y + 4, self.msg, fg=self.msg_color, bold=True)
@@ -259,8 +264,8 @@ class Login:
                     self.msg, self.msg_color = "Type your password and press Enter.", TEXT
                 elif k in (curses.KEY_F10, 274):
                     self.power()
-                elif 32 <= k < 127:
-                    typed += chr(k)
+                elif tui.typed_char(k):
+                    typed += tui.typed_char(k)
         finally:
             self.ui.s.timeout(-1)
 
@@ -375,7 +380,7 @@ if __name__ == "__main__":
         is_preview = "--preview" in sys.argv
         tui.setup_console(bg=LOGIN_BG, preview=is_preview)
         try:
-            curses.wrapper(preview if is_preview else main)
+            tui.run(preview if is_preview else main)
         finally:
             tui.restore_console()
     else:
