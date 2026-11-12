@@ -330,3 +330,28 @@ daemon, runtime or toolchain. Full record:
 
 A per-user JSON file watched by the shell and apps, written only by Settings.
 Full record: [decisions/018-axiom-settings-store.md](decisions/018-axiom-settings-store.md).
+
+## ADR-022: Usable core first, differentiators after, extension seams (proposed)
+
+Finish Phases 7 to 10 as planned, then add profiles and maker tools in a phase
+D, and apply nine extension-seam rules to all new code now so later work is
+additive; no security or privacy rule weakened. Full record:
+[decisions/022-differentiation-direction.md](decisions/022-differentiation-direction.md).
+
+## ADR-023: AI system direction (Jarvis) and rules (accepted, defaults)
+
+Jarvis is a user-owned agent platform, not an AGI: user-built agents are data
+with typed authority enforced by a deterministic broker; Duet first, then Team;
+lessons are structured and verified, never video; Shikigami is an optional
+external app; sessions reuse ContextGit headless behind a sandbox. Full record:
+[decisions/023-ai-system-direction.md](decisions/023-ai-system-direction.md).
+Synthesis: [research/ai-synthesis.md](research/ai-synthesis.md).
+
+## ADR-024: Graphical greeter (Quickshell over greetd, labwc, curses fallback)
+
+The Phase 6 curses login is replaced by a Quickshell greeter over the real
+Greetd API under a minimal labwc session, in the lock screen's visual language.
+The greetd command path is unchanged: `axiom-greeter` runs the graphical
+greeter first and falls back to the curses screen if the graphical stack cannot
+start, so a broken Wayland setup never locks the user out. Full record:
+[decisions/024-graphical-greeter.md](decisions/024-graphical-greeter.md).

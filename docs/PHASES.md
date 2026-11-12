@@ -1,6 +1,7 @@
 # Axiom implementation phases
 
-Current phase: **Phase 6 — installable system (complete, 2026-11-08; see [ADR-020](decisions/020-installable-system.md))**. Phases 0 to 6 are complete.
+Current phase: **Phase 6 — installable system (complete, 2026-11-08; see [ADR-020](decisions/020-installable-system.md))**. Phases 0 to 6 are complete. Next: **Phase 7**.
+Direction for phases 7 onward: [ADR-022](decisions/022-differentiation-direction.md) (usable core first, then the differentiators in phase D, with extension seams in every phase) and [ADR-023](decisions/023-ai-system-direction.md) (the AI system, accepted with defaults).
 Phases 6 onward were re-ordered on 2026-11-06: a complete, installable core
 distro (installer, packages, daily-driver, developer edition, hardware) comes
 before the security and AI layers.
@@ -21,8 +22,9 @@ in a branch is not an exit criterion.
 | 8 | Daily-driver completeness | Printing, removable media, screenshots/recording, clipboard, idle lock, input methods/i18n, accessibility, default firewall and baseline hardening pass on the installed system. |
 | 9 | Developer edition | Curated toolchains, git, containers, editors and optional security-tools sets; a clean install builds and runs sample projects. |
 | 10 | Hardware and stability | Declared Intel/AMD/NVIDIA, power, suspend, multi-monitor, HiDPI, input, connectivity and audio matrix passes on the installed system. |
+| D | Differentiators (after the usable line) | Profiles look layer, Launcher+ and typed actions, Zones, Capture, Axiom Projects, Connections, Creator profile. Each item has its own exit evidence. |
 | 11 | Security layer | Capability permissions, filesystem/network scopes, secret protection, audit and Warden disposition are evidence-backed. |
-| 12 | AI-native layer | Optional agent runtime, contextual search and safe automation operate through typed permissions. |
+| 12 | AI-native layer | Duet-style single agent and Team mode run user-built agents through typed, revocable grants; sessions preview; lessons only if their experiment passes. |
 | 13 | Distribution | Signed updates, release repository, channels and recovery media pass disposable-target gates (signature rejection, interruption). |
 
 ## Phase 0 — architecture reset
@@ -209,7 +211,10 @@ firewall and baseline hardening (the full capability layer stays in Phase 11).
 ## Phase 9 — developer edition
 
 Curated toolchains, git, containers, editors and terminal workflow, plus an
-optional Kali-style security-tools package set.
+optional Kali-style security-tools package set. The Developer Hub shows Shikigami
+as an optional external entry: its icon is visible, it is not installed by default,
+and installing is the user's choice (the entry links to the vendor's download;
+Axiom does not host, sandbox or audit it).
 
 **Exit:** a clean install builds and runs sample projects in several languages.
 
@@ -219,6 +224,39 @@ Test Intel, AMD and NVIDIA where practical; laptop power states, suspend/resume,
 multi-monitor, HiDPI, touchpad, Bluetooth, Wi-Fi, audio and USB devices. Record
 supported, unsupported and untested states instead of broad claims.
 
+## Phase D — differentiators (after the usable line)
+
+Starts after Phase 10. Steps are ordered and each has its own exit criteria and
+QEMU evidence when it starts:
+
+- **D1 Profiles, look layer:** colors and fonts come from the active profile
+  tokens; three built-in looks; one-click undo through the kept previous file.
+  Default Axiom look stays pixel-identical (regression check). Profiles are data,
+  never code.
+- **D2 Launcher+ and typed `ActionService`:** one catalogue and validator shared
+  by the Launcher, Automate and Phase 12. Acceptance criteria include the AI seams
+  S10-S17 from ADR-023 (action metadata, actor identity, one audit format, a
+  reserved `secretRef` type, one resource-scope vocabulary, cancellable jobs, a
+  shared-artifact convention, an untrusted-content wrapper). No Vicinae
+  embedding (GPL-3.0; unsandboxed Node extensions).
+- **D3 Zones:** generated labwc regions through the ADR-016 adapter.
+- **D4 Capture (full app):** annotate, OCR, record, and upload only on user click
+  after a destination is shown. Redaction must destroy pixels. The recording
+  indicator cannot be hidden. The basic capture service from Phase 8 is reused.
+- **D5 Axiom Projects:** a Python CLI over plain files; every git call goes through
+  one locked-down runner (a repository's `core.fsmonitor` executed code in testing);
+  a 20-case adversarial corpus must pass; kill-by test of 15 of 20 working days.
+- **D6 Connections:** SSH and SFTP sessions over `~/.ssh/config`, with strict field
+  schemas and never writing `ProxyCommand` or `LocalCommand`. Key-based login only.
+- **D7 Creator profile and bridge pipelines:** demo video (Capture, OpenScreen or
+  Recordly with manual zoom, whisper.cpp captions) and launch kit (git-cliff plus a
+  prompt template). AGPL and GPL tools are recommended, never bundled.
+
+Seams S1-S9 from ADR-022 apply to every step.
+
+**Exit:** each D step passes its own evidence gate; no step ships a claim listed
+as unsupported in the Track 4 synthesis.
+
 ## Phase 11 — security layer
 
 Define and enforce app permissions, agent filesystem scopes, network permissions,
@@ -226,11 +264,53 @@ secret protection, capability-based execution, sensitive-file protection and
 audit logs. Evaluate Warden only against verified behavior; it never grants
 intent or replaces Axiom policy.
 
+Added by ADR-023 (accepted):
+- **Broker:** a dedicated unprivileged-UID daemon that recomputes effective
+  authority on every call (manifest request, user grant, parent ceiling, lane
+  ceiling, system policy, taint narrowing, remaining budget). It has its own ADR
+  and review before it exists.
+- **Sandbox layering:** Warden plus Landlock, seccomp and cgroups v2 for agent
+  workers, once Warden's bypass matrix passes. Warden's audit is post-hoc, so it
+  is not treated as preventive.
+- **Taint rule:** deterministic; once a session has seen untrusted content and
+  private data, egress actions are SENSITIVE with a payload preview.
+- **Grants:** SENSITIVE and CRITICAL grants are one-use; a kill switch bumps a
+  policy generation.
+- **Secret store:** needed before any upload token or saved SSH passphrase.
+- **Compositor gating:** labwc lets unsandboxed clients capture and inject input.
+  No security claims about agents on the labwc harness until the Axiom compositor
+  exists.
+- **Sessions:** Axiom Sessions run in an Axiom-owned sandbox (fake home, scrubbed
+  environment, egress only through an allowlisting proxy, one tmux server per
+  session, one clone per session). A session never receives a Wayland socket.
+
 ## Phase 12 — AI-native layer
 
-Add the optional system agent, natural-language launcher, contextual search,
-developer workflows, automation, project awareness and local/cloud adapters.
-Core OS functionality remains independent of AI and network providers.
+Phase 12 is split by ADR-023:
+
+- **12a (Duet, working name "Pair"):** one visible agent; agent files as
+  `agent.json` beside a spec-valid `SKILL.md`; typed actions only; mandatory
+  budgets; memory as plain files the user can read and delete; a built-in
+  Research Team template; Axiom Sessions preview (Lane 1, developer sessions);
+  the Shikigami entry stays external. Runtime is a module of `assistantd` plus
+  systemd user units; no new daemon beyond the Phase 11 broker.
+- **12b (Team):** several bounded background agents with typed handoffs,
+  depth at most 2 and breadth at most 4, a budget pool, and an approvals inbox.
+  Lessons are added only if their experiment passes: a teacher is chosen per task
+  area by measured score (or pinned by the user), learners are cheaper hosted or
+  local models, and a lesson is accepted only after the learner's own score
+  improves. Routine promotion always needs user approval.
+- **Later, separate ADRs:** community exchange, unattended write actions,
+  third-party `SKILL.md` import, voice.
+
+Core OS functionality remains independent of AI and network providers. Cloud
+providers are optional; any lesson or task text sent to a hosted provider is
+redacted and approved per task.
+
+**Exit (12a):** a user builds a Duet agent, grants it a capability, runs it, reads
+its audit trail, revokes the grant, and kills it, all in QEMU, with the model
+unable to bypass the broker. **Exit (12b):** the same for a Team, plus the
+lessons experiment result retained, whether it passed or not.
 
 ## Phase 13 — distribution
 
