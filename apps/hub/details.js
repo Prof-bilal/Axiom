@@ -231,12 +231,7 @@ var DETAILS = {
  },
  "helix": {
   "overview": "Helix is a modal terminal text editor written in Rust with built-in language server support and tree-sitter syntax handling. It is for developers who want a batteries-included modal editor with no configuration plugin system.",
-  "shots": [
-   {
-    "url": "screenshots/helix-shot-1.png",
-    "caption": ""
-   }
-  ],
+  "shots": [],
   "when": "- You want a terminal editor with built-in language server support and no plugin setup.\n- You like selection-first editing and multiple selections.\n- You want Tree-sitter based highlighting and navigation.\n- You want a modal editor without writing a Lua or Vimscript config.",
   "how": "- Normal mode navigates and runs commands; insert mode (`i`) types text; select/extend mode (`v`) makes selections.\n- You select text first, then act on it (for example `c` to change), and multiple selections act together.\n- A fuzzy file picker jumps to files and buffers.\n- Documentation is at docs.helix-editor.com; `:health` and language config details: Not found.",
   "notFor": "- Users who want to script the editor heavily or use the Vim plugin ecosystem; use Neovim.\n- Users who want a GUI with menus and point-and-click; use VS Code or Zed.",
@@ -334,20 +329,7 @@ var DETAILS = {
  },
  "geany": {
   "overview": "Geany is a lightweight, fast IDE-style text editor using GTK, with syntax highlighting, code folding, symbol lists and build integration. It is for developers and students who want a small, quick editor rather than a full IDE.",
-  "shots": [
-   {
-    "url": "screenshots/geany-shot-1.png",
-    "caption": ""
-   },
-   {
-    "url": "screenshots/geany-shot-2.png",
-    "caption": ""
-   },
-   {
-    "url": "screenshots/geany-shot-3.png",
-    "caption": ""
-   }
-  ],
+  "shots": [],
   "when": "- You want a small, fast GTK editor with few dependencies.\n- You are not on KDE or GNOME and want a lightweight IDE.\n- You need a symbol list and document list in a sidebar while you code.\n- You want to open files quickly from the command line.",
   "how": "- Each open file is a document shown in an editor tab.\n- The sidebar has a Symbols view (code symbols) and a Documents view (open files).\n- Open with File > Open or `geany file:line:col` to jump to a position.\n- Build menu and plugin setup: Not found in the sections I could read.",
   "notFor": "- Java or Android projects that need deep build and refactoring tools; use IntelliJ IDEA or Android Studio.\n- Users who want modal editing; use Neovim or Helix.",
@@ -390,16 +372,7 @@ var DETAILS = {
  },
  "opencode": {
   "overview": "OpenCode is an open-source AI coding agent for the terminal, with a build mode for read/write changes and a read-only plan mode. It is for developers who want an agent that works with multiple model providers, including local models.",
-  "shots": [
-   {
-    "url": "screenshots/opencode-shot-1.webp",
-    "caption": ""
-   },
-   {
-    "url": "screenshots/opencode-shot-2.webp",
-    "caption": ""
-   }
-  ],
+  "shots": [],
   "when": "- You want a terminal coding agent that is not tied to one model provider.\n- You want to switch between models and providers from inside one tool.\n- You work in a terminal and want a TUI with sessions you can resume.\n- You want to add your own commands, plugins, or MCP servers.",
   "how": "- Run `opencode` in a project directory to open the TUI.\n- Connect a provider with `/connect`, then choose a model with `/models`.\n- `/new` starts a session; `/sessions` lists and switches sessions.\n- Reference files with `@`, run shell commands with `!`, and use `/undo` and `/redo` for file changes in a Git repo.",
   "notFor": "- Users who want a fully managed agent with no API key or provider setup; use Claude Code or Codex.\n- Non-terminal workflows; use an IDE agent or a desktop tool instead.",
@@ -448,12 +421,7 @@ var DETAILS = {
  },
  "claudecode": {
   "overview": "Claude Code is Anthropic's agentic coding tool that runs in the terminal, with IDE and desktop front ends, for reading, editing and running code in a project. It is for developers who use Claude models for software work.",
-  "shots": [
-   {
-    "url": "screenshots/claudecode-shot-1.gif",
-    "caption": ""
-   }
-  ],
+  "shots": [],
   "when": "- You want an agent that reads a codebase, edits many files, runs commands, and verifies the result.\n- You want to automate tasks in the terminal, for example writing tests and fixing failures.\n- You want commits and pull requests created from the command line.\n- You want repeatable project rules through CLAUDE.md, skills, and hooks.",
   "how": "- Install, then run `claude` in a project directory; it prompts you to log in on first use.\n- Describe a task in plain language; it plans, edits files across the project, and checks the result.\n- Use `claude -p \"...\"` for non-interactive, scriptable runs and pipelines.\n- CLAUDE.md is read at the start of each session; MCP connects external tools; hooks run shell commands around actions.",
   "notFor": "- Users who want a free, offline-only tool; it needs a subscription or API account.\n- Quick single-file edits where a plain editor is faster; use VS Code or Zed.",
@@ -1019,12 +987,7 @@ var DETAILS = {
  },
  "lens": {
   "overview": "Lens is a desktop Kubernetes IDE for viewing and managing clusters, with a GUI for workloads, logs and terminals. It is for developers and operators who prefer a desktop tool over the command line for cluster work.",
-  "shots": [
-   {
-    "url": "screenshots/lens-shot-1.png",
-    "caption": ""
-   }
-  ],
+  "shots": [],
   "when": "- You want a desktop GUI to see, debug, and operate Kubernetes clusters from one workspace instead of many terminal commands.\n- You are connecting to managed clusters such as EKS, AKS, GKE, or OpenShift and want their resources in one place.\n- You want to view pod logs, open a pod shell, or set up port forwarding without typing kubectl commands.\n- You want to browse Helm charts and releases visually.",
   "how": "- Lens is a desktop app that runs locally and uses your existing cluster credentials; it respects existing RBAC.\n- You add clusters (local, or cloud-managed) to the catalog and switch between them.\n- The Workloads and resource views show pods, deployments, and other objects, with Config, Network, Storage, and Access Control sections.\n- The Navigator, Hotbar, Details panel, and Command Palette organize the workspace.\n- Extensions come from a Marketplace, and an integrated terminal is available.",
   "notFor": "- Scripting, automation, or CI; use kubectl or Helm.\n- A lightweight terminal-only workflow; k9s is faster over SSH.\n- Governed AI agent platforms: the homepage promotes Lens Agents, which is a separate product area, so check its scope before adopting it.",
@@ -2156,20 +2119,7 @@ var DETAILS = {
  },
  "itch": {
   "overview": "The itch app is a desktop client for itch.io that installs and updates games and tools from the itch.io store. It is for players and creators who use itch.io.",
-  "shots": [
-   {
-    "url": "screenshots/itch-shot-1.png",
-    "caption": ""
-   },
-   {
-    "url": "screenshots/itch-shot-2.png",
-    "caption": ""
-   },
-   {
-    "url": "screenshots/itch-shot-3.png",
-    "caption": ""
-   }
-  ],
+  "shots": [],
   "when": "- You buy or download indie games and tools from itch.io and want them in one desktop app.\n- You want the app to download, update and launch your itch.io games for you.\n- You want to filter the store for games that are marked as available on Linux.",
   "how": "- The itch app is a desktop client for the itch.io store; it is not a replacement for the website.\n- Your owned and downloaded games appear in the app's library.\n- Downloads, installs, updates and launches are handled by butler, a background component the app uses.\n- The app notifies you when an installed game has an update.\n- In the store, the Linux tag in the filter sidebar limits results to Linux builds.",
   "notFor": "- Steam, Epic or GOG titles; use Steam or Heroic.\n- Running Windows-only games with per-environment Wine control; use Bottles.",
@@ -2476,20 +2426,7 @@ var DETAILS = {
  },
  "waydroid": {
   "overview": "",
-  "shots": [
-   {
-    "url": "screenshots/waydroid-shot-1.jpg",
-    "caption": ""
-   },
-   {
-    "url": "screenshots/waydroid-shot-2.jpg",
-    "caption": ""
-   },
-   {
-    "url": "screenshots/waydroid-shot-3.png",
-    "caption": ""
-   }
-  ],
+  "shots": [],
   "when": "- You want Android apps to run on a Linux desktop without a virtual machine.\n- You are on a Wayland session (the official docs ask for a Wayland session on Ubuntu 22.04+).\n- You need to install a specific APK on a Linux machine, for example with `waydroid app install`.\n- You want Android apps in the normal Linux application menu, in windowed or full-screen mode.",
   "how": "- Runs a full Android system (LineageOS-based image, Android 13 per the project site) in a container that uses Linux namespaces.\n- Needs an initial setup with `waydroid init`, then a container service, then a user session.\n- Uses the Linux kernel's binder support for Android hardware access.\n- Apps installed with `waydroid app install file.apk`. APKs that are ARM-only will not run on x86_64.",
   "notFor": "- Systems that cannot provide a Wayland session or the kernel features Waydroid relies on.",
@@ -2569,12 +2506,7 @@ var DETAILS = {
  },
  "cuda-toolkit": {
   "overview": "",
-  "shots": [
-   {
-    "url": "screenshots/cuda-toolkit-shot-1.png",
-    "caption": ""
-   }
-  ],
+  "shots": [],
   "when": "- You are building or running GPU-accelerated C/C++ code on an NVIDIA GPU under Linux.\n- You need `nvcc`, the CUDA runtime, and the GPU math libraries for a project.\n- You want the sample programs (deviceQuery, bandwidthTest) to check the GPU works.\n- You need to match a CUDA version to a framework or library you are building against.",
   "how": "- Installed from NVIDIA's repositories with `apt install cuda-toolkit` or `dnf install cuda-toolkit`, or from a `.run` file.\n- Since CUDA 13.4 the toolkit does not install the GPU driver; install a compatible driver separately.\n- Needs a CUDA-capable NVIDIA GPU; supported architectures are listed on NVIDIA's CUDA GPU page.\n- Put `/usr/local/cuda-<version>/bin` on `PATH` and its `lib64` on `LD_LIBRARY_PATH` so `nvcc` and the libraries are found.",
   "notFor": "- Machines without an NVIDIA GPU (AMD and Intel GPUs need other stacks).\n- Runtime-only use: the pip wheel `nvidia-cuda-runtime` does not include the developer tools.",
@@ -2659,16 +2591,7 @@ var DETAILS = {
  },
  "unityhub": {
   "overview": "",
-  "shots": [
-   {
-    "url": "screenshots/unityhub-shot-1.png",
-    "caption": ""
-   },
-   {
-    "url": "screenshots/unityhub-shot-2.png",
-    "caption": ""
-   }
-  ],
+  "shots": [],
   "when": "- You develop games or interactive 3D content with Unity on Linux.\n- You need several Unity Editor versions side by side and want to switch between them.\n- You want to create or open Unity projects and add platform build modules.\n- You want Unity's own package repository so Hub updates come through apt or dnf.",
   "how": "- A desktop manager for the Unity Editor: it installs, lists and launches Editor versions and projects.\n- Ubuntu is the officially supported Linux target (`.deb` via apt); RHEL, CentOS and Fedora use an `.rpm` repository that Unity does not officially support.\n- Any distribution can run the AppImage (`UnityHubSetup-x86_64.AppImage`) with no root access.\n- The Unity Editor does not run on Linux Arm64 yet, so the Hub cannot run an Editor there.",
   "notFor": "- Arm64 Linux machines that need the Unity Editor.\n- Users who need an officially supported Hub on Fedora, RHEL or CentOS.",
