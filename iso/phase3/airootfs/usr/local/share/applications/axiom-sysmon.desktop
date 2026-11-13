@@ -1,0 +1,12 @@
+[Desktop Entry]
+# Axiom System Monitor: CPU, memory and process graphs (btop, run in the Foot terminal).
+Type=Application
+Icon=axiom-sysmon
+Name=System Monitor
+GenericName=Performance Monitor
+Comment=Show CPU, memory, disk and process activity
+Categories=System;Monitor;
+Keywords=monitor;cpu;memory;processes;performance;
+Exec=foot -e btop
+StartupNotify=true
+Terminal=false
