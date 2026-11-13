@@ -1,0 +1,19 @@
+{
+  "id": "dockerdesktop",
+  "commands": [
+    {
+      "method": "download .deb (Debian)",
+      "command": "download the Docker Desktop .deb from the official Debian install page (the direct file is not given on the page)",
+      "needs_root": false,
+      "source": "https://docs.docker.com/desktop/setup/install/linux/debian/"
+    },
+    {
+      "method": "apt install .deb (Debian)",
+      "command": "sudo apt-get update && sudo apt-get install ./docker-desktop-amd64.deb",
+      "needs_root": true,
+      "source": "https://docs.docker.com/desktop/setup/install/linux/debian/"
+    }
+  ],
+  "status": "partly verified",
+  "note": "The official Debian page gives the apt install step, but the apt repository setup lives on the Docker Engine page, which was not read; the .deb itself is a download step."
+}

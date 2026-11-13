@@ -1,0 +1,13 @@
+{"id": "k9s",
+ "screenshots": [{"url": "https://github.com/derailed/k9s/raw/master/assets/screen_po.png", "caption": "Pods view", "source": "https://github.com/derailed/k9s"},
+  {"url": "https://github.com/derailed/k9s/raw/master/assets/screen_logs.png", "caption": "Logs view", "source": "https://github.com/derailed/k9s"},
+  {"url": "https://github.com/derailed/k9s/raw/master/assets/screen_dp.png", "caption": "Deployments view", "source": "https://github.com/derailed/k9s"}],
+ "logo": {"url": "https://github.com/derailed/k9s/raw/master/assets/k9s.png", "source": "https://github.com/derailed/k9s"},
+ "commands": [{"method": "install (Homebrew)", "command": "brew install derailed/k9s/k9s", "needs_root": false, "source": "https://github.com/derailed/k9s"},
+  {"method": "install (pacman, Arch)", "command": "pacman -S k9s", "needs_root": true, "source": "https://github.com/derailed/k9s"},
+  {"method": "install (dnf, Fedora 42+)", "command": "dnf install k9s", "needs_root": true, "source": "https://github.com/derailed/k9s"},
+  {"method": "install (Go)", "command": "go install github.com/derailed/k9s@latest", "needs_root": false, "source": "https://github.com/derailed/k9s"},
+  {"method": "run", "command": "k9s", "needs_root": false, "source": "https://github.com/derailed/k9s"}],
+ "min_ram_gb": null,
+ "status": "partly found",
+ "note": "Logo, three screenshots and install/run commands found in the README; no RAM requirement is stated."}

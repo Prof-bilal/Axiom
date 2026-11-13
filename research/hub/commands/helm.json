@@ -1,0 +1,13 @@
+{"id": "helm",
+ "screenshots": [],
+ "logo": {"url": "https://helm.sh/img/helm.svg", "source": "https://helm.sh/docs/intro/install/"},
+ "commands": [{"method": "installer script (download)", "command": "curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-4", "needs_root": false, "source": "https://helm.sh/docs/intro/install/"},
+  {"method": "installer script (chmod)", "command": "chmod 700 get_helm.sh", "needs_root": false, "source": "https://helm.sh/docs/intro/install/"},
+  {"method": "installer script (run)", "command": "./get_helm.sh", "needs_root": false, "source": "https://helm.sh/docs/intro/install/"},
+  {"method": "install (apt, Debian/Ubuntu)", "command": "sudo apt-get update", "needs_root": true, "source": "https://helm.sh/docs/intro/install/"},
+  {"method": "install (apt, Debian/Ubuntu)", "command": "sudo apt-get install helm", "needs_root": true, "source": "https://helm.sh/docs/intro/install/"},
+  {"method": "install (snap)", "command": "sudo snap install helm --classic", "needs_root": true, "source": "https://helm.sh/docs/intro/install/"},
+  {"method": "install (dnf, Fedora)", "command": "sudo dnf install helm", "needs_root": true, "source": "https://helm.sh/docs/intro/install/"}],
+ "min_ram_gb": null,
+ "status": "partly found",
+ "note": "Logo and install commands found on the official install page; no screenshots and no RAM requirement are stated there. The logo URL is the page's relative /img/helm.svg resolved on helm.sh."}

@@ -1,0 +1,10 @@
+{"id": "ansible",
+ "screenshots": [],
+ "logo": {"url": "https://docs.ansible.com/projects/ansible/latest/_static/images/Ansible-Mark-RGB_White.png", "source": "https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html"},
+ "commands": [{"method": "install (pip, full package)", "command": "python3 -m pip install --user ansible", "needs_root": false, "source": "https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html"},
+  {"method": "install (pip, minimal package)", "command": "python3 -m pip install --user ansible-core", "needs_root": false, "source": "https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html"},
+  {"method": "install (pipx, full package)", "command": "pipx install --include-deps ansible", "needs_root": false, "source": "https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html"},
+  {"method": "install (pipx, minimal package)", "command": "pipx install ansible-core", "needs_root": false, "source": "https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html"}],
+ "min_ram_gb": null,
+ "status": "partly found",
+ "note": "Logo and pip/pipx install commands found on the official install guide; no screenshots and no RAM requirement are stated, and apt/dnf commands are on a separate OS-specific page not read."}

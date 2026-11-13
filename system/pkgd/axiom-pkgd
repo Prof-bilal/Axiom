@@ -1,0 +1,32 @@
+#!/bin/sh
+# Privileged helper for Axiom App Installer: install one pacman package file.
+# Runs only as root through pkexec, after polkit approves org.axiom.installer.install.
+# Operations: install <abs path to .pkg.tar.*> (copied to a root-only dir first so it
+# cannot be swapped after the check), sync <repo package>, remove <package>.
+set -u
+
+[ "$(id -u)" -eq 0 ] || { echo "axiom-pkgd: must run as root" >&2; exit 1; }
+op=${1:-}
+case "$op" in
+  install)
+    src=${2:-}
+    case "$src" in /*) ;; *) echo "axiom-pkgd: path must be absolute" >&2; exit 2 ;; esac
+    case "$src" in *.pkg.tar.zst|*.pkg.tar.xz) ;; *) echo "axiom-pkgd: not a package file" >&2; exit 2 ;; esac
+    [ -f "$src" ] && [ ! -L "$src" ] || { echo "axiom-pkgd: no such file" >&2; exit 2; }
+    tmp=$(mktemp -d /run/axiom-pkgd.XXXXXX) || exit 1
+    cp -- "$src" "$tmp/package" || { rm -rf "$tmp"; exit 1; }
+    pacman -U --noconfirm -- "$tmp/package"
+    rc=$?
+    rm -rf "$tmp"
+    exit $rc
+    ;;
+  sync|remove)
+    pkg=${2:-}
+    case "$pkg" in
+      ""|-*|*[!a-z0-9@._+-]*) echo "axiom-pkgd: invalid package name" >&2; exit 2 ;;
+    esac
+    if [ "$op" = sync ]; then exec pacman -S --noconfirm --needed -- "$pkg"; fi
+    exec pacman -Rns --noconfirm -- "$pkg"
+    ;;
+  *) echo "axiom-pkgd: unknown operation" >&2; exit 2 ;;
+esac

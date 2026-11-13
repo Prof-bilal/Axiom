@@ -176,3 +176,10 @@ xkeyboard-config
 # test fixture only: simulated access point on mac80211_hwsim for the Wi-Fi tests
 hostapd
 plymouth
+
+# --- Axiom Hub (software install): Flatpak, polkit agent for the admin prompt, user-scope CLI installers, AppImage runtime ---
+flatpak
+polkit-gnome
+npm
+python-pipx
+fuse2

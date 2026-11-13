@@ -104,6 +104,7 @@ AppWindow {
             }
 
             Text {
+                id: countText
                 anchors.right: parent.right
                 anchors.rightMargin: Theme.spacingLg
                 anchors.verticalCenter: parent.verticalCenter
@@ -299,4 +300,5 @@ AppWindow {
             onShowPackage: function (name) { root.showPackage(name) }
         }
     }
+
 }

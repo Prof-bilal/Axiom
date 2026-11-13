@@ -1,0 +1,31 @@
+{
+  "id": "goose",
+  "commands": [
+    {
+      "method": "CLI install script",
+      "command": "curl -fsSL https://github.com/aaif-goose/goose/releases/download/stable/download_cli.sh | bash",
+      "needs_root": false,
+      "source": "https://goose-docs.ai/docs/getting-started/installation"
+    },
+    {
+      "method": "CLI install script (no interactive setup)",
+      "command": "curl -fsSL https://github.com/aaif-goose/goose/releases/download/stable/download_cli.sh | CONFIGURE=false bash",
+      "needs_root": false,
+      "source": "https://goose-docs.ai/docs/getting-started/installation"
+    },
+    {
+      "method": "Desktop DEB (Debian/Ubuntu)",
+      "command": "download https://github.com/aaif-goose/goose/releases/latest (choose the .deb asset), then: sudo dpkg -i (filename).deb",
+      "needs_root": true,
+      "source": "https://goose-docs.ai/docs/getting-started/installation"
+    },
+    {
+      "method": "Desktop RPM / Flatpak",
+      "command": "download https://github.com/aaif-goose/goose/releases/latest (choose the .rpm or Flatpak asset)",
+      "needs_root": false,
+      "source": "https://goose-docs.ai/docs/getting-started/installation"
+    }
+  ],
+  "status": "verified",
+  "note": "Commands are from the official goose docs installation page; the .deb asset filename is not given, so it is a download step."
+}

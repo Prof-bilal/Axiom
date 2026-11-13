@@ -1,0 +1,43 @@
+{
+  "id": "colima",
+  "commands": [
+    {
+      "method": "Homebrew",
+      "command": "brew install colima",
+      "needs_root": false,
+      "source": "https://colima.run/docs/installation/"
+    },
+    {
+      "method": "Homebrew with Docker client",
+      "command": "brew install colima docker",
+      "needs_root": false,
+      "source": "https://colima.run/docs/installation/"
+    },
+    {
+      "method": "Nix",
+      "command": "nix-env -i colima",
+      "needs_root": false,
+      "source": "https://colima.run/docs/installation/"
+    },
+    {
+      "method": "binary download (x86_64)",
+      "command": "curl -LO https://github.com/abiosoft/colima/releases/latest/download/colima-Linux-x86_64 && sudo install colima-Linux-x86_64 /usr/local/bin/colima",
+      "needs_root": true,
+      "source": "https://colima.run/docs/installation/"
+    },
+    {
+      "method": "binary download (arm64)",
+      "command": "curl -LO https://github.com/abiosoft/colima/releases/latest/download/colima-Linux-arm64 && sudo install colima-Linux-arm64 /usr/local/bin/colima",
+      "needs_root": true,
+      "source": "https://colima.run/docs/installation/"
+    },
+    {
+      "method": "KVM permission (if needed)",
+      "command": "sudo usermod -aG kvm $USER",
+      "needs_root": true,
+      "source": "https://colima.run/docs/installation/"
+    }
+  ],
+  "status": "verified",
+  "note": "Commands are from the official Colima installation page; root needs for the Homebrew and Nix lines are inferred from how those tools install, not stated on the page."
+}

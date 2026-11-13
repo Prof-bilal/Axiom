@@ -1,0 +1,13 @@
+{
+  "id": "ollama",
+  "commands": [
+    {
+      "method": "install script",
+      "command": "curl -fsSL https://ollama.com/install.sh | sh",
+      "needs_root": false,
+      "source": "https://ollama.com/download/linux"
+    }
+  ],
+  "status": "partly verified",
+  "note": "The official page shows the install script, but does not say whether it needs root (the script may invoke sudo itself)."
+}

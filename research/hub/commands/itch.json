@@ -1,0 +1,1 @@
+{"id": "itch", "commands": [{"method": "download AppImage archive", "command": "download https://broth.itch.zone/install-itch/linux-appimage-amd64/LATEST/archive.zip", "needs_root": false, "source": "https://itch.io/app"}], "status": "partly verified", "note": "The official page offers only a zip download of the AppImage with no extract or run steps."}

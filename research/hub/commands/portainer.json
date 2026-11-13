@@ -1,0 +1,19 @@
+{
+  "id": "portainer",
+  "commands": [
+    {
+      "method": "docker (create volume)",
+      "command": "docker volume create portainer_data",
+      "needs_root": false,
+      "source": "https://docs.portainer.io/start/install-ce/server/docker/linux"
+    },
+    {
+      "method": "docker (run server)",
+      "command": "docker run -d -p 8000:8000 -p 9443:9443 --name portainer --restart=always -v /var/run/docker.sock:/var/run/docker.sock -v portainer_data:/data portainer/portainer-ce:lts",
+      "needs_root": false,
+      "source": "https://docs.portainer.io/start/install-ce/server/docker/linux"
+    }
+  ],
+  "status": "verified",
+  "note": "Docker run commands are from the official Portainer CE Linux docs; root needs are not stated per command (page assumes Docker runs as root), so needs_root is false and the Docker daemon access is the real requirement."
+}

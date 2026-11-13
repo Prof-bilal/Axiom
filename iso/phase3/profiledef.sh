@@ -27,6 +27,7 @@ file_permissions=(
   ["/usr/local/bin/axiom-greeting"]="0:0:755"
   ["/usr/local/bin/axiom-terminal"]="0:0:755"
   ["/usr/local/bin/axiom-app"]="0:0:755"
+  ["/usr/local/bin/axiom-pkgd"]="0:0:755"
   ["/usr/local/lib/axiom-installer"]="0:0:755"
   ["/usr/local/lib/axiom-installer/axiom-installer"]="0:0:755"
   ["/usr/local/lib/axiom-installer/axiom_install.py"]="0:0:755"

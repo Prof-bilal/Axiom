@@ -1,0 +1,10 @@
+{"id": "vllm",
+ "screenshots": [],
+ "logo": {"url": "https://raw.githubusercontent.com/vllm-project/vllm/main/docs/assets/logos/vllm-logo-text-light.png", "source": "https://github.com/vllm-project/vllm"},
+ "commands": [
+  {"method": "uv", "command": "uv pip install vllm", "needs_root": false, "source": "https://github.com/vllm-project/vllm"},
+  {"method": "vllm CLI", "command": "vllm download-kernels", "needs_root": false, "source": "https://github.com/vllm-project/vllm"}
+ ],
+ "min_ram_gb": null,
+ "status": "partly found",
+ "note": "The README has a logo and install commands but no screenshots, and it states no minimum RAM or memory requirement."}

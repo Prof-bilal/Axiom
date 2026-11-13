@@ -1,0 +1,10 @@
+{"id": "nix",
+ "screenshots": [],
+ "logo": null,
+ "commands": [
+  {"method": "multi-user install (recommended)", "command": "curl --proto '=https' --tlsv1.2 -L https://nixos.org/nix/install | sh -s -- --daemon", "needs_root": true, "source": "https://nixos.org/download/"},
+  {"method": "single-user install", "command": "curl --proto '=https' --tlsv1.2 -L https://nixos.org/nix/install | sh -s -- --no-daemon", "needs_root": false, "source": "https://nixos.org/download/"}
+ ],
+ "min_ram_gb": null,
+ "status": "partly found",
+ "note": "Install commands found on the official download page; it has no screenshots and states no minimum RAM."}

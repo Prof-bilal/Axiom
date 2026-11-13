@@ -1,0 +1,15 @@
+{"id": "virtualbox",
+ "screenshots": [
+  {"url": "https://www.virtualbox.org/attachment/wiki/Screenshots/Mint17.1_on_Ubuntu_14.04.png", "caption": "VirtualBox 5.0 for Linux. Within VirtualBox Mint 17.1 is running.", "source": "https://www.virtualbox.org/wiki/Screenshots"},
+  {"url": "https://www.virtualbox.org/attachment/wiki/Screenshots/Windows_7_on_Ubuntu_14.04.png", "caption": "VirtualBox 5.0 for Linux. Within VirtualBox Windows 7 is running.", "source": "https://www.virtualbox.org/wiki/Screenshots"},
+  {"url": "https://www.virtualbox.org/attachment/wiki/Screenshots/3-setup-starting.png", "caption": "Windows Vista setup begins!", "source": "https://www.virtualbox.org/wiki/Screenshots"},
+  {"url": "https://www.virtualbox.org/attachment/wiki/Screenshots/snapshot-details.png", "caption": "Snapshot details of a Windows Vista VM.", "source": "https://www.virtualbox.org/wiki/Screenshots"}
+ ],
+ "logo": {"url": "https://www.virtualbox.org/graphics/vbox-new-logo.png", "source": "https://www.virtualbox.org/"},
+ "commands": [
+  {"method": "apt", "command": "sudo apt-get update", "needs_root": true, "source": "https://www.virtualbox.org/wiki/Linux_Downloads"},
+  {"method": "apt", "command": "sudo apt-get install virtualbox-7.1", "needs_root": true, "source": "https://www.virtualbox.org/wiki/Linux_Downloads"}
+ ],
+ "min_ram_gb": null,
+ "status": "found",
+ "note": "Screenshots and logo are from virtualbox.org; the Debian/Ubuntu commands are from the official download page. The official pages state no RAM requirement, and the Arch wiki page was blocked, so the pacman install was not recorded."}

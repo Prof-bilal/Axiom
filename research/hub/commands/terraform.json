@@ -1,0 +1,10 @@
+{"id": "terraform",
+ "screenshots": [],
+ "logo": null,
+ "commands": [{"method": "install (apt, Ubuntu/Debian)", "command": "sudo apt update && sudo apt install terraform", "needs_root": true, "source": "https://developer.hashicorp.com/terraform/install"},
+  {"method": "install (dnf, Fedora)", "command": "sudo dnf -y install terraform", "needs_root": true, "source": "https://developer.hashicorp.com/terraform/install"},
+  {"method": "install (Homebrew, Linux)", "command": "brew tap hashicorp/tap", "needs_root": false, "source": "https://developer.hashicorp.com/terraform/install"},
+  {"method": "install (Homebrew, Linux)", "command": "brew install hashicorp/tap/terraform", "needs_root": false, "source": "https://developer.hashicorp.com/terraform/install"}],
+ "min_ram_gb": null,
+ "status": "partly found",
+ "note": "Install commands found on the official install page; no logo, screenshot or RAM requirement is stated there. The apt repository setup lines were truncated in the fetched output and are omitted."}

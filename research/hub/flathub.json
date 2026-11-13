@@ -1,0 +1,1107 @@
+{
+ "vscode": {
+  "ref": "com.visualstudio.code",
+  "name": "Visual Studio Code",
+  "summary": "Code editing. Redefined.",
+  "developer": "Microsoft Corporation",
+  "license": "LicenseRef-proprietary=https://code.visualstudio.com/license",
+  "version": "1.139.1",
+  "released": "2026-09-25",
+  "homepage": "https://code.visualstudio.com",
+  "flathub_verified": false,
+  "end_of_life": false,
+  "screenshots": [
+   {
+    "url": "https://dl.flathub.org/media/com/visualstudio/code/929ab57f09f2d5a5bc7cea0648c9a332/screenshots/image-1_orig.png",
+    "caption": "Editing TypeScript"
+   }
+  ],
+  "source": "https://flathub.org/api/v2/appstream/com.visualstudio.code"
+ },
+ "vscodium": {
+  "ref": "com.vscodium.codium",
+  "name": "VSCodium",
+  "summary": "Telemetry-less code editing",
+  "developer": "The VSCodium team",
+  "license": "MIT",
+  "version": "1.143.17232",
+  "released": "2026-10-28",
+  "homepage": "https://vscodium.com/",
+  "flathub_verified": true,
+  "end_of_life": false,
+  "screenshots": [
+   {
+    "url": "https://dl.flathub.org/media/com/vscodium/codium/e0a5c354f394516c7d99300ed5e4fd4a/screenshots/image-1_orig.png",
+    "caption": "Reading a Markdown file"
+   },
+   {
+    "url": "https://dl.flathub.org/media/com/vscodium/codium/e0a5c354f394516c7d99300ed5e4fd4a/screenshots/image-2_orig.png",
+    "caption": "Reading a Python example file"
+   },
+   {
+    "url": "https://dl.flathub.org/media/com/vscodium/codium/e0a5c354f394516c7d99300ed5e4fd4a/screenshots/image-3_orig.png",
+    "caption": "Editing a Rust file"
+   },
+   {
+    "url": "https://dl.flathub.org/media/com/vscodium/codium/e0a5c354f394516c7d99300ed5e4fd4a/screenshots/image-4_orig.png",
+    "caption": "Reading a Python File"
+   },
+   {
+    "url": "https://dl.flathub.org/media/com/vscodium/codium/e0a5c354f394516c7d99300ed5e4fd4a/screenshots/image-5_orig.png",
+    "caption": "Searching for a file"
+   }
+  ],
+  "source": "https://flathub.org/api/v2/appstream/com.vscodium.codium"
+ },
+ "androidstudio": {
+  "ref": "com.google.AndroidStudio",
+  "name": "Android Studio",
+  "summary": "IDE for Android app development",
+  "developer": "Android Open Source Project",
+  "license": "LicenseRef-proprietary=https://developer.android.com/studio/terms",
+  "version": "2026.2.2.9",
+  "released": "2026-11-05",
+  "homepage": "https://developer.android.com/studio/",
+  "flathub_verified": false,
+  "end_of_life": false,
+  "screenshots": [
+   {
+    "url": "https://dl.flathub.org/media/com/google/AndroidStudio/14c79cfed9911ddb77b23429977e485e/screenshots/image-1_orig.png",
+    "caption": "Android Studio Showing the structure of a project"
+   },
+   {
+    "url": "https://dl.flathub.org/media/com/google/AndroidStudio/14c79cfed9911ddb77b23429977e485e/screenshots/image-2_orig.png",
+    "caption": "Try Gemini in Android Studio"
+   },
+   {
+    "url": "https://dl.flathub.org/media/com/google/AndroidStudio/14c79cfed9911ddb77b23429977e485e/screenshots/image-3_orig.png",
+    "caption": "Intelligent code editor"
+   },
+   {
+    "url": "https://dl.flathub.org/media/com/google/AndroidStudio/14c79cfed9911ddb77b23429977e485e/screenshots/image-4_orig.png",
+    "caption": "Flexible build system"
+   },
+   {
+    "url": "https://dl.flathub.org/media/com/google/AndroidStudio/14c79cfed9911ddb77b23429977e485e/screenshots/image-5_orig.png",
+    "caption": "Easily emulate any device"
+   }
+  ],
+  "source": "https://flathub.org/api/v2/appstream/com.google.AndroidStudio"
+ },
+ "intellij": {
+  "ref": "com.jetbrains.IntelliJ-IDEA-Community",
+  "name": "IntelliJ IDEA OSS",
+  "summary": "Java and Kotlin IDE for you and your agents",
+  "developer": "JetBrains s.r.o.",
+  "license": "Apache-2.0",
+  "version": "2026.3",
+  "released": "2026-11-04",
+  "homepage": "https://www.jetbrains.com/idea/",
+  "flathub_verified": false,
+  "end_of_life": false,
+  "screenshots": [
+   {
+    "url": "https://dl.flathub.org/media/com/jetbrains/IntelliJ-IDEA-Community/8eb46e6b52f6433fd577e7a9c92ed81c/screenshots/image-1_orig.png",
+    "caption": "Java support"
+   },
+   {
+    "url": "https://dl.flathub.org/media/com/jetbrains/IntelliJ-IDEA-Community/8eb46e6b52f6433fd577e7a9c92ed81c/screenshots/image-2_orig.png",
+    "caption": "Kotlin support"
+   },
+   {
+    "url": "https://dl.flathub.org/media/com/jetbrains/IntelliJ-IDEA-Community/8eb46e6b52f6433fd577e7a9c92ed81c/screenshots/image-3_orig.png",
+    "caption": "AI Assistant"
+   },
+   {
+    "url": "https://dl.flathub.org/media/com/jetbrains/IntelliJ-IDEA-Community/8eb46e6b52f6433fd577e7a9c92ed81c/screenshots/image-4_orig.png",
+    "caption": "The Problems tool window"
+   },
+   {
+    "url": "https://dl.flathub.org/media/com/jetbrains/IntelliJ-IDEA-Community/8eb46e6b52f6433fd577e7a9c92ed81c/screenshots/image-5_orig.png",
+    "caption": "Detection of code duplicates"
+   }
+  ],
+  "source": "https://flathub.org/api/v2/appstream/com.jetbrains.IntelliJ-IDEA-Community"
+ },
+ "zed": {
+  "ref": "dev.zed.Zed",
+  "name": "Zed",
+  "summary": "High-performance code editor",
+  "developer": "Zed Industries, Inc.",
+  "license": "AGPL-3.0-or-later and Apache-2.0 and GPL-3.0-or-later",
+  "version": "v1.28.1",
+  "released": "2026-11-11",
+  "homepage": "https://zed.dev",
+  "flathub_verified": false,
+  "end_of_life": false,
+  "screenshots": [
+   {
+    "url": "https://dl.flathub.org/media/dev/zed/Zed/fb2b92278424f25a17c9abb63f81646d/screenshots/image-1_orig.png",
+    "caption": "Zed with a large project open, showing language server and gitblame support"
+   },
+   {
+    "url": "https://dl.flathub.org/media/dev/zed/Zed/fb2b92278424f25a17c9abb63f81646d/screenshots/image-2_orig.png",
+    "caption": "Zed with a file open and a channel message thread in the right sidebar"
+   },
+   {
+    "url": "https://dl.flathub.org/media/dev/zed/Zed/fb2b92278424f25a17c9abb63f81646d/screenshots/image-3_orig.png",
+    "caption": "Example of a channel's shared document"
+   },
+   {
+    "url": "https://dl.flathub.org/media/dev/zed/Zed/fb2b92278424f25a17c9abb63f81646d/screenshots/image-4_orig.png",
+    "caption": "Zed's extension list"
+   },
+   {
+    "url": "https://dl.flathub.org/media/dev/zed/Zed/fb2b92278424f25a17c9abb63f81646d/screenshots/image-5_orig.png",
+    "caption": "Theme switcher UI and example theme"
+   }
+  ],
+  "source": "https://flathub.org/api/v2/appstream/dev.zed.Zed"
+ },
+ "emacs": {
+  "ref": "org.gnu.emacs",
+  "name": "GNU Emacs",
+  "summary": "An extensible text editor",
+  "developer": "Free Software Foundation",
+  "license": "GPL-3.0+ and GFDL-1.3+",
+  "version": "31.1",
+  "released": "2026-08-24",
+  "homepage": "https://www.gnu.org/software/emacs",
+  "flathub_verified": false,
+  "end_of_life": false,
+  "screenshots": [
+   {
+    "url": "https://dl.flathub.org/media/org/gnu/emacs/79f1308b0e57813710dafafdc7ce9a4f/screenshots/image-1_orig.png",
+    "caption": "Editing a Lisp program, whilst viewing the manual"
+   }
+  ],
+  "source": "https://flathub.org/api/v2/appstream/org.gnu.emacs"
+ },
+ "kate": {
+  "ref": "org.kde.kate",
+  "name": "Kate",
+  "summary": "Advanced text editor",
+  "developer": "KDE",
+  "license": "LGPL-2.1+",
+  "version": "26.04.2",
+  "released": "2026-06-04",
+  "homepage": "https://kate-editor.org/",
+  "flathub_verified": true,
+  "end_of_life": false,
+  "screenshots": [
+   {
+    "url": "https://dl.flathub.org/media/org/kde/kate.desktop/1bdc8f3611cd16919ee2eb2afdfc516a/screenshots/image-1_orig.png",
+    "caption": "Editing code with Kate"
+   }
+  ],
+  "source": "https://flathub.org/api/v2/appstream/org.kde.kate"
+ },
+ "lapce": {
+  "ref": "dev.lapce.lapce",
+  "name": "Lapce",
+  "summary": "Lightning-fast and powerful code editor written in Rust",
+  "developer": "Dongdong Zhou, et al.",
+  "license": "Apache-2.0",
+  "version": "0.4.6",
+  "released": "2026-01-21",
+  "homepage": "https://lapce.dev/",
+  "flathub_verified": true,
+  "end_of_life": false,
+  "screenshots": [
+   {
+    "url": "https://dl.flathub.org/media/dev/lapce/lapce/9c9fd2d6c653ac517ed98e2e1c2a36b3/screenshots/image-1_orig.png",
+    "caption": "Lapce source project opened in Lapce with Rust source code file opened"
+   }
+  ],
+  "source": "https://flathub.org/api/v2/appstream/dev.lapce.lapce"
+ },
+ "gpt4all": {
+  "ref": "io.gpt4all.gpt4all",
+  "name": "GPT4ALL",
+  "summary": "Open-source assistant",
+  "developer": "Nomic-ai",
+  "license": "MIT",
+  "version": "3.10.0",
+  "released": "2025-02-25",
+  "homepage": "https://www.nomic.ai/gpt4all",
+  "flathub_verified": false,
+  "end_of_life": false,
+  "screenshots": [
+   {
+    "url": "https://dl.flathub.org/media/io/gpt4all/gpt4all/1ee7ca0d1b164d3843c20316bf440a88/screenshots/image-1_orig.png",
+    "caption": "Main Window"
+   },
+   {
+    "url": "https://dl.flathub.org/media/io/gpt4all/gpt4all/1ee7ca0d1b164d3843c20316bf440a88/screenshots/image-2_orig.png",
+    "caption": ""
+   }
+  ],
+  "source": "https://flathub.org/api/v2/appstream/io.gpt4all.gpt4all"
+ },
+ "dbeaver": {
+  "ref": "io.dbeaver.DBeaverCommunity",
+  "name": "DBeaver Community",
+  "summary": "Free Universal Database Tool",
+  "developer": "DBeaver Corporation",
+  "license": "Apache-2.0",
+  "version": "26.2.4",
+  "released": "2026-11-01",
+  "homepage": "https://dbeaver.io",
+  "flathub_verified": false,
+  "end_of_life": false,
+  "screenshots": [
+   {
+    "url": "https://dl.flathub.org/media/io/dbeaver/DBeaverCommunity/330733fda5961c5b0eaa724ce7080977/screenshots/image-1_orig.png",
+    "caption": "General overview"
+   },
+   {
+    "url": "https://dl.flathub.org/media/io/dbeaver/DBeaverCommunity/330733fda5961c5b0eaa724ce7080977/screenshots/image-2_orig.png",
+    "caption": "Entity Relationship Diagram"
+   },
+   {
+    "url": "https://dl.flathub.org/media/io/dbeaver/DBeaverCommunity/330733fda5961c5b0eaa724ce7080977/screenshots/image-3_orig.png",
+    "caption": "Editing and running a SQL script"
+   },
+   {
+    "url": "https://dl.flathub.org/media/io/dbeaver/DBeaverCommunity/330733fda5961c5b0eaa724ce7080977/screenshots/image-4_orig.png",
+    "caption": "Editing a Stored Procedure"
+   }
+  ],
+  "source": "https://flathub.org/api/v2/appstream/io.dbeaver.DBeaverCommunity"
+ },
+ "sqlitebrowser": {
+  "ref": "org.sqlitebrowser.sqlitebrowser",
+  "name": "DB Browser for SQLite",
+  "summary": "light GUI editor for SQLite databases",
+  "developer": "DB Browser for SQLite developers",
+  "license": "MPL-2.0 and GPL-3.0+",
+  "version": "3.13.1",
+  "released": "2024-10-16",
+  "homepage": "https://sqlitebrowser.org/",
+  "flathub_verified": true,
+  "end_of_life": false,
+  "screenshots": [
+   {
+    "url": "https://dl.flathub.org/media/org/sqlitebrowser/sqlitebrowser/f936f43dea69ed8f0e3eeb8e936ac8d4/screenshots/image-1_orig.png",
+    "caption": "DB Browser for SQLite, executing query"
+   },
+   {
+    "url": "https://dl.flathub.org/media/org/sqlitebrowser/sqlitebrowser/f936f43dea69ed8f0e3eeb8e936ac8d4/screenshots/image-2_orig.png",
+    "caption": "DB Browser for SQLite, browsing data with plot"
+   },
+   {
+    "url": "https://dl.flathub.org/media/org/sqlitebrowser/sqlitebrowser/f936f43dea69ed8f0e3eeb8e936ac8d4/screenshots/image-3_orig.png",
+    "caption": "DB Browser for SQLite, browsing a blob field"
+   },
+   {
+    "url": "https://dl.flathub.org/media/org/sqlitebrowser/sqlitebrowser/f936f43dea69ed8f0e3eeb8e936ac8d4/screenshots/image-4_orig.png",
+    "caption": "DB Browser for SQLite, creating a table"
+   }
+  ],
+  "source": "https://flathub.org/api/v2/appstream/org.sqlitebrowser.sqlitebrowser"
+ },
+ "firefox": {
+  "ref": "org.mozilla.firefox",
+  "name": "Firefox",
+  "summary": "Fast, Private & Safe Web Browser",
+  "developer": "Mozilla",
+  "license": "MPL-2.0",
+  "version": "160.0",
+  "released": "2026-11-04",
+  "homepage": "https://www.mozilla.org/firefox/",
+  "flathub_verified": true,
+  "end_of_life": false,
+  "screenshots": [
+   {
+    "url": "https://dl.flathub.org/media/org.mozilla.firefox-stable/1504x846/org.mozilla.firefox-af5d1ae7c121ea4864b3c5a1098f8f9c.png",
+    "caption": ""
+   },
+   {
+    "url": "https://dl.flathub.org/media/org.mozilla.firefox-stable/1504x846/org.mozilla.firefox-c6f98b38b8b28b113a75a6b34037b759.png",
+    "caption": ""
+   },
+   {
+    "url": "https://dl.flathub.org/media/org.mozilla.firefox-stable/1504x846/org.mozilla.firefox-60e855c1f4180607e40c9762a0fb9fa6.png",
+    "caption": ""
+   }
+  ],
+  "source": "https://flathub.org/api/v2/appstream/org.mozilla.firefox"
+ },
+ "chromium": {
+  "ref": "org.chromium.Chromium",
+  "name": "Chromium Web Browser",
+  "summary": "The web browser from Chromium project",
+  "developer": "The Chromium Authors",
+  "license": "BSD-3-Clause and LGPL-2.1+ and Apache-2.0 and IJG and MIT and GPL-2.0+ and ISC and OpenSSL and (MPL-1.1 or GPL-2.0 or LGPL-2.0)",
+  "version": "157.0.8103.50",
+  "released": "2026-11-09",
+  "homepage": "https://www.chromium.org/Home",
+  "flathub_verified": false,
+  "end_of_life": false,
+  "screenshots": [
+   {
+    "url": "https://dl.flathub.org/media/org/chromium/Chromium/2c7ae9c489b91756633684a24504f67f/screenshots/image-1_orig.png",
+    "caption": ""
+   }
+  ],
+  "source": "https://flathub.org/api/v2/appstream/org.chromium.Chromium"
+ },
+ "brave": {
+  "ref": "com.brave.Browser",
+  "name": "Brave",
+  "summary": "Fast Internet, AI, Adblock",
+  "developer": "Brave Software",
+  "license": "MPL-2.0",
+  "version": "1.99.57",
+  "released": "2026-11-12",
+  "homepage": "https://brave.com",
+  "flathub_verified": true,
+  "end_of_life": false,
+  "screenshots": [
+   {
+    "url": "https://dl.flathub.org/media/com/brave/Browser/eaad22d475d8a7ae02d00d8995778a3f/screenshots/image-1_orig.png",
+    "caption": "Welcome page of Brave"
+   },
+   {
+    "url": "https://dl.flathub.org/media/com/brave/Browser/eaad22d475d8a7ae02d00d8995778a3f/screenshots/image-2_orig.png",
+    "caption": "New tab page of Brave"
+   }
+  ],
+  "source": "https://flathub.org/api/v2/appstream/com.brave.Browser"
+ },
+ "thunderbird": {
+  "ref": "org.mozilla.thunderbird",
+  "name": "Thunderbird",
+  "summary": "Thunderbird is a free and open source email, newsfeed, chat, and calendaring client",
+  "developer": "MZLA Technologies, part of the Mozilla Foundation",
+  "license": "MPL-2.0",
+  "version": "160.0",
+  "released": "2026-11-07",
+  "homepage": "https://www.thunderbird.net/",
+  "flathub_verified": false,
+  "end_of_life": false,
+  "screenshots": [
+   {
+    "url": "https://dl.flathub.org/media/org/mozilla/thunderbird/add6c1c4e3b479450e2da56d0ea792f9/screenshots/image-1_orig.png",
+    "caption": ""
+   },
+   {
+    "url": "https://dl.flathub.org/media/org/mozilla/thunderbird/add6c1c4e3b479450e2da56d0ea792f9/screenshots/image-2_orig.png",
+    "caption": ""
+   }
+  ],
+  "source": "https://flathub.org/api/v2/appstream/org.mozilla.thunderbird"
+ },
+ "discord": {
+  "ref": "com.discordapp.Discord",
+  "name": "Discord",
+  "summary": "Talk, play, hang out",
+  "developer": "Discord Inc.",
+  "license": "LicenseRef-proprietary=https://discord.com/terms",
+  "version": "1.0.169",
+  "released": "2026-11-09",
+  "homepage": "https://discord.com",
+  "flathub_verified": true,
+  "end_of_life": false,
+  "screenshots": [
+   {
+    "url": "https://dl.flathub.org/media/com/discordapp/Discord/ad437a3fa3ceb2574841465284223573/screenshots/image-1_orig.png",
+    "caption": "Dark Mode Window"
+   },
+   {
+    "url": "https://dl.flathub.org/media/com/discordapp/Discord/ad437a3fa3ceb2574841465284223573/screenshots/image-2_orig.png",
+    "caption": "Light Mode Window"
+   }
+  ],
+  "source": "https://flathub.org/api/v2/appstream/com.discordapp.Discord"
+ },
+ "libreoffice": {
+  "ref": "org.libreoffice.LibreOffice",
+  "name": "LibreOffice",
+  "summary": "The LibreOffice productivity suite",
+  "developer": "The Document Foundation",
+  "license": "MPL-2.0",
+  "version": "26.8.3.1",
+  "released": "2026-11-13",
+  "homepage": "http://www.libreoffice.org/discover/libreoffice/",
+  "flathub_verified": true,
+  "end_of_life": false,
+  "screenshots": [
+   {
+    "url": "https://dl.flathub.org/media/org/libreoffice/LibreOffice/341e8fb5e2267b0cdc5e932b3886a08e/screenshots/image-1_orig.png",
+    "caption": "Sample Writer document"
+   },
+   {
+    "url": "https://dl.flathub.org/media/org/libreoffice/LibreOffice/341e8fb5e2267b0cdc5e932b3886a08e/screenshots/image-2_orig.png",
+    "caption": "Sample Calc document"
+   },
+   {
+    "url": "https://dl.flathub.org/media/org/libreoffice/LibreOffice/341e8fb5e2267b0cdc5e932b3886a08e/screenshots/image-3_orig.png",
+    "caption": "Sample Impress document"
+   },
+   {
+    "url": "https://dl.flathub.org/media/org/libreoffice/LibreOffice/341e8fb5e2267b0cdc5e932b3886a08e/screenshots/image-4_orig.png",
+    "caption": "Sample Draw document"
+   },
+   {
+    "url": "https://dl.flathub.org/media/org/libreoffice/LibreOffice/341e8fb5e2267b0cdc5e932b3886a08e/screenshots/image-5_orig.png",
+    "caption": "Sample Base document"
+   }
+  ],
+  "source": "https://flathub.org/api/v2/appstream/org.libreoffice.LibreOffice"
+ },
+ "onlyoffice": {
+  "ref": "org.onlyoffice.desktopeditors",
+  "name": "ONLYOFFICE Desktop Editors",
+  "summary": "Office productivity suite",
+  "developer": "ONLYOFFICE",
+  "license": "AGPL-3.0-only",
+  "version": "10.0.0",
+  "released": "2026-10-13",
+  "homepage": "https://onlyoffice.com",
+  "flathub_verified": true,
+  "end_of_life": false,
+  "screenshots": [
+   {
+    "url": "https://dl.flathub.org/media/org/onlyoffice/desktopeditors/3760ea2b23912d02a32ae35898f66582/screenshots/image-1_orig.png",
+    "caption": "Home"
+   },
+   {
+    "url": "https://dl.flathub.org/media/org/onlyoffice/desktopeditors/3760ea2b23912d02a32ae35898f66582/screenshots/image-2_orig.png",
+    "caption": "AI Tools"
+   },
+   {
+    "url": "https://dl.flathub.org/media/org/onlyoffice/desktopeditors/3760ea2b23912d02a32ae35898f66582/screenshots/image-3_orig.png",
+    "caption": "Docs"
+   },
+   {
+    "url": "https://dl.flathub.org/media/org/onlyoffice/desktopeditors/3760ea2b23912d02a32ae35898f66582/screenshots/image-4_orig.png",
+    "caption": "PDF Editor"
+   },
+   {
+    "url": "https://dl.flathub.org/media/org/onlyoffice/desktopeditors/3760ea2b23912d02a32ae35898f66582/screenshots/image-5_orig.png",
+    "caption": "Sheets"
+   }
+  ],
+  "source": "https://flathub.org/api/v2/appstream/org.onlyoffice.desktopeditors"
+ },
+ "obsidian": {
+  "ref": "md.obsidian.Obsidian",
+  "name": "Obsidian",
+  "summary": "Markdown-based knowledge base",
+  "developer": "Obsidian",
+  "license": "LicenseRef-proprietary=https://obsidian.md/eula",
+  "version": "1.15.0",
+  "released": "2026-10-31",
+  "homepage": "https://obsidian.md/",
+  "flathub_verified": true,
+  "end_of_life": false,
+  "screenshots": [
+   {
+    "url": "https://dl.flathub.org/media/md/obsidian/Obsidian/c97fbe7fe83bc7e70ac76009b6b56055/screenshots/image-1_orig.png",
+    "caption": "Screenshot of Obsidian's main interface"
+   },
+   {
+    "url": "https://dl.flathub.org/media/md/obsidian/Obsidian/c97fbe7fe83bc7e70ac76009b6b56055/screenshots/image-2_orig.png",
+    "caption": "Examples of Obsidian's basic text formatting capabilities"
+   },
+   {
+    "url": "https://dl.flathub.org/media/md/obsidian/Obsidian/c97fbe7fe83bc7e70ac76009b6b56055/screenshots/image-3_orig.png",
+    "caption": "Screenshot of Obsidian's graph view"
+   },
+   {
+    "url": "https://dl.flathub.org/media/md/obsidian/Obsidian/c97fbe7fe83bc7e70ac76009b6b56055/screenshots/image-4_orig.png",
+    "caption": "Example of Obsidian's multi-pane (now multi-tab) layout capabilities"
+   }
+  ],
+  "source": "https://flathub.org/api/v2/appstream/md.obsidian.Obsidian"
+ },
+ "keepassxc": {
+  "ref": "org.keepassxc.KeePassXC",
+  "name": "KeePassXC",
+  "summary": "Secure and Full-featured Password Manager",
+  "developer": "KeePassXC Team",
+  "license": "GPL-3.0-or-later",
+  "version": "2.8.0",
+  "released": "2026-10-21",
+  "homepage": "https://keepassxc.org",
+  "flathub_verified": true,
+  "end_of_life": false,
+  "screenshots": [
+   {
+    "url": "https://dl.flathub.org/media/org/keepassxc/KeePassXC.desktop/8703bd4e659abcb1dac1d6646881bb00/screenshots/image-1_orig.png",
+    "caption": "Organize with Groups and Entries"
+   },
+   {
+    "url": "https://dl.flathub.org/media/org/keepassxc/KeePassXC.desktop/8703bd4e659abcb1dac1d6646881bb00/screenshots/image-2_orig.png",
+    "caption": "Unlock database"
+   },
+   {
+    "url": "https://dl.flathub.org/media/org/keepassxc/KeePassXC.desktop/8703bd4e659abcb1dac1d6646881bb00/screenshots/image-3_orig.png",
+    "caption": "Icon Selection for Entry"
+   },
+   {
+    "url": "https://dl.flathub.org/media/org/keepassxc/KeePassXC.desktop/8703bd4e659abcb1dac1d6646881bb00/screenshots/image-4_orig.png",
+    "caption": "Password Generator"
+   }
+  ],
+  "source": "https://flathub.org/api/v2/appstream/org.keepassxc.KeePassXC"
+ },
+ "bitwarden": {
+  "ref": "com.bitwarden.desktop",
+  "name": "Bitwarden",
+  "summary": "A secure and free password manager for all of your devices",
+  "developer": "Bitwarden Inc.",
+  "license": "LicenseRef-proprietary=https://raw.githubusercontent.com/bitwarden/clients/refs/heads/main/LICENSE_BITWARDEN.txt",
+  "version": "2026.10.3",
+  "released": "2026-11-02",
+  "homepage": "https://www.bitwarden.com/",
+  "flathub_verified": true,
+  "end_of_life": false,
+  "screenshots": [
+   {
+    "url": "https://dl.flathub.org/media/com/bitwarden/desktop/1b8e29276714c7a0aac31a343205f421/screenshots/image-1_orig.png",
+    "caption": "Bitwarden on multiple devices"
+   }
+  ],
+  "source": "https://flathub.org/api/v2/appstream/com.bitwarden.desktop"
+ },
+ "gimp": {
+  "ref": "org.gimp.GIMP",
+  "name": "GNU Image Manipulation Program",
+  "summary": "High-end image creation and manipulation",
+  "developer": "The GIMP team",
+  "license": "GPL-3.0+ AND LGPL-3.0+",
+  "version": "3.2.8",
+  "released": "2026-11-02",
+  "homepage": "https://www.gimp.org/",
+  "flathub_verified": true,
+  "end_of_life": false,
+  "screenshots": [
+   {
+    "url": "https://dl.flathub.org/media/org/gimp/GIMP/800933a572869e1c8daee367dc2287cb/screenshots/image-1_orig.png",
+    "caption": "Scene 4 cut 15 of \"ZeMarmot\" being edited in GIMP. Illustration by Aryeom (CC by-sa 4.0 International)"
+   },
+   {
+    "url": "https://dl.flathub.org/media/org/gimp/GIMP/800933a572869e1c8daee367dc2287cb/screenshots/image-2_orig.png",
+    "caption": "Gull on beach photograph being edited in GIMP. Photo by Iana (CC by-sa 4.0 International)"
+   },
+   {
+    "url": "https://dl.flathub.org/media/org/gimp/GIMP/800933a572869e1c8daee367dc2287cb/screenshots/image-3_orig.png",
+    "caption": "Portrait of Sofiia being edited in GIMP. Photo by Sofia (CC by-sa 4.0 International)"
+   },
+   {
+    "url": "https://dl.flathub.org/media/org/gimp/GIMP/800933a572869e1c8daee367dc2287cb/screenshots/image-4_orig.png",
+    "caption": "Scanned engraving being edited in GIMP. Artwork by Liam (CC0)"
+   }
+  ],
+  "source": "https://flathub.org/api/v2/appstream/org.gimp.GIMP"
+ },
+ "krita": {
+  "ref": "org.kde.krita",
+  "name": "Krita",
+  "summary": "Digital Painting, Creative Freedom",
+  "developer": "Krita Foundation",
+  "license": "GPL-3.0-only",
+  "version": "5.3.4.1",
+  "released": "2026-10-07",
+  "homepage": "https://www.krita.org/",
+  "flathub_verified": true,
+  "end_of_life": false,
+  "screenshots": [
+   {
+    "url": "https://dl.flathub.org/media/org/kde/krita/1348962dcc0842250c4ce6876acc36cc/screenshots/image-1_orig.png",
+    "caption": "Krita is a full-featured digital painting studio"
+   },
+   {
+    "url": "https://dl.flathub.org/media/org/kde/krita/1348962dcc0842250c4ce6876acc36cc/screenshots/image-2_orig.png",
+    "caption": "The startup window now also gives you the latest news about Krita"
+   },
+   {
+    "url": "https://dl.flathub.org/media/org/kde/krita/1348962dcc0842250c4ce6876acc36cc/screenshots/image-3_orig.png",
+    "caption": "There are over ten immensely powerful brush engines"
+   },
+   {
+    "url": "https://dl.flathub.org/media/org/kde/krita/1348962dcc0842250c4ce6876acc36cc/screenshots/image-4_orig.png",
+    "caption": "Into animation? Krita provides everything you need for traditional, hand-drawn animation"
+   },
+   {
+    "url": "https://dl.flathub.org/media/org/kde/krita/1348962dcc0842250c4ce6876acc36cc/screenshots/image-5_orig.png",
+    "caption": "If you're new to digital painting, there's an extensive, up-to-date manual"
+   }
+  ],
+  "source": "https://flathub.org/api/v2/appstream/org.kde.krita"
+ },
+ "inkscape": {
+  "ref": "org.inkscape.Inkscape",
+  "name": "Inkscape",
+  "summary": "Vector Graphics Editor",
+  "developer": "The Inkscape Community",
+  "license": "GPL-2.0-or-later",
+  "version": "1.4.4",
+  "released": "2026-05-06",
+  "homepage": "https://inkscape.org",
+  "flathub_verified": true,
+  "end_of_life": false,
+  "screenshots": [
+   {
+    "url": "https://dl.flathub.org/media/org/inkscape/Inkscape/d06b79da7ad6df73032683fbcf8c4d56/screenshots/image-1_orig.png",
+    "caption": "Editing a Flatpak Logo"
+   },
+   {
+    "url": "https://dl.flathub.org/media/org/inkscape/Inkscape/d06b79da7ad6df73032683fbcf8c4d56/screenshots/image-2_orig.png",
+    "caption": "Multipage editing"
+   },
+   {
+    "url": "https://dl.flathub.org/media/org/inkscape/Inkscape/d06b79da7ad6df73032683fbcf8c4d56/screenshots/image-3_orig.png",
+    "caption": "Editing with Inkscape"
+   },
+   {
+    "url": "https://dl.flathub.org/media/org/inkscape/Inkscape/d06b79da7ad6df73032683fbcf8c4d56/screenshots/image-4_orig.png",
+    "caption": "Gradient editing"
+   }
+  ],
+  "source": "https://flathub.org/api/v2/appstream/org.inkscape.Inkscape"
+ },
+ "blender": {
+  "ref": "org.blender.Blender",
+  "name": "Blender",
+  "summary": "Free and open source 3D creation suite",
+  "developer": "Blender Foundation",
+  "license": "GPL-3.0",
+  "version": "5.2",
+  "released": "2026-07-14",
+  "homepage": "https://www.blender.org",
+  "flathub_verified": false,
+  "end_of_life": false,
+  "screenshots": [
+   {
+    "url": "https://dl.flathub.org/media/org/blender/Blender/c6b07403115901571923d99f1b725b0e/screenshots/image-1_orig.png",
+    "caption": "Sculpt"
+   },
+   {
+    "url": "https://dl.flathub.org/media/org/blender/Blender/c6b07403115901571923d99f1b725b0e/screenshots/image-2_orig.png",
+    "caption": "Model"
+   },
+   {
+    "url": "https://dl.flathub.org/media/org/blender/Blender/c6b07403115901571923d99f1b725b0e/screenshots/image-3_orig.png",
+    "caption": "Animate"
+   },
+   {
+    "url": "https://dl.flathub.org/media/org/blender/Blender/c6b07403115901571923d99f1b725b0e/screenshots/image-4_orig.png",
+    "caption": "Edit & Grade"
+   }
+  ],
+  "source": "https://flathub.org/api/v2/appstream/org.blender.Blender"
+ },
+ "vlc": {
+  "ref": "org.videolan.VLC",
+  "name": "VLC",
+  "summary": "VLC media player, the open-source multimedia player",
+  "developer": "VideoLAN et al.",
+  "license": "GPL-2.0+",
+  "version": "3.0.24",
+  "released": "2026-09-17",
+  "homepage": "https://www.videolan.org/vlc/",
+  "flathub_verified": false,
+  "end_of_life": false,
+  "screenshots": [
+   {
+    "url": "https://dl.flathub.org/media/org/videolan/VLC/0e71024f872bdd57a2907a775cca0e6c/screenshots/image-1_orig.png",
+    "caption": ""
+   },
+   {
+    "url": "https://dl.flathub.org/media/org/videolan/VLC/0e71024f872bdd57a2907a775cca0e6c/screenshots/image-2_orig.png",
+    "caption": ""
+   },
+   {
+    "url": "https://dl.flathub.org/media/org/videolan/VLC/0e71024f872bdd57a2907a775cca0e6c/screenshots/image-3_orig.png",
+    "caption": ""
+   }
+  ],
+  "source": "https://flathub.org/api/v2/appstream/org.videolan.VLC"
+ },
+ "obs": {
+  "ref": "com.obsproject.Studio",
+  "name": "OBS Studio",
+  "summary": "Live stream and record videos",
+  "developer": "OBS Project",
+  "license": "GPL-2.0-or-later",
+  "version": "33.0.1",
+  "released": "2026-10-29",
+  "homepage": "https://obsproject.com",
+  "flathub_verified": true,
+  "end_of_life": false,
+  "screenshots": [
+   {
+    "url": "https://dl.flathub.org/media/com/obsproject/Studio/eee0a1f453649164008dc9f0913dfe7e/screenshots/image-1_orig.png",
+    "caption": "The OBS Studio window showing a card game, the project website, a video, and a purple rectangle"
+   }
+  ],
+  "source": "https://flathub.org/api/v2/appstream/com.obsproject.Studio"
+ },
+ "kdenlive": {
+  "ref": "org.kde.kdenlive",
+  "name": "Kdenlive",
+  "summary": "Video editor",
+  "developer": "KDE",
+  "license": "GPL-3.0-only",
+  "version": "26.08.3",
+  "released": "2026-11-05",
+  "homepage": "https://kdenlive.org/?mtm_campaign=appstream_data&mtm_kwd=homepage",
+  "flathub_verified": true,
+  "end_of_life": false,
+  "screenshots": [
+   {
+    "url": "https://dl.flathub.org/media/org/kde/kdenlive.desktop/43ea1daa3a961b305292f8cd7ccae60f/screenshots/image-1_orig.png",
+    "caption": "Dark theme"
+   },
+   {
+    "url": "https://dl.flathub.org/media/org/kde/kdenlive.desktop/43ea1daa3a961b305292f8cd7ccae60f/screenshots/image-2_orig.png",
+    "caption": "Default interface"
+   },
+   {
+    "url": "https://dl.flathub.org/media/org/kde/kdenlive.desktop/43ea1daa3a961b305292f8cd7ccae60f/screenshots/image-3_orig.png",
+    "caption": "Color correction"
+   },
+   {
+    "url": "https://dl.flathub.org/media/org/kde/kdenlive.desktop/43ea1daa3a961b305292f8cd7ccae60f/screenshots/image-4_orig.png",
+    "caption": "Configurable interface"
+   },
+   {
+    "url": "https://dl.flathub.org/media/org/kde/kdenlive.desktop/43ea1daa3a961b305292f8cd7ccae60f/screenshots/image-5_orig.png",
+    "caption": "Titling"
+   }
+  ],
+  "source": "https://flathub.org/api/v2/appstream/org.kde.kdenlive"
+ },
+ "wireshark": {
+  "ref": "org.wireshark.Wireshark",
+  "name": "Wireshark",
+  "summary": "Network protocol analyzer (without capture support)",
+  "developer": "The Wireshark developer community",
+  "license": "GPL-2.0",
+  "version": "4.6.9",
+  "released": "2026-09-20",
+  "homepage": "https://www.wireshark.org",
+  "flathub_verified": false,
+  "end_of_life": false,
+  "screenshots": [
+   {
+    "url": "https://dl.flathub.org/media/org/wireshark/Wireshark/fc127d7493e8aface3009264399618b9/screenshots/image-1_orig.png",
+    "caption": "Wireshark's main window"
+   },
+   {
+    "url": "https://dl.flathub.org/media/org/wireshark/Wireshark/fc127d7493e8aface3009264399618b9/screenshots/image-2_orig.png",
+    "caption": "Wireshark I/O Graph"
+   },
+   {
+    "url": "https://dl.flathub.org/media/org/wireshark/Wireshark/fc127d7493e8aface3009264399618b9/screenshots/image-3_orig.png",
+    "caption": "Wireshark Conversations"
+   }
+  ],
+  "source": "https://flathub.org/api/v2/appstream/org.wireshark.Wireshark"
+ },
+ "steam": {
+  "ref": "com.valvesoftware.Steam",
+  "name": "Steam",
+  "summary": "Launcher for the Steam software distribution service",
+  "developer": "Valve Corporation",
+  "license": "LicenseRef-proprietary",
+  "version": "1.0.0.87",
+  "released": "2026-06-26",
+  "homepage": "https://store.steampowered.com/",
+  "flathub_verified": false,
+  "end_of_life": false,
+  "screenshots": [
+   {
+    "url": "https://dl.flathub.org/media/com/valvesoftware/Steam/71bd4338705ac5f74c133bfbaacaa3d8/screenshots/image-1_orig.png",
+    "caption": "The main Steam library window"
+   },
+   {
+    "url": "https://dl.flathub.org/media/com/valvesoftware/Steam/71bd4338705ac5f74c133bfbaacaa3d8/screenshots/image-2_orig.png",
+    "caption": "Steam Store interface"
+   },
+   {
+    "url": "https://dl.flathub.org/media/com/valvesoftware/Steam/71bd4338705ac5f74c133bfbaacaa3d8/screenshots/image-3_orig.png",
+    "caption": ""
+   },
+   {
+    "url": "https://dl.flathub.org/media/com/valvesoftware/Steam/71bd4338705ac5f74c133bfbaacaa3d8/screenshots/image-4_orig.png",
+    "caption": ""
+   },
+   {
+    "url": "https://dl.flathub.org/media/com/valvesoftware/Steam/71bd4338705ac5f74c133bfbaacaa3d8/screenshots/image-5_orig.png",
+    "caption": ""
+   }
+  ],
+  "source": "https://flathub.org/api/v2/appstream/com.valvesoftware.Steam"
+ },
+ "lutris": {
+  "ref": "net.lutris.Lutris",
+  "name": "Lutris",
+  "summary": "Video game preservation platform",
+  "developer": "Lutris Team",
+  "license": "GPL-3.0-or-later",
+  "version": "0.5.23",
+  "released": "2026-03-15",
+  "homepage": "https://lutris.net",
+  "flathub_verified": true,
+  "end_of_life": false,
+  "screenshots": [
+   {
+    "url": "https://dl.flathub.org/media/net/lutris/Lutris/ef38bc8331f9102f611cc71700cf5770/screenshots/image-1_orig.png",
+    "caption": "Main window"
+   }
+  ],
+  "source": "https://flathub.org/api/v2/appstream/net.lutris.Lutris"
+ },
+ "heroic": {
+  "ref": "com.heroicgameslauncher.hgl",
+  "name": "Heroic",
+  "summary": "Play Epic, GOG and Amazon Games",
+  "developer": "Heroic Games Launcher",
+  "license": "GPL-3.0",
+  "version": "v2.22.4",
+  "released": "2026-10-15",
+  "homepage": "https://heroicgameslauncher.com",
+  "flathub_verified": true,
+  "end_of_life": false,
+  "screenshots": [
+   {
+    "url": "https://dl.flathub.org/media/com/heroicgameslauncher/hgl/086b2f476c35a2b036fbad1b19d7a285/screenshots/image-1_orig.png",
+    "caption": "Library"
+   },
+   {
+    "url": "https://dl.flathub.org/media/com/heroicgameslauncher/hgl/086b2f476c35a2b036fbad1b19d7a285/screenshots/image-2_orig.png",
+    "caption": "GamePage"
+   },
+   {
+    "url": "https://dl.flathub.org/media/com/heroicgameslauncher/hgl/086b2f476c35a2b036fbad1b19d7a285/screenshots/image-3_orig.png",
+    "caption": "Stores"
+   },
+   {
+    "url": "https://dl.flathub.org/media/com/heroicgameslauncher/hgl/086b2f476c35a2b036fbad1b19d7a285/screenshots/image-4_orig.png",
+    "caption": "Sideload Dialog"
+   },
+   {
+    "url": "https://dl.flathub.org/media/com/heroicgameslauncher/hgl/086b2f476c35a2b036fbad1b19d7a285/screenshots/image-5_orig.png",
+    "caption": "Download Manager"
+   }
+  ],
+  "source": "https://flathub.org/api/v2/appstream/com.heroicgameslauncher.hgl"
+ },
+ "bottles": {
+  "ref": "com.usebottles.bottles",
+  "name": "Bottles",
+  "summary": "Run Windows software",
+  "developer": "The Bottles Contributors",
+  "license": "GPL-3.0-only",
+  "version": "67.6",
+  "released": "2026-11-04",
+  "homepage": "https://usebottles.com",
+  "flathub_verified": true,
+  "end_of_life": false,
+  "screenshots": [
+   {
+    "url": "https://dl.flathub.org/media/com/usebottles/bottles/e9a39d6efc5a3a5eb3abd180a1f06843/screenshots/image-1_orig.png",
+    "caption": "Bottles List Page"
+   },
+   {
+    "url": "https://dl.flathub.org/media/com/usebottles/bottles/e9a39d6efc5a3a5eb3abd180a1f06843/screenshots/image-2_orig.png",
+    "caption": "Library Page"
+   },
+   {
+    "url": "https://dl.flathub.org/media/com/usebottles/bottles/e9a39d6efc5a3a5eb3abd180a1f06843/screenshots/image-3_orig.png",
+    "caption": "Create New Bottle"
+   },
+   {
+    "url": "https://dl.flathub.org/media/com/usebottles/bottles/e9a39d6efc5a3a5eb3abd180a1f06843/screenshots/image-4_orig.png",
+    "caption": "Bottle Details Page"
+   },
+   {
+    "url": "https://dl.flathub.org/media/com/usebottles/bottles/e9a39d6efc5a3a5eb3abd180a1f06843/screenshots/image-5_orig.png",
+    "caption": "Bottle Settings Page"
+   }
+  ],
+  "source": "https://flathub.org/api/v2/appstream/com.usebottles.bottles"
+ },
+ "protonup": {
+  "ref": "net.davidotek.pupgui2",
+  "name": "ProtonUp-Qt",
+  "summary": "Install Wine- and Proton-based compatibility tools",
+  "developer": "DavidoTek",
+  "license": "GPL-3.0",
+  "version": "2.16.0",
+  "released": "2026-10-11",
+  "homepage": "https://davidotek.github.io/protonup-qt",
+  "flathub_verified": true,
+  "end_of_life": false,
+  "screenshots": [
+   {
+    "url": "https://dl.flathub.org/media/net/davidotek/pupgui2/cb80abc806d40793dec0412c81f83c68/screenshots/image-1_orig.png",
+    "caption": ""
+   },
+   {
+    "url": "https://dl.flathub.org/media/net/davidotek/pupgui2/cb80abc806d40793dec0412c81f83c68/screenshots/image-2_orig.png",
+    "caption": ""
+   },
+   {
+    "url": "https://dl.flathub.org/media/net/davidotek/pupgui2/cb80abc806d40793dec0412c81f83c68/screenshots/image-3_orig.png",
+    "caption": ""
+   }
+  ],
+  "source": "https://flathub.org/api/v2/appstream/net.davidotek.pupgui2"
+ },
+ "retroarch": {
+  "ref": "org.libretro.RetroArch",
+  "name": "RetroArch",
+  "summary": "Frontend for emulators, game engines and media players",
+  "developer": "libretro",
+  "license": "GPL-3.0-or-later",
+  "version": "1.22.2",
+  "released": "2025-11-22",
+  "homepage": "https://www.retroarch.com",
+  "flathub_verified": true,
+  "end_of_life": false,
+  "screenshots": [
+   {
+    "url": "https://dl.flathub.org/media/org/libretro/RetroArch/3ee0774bac871b4ff7a8a6927c43b394/screenshots/image-1_orig.png",
+    "caption": "RetroArch main menu"
+   },
+   {
+    "url": "https://dl.flathub.org/media/org/libretro/RetroArch/3ee0774bac871b4ff7a8a6927c43b394/screenshots/image-2_orig.png",
+    "caption": "RetroArch running the NES"
+   },
+   {
+    "url": "https://dl.flathub.org/media/org/libretro/RetroArch/3ee0774bac871b4ff7a8a6927c43b394/screenshots/image-3_orig.png",
+    "caption": "Rabbit : a fighting game from 1997, one of the only Electronic Arts arcade games"
+   },
+   {
+    "url": "https://dl.flathub.org/media/org/libretro/RetroArch/3ee0774bac871b4ff7a8a6927c43b394/screenshots/image-4_orig.png",
+    "caption": "Wolfenstein 3D (Shareware)"
+   }
+  ],
+  "source": "https://flathub.org/api/v2/appstream/org.libretro.RetroArch"
+ },
+ "dolphin": {
+  "ref": "org.DolphinEmu.dolphin-emu",
+  "name": "Dolphin Emulator",
+  "summary": "GameCube / Wii / Triforce Emulator",
+  "developer": "Dolphin Emulator Project",
+  "license": "GPL-2.0+",
+  "version": "2609a",
+  "released": "2026-10-08",
+  "homepage": "https://dolphin-emu.org",
+  "flathub_verified": false,
+  "end_of_life": false,
+  "screenshots": [
+   {
+    "url": "https://dl.flathub.org/media/org/dolphinemu/dolphin-emu/545d6103cffc1fc13e2704ce509e2c0b/screenshots/image-1_orig.png",
+    "caption": "Dolpin's main window"
+   },
+   {
+    "url": "https://dl.flathub.org/media/org/dolphinemu/dolphin-emu/545d6103cffc1fc13e2704ce509e2c0b/screenshots/image-2_orig.png",
+    "caption": "In-game"
+   },
+   {
+    "url": "https://dl.flathub.org/media/org/dolphinemu/dolphin-emu/545d6103cffc1fc13e2704ce509e2c0b/screenshots/image-3_orig.png",
+    "caption": "Grapics configuration"
+   },
+   {
+    "url": "https://dl.flathub.org/media/org/dolphinemu/dolphin-emu/545d6103cffc1fc13e2704ce509e2c0b/screenshots/image-4_orig.png",
+    "caption": "Controller configuration"
+   }
+  ],
+  "source": "https://flathub.org/api/v2/appstream/org.DolphinEmu.dolphin-emu"
+ },
+ "prism": {
+  "ref": "org.prismlauncher.PrismLauncher",
+  "name": "Prism Launcher",
+  "summary": "Custom Minecraft Launcher to easily manage multiple Minecraft installations at once",
+  "developer": "Prism Launcher Contributors",
+  "license": "GPL-3.0-only",
+  "version": "11.1.1",
+  "released": "2011-11-11",
+  "homepage": "https://prismlauncher.org/",
+  "flathub_verified": true,
+  "end_of_life": false,
+  "screenshots": [
+   {
+    "url": "https://dl.flathub.org/media/org/prismlauncher/PrismLauncher/61a6268120825540bced2adcb8e6b734/screenshots/image-1_orig.png",
+    "caption": "The main Prism Launcher window"
+   },
+   {
+    "url": "https://dl.flathub.org/media/org/prismlauncher/PrismLauncher/61a6268120825540bced2adcb8e6b734/screenshots/image-2_orig.png",
+    "caption": "Modpack installation"
+   },
+   {
+    "url": "https://dl.flathub.org/media/org/prismlauncher/PrismLauncher/61a6268120825540bced2adcb8e6b734/screenshots/image-3_orig.png",
+    "caption": "Modpack updating"
+   },
+   {
+    "url": "https://dl.flathub.org/media/org/prismlauncher/PrismLauncher/61a6268120825540bced2adcb8e6b734/screenshots/image-4_orig.png",
+    "caption": "Mod installation"
+   },
+   {
+    "url": "https://dl.flathub.org/media/org/prismlauncher/PrismLauncher/61a6268120825540bced2adcb8e6b734/screenshots/image-5_orig.png",
+    "caption": "Mod updating"
+   }
+  ],
+  "source": "https://flathub.org/api/v2/appstream/org.prismlauncher.PrismLauncher"
+ },
+ "anki": {
+  "ref": "net.ankiweb.Anki",
+  "name": "Anki",
+  "summary": "Powerful, intelligent flash cards",
+  "developer": "Damien Elmes",
+  "license": "AGPL-3.0+",
+  "version": "26.09.4",
+  "released": "2026-11-04",
+  "homepage": "https://apps.ankiweb.net/",
+  "flathub_verified": true,
+  "end_of_life": false,
+  "screenshots": [
+   {
+    "url": "https://dl.flathub.org/media/net/ankiweb/Anki/844887dbd05a52ecf890ddd79317b1ff/screenshots/image-1_orig.png",
+    "caption": "Flashcard and answer"
+   }
+  ],
+  "source": "https://flathub.org/api/v2/appstream/net.ankiweb.Anki"
+ },
+ "gcompris": {
+  "ref": "org.kde.gcompris",
+  "name": "GCompris",
+  "summary": "Educational game for children",
+  "developer": "KDE",
+  "license": "AGPL-3.0",
+  "version": "26.2",
+  "released": "2026-09-23",
+  "homepage": "https://gcompris.net/",
+  "flathub_verified": true,
+  "end_of_life": false,
+  "screenshots": [
+   {
+    "url": "https://dl.flathub.org/media/org/kde/gcompris/6b4a73b3e227329bd88ac50017e42bbb/screenshots/image-1_orig.png",
+    "caption": "GCompris main menu"
+   },
+   {
+    "url": "https://dl.flathub.org/media/org/kde/gcompris/6b4a73b3e227329bd88ac50017e42bbb/screenshots/image-2_orig.png",
+    "caption": "\"Click on an uppercase letter\" activity"
+   },
+   {
+    "url": "https://dl.flathub.org/media/org/kde/gcompris/6b4a73b3e227329bd88ac50017e42bbb/screenshots/image-3_orig.png",
+    "caption": "\"Learning Clock\" activity"
+   },
+   {
+    "url": "https://dl.flathub.org/media/org/kde/gcompris/6b4a73b3e227329bd88ac50017e42bbb/screenshots/image-4_orig.png",
+    "caption": "\"Mixing color of paint\" activity"
+   },
+   {
+    "url": "https://dl.flathub.org/media/org/kde/gcompris/6b4a73b3e227329bd88ac50017e42bbb/screenshots/image-5_orig.png",
+    "caption": "\"Colors\" activity"
+   }
+  ],
+  "source": "https://flathub.org/api/v2/appstream/org.kde.gcompris"
+ }
+}

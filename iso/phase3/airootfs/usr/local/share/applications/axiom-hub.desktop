@@ -1,0 +1,13 @@
+[Desktop Entry]
+# Axiom Hub: find, install, update and remove software.
+Type=Application
+Icon=axiom-software
+Name=Axiom Hub
+GenericName=Software Hub
+Comment=Find, install, update and remove software
+Categories=System;PackageManager;
+Keywords=install;apps;software;store;flatpak;appimage;
+Exec=axiom-app hub
+StartupWMClass=org.axiom.Hub
+StartupNotify=true
+Terminal=false

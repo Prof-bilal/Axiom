@@ -1,0 +1,12 @@
+[Desktop Entry]
+# Axiom App Installer: install AppImage and Flatpak files for the current user.
+Type=Application
+Icon=axiom-software
+Name=App Installer
+Comment=Install AppImage and Flatpak files you downloaded
+Categories=System;PackageManager;
+Keywords=install;appimage;flatpak;package;
+Exec=axiom-app appinstaller
+StartupWMClass=org.axiom.AppInstaller
+StartupNotify=true
+Terminal=false

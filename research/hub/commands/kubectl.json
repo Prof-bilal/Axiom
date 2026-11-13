@@ -1,0 +1,12 @@
+{"id": "kubectl",
+ "screenshots": [],
+ "logo": null,
+ "commands": [{"method": "download binary (curl)", "command": "curl -LO \"https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl\"", "needs_root": false, "source": "https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/"},
+  {"method": "download checksum (curl)", "command": "curl -LO \"https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl.sha256\"", "needs_root": false, "source": "https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/"},
+  {"method": "verify checksum", "command": "echo \"$(cat kubectl.sha256)  kubectl\" | sha256sum --check", "needs_root": false, "source": "https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/"},
+  {"method": "install binary", "command": "sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl", "needs_root": true, "source": "https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/"},
+  {"method": "install (apt, Debian-based)", "command": "sudo apt-get install -y kubectl", "needs_root": true, "source": "https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/"},
+  {"method": "version check", "command": "kubectl version --client", "needs_root": false, "source": "https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/"}],
+ "min_ram_gb": null,
+ "status": "partly found",
+ "note": "Install commands found on the official page; no screenshot, logo or RAM requirement is stated there (the Arch commands were in a truncated section and not read)."}

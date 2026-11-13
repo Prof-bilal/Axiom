@@ -10,9 +10,9 @@
 APPS_DIR=/usr/local/share/axiom/shell
 
 case "$1" in
-  files|software|settings) app="$1" ;;
+  files|software|settings|appinstaller|hub) app="$1" ;;
   *)
-    echo "axiom-app: unknown app '$1' (known: files software settings)" >&2
+    echo "axiom-app: unknown app '$1' (known: files software settings appinstaller hub)" >&2
     exit 2
     ;;
 esac
