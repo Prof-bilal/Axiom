@@ -11,17 +11,19 @@ and components (`qs.src.shared`) are imported, not copied:
 shell/files.qml           entry (AppId org.axiom.Files)     imports qs.apps.files
 shell/software.qml        entry (AppId org.axiom.Software)  imports qs.apps.software
 shell/appinstaller.qml    entry (AppId org.axiom.AppInstaller)  imports qs.apps.appinstaller
+shell/quickinstall.qml    entry (AppId org.axiom.QuickInstall)  click-to-install progress window
 shell/settings.qml        entry (AppId org.axiom.Settings)  imports qs.apps.settings
 shell/apps -> ../apps     symlink: apps/ is part of the same config root
 apps/shared/              AppWindow, AppButton, SearchField, ContextMenu, CommandRunner
 apps/files/               Axiom Files    (files.js: pure logic, FileBackend.qml: all I/O)
 apps/software/            Axiom Software (software.js, PackageBackend.qml)
-apps/appinstaller/        Axiom App Installer (installfile.js, InstallFile.qml, AppInstaller.qml)
+apps/appinstaller/        Axiom App Installer (installfile.js, InstallFile.qml, AppInstaller.qml) and the
+                          click-to-install window (QuickInstall.qml: AppImage, Flatpak, .deb; ADR-028)
 apps/settings/            Axiom Settings (settings.js, one page per file; Phase 5 adds Network, Bluetooth,
                           Sound, Displays (writable), Power, Notifications, Keyboard, Date & time, Users)
 ```
 
-Launched with `axiom-app <files|software|settings|appinstaller> [path-or-uri]`
+Launched with `axiom-app <files|software|settings|appinstaller|quickinstall> [path-or-uri]`
 (`/usr/local/bin/axiom-app`): a fixed list of names, one optional argument
 handed over as `AXIOM_APP_ARG`. Apps run as the desktop user, never as root,
 and do system work through argv-array processes (`find`, `gio`, `pacman`,

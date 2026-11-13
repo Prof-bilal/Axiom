@@ -5,7 +5,7 @@ import test from "node:test";
 
 const src = readFileSync(new URL("../../apps/appinstaller/installfile.js", import.meta.url), "utf8")
   .replace(/^\.pragma library/m, "");
-const lib = new Function(src + "; return { classify, appImageTarget, formatSize, quoteExec, desktopEntry, flatpakArgv };")();
+const lib = new Function(src + "; return { classify, appImageTarget, formatSize, quoteExec, desktopEntry, flatpakArgv, debStagePath, containerListed, validDebName, debListArgv, debCreateArgv, debEnterArgv, debNameArgv, debInstallArgv, debExportArgv };")();
 
 test("classifies AppImage, Flatpak and Arch packages", () => {
   assert.equal(lib.classify("Foo-x86_64.AppImage").kind, "appimage");
@@ -16,7 +16,7 @@ test("classifies AppImage, Flatpak and Arch packages", () => {
 
 test("unknown types return null", () => {
   assert.equal(lib.classify("notes.txt"), null);
-  assert.equal(lib.classify("setup.deb"), null);
+  assert.equal(lib.classify("setup.exe"), null);
   assert.equal(lib.classify(""), null);
 });
 
@@ -59,4 +59,41 @@ test("helper refuses to run without root", async () => {
   const r = spawnSync("sh", [new URL("../../system/pkgd/axiom-pkgd", import.meta.url).pathname, "install", "/tmp/x.pkg.tar.zst"], { encoding: "utf8" });
   assert.equal(r.status, 1);
   assert.match(r.stderr, /must run as root/);
+});
+
+test("classifies .deb as a user-scope container install", () => {
+  const c = lib.classify("Tool_1.0_amd64.DEB");
+  assert.equal(c.kind, "deb");
+  assert.equal(c.root, false);
+});
+
+test(".deb staging path stays inside ~/.cache/axiom-debs", () => {
+  assert.equal(lib.debStagePath("/home/u/", "../../etc/x y.deb"), "/home/u/.cache/axiom-debs/x_y.deb");
+});
+
+test("recognises the Axiom container in distrobox list output", () => {
+  const out = "ID           | NAME          | STATUS   | IMAGE\n1a2b | axiom-debian | Up 2 min | debian:stable\n";
+  assert.equal(lib.containerListed(out), true);
+  assert.equal(lib.containerListed("ID | NAME\n1 | other | Up"), false);
+  assert.equal(lib.containerListed(""), false);
+});
+
+test("Debian package names are validated before use", () => {
+  assert.equal(lib.validDebName("google-chrome-stable"), true);
+  assert.equal(lib.validDebName("libc6+dev"), true);
+  for (const bad of ["", "-rf", "a b", "a;b", "$(x)", "../x", "A"]) assert.equal(lib.validDebName(bad), false, bad);
+});
+
+test(".deb commands are argv arrays that enter only the Axiom container", () => {
+  assert.deepEqual(lib.debListArgv(), ["distrobox", "list"]);
+  const create = lib.debCreateArgv();
+  assert.deepEqual(create.slice(0, 5), ["distrobox", "create", "--yes", "--name", "axiom-debian"]);
+  assert.equal(create.includes("--image"), true);
+  assert.deepEqual(lib.debInstallArgv("/h/.cache/axiom-debs/x.deb"),
+    ["distrobox", "enter", "axiom-debian", "--", "sudo", "apt-get", "install", "-y", "/h/.cache/axiom-debs/x.deb"]);
+  assert.deepEqual(lib.debNameArgv("/h/x.deb").slice(-4), ["dpkg-deb", "-f", "/h/x.deb", "Package"]);
+  assert.deepEqual(lib.debExportArgv("pkg").slice(-3), ["distrobox-export", "--app", "pkg"]);
+  for (const a of [lib.debInstallArgv("/x.deb"), lib.debExportArgv("p"), lib.debNameArgv("/x.deb")]) {
+    assert.equal(a.slice(0, 4).join(" "), "distrobox enter axiom-debian --");
+  }
 });

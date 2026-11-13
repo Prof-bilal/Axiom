@@ -4,11 +4,15 @@
 // Pure logic, no I/O. Unit-tested with tests/apps/installfile-logic.test.mjs.
 // AppImage and Flatpak install as the user; Arch packages go through the
 // privileged helper (pkexec + polkit), so they need an admin approval.
+// A .deb never touches the Arch system: it installs inside a rootless distrobox
+// container (see docs/decisions/028-deb-via-distrobox.md) and its launcher is
+// exported to the user's menu.
 
 var KINDS = {
     appimage: { label: "AppImage", root: false },
     flatpak: { label: "Flatpak bundle", root: false },
-    arch: { label: "Arch package", root: true }
+    arch: { label: "Arch package", root: true },
+    deb: { label: "Debian package (in a container)", root: false }
 }
 
 // Returns { kind, label, root, supported } or null for unknown file types.
@@ -18,6 +22,7 @@ function classify(fileName) {
     if (n.endsWith(".appimage")) kind = "appimage"
     else if (n.endsWith(".flatpak") || n.endsWith(".flatpakref")) kind = "flatpak"
     else if (n.endsWith(".pkg.tar.zst") || n.endsWith(".pkg.tar.xz")) kind = "arch"
+    else if (n.endsWith(".deb")) kind = "deb"
     if (!kind) return null
     return { kind: kind, label: KINDS[kind].label, root: KINDS[kind].root }
 }
@@ -60,3 +65,31 @@ function formatSize(bytes) {
     return (i === 0 ? v.toFixed(0) : v.toFixed(1)) + " " + units[i]
 }
 
+// ---- .deb through distrobox (rootless; the container does the apt work) ----
+
+var DEB_CONTAINER = "axiom-debian"
+var DEB_IMAGE = "docker.io/library/debian:stable"
+var DEB_NAME = /^[a-z0-9][a-z0-9+.-]*$/   // Debian package names
+
+// Where a .deb is staged inside the user's home so the container can see it.
+function debStagePath(home, fileName) {
+    var base = (fileName || "").split("/").pop().replace(/[^A-Za-z0-9._+-]/g, "_")
+    return home.replace(/\/+$/, "") + "/.cache/axiom-debs/" + base
+}
+
+// True when `distrobox list` output names the Axiom container.
+function containerListed(out) {
+    return (out || "").split("\n").some(function (l) {
+        return l.split("|").some(function (c) { return c.trim() === DEB_CONTAINER })
+    })
+}
+
+function validDebName(name) { return DEB_NAME.test((name || "").trim()) }
+
+function debListArgv() { return ["distrobox", "list"] }
+function debCreateArgv() { return ["distrobox", "create", "--yes", "--name", DEB_CONTAINER, "--image", DEB_IMAGE] }
+function debEnterArgv(cmd) { return ["distrobox", "enter", DEB_CONTAINER, "--"].concat(cmd) }
+function debNameArgv(stagedPath) { return debEnterArgv(["dpkg-deb", "-f", stagedPath, "Package"]) }
+function debInstallArgv(stagedPath) { return debEnterArgv(["sudo", "apt-get", "install", "-y", stagedPath]) }
+// distrobox-export puts the app's launcher in the host's ~/.local/share/applications.
+function debExportArgv(pkg) { return debEnterArgv(["distrobox-export", "--app", pkg]) }

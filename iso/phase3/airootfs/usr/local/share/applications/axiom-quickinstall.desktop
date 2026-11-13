@@ -1,0 +1,14 @@
+[Desktop Entry]
+# Axiom click-to-install: opens a small progress window for a downloaded app file.
+# Registered as the handler for AppImage, Flatpak and Debian package files.
+Type=Application
+Icon=axiom-software
+Name=Install with Axiom
+Comment=Install a downloaded app with a small progress window
+Categories=System;PackageManager;
+Exec=axiom-app quickinstall %f
+MimeType=application/vnd.appimage;application/x-iso9660-appimage;application/vnd.flatpak;application/vnd.flatpak.ref;application/vnd.debian.binary-package;application/x-deb;
+StartupWMClass=org.axiom.QuickInstall
+StartupNotify=true
+NoDisplay=true
+Terminal=false

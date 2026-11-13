@@ -184,3 +184,6 @@ polkit-gnome
 npm
 python-pipx
 fuse2
+# .deb files (click-to-install): rootless container so a Debian package never touches the Arch system
+distrobox
+podman

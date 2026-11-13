@@ -1,2 +1,8 @@
 [Default Applications]
 inode/directory=axiom-files.desktop
+application/vnd.appimage=axiom-quickinstall.desktop
+application/x-iso9660-appimage=axiom-quickinstall.desktop
+application/vnd.flatpak=axiom-quickinstall.desktop
+application/vnd.flatpak.ref=axiom-quickinstall.desktop
+application/vnd.debian.binary-package=axiom-quickinstall.desktop
+application/x-deb=axiom-quickinstall.desktop

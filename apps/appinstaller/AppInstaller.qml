@@ -210,7 +210,7 @@ AppWindow {
             AppButton {
                 id: closeButton
                 text: "Close"
-                onClicked: root.close()
+                onClicked: Qt.quit()
             }
 
             AppButton {
