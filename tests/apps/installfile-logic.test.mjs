@@ -5,7 +5,7 @@ import test from "node:test";
 
 const src = readFileSync(new URL("../../apps/appinstaller/installfile.js", import.meta.url), "utf8")
   .replace(/^\.pragma library/m, "");
-const lib = new Function(src + "; return { classify, appImageTarget, formatSize, quoteExec, desktopEntry, flatpakArgv, debStagePath, containerListed, validDebName, debListArgv, debCreateArgv, debEnterArgv, debNameArgv, debInstallArgv, debExportArgv };")();
+const lib = new Function(src + "; return { classify, appImageTarget, formatSize, quoteExec, desktopEntry, flatpakArgv, debStagePath, containerListed, validDebName, displayName, debListArgv, debCreateArgv, debEnterArgv, debNameArgv, debInstallArgv, debExportArgv };")();
 
 test("classifies AppImage, Flatpak and Arch packages", () => {
   assert.equal(lib.classify("Foo-x86_64.AppImage").kind, "appimage");
@@ -96,4 +96,12 @@ test(".deb commands are argv arrays that enter only the Axiom container", () => 
   for (const a of [lib.debInstallArgv("/x.deb"), lib.debExportArgv("p"), lib.debNameArgv("/x.deb")]) {
     assert.equal(a.slice(0, 4).join(" "), "distrobox enter axiom-debian --");
   }
+});
+
+test("friendly app name drops extension, architecture and version", () => {
+  assert.equal(lib.displayName("Foo-Bar-1.2.3-x86_64.AppImage"), "Foo Bar");
+  assert.equal(lib.displayName("/home/u/Downloads/obsidian_1.5.3_amd64.deb"), "Obsidian");
+  assert.equal(lib.displayName("google-chrome-stable_current_amd64.deb"), "Google chrome");
+  assert.equal(lib.displayName("1.2.3.AppImage"), "1.2.3.AppImage");
+  assert.equal(lib.displayName(""), "App");
 });

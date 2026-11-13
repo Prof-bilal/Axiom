@@ -56,6 +56,17 @@ function flatpakArgv(path) {
     return ["flatpak", "install", "--user", "--noninteractive", path]
 }
 
+// Friendly app name from a file name: drop the extension, architecture and version
+// parts, turn - and _ into spaces. "Foo-Bar-1.2.3-x86_64.AppImage" -> "Foo Bar".
+function displayName(fileName) {
+    var base = (fileName || "").split("/").pop().replace(/\.(appimage|flatpakref|flatpak|deb|pkg\.tar\.(zst|xz))$/i, "")
+    var words = base.split(/[-_ ]+/).filter(function (w) {
+        return w.length > 0 && !/^(x86|x86_64|amd64|arm64|aarch64|i386|i686|current|stable|linux)$/i.test(w) && !/^v?\d[\w.+~]*$/.test(w)
+    })
+    var name = words.join(" ")
+    return name.length > 0 ? name.charAt(0).toUpperCase() + name.slice(1) : (fileName || "App")
+}
+
 // Human-readable size for the confirmation dialog.
 function formatSize(bytes) {
     if (!(bytes >= 0)) return "unknown size"
