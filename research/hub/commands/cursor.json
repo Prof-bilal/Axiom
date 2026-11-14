@@ -1,0 +1,43 @@
+{
+  "id": "cursor",
+  "commands": [
+    {
+      "method": "apt key (Debian/Ubuntu)",
+      "command": "curl -fsSL https://downloads.cursor.com/keys/anysphere.asc | gpg --dearmor | sudo tee /etc/apt/keyrings/cursor.gpg > /dev/null",
+      "needs_root": true,
+      "source": "https://cursor.com/docs/get-started/installation"
+    },
+    {
+      "method": "apt repo (Debian/Ubuntu)",
+      "command": "echo \"deb [arch=amd64,arm64 signed-by=/etc/apt/keyrings/cursor.gpg] https://downloads.cursor.com/aptrepo stable main\" | sudo tee /etc/apt/sources.list.d/cursor.list > /dev/null",
+      "needs_root": true,
+      "source": "https://cursor.com/docs/get-started/installation"
+    },
+    {
+      "method": "apt install (Debian/Ubuntu)",
+      "command": "sudo apt update && sudo apt install cursor",
+      "needs_root": true,
+      "source": "https://cursor.com/docs/get-started/installation"
+    },
+    {
+      "method": "yum/dnf repo (RHEL/Fedora)",
+      "command": "sudo tee /etc/yum.repos.d/cursor.repo << 'EOF' (baseurl=https://downloads.cursor.com/yumrepo, gpgkey=https://downloads.cursor.com/keys/anysphere.asc)",
+      "needs_root": true,
+      "source": "https://cursor.com/docs/get-started/installation"
+    },
+    {
+      "method": "dnf install (RHEL/Fedora)",
+      "command": "sudo dnf install cursor",
+      "needs_root": true,
+      "source": "https://cursor.com/docs/get-started/installation"
+    },
+    {
+      "method": "AppImage",
+      "command": "download from https://cursor.com/downloads, then: chmod +x Cursor-*.AppImage && ./Cursor-*.AppImage",
+      "needs_root": false,
+      "source": "https://cursor.com/docs/get-started/installation"
+    }
+  ],
+  "status": "partly verified",
+  "note": "Read from the official Cursor install page via a summary; the apt key pipeline was reassembled from split lines, and root needs were inferred from sudo usage."
+}

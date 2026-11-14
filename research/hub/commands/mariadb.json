@@ -1,0 +1,10 @@
+{"id": "mariadb",
+ "screenshots": [],
+ "logo": null,
+ "commands": [
+  {"method": "apt", "command": "sudo apt install mariadb-server mariadb-client mariadb-backup", "needs_root": true, "source": "https://mariadb.com/kb/en/mariadb-package-repository-setup-and-usage/"},
+  {"method": "dnf", "command": "sudo dnf install MariaDB-server MariaDB-client MariaDB-backup", "needs_root": true, "source": "https://mariadb.com/kb/en/mariadb-package-repository-setup-and-usage/"}
+ ],
+ "min_ram_gb": null,
+ "status": "partly found",
+ "note": "The MariaDB package repository page gives install commands, but it has no screenshots or logo and states no RAM requirement."}

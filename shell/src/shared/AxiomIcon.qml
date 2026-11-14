@@ -66,6 +66,9 @@ Canvas {
         "grid": {
             stroke: "M4 4h6v6H4z M14 4h6v6h-6z M4 14h6v6H4z M14 14h6v6h-6z"
         },
+        "list": {
+            stroke: "M4 6h2 M9 6h11 M4 12h2 M9 12h11 M4 18h2 M9 18h11"
+        },
         "folder": {
             stroke: "M3 6.5a1.5 1.5 0 0 1 1.5-1.5h4.8l2 2.2h8.2a1.5 1.5 0 0 1 1.5 1.5v9.8a1.5 1.5 0 0 1-1.5 1.5h-15A1.5 1.5 0 0 1 3 18.5z"
         },

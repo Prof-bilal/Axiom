@@ -1,0 +1,1 @@
+{"id": "sqlserver", "commands": [], "status": "not verified", "note": "Official Microsoft Learn says SSMS is a Windows application with no Linux install; the page gives no Linux install commands for sqlcmd or the VS Code MSSQL extension."}

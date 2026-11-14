@@ -58,6 +58,7 @@ cp -r "$SHELL_SRC" "$WORK/profile/airootfs/usr/local/share/axiom/shell"
 # Core apps (Phase 4): staged as a sibling of the shell; shell/apps is a
 # relative symlink to ../apps, so the apps share the shell's config root.
 cp -r "$ROOT/apps" "$WORK/profile/airootfs/usr/local/share/axiom/apps"
+install -m 755 "$ROOT/system/pkgd/axiom-pkgd" "$WORK/profile/airootfs/usr/local/bin/axiom-pkgd"
 rm -rf "$WORK/profile/airootfs/usr/local/share/axiom/shell/tests"
 # Installer (Phase 6): backend, TUI and the Developer Hub catalogue.
 install -d "$WORK/profile/airootfs/usr/local/lib/axiom-installer"

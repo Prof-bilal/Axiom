@@ -1,0 +1,13 @@
+{"id": "yabridge",
+ "screenshots": [],
+ "logo": null,
+ "commands": [
+  {"method": "install from tarball", "command": "tar -C ~/.local/share -xavf yabridge-x.y.z.tar.gz", "needs_root": false, "source": "https://github.com/robbert-vdh/yabridge"},
+  {"method": "add plugin path", "command": "yabridgectl add \"$HOME/.wine/drive_c/Program Files/Steinberg/VstPlugins\"", "needs_root": false, "source": "https://github.com/robbert-vdh/yabridge"},
+  {"method": "sync plugins", "command": "yabridgectl sync", "needs_root": false, "source": "https://github.com/robbert-vdh/yabridge"},
+  {"method": "realtime group setup", "command": "sudo gpasswd -a \"$USER\" realtime", "needs_root": true, "source": "https://github.com/robbert-vdh/yabridge"},
+  {"method": "disable rtkit", "command": "sudo systemctl mask rtkit-daemon.service", "needs_root": true, "source": "https://github.com/robbert-vdh/yabridge"}
+ ],
+ "min_ram_gb": null,
+ "status": "partly found",
+ "note": "Setup commands found in the official README; the only image is a project screenshot, not a logo, and the README states no minimum RAM."}

@@ -112,7 +112,7 @@ Singleton {
     readonly property int panelNavHeight: 28
     readonly property int workspaceButtonWidth: 30
     readonly property int workspaceButtonHeight: 26
-    readonly property int dockIconSize: 54
+    readonly property int dockIconSize: 48
     readonly property int dockItemSize: 66
     readonly property int dockPadding: 7
     readonly property int dockEdgeGap: 12

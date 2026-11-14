@@ -1,0 +1,10 @@
+{"id": "postgresql",
+ "screenshots": [],
+ "logo": {"url": "https://www.postgresql.org/media/img/about/press/elephant.png", "source": "https://www.postgresql.org/download/linux/ubuntu/"},
+ "commands": [
+  {"method": "apt", "command": "sudo apt update", "needs_root": true, "source": "https://www.postgresql.org/download/linux/ubuntu/"},
+  {"method": "apt", "command": "sudo apt install postgresql-18", "needs_root": true, "source": "https://www.postgresql.org/download/linux/ubuntu/"}
+ ],
+ "min_ram_gb": null,
+ "status": "partly found",
+ "note": "The PostgreSQL Ubuntu download page gives the apt install commands and the elephant logo, but no screenshots. The Arch pacman command was not found on an official page and no RAM requirement is stated."}

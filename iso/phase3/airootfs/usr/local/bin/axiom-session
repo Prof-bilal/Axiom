@@ -12,7 +12,8 @@ export XDG_CURRENT_DESKTOP=Axiom
 export XDG_SESSION_DESKTOP=axiom
 export XDG_SESSION_TYPE=wayland
 export XDG_RUNTIME_DIR="${XDG_RUNTIME_DIR:-/run/user/$(id -u)}"
-export PATH="/usr/local/bin:$PATH"
+# ~/.local/bin holds commands installed with npm (--prefix ~/.local) and pipx.
+export PATH="$HOME/.local/bin:/usr/local/bin:$PATH"
 # Lets `qs ipc call axiom …` from any session process find the Axiom Shell.
 export QS_CONFIG_PATH=/usr/local/share/axiom/shell
 

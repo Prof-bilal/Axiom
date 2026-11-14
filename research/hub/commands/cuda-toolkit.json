@@ -1,0 +1,13 @@
+{"id": "cuda-toolkit",
+ "screenshots": [],
+ "logo": {"url": "https://docs.nvidia.com/cuda/_static/Logo_and_CUDA.png", "source": "https://docs.nvidia.com/cuda/cuda-installation-guide-linux/index.html"},
+ "commands": [
+  {"method": "apt (Ubuntu/Debian)", "command": "apt install cuda-toolkit", "needs_root": true, "source": "https://docs.nvidia.com/cuda/cuda-installation-guide-linux/index.html"},
+  {"method": "dnf (RHEL/Fedora)", "command": "dnf install cuda-toolkit", "needs_root": true, "source": "https://docs.nvidia.com/cuda/cuda-installation-guide-linux/index.html"},
+  {"method": "zypper (SUSE/openSUSE)", "command": "zypper install cuda-toolkit", "needs_root": true, "source": "https://docs.nvidia.com/cuda/cuda-installation-guide-linux/index.html"},
+  {"method": "conda", "command": "conda install cuda -c nvidia", "needs_root": false, "source": "https://docs.nvidia.com/cuda/cuda-installation-guide-linux/index.html"},
+  {"method": "pip", "command": "python3 -m pip install nvidia-cuda-runtime", "needs_root": false, "source": "https://docs.nvidia.com/cuda/cuda-installation-guide-linux/index.html"}
+ ],
+ "min_ram_gb": null,
+ "status": "partly found",
+ "note": "Commands and a logo found in the official NVIDIA guide; the guide states no minimum RAM. The logo path was relative and resolved against the page URL."}

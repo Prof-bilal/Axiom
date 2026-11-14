@@ -1,0 +1,1745 @@
+{
+  "vscode": {
+    "methods": [
+      {
+        "method": "Flatpak (community repackage, unverified on Flathub)",
+        "command": "flatpak install flathub com.visualstudio.code",
+        "root": "no"
+      },
+      {
+        "method": "Snap (Microsoft)",
+        "command": "sudo snap install code --classic",
+        "root": "yes"
+      }
+    ],
+    "notes": [
+      "The Flathub build is a repackaging of Microsoft's build and is not supported by Microsoft.",
+      "Extensions that need host tools (gcc, python) may need Flatpak SDK extensions, for example org.freedesktop.Sdk.Extension.golang."
+    ],
+    "sources": [
+      "https://flathub.org/de/apps/com.visualstudio.code",
+      "https://github.com/flathub/com.visualstudio.code"
+    ]
+  },
+  "docker": {
+    "methods": [
+      {
+        "method": "Arch package",
+        "command": "sudo pacman -S docker",
+        "root": "yes"
+      },
+      {
+        "method": "Start the daemon",
+        "command": "sudo systemctl enable --now docker",
+        "root": "yes"
+      },
+      {
+        "method": "Run without sudo (log out and back in after)",
+        "command": "sudo usermod -aG docker \"$USER\"",
+        "root": "yes"
+      }
+    ],
+    "notes": [
+      "Members of the docker group are root-equivalent.",
+      "Docker Compose is a separate package: sudo pacman -S docker-compose."
+    ],
+    "sources": [
+      "https://itsfoss.com/install-docker-arch-linux/",
+      "https://linuxcapable.com/how-to-install-docker-on-arch-linux/"
+    ]
+  },
+  "neovim": {
+    "methods": [
+      {
+        "method": "Arch package",
+        "command": "sudo pacman -S neovim",
+        "root": "yes"
+      },
+      {
+        "method": "AUR development build",
+        "command": "yay -S neovim-git",
+        "root": "no"
+      }
+    ],
+    "notes": [
+      "No Flathub listing was confirmed for io.neovim.nvim."
+    ],
+    "sources": [
+      "https://wiki.archlinux.org/title/Nvim",
+      "https://www.neovim.io/doc/install"
+    ]
+  },
+  "podman": {
+    "methods": [
+      {
+        "method": "Arch package",
+        "command": "sudo pacman -S podman",
+        "root": "yes"
+      },
+      {
+        "method": "Rootless helpers",
+        "command": "sudo pacman -S passt fuse-overlayfs crun",
+        "root": "yes"
+      }
+    ],
+    "notes": [
+      "Rootless use needs subordinate UID/GID ranges in /etc/subuid and /etc/subgid.",
+      "Check with: podman info (expects cgroups v2 and crun)."
+    ],
+    "sources": [
+      "https://podman.io/docs/installation"
+    ]
+  },
+  "androidstudio": {
+    "methods": [
+      {
+        "method": "Flatpak (community build, unverified)",
+        "command": "flatpak install flathub com.google.AndroidStudio",
+        "root": "no"
+      },
+      {
+        "method": "Official tarball",
+        "command": "download Linux (64-bit) from https://developer.android.com/studio",
+        "root": "no"
+      }
+    ],
+    "notes": [
+      "The Flathub package is community-made and unverified; it wraps Google's tarball."
+    ],
+    "sources": [
+      "https://wiki.debian.org/AndroidStudio",
+      "https://flathub.org/fr/apps/com.google.AndroidStudio/install"
+    ]
+  },
+  "zed": {
+    "methods": [
+      {
+        "method": "Official install script",
+        "command": "curl -f https://zed.dev/install.sh | sh",
+        "root": "no"
+      },
+      {
+        "method": "Flatpak (unverified wrapper)",
+        "command": "flatpak install flathub dev.zed.Zed",
+        "root": "no"
+      }
+    ],
+    "notes": [
+      "The script build needs a Vulkan-capable GPU."
+    ],
+    "sources": [
+      "https://zed.dev/docs/linux"
+    ]
+  },
+  "vscodium": {
+    "methods": [
+      {
+        "method": "Flatpak",
+        "command": "flatpak install flathub com.vscodium.codium",
+        "root": "no"
+      }
+    ],
+    "notes": [
+      "Sandboxed file access: grant folders with flatpak override.",
+      "Wayland display problems: run codium --ozone-platform=x11."
+    ],
+    "sources": [
+      "https://flathub.org/pl/apps/com.vscodium.codium",
+      "https://github.com/flathub/com.vscodium.codium"
+    ]
+  },
+  "helix": {
+    "methods": [
+      {
+        "method": "Arch package (extra)",
+        "command": "sudo pacman -S helix",
+        "root": "yes"
+      }
+    ],
+    "notes": [
+      "On Arch the command is helix, not hx.",
+      "Check the setup with: helix --health"
+    ],
+    "sources": [
+      "https://docs.helix-editor.com/package-managers.html"
+    ]
+  },
+  "firefox": {
+    "methods": [
+      {
+        "method": "Flatpak (Mozilla guide)",
+        "command": "flatpak install flathub org.mozilla.firefox",
+        "root": "no"
+      }
+    ],
+    "notes": [
+      "Distro packages may lag behind or lack branding, per Mozilla.",
+      "The Arch command sudo pacman -S firefox was not checked against a source."
+    ],
+    "sources": [
+      "https://support.mozilla.org/en-US/kb/install-firefox-linux"
+    ]
+  },
+  "steam": {
+    "methods": [
+      {
+        "method": "Arch package (needs [multilib] enabled in /etc/pacman.conf)",
+        "command": "sudo pacman -S steam",
+        "root": "yes"
+      },
+      {
+        "method": "Flatpak",
+        "command": "flatpak install flathub com.valvesoftware.Steam",
+        "root": "no"
+      }
+    ],
+    "notes": [
+      "Steam is 32-bit, so the multilib repository must be enabled first.",
+      "The Flatpak has no home-folder access; grant it with flatpak override com.valvesoftware.Steam --filesystem=$HOME."
+    ],
+    "sources": [
+      "https://wiki.archlinux.org/title/Steam",
+      "https://developer.valvesoftware.com/wiki/Getting_Steam_and_Source_1_%26_2_on_Arch_Linux"
+    ]
+  },
+  "obsidian": {
+    "methods": [
+      {
+        "method": "Flatpak (listed in Obsidian's help)",
+        "command": "flatpak install flathub md.obsidian.Obsidian",
+        "root": "no"
+      },
+      {
+        "method": "AppImage",
+        "command": "download from https://obsidian.md/download, then chmod u+x Obsidian-<version>.AppImage",
+        "root": "no"
+      }
+    ],
+    "notes": [
+      "AppImage failing with a FUSE error needs libfuse2 (fuse2 on Arch).",
+      "With Flatpak, leave Obsidian's in-app updates off; Flatpak handles updates."
+    ],
+    "sources": [
+      "https://obsidian.md/help/install"
+    ]
+  },
+  "dbeaver": {
+    "methods": [
+      {
+        "method": "Flatpak (listed on dbeaver.io/download)",
+        "command": "flatpak install flathub io.dbeaver.DBeaverCommunity",
+        "root": "no"
+      }
+    ],
+    "notes": [
+      "Flathub says DBeaver does not support the Flatpak repackaging; report Flatpak issues to Flathub.",
+      "The first install is large because it pulls a GNOME runtime.",
+      "SSH tunnels: give the sandbox read access to ~/.ssh with flatpak override (community tip)."
+    ],
+    "sources": [
+      "https://dbeaver.io/download/",
+      "https://flathub.org/de/apps/io.dbeaver.DBeaverCommunity"
+    ]
+  },
+  "blender": {
+    "methods": [
+      {
+        "method": "Flatpak (community package, unverified)",
+        "command": "flatpak install flathub org.blender.Blender",
+        "root": "no"
+      },
+      {
+        "method": "Official tarball",
+        "command": "download Linux build from https://www.blender.org/download/ and extract",
+        "root": "no"
+      }
+    ],
+    "notes": [
+      "Distro packages may lag behind the latest release.",
+      "The Flathub build is x86_64 only."
+    ],
+    "sources": [
+      "https://docs.blender.org/manual/en/4.5/getting_started/installing/linux.html",
+      "https://linuxcapable.com/how-to-install-blender-on-fedora-linux/"
+    ]
+  },
+  "vlc": {
+    "methods": [
+      {
+        "method": "Flatpak",
+        "command": "flatpak install flathub org.videolan.VLC",
+        "root": "no"
+      },
+      {
+        "method": "Arch package",
+        "command": "sudo pacman -S vlc",
+        "root": "yes"
+      }
+    ],
+    "notes": [
+      "Known error: 'Nothing matches org.videolan.VLC in remote flathub' means the Flathub remote is missing or scoped wrong; add it with flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo.",
+      "The Arch pacman command was not checked against a source."
+    ],
+    "sources": [
+      "https://linuxcapable.com/how-to-install-vlc-media-player-on-linux-mint/",
+      "https://discourse.flathub.org/t/vlc-org-videolan-vlc-not-found-in-remote-flathub/9496"
+    ]
+  },
+  "obs": {
+    "methods": [
+      {
+        "method": "Flatpak (official build)",
+        "command": "flatpak install flathub com.obsproject.Studio",
+        "root": "no"
+      }
+    ],
+    "notes": [
+      "OBS maintains two official Linux builds: Flatpak and Ubuntu. The Arch package is listed as unofficial."
+    ],
+    "sources": [
+      "https://obsproject.com/wiki/Install-Instructions",
+      "https://github.com/obsproject/obs-studio/wiki/install-instructions"
+    ]
+  },
+  "gimp": {
+    "methods": [
+      {
+        "method": "Flatpak (called official in guides)",
+        "command": "flatpak install flathub org.gimp.GIMP",
+        "root": "no"
+      },
+      {
+        "method": "Remove with data",
+        "command": "flatpak uninstall --delete-data org.gimp.GIMP",
+        "root": "no"
+      }
+    ],
+    "notes": [
+      "Missing menu icon after install: log out and back in.",
+      "The gimp.org page itself was not opened; Flatpak details come from guides."
+    ],
+    "sources": [
+      "https://ostechnix.com/install-gimp-linux/",
+      "https://linuxcapable.com/install-gimp-on-fedora-linux/"
+    ]
+  },
+  "krita": {
+    "methods": [
+      {
+        "method": "Flatpak (user install, per Krita docs)",
+        "command": "flatpak --user install flathub org.kde.krita",
+        "root": "no"
+      },
+      {
+        "method": "AppImage",
+        "command": "download from https://krita.org/en/download/, then chmod +x krita-*-x86_64.AppImage",
+        "root": "no"
+      }
+    ],
+    "notes": [
+      "The Flathub build can lag behind the AppImage release.",
+      "AppImages need FUSE 2 (fuse2 on Arch, libfuse2t64 on Mint 22)."
+    ],
+    "sources": [
+      "https://docs.krita.org/Installation",
+      "https://linuxcapable.com/how-to-install-krita-on-linux-mint/"
+    ]
+  },
+  "inkscape": {
+    "methods": [
+      {
+        "method": "Flatpak",
+        "command": "flatpak install flathub org.inkscape.Inkscape",
+        "root": "no"
+      },
+      {
+        "method": "AppImage (official release listing)",
+        "command": "download from https://inkscape.org/release/all/gnulinux/appimage/",
+        "root": "no"
+      },
+      {
+        "method": "Arch package",
+        "command": "sudo pacman -S inkscape",
+        "root": "yes"
+      }
+    ],
+    "notes": [
+      "No inkscape.org page explicitly names the Flatpak id; it comes from guides and Flathub."
+    ],
+    "sources": [
+      "https://inkscape.org/release/all/gnulinux/appimage",
+      "https://wiki.inkscape.org/wiki/InstallHelp",
+      "https://linuxcapable.com/how-to-install-inkscape-on-ubuntu-linux"
+    ]
+  },
+  "libreoffice": {
+    "methods": [
+      {
+        "method": "Flatpak (official, distributed on Flathub)",
+        "command": "flatpak install flathub org.libreoffice.LibreOffice",
+        "root": "no"
+      },
+      {
+        "method": "Help pages (separate extension)",
+        "command": "flatpak install flathub org.libreoffice.LibreOffice.Help",
+        "root": "no"
+      }
+    ],
+    "notes": [
+      "The Flatpak uses the GTK3 backend and supports Wayland.",
+      "flatpak uninstall --delete-data removes your LibreOffice profile; back it up first."
+    ],
+    "sources": [
+      "https://www.libreoffice.org/download/flatpak/"
+    ]
+  },
+  "thunderbird": {
+    "methods": [
+      {
+        "method": "Flatpak (maintained by Thunderbird staff; Mozilla's preferred route)",
+        "command": "flatpak install flathub org.mozilla.thunderbird",
+        "root": "no"
+      },
+      {
+        "method": "ESR channel",
+        "command": "flatpak install flathub org.mozilla.thunderbird_esr",
+        "root": "no"
+      }
+    ],
+    "notes": [
+      "Flathub moved Thunderbird to the lowercase id org.mozilla.thunderbird; the old org.mozilla.Thunderbird is end-of-life and existing installs are rebased to org.mozilla.thunderbird_esr. Mozilla's support page still shows the old id.",
+      "Distro packages can lag behind official releases, per Mozilla."
+    ],
+    "sources": [
+      "https://support.mozilla.org/kb/installing-thunderbird-linux",
+      "https://flathub.org/api/v2/appstream/org.mozilla.thunderbird"
+    ]
+  },
+  "keepassxc": {
+    "methods": [
+      {
+        "method": "Flatpak (amd64 and arm64 only)",
+        "command": "flatpak install flathub org.keepassxc.KeePassXC",
+        "root": "no"
+      },
+      {
+        "method": "Official AppImage",
+        "command": "download from https://keepassxc.org/download/#linux, then chmod +x KeePassXC-*.AppImage",
+        "root": "no"
+      }
+    ],
+    "notes": [
+      "AppImages need FUSE 2 (fuse2 on Arch, libfuse2 on Ubuntu 22.04+)."
+    ],
+    "sources": [
+      "https://www.linuxcapable.com/how-to-install-keepassxc-on-ubuntu-22-04-lts/",
+      "https://www.rz.uni-kiel.de/en/hints-howtos/password-manager-keepassxc/installing-keepassxc/installation-on-linux/installation-and-initial-setup-of-keepassxc-on-linux"
+    ]
+  },
+  "bitwarden": {
+    "methods": [
+      {
+        "method": "Flatpak (official desktop app on Flathub)",
+        "command": "flatpak install --user flathub com.bitwarden.desktop",
+        "root": "no"
+      },
+      {
+        "method": "AppImage",
+        "command": "download from https://bitwarden.com/download/, then chmod +x Bitwarden-*.AppImage",
+        "root": "no"
+      }
+    ],
+    "notes": [
+      "DEB and RPM packages are also offered on the download page.",
+      "The bitwarden.com page itself was not opened; check the current version there."
+    ],
+    "sources": [
+      "https://www.linux-magazine.com/Online/Features/Bitwarden",
+      "https://community.bitwarden.com/t/snap-vs-appimage-for-linux-install/50154"
+    ]
+  },
+  "wireshark": {
+    "methods": [
+      {
+        "method": "Arch package (GUI)",
+        "command": "sudo pacman -S wireshark-qt",
+        "root": "yes"
+      },
+      {
+        "method": "Arch package (CLI only, tshark)",
+        "command": "sudo pacman -S wireshark-cli",
+        "root": "yes"
+      },
+      {
+        "method": "Allow capture as your user (then log in again)",
+        "command": "sudo gpasswd -a $USER wireshark",
+        "root": "yes"
+      },
+      {
+        "method": "Flatpak (analysis only, no live capture)",
+        "command": "flatpak install flathub org.wireshark.Wireshark",
+        "root": "no"
+      }
+    ],
+    "notes": [
+      "/usr/bin/dumpcap runs only for root and the wireshark group; the Arch package creates the group.",
+      "The Flathub build cannot capture live traffic; use the native package for capture."
+    ],
+    "sources": [
+      "https://wiki.archlinux.org/title/Wireshark",
+      "https://wiki.wireshark.org/CaptureSetup/CapturePrivileges/"
+    ]
+  },
+  "kdenlive": {
+    "methods": [
+      {
+        "method": "Flatpak (officially supported)",
+        "command": "flatpak install flathub org.kde.kdenlive",
+        "root": "no"
+      },
+      {
+        "method": "AppImage (officially supported)",
+        "command": "download from https://kdenlive.org/en/download/, then chmod +x kdenlive-*.AppImage",
+        "root": "no"
+      }
+    ],
+    "notes": [
+      "Only AppImage and Flatpak releases are officially supported; the Ubuntu PPA was dropped."
+    ],
+    "sources": [
+      "https://docs.kdenlive.org/en/getting_started/installation.html"
+    ]
+  },
+  "discord": {
+    "methods": [
+      {
+        "method": "Flatpak (x86_64 only)",
+        "command": "flatpak install flathub com.discordapp.Discord",
+        "root": "no"
+      },
+      {
+        "method": "Official .deb (Debian/Ubuntu)",
+        "command": "download from https://discord.com/download, then sudo apt install ./discord.deb",
+        "root": "yes"
+      }
+    ],
+    "notes": [
+      "Do not mix the Flatpak, Snap and .deb builds on one system.",
+      "discord.com itself was not opened; check the current packages there."
+    ],
+    "sources": [
+      "https://linuxcapable.com/how-to-install-discord-on-debian-linux/",
+      "https://itsfoss.com/install-discord-linux"
+    ]
+  },
+  "chromium": {
+    "methods": [
+      {
+        "method": "Flatpak (community-maintained)",
+        "command": "flatpak install flathub org.chromium.Chromium",
+        "root": "no"
+      }
+    ],
+    "notes": [
+      "The Flathub build is community-maintained, not from Google.",
+      "The Arch package name was not confirmed; check with pacman -Ss chromium."
+    ],
+    "sources": [
+      "https://www.linuxuprising.com/2020/12/chromium-and-ungoogled-chromium-web.html",
+      "https://blogs.gnome.org/wjjt/2021/03/"
+    ]
+  },
+  "brave": {
+    "methods": [
+      {
+        "method": "Official install script",
+        "command": "curl -fsS https://dl.brave.com/install.sh | sh",
+        "root": "yes"
+      },
+      {
+        "method": "Arch AUR binary (official page)",
+        "command": "yay -Sy brave-bin",
+        "root": "no"
+      },
+      {
+        "method": "Flatpak",
+        "command": "flatpak install flathub com.brave.Browser",
+        "root": "no"
+      }
+    ],
+    "notes": [
+      "Brave's Linux page says the Flatpak is not working very well.",
+      "The AUR package brave (without -bin) compiles from source and takes hours."
+    ],
+    "sources": [
+      "https://brave.com/linux/",
+      "https://forum.endeavouros.com/t/install-brave-from-the-aur-or-flatpak/69006"
+    ]
+  },
+  "onlyoffice": {
+    "methods": [
+      {
+        "method": "Flatpak (official Help Center guide)",
+        "command": "flatpak install flathub org.onlyoffice.desktopeditors",
+        "root": "no"
+      }
+    ],
+    "notes": [
+      "The DEB package runs as desktopeditors; the Flatpak runs as flatpak run org.onlyoffice.desktopeditors."
+    ],
+    "sources": [
+      "https://helpcenter.onlyoffice.com/installation/desktop-install-flatpak.aspx",
+      "https://onlyoffice.com/blog/2019/11/onlyoffice-desktop-editors-are-now-available-as-flatpak"
+    ]
+  },
+  "lutris": {
+    "methods": [
+      {
+        "method": "Flatpak (recommended by Lutris)",
+        "command": "flatpak install flathub --user -y net.lutris.Lutris",
+        "root": "no"
+      },
+      {
+        "method": "Arch package (extra)",
+        "command": "sudo pacman -S lutris",
+        "root": "yes"
+      }
+    ],
+    "notes": [
+      "Do not run setup.py install; it skips parts the package manager handles."
+    ],
+    "sources": [
+      "https://lutris.net/downloads",
+      "https://github.com/lutris/lutris/blob/master/INSTALL.rst"
+    ]
+  },
+  "heroic": {
+    "methods": [
+      {
+        "method": "Flatpak (recommended by Heroic)",
+        "command": "flatpak install flathub com.heroicgameslauncher.hgl",
+        "root": "no"
+      },
+      {
+        "method": "Arch AUR (the only AUR package Heroic supports)",
+        "command": "yay -S heroic-games-launcher-bin",
+        "root": "no"
+      },
+      {
+        "method": "AppImage",
+        "command": "download from https://heroicgameslauncher.com/downloads, then chmod +x Heroic-*.AppImage",
+        "root": "no"
+      }
+    ],
+    "notes": [
+      "Games stored outside the default paths need extra Flatpak folder access (Flatseal or flatpak override).",
+      "Some setups need --no-sandbox for the AppImage."
+    ],
+    "sources": [
+      "https://heroicgameslauncher.com/downloads",
+      "https://github.com/Heroic-Games-Launcher/HeroicGamesLauncher/wiki/Linux-Quick-Start-Guide"
+    ]
+  },
+  "bottles": {
+    "methods": [
+      {
+        "method": "Flatpak (recommended by the developers)",
+        "command": "flatpak install flathub com.usebottles.bottles",
+        "root": "no"
+      }
+    ],
+    "notes": [
+      "Grant access to specific folders instead of --filesystem=host.",
+      "AUR packages exist (bottles, bottles-git) but Flatpak is the recommended route."
+    ],
+    "sources": [
+      "https://linuxcapable.com/how-to-install-bottles-on-ubuntu-linux/",
+      "https://github.com/bottlesdevs/bottles"
+    ]
+  },
+  "protonup": {
+    "methods": [
+      {
+        "method": "Flatpak (recommended in release notes)",
+        "command": "flatpak install flathub net.davidotek.pupgui2",
+        "root": "no"
+      },
+      {
+        "method": "AppImage (GitHub releases)",
+        "command": "download from https://github.com/DavidoTek/ProtonUp-Qt/releases, then chmod +x ProtonUp-Qt*.AppImage",
+        "root": "no"
+      }
+    ],
+    "notes": [
+      "The exact flatpak install command was not shown in sources; the app id is confirmed by the Flathub link in the README."
+    ],
+    "sources": [
+      "https://github.com/DavidoTek/ProtonUp-Qt/blob/main/README.md"
+    ]
+  },
+  "retroarch": {
+    "methods": [
+      {
+        "method": "Flatpak (official, per libretro docs)",
+        "command": "flatpak install --user flathub org.libretro.RetroArch",
+        "root": "no"
+      },
+      {
+        "method": "Arch package (extra)",
+        "command": "sudo pacman -S retroarch",
+        "root": "yes"
+      }
+    ],
+    "notes": [
+      "Use the AUR git build only if the Arch release has problems."
+    ],
+    "sources": [
+      "https://docs.libretro.com/guides/install-gnu"
+    ]
+  },
+  "dolphin": {
+    "methods": [
+      {
+        "method": "Flatpak",
+        "command": "flatpak install flathub org.DolphinEmu.dolphin-emu",
+        "root": "no"
+      },
+      {
+        "method": "Arch package",
+        "command": "sudo pacman -S dolphin-emu",
+        "root": "yes"
+      },
+      {
+        "method": "Dolphin's own Flatpak repo (stable)",
+        "command": "flatpak remote-add --if-not-exists dolphin-emu https://flatpak.dolphin-emu.org/releases.flatpakrepo",
+        "root": "no"
+      }
+    ],
+    "notes": [
+      "Dolphin added official Linux Flatpak support in release 2412."
+    ],
+    "sources": [
+      "https://ubuntuhandbook.org/index.php/2024/12/dolphin-emulator-2412-flatpak-support/",
+      "https://cdn.jsdelivr.net/npm/arch-wiki-md-repo@0.10.84/wiki/_content/english/Dolphin emulator.md"
+    ]
+  },
+  "prism": {
+    "methods": [
+      {
+        "method": "Flatpak (primary method on Linux)",
+        "command": "flatpak install flathub org.prismlauncher.PrismLauncher",
+        "root": "no"
+      },
+      {
+        "method": "Arch package",
+        "command": "sudo pacman -S prismlauncher",
+        "root": "yes"
+      }
+    ],
+    "notes": [
+      "An x86_64 AppImage is also on GitHub releases.",
+      "Minecraft needs a Microsoft account to play."
+    ],
+    "sources": [
+      "https://wiki.alpinelinux.org/wiki/Prism_Launcher",
+      "https://79dbc715-prismlauncher.scrumplex.workers.dev/download/linux"
+    ]
+  },
+  "git": {
+    "methods": [
+      {
+        "method": "Arch package (official git-scm.com instruction)",
+        "command": "sudo pacman -S git",
+        "root": "yes"
+      }
+    ],
+    "notes": [
+      "Check with git --version. The Snap git-scm is not the official package."
+    ],
+    "sources": [
+      "https://git-scm.com/download/linux",
+      "https://git-scm.com/install/linux"
+    ]
+  },
+  "postgresql": {
+    "methods": [
+      {
+        "method": "Arch package",
+        "command": "sudo pacman -S postgresql",
+        "root": "yes"
+      },
+      {
+        "method": "Create the database cluster (as the postgres user)",
+        "command": "sudo -iu postgres initdb --locale $LANG -E UTF8 -D /var/lib/postgres/data",
+        "root": "yes"
+      },
+      {
+        "method": "Start now and at boot",
+        "command": "sudo systemctl enable --now postgresql",
+        "root": "yes"
+      }
+    ],
+    "notes": [
+      "The package creates the postgres system user.",
+      "initdb fails with a permission error if run as your own user; run it as postgres."
+    ],
+    "sources": [
+      "https://wiki.archlinux.org/title/PostgreSQL_(Italiano)",
+      "https://linuxcapable.com/how-to-install-postgresql-on-arch-linux/"
+    ]
+  },
+  "mariadb": {
+    "methods": [
+      {
+        "method": "Arch package",
+        "command": "sudo pacman -S mariadb",
+        "root": "yes"
+      },
+      {
+        "method": "Create the data directory (Arch does not do it)",
+        "command": "sudo mariadb-install-db --user=mysql --basedir=/usr --datadir=/var/lib/mysql",
+        "root": "yes"
+      },
+      {
+        "method": "Start now and at boot",
+        "command": "sudo systemctl enable --now mariadb",
+        "root": "yes"
+      },
+      {
+        "method": "Set a root password and harden",
+        "command": "sudo mysql_secure_installation",
+        "root": "yes"
+      }
+    ],
+    "notes": [
+      "MariaDB is Arch's default MySQL implementation (also mariadb-lts).",
+      "Config path differs between guides (/etc/my.cnf.d/server.cnf or /etc/my.cnf); check the installed files."
+    ],
+    "sources": [
+      "https://wiki.archlinux.org/title/MariaDB",
+      "https://www.linuxcapable.com/how-to-install-mariadb-on-arch-linux"
+    ]
+  },
+  "redis": {
+    "methods": [
+      {
+        "method": "Arch package (Valkey replaced Redis in April 2025)",
+        "command": "sudo pacman -S valkey",
+        "root": "yes"
+      },
+      {
+        "method": "Start now and at boot",
+        "command": "sudo systemctl enable --now valkey",
+        "root": "yes"
+      }
+    ],
+    "notes": [
+      "Arch moved the redis package to the AUR and no longer updates it; Valkey is the Redis-compatible replacement.",
+      "Scripts that call redis-cli or redis-server by name may need a compatibility package."
+    ],
+    "sources": [
+      "https://archlinux.org/news/valkey-to-replace-redis-in-the-extra-repository",
+      "https://valkey.io/topics/installation"
+    ]
+  },
+  "sqlite": {
+    "methods": [
+      {
+        "method": "Arch package (core)",
+        "command": "sudo pacman -S sqlite",
+        "root": "yes"
+      }
+    ],
+    "notes": [
+      "The package is sqlite; sqlite3 is the command it provides, not a package name.",
+      "Optional extras: sqlite-doc, sqlite-analyzer."
+    ],
+    "sources": [
+      "https://archlinux.org/packages/core/x86_64/sqlite/"
+    ]
+  },
+  "sqlitebrowser": {
+    "methods": [
+      {
+        "method": "Flatpak",
+        "command": "flatpak install flathub org.sqlitebrowser.sqlitebrowser",
+        "root": "no"
+      },
+      {
+        "method": "Arch package",
+        "command": "sudo pacman -S sqlitebrowser",
+        "root": "yes"
+      }
+    ],
+    "notes": [
+      "Flathub lists about 17.3 MiB installed."
+    ],
+    "sources": [
+      "https://flathub.org/it/apps/org.sqlitebrowser.sqlitebrowser",
+      "https://linuxcapable.com/how-to-install-sqlite-on-arch-linux/"
+    ]
+  },
+  "kubectl": {
+    "methods": [
+      {
+        "method": "Arch package (extra)",
+        "command": "sudo pacman -S kubectl",
+        "root": "yes"
+      },
+      {
+        "method": "Official binary (x86-64)",
+        "command": "curl -LO \"https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl\" && install -m 0755 kubectl ~/.local/bin/kubectl",
+        "root": "no"
+      }
+    ],
+    "notes": [
+      "Verify the binary with the checksum file from dl.k8s.io.",
+      "The AUR kubectl-bin is redundant on Arch; extra already has kubectl.",
+      "Older guides use storage.googleapis.com URLs; prefer dl.k8s.io."
+    ],
+    "sources": [
+      "https://kubernetes.io/docs/tasks/tools/install-kubectl-linux",
+      "https://archlinux.org/packages/extra/x86_64/kubectl/"
+    ]
+  },
+  "helm": {
+    "methods": [
+      {
+        "method": "Arch package (extra)",
+        "command": "sudo pacman -S helm",
+        "root": "yes"
+      }
+    ],
+    "notes": [
+      "A newer major version may sit in extra-testing first."
+    ],
+    "sources": [
+      "https://archlinux.org/packages/helm"
+    ]
+  },
+  "k9s": {
+    "methods": [
+      {
+        "method": "Arch package (extra)",
+        "command": "sudo pacman -S k9s",
+        "root": "yes"
+      }
+    ],
+    "notes": [],
+    "sources": [
+      "https://archlinux.org/packages/extra/x86_64/k9s/"
+    ]
+  },
+  "terraform": {
+    "methods": [
+      {
+        "method": "Arch package (extra, BUSL-1.1 licence)",
+        "command": "sudo pacman -S terraform",
+        "root": "yes"
+      },
+      {
+        "method": "Official binaries and repos",
+        "command": "see https://developer.hashicorp.com/terraform/install (APT, DNF, zip)",
+        "root": "varies"
+      }
+    ],
+    "notes": [
+      "Terraform moved from MPL 2.0 to BSL 1.1 in August 2023; OpenTofu is the open-source fork."
+    ],
+    "sources": [
+      "https://archlinux.org/packages/extra/x86_64/terraform/",
+      "https://developer.hashicorp.com/terraform/install"
+    ]
+  },
+  "opentofu": {
+    "methods": [
+      {
+        "method": "Arch package (extra)",
+        "command": "sudo pacman -S opentofu",
+        "root": "yes"
+      }
+    ],
+    "notes": [
+      "The command is tofu, not opentofu.",
+      "AUR alternatives: opentofu-bin, opentofu-bin-stable."
+    ],
+    "sources": [
+      "https://archlinux.org/packages/extra/x86_64/opentofu/"
+    ]
+  },
+  "ansible": {
+    "methods": [
+      {
+        "method": "Arch package (extra, full collections)",
+        "command": "sudo pacman -S ansible",
+        "root": "yes"
+      },
+      {
+        "method": "Core only",
+        "command": "sudo pacman -S ansible-core",
+        "root": "yes"
+      }
+    ],
+    "notes": [],
+    "sources": [
+      "https://archlinux.org/packages/extra/any/ansible",
+      "https://wiki.archlinux.org/title/Ansible"
+    ]
+  },
+  "virtualbox": {
+    "methods": [
+      {
+        "method": "Arch package",
+        "command": "sudo pacman -S virtualbox virtualbox-host-modules-arch",
+        "root": "yes"
+      },
+      {
+        "method": "For non-default kernels (linux-lts, zen): DKMS modules plus headers",
+        "command": "sudo pacman -S virtualbox virtualbox-host-dkms linux-lts-headers",
+        "root": "yes"
+      },
+      {
+        "method": "Allow your user to manage VMs",
+        "command": "sudo usermod -aG vboxusers $USER",
+        "root": "yes"
+      }
+    ],
+    "notes": [
+      "Pick the host-modules package that matches your kernel; the wrong one makes VirtualBox fail to start VMs.",
+      "Guest additions ISO: virtualbox-guest-iso."
+    ],
+    "sources": [
+      "https://wiki.archlinux.org/title/Vbox",
+      "https://discuss.cachyos.org/t/info-on-how-to-install-virtualbox-on-cachyos/2488"
+    ]
+  },
+  "opencode": {
+    "methods": [
+      {
+        "method": "Official install script (OpenCode 1, stable)",
+        "command": "curl -fsSL https://opencode.ai/install | bash",
+        "root": "no"
+      },
+      {
+        "method": "npm (OpenCode 1, stable)",
+        "command": "npm install -g opencode-ai",
+        "root": "no"
+      }
+    ],
+    "notes": [
+      "The Arch package installs OpenCode 2 (beta, command opencode2); use npm or the script for OpenCode 1.",
+      "OpenCode needs a model provider key or login."
+    ],
+    "sources": [
+      "https://opencode.ai/docs",
+      "https://github.com/anomalyco/opencode"
+    ]
+  },
+  "codex": {
+    "methods": [
+      {
+        "method": "npm (official README)",
+        "command": "npm install -g @openai/codex",
+        "root": "no"
+      },
+      {
+        "method": "Prebuilt binary",
+        "command": "download from https://github.com/openai/codex/releases/latest",
+        "root": "no"
+      }
+    ],
+    "notes": [
+      "Needs a ChatGPT plan or an OpenAI API key."
+    ],
+    "sources": [
+      "https://github.com/openai/codex"
+    ]
+  },
+  "claudecode": {
+    "methods": [
+      {
+        "method": "Native installer (recommended, no sudo, no Node.js)",
+        "command": "curl -fsSL https://claude.ai/install.sh | bash",
+        "root": "no"
+      },
+      {
+        "method": "npm (Node.js 18+; never with sudo)",
+        "command": "npm install -g @anthropic-ai/claude-code",
+        "root": "no"
+      }
+    ],
+    "notes": [
+      "Check the install with claude doctor.",
+      "Needs an Anthropic account or API key; needs 4 GB+ RAM."
+    ],
+    "sources": [
+      "https://code.claude.com/docs/en/installation",
+      "https://code.claude.com/docs/en/setup"
+    ]
+  },
+  "aider": {
+    "methods": [
+      {
+        "method": "uv (recommended by aider)",
+        "command": "uv tool install --force --python python3.12 --with pip aider-chat@latest",
+        "root": "no"
+      },
+      {
+        "method": "pipx (Python 3.9-3.12)",
+        "command": "pipx install aider-chat",
+        "root": "no"
+      },
+      {
+        "method": "One-line script",
+        "command": "curl -LsSf https://aider.chat/install.sh | sh",
+        "root": "no"
+      }
+    ],
+    "notes": [
+      "uv installs its own Python 3.12 for aider.",
+      "You pay the model provider directly."
+    ],
+    "sources": [
+      "https://aider.chat/docs/install.html",
+      "https://aider.chat/docs/install/pipx.html"
+    ]
+  },
+  "geminicli": {
+    "methods": [
+      {
+        "method": "npm (official)",
+        "command": "npm install -g @google/gemini-cli",
+        "root": "no"
+      },
+      {
+        "method": "One-off run",
+        "command": "npx @google/gemini-cli",
+        "root": "no"
+      }
+    ],
+    "notes": [
+      "Needs Node.js 20 or newer; older Node installs succeed but fail on first run.",
+      "On permission errors, set a user-level npm prefix instead of using sudo."
+    ],
+    "sources": [
+      "https://www.geminicli.com/docs/get-started/installation",
+      "https://npmjs.com/package/@google/gemini-cli"
+    ]
+  },
+  "ollama": {
+    "methods": [
+      {
+        "method": "Official install script (installs to /usr/local/bin and a systemd service)",
+        "command": "curl -fsSL https://ollama.com/install.sh | sh",
+        "root": "yes"
+      },
+      {
+        "method": "Manual tarball",
+        "command": "curl -fsSL https://ollama.com/download/ollama-linux-amd64.tar.zst | sudo tar x -C /usr",
+        "root": "yes"
+      }
+    ],
+    "notes": [
+      "Logs: journalctl -e -u ollama.",
+      "Before upgrading a manual install, remove old libraries: sudo rm -rf /usr/lib/ollama.",
+      "Arch packages ollama, ollama-cuda and ollama-rocm were only seen in a secondary source."
+    ],
+    "sources": [
+      "https://docs.ollama.com/linux"
+    ]
+  },
+  "openwebui": {
+    "methods": [
+      {
+        "method": "pip (Python 3.11)",
+        "command": "pip install open-webui && open-webui serve",
+        "root": "no"
+      },
+      {
+        "method": "uv",
+        "command": "DATA_DIR=~/.open-webui uvx --python 3.11 open-webui@latest serve",
+        "root": "no"
+      },
+      {
+        "method": "Docker",
+        "command": "docker run -d -p 3000:8080 -v open-webui:/app/backend/data --name open-webui ghcr.io/open-webui/open-webui:main",
+        "root": "docker group"
+      }
+    ],
+    "notes": [
+      "Needs an LLM backend such as Ollama.",
+      "The pip route opens on localhost:8080; Docker on localhost:3000.",
+      "Python 3.13 is reported unsupported by a secondary source."
+    ],
+    "sources": [
+      "https://docs.openwebui.com/"
+    ]
+  },
+  "sublime": {
+    "methods": [
+      {
+        "method": "Official package repositories (Arch, apt, dnf)",
+        "command": "follow https://www.sublimetext.com/docs/linux_repositories.html",
+        "root": "yes"
+      }
+    ],
+    "notes": [
+      "The exact Arch commands from the official page were not captured; open the page before installing.",
+      "One Flathub listing is marked not maintained for new installs."
+    ],
+    "sources": [
+      "https://www.sublimetext.com/docs/linux_repositories.html"
+    ]
+  },
+  "emacs": {
+    "methods": [
+      {
+        "method": "Arch package (GTK, stable)",
+        "command": "sudo pacman -S emacs",
+        "root": "yes"
+      },
+      {
+        "method": "Terminal-only build",
+        "command": "sudo pacman -S emacs-nox",
+        "root": "yes"
+      },
+      {
+        "method": "Wayland (PGTK) build",
+        "command": "sudo pacman -S emacs-wayland",
+        "root": "yes"
+      },
+      {
+        "method": "Flatpak",
+        "command": "flatpak install flathub org.gnu.emacs",
+        "root": "no"
+      }
+    ],
+    "notes": [
+      "With emacs-nox, emacs and emacs -nw behave the same."
+    ],
+    "sources": [
+      "https://wiki.archlinux.org/title/Emacs",
+      "https://archlinux.org/packages/extra/x86_64/emacs-wayland/"
+    ]
+  },
+  "kate": {
+    "methods": [
+      {
+        "method": "Flatpak (recommended on kate-editor.org)",
+        "command": "flatpak install flathub org.kde.kate",
+        "root": "no"
+      },
+      {
+        "method": "Arch package",
+        "command": "sudo pacman -S kate",
+        "root": "yes"
+      }
+    ],
+    "notes": [
+      "Install konsole too for the integrated terminal.",
+      "The Flatpak may not see host language servers and formatters."
+    ],
+    "sources": [
+      "https://kate-editor.org/get-it/",
+      "https://wiki.archlinux.org/title/Kate"
+    ]
+  },
+  "geany": {
+    "methods": [
+      {
+        "method": "Arch package (extra; listed on geany.org)",
+        "command": "sudo pacman -S geany",
+        "root": "yes"
+      },
+      {
+        "method": "Plugins",
+        "command": "sudo pacman -S geany-plugins",
+        "root": "yes"
+      }
+    ],
+    "notes": [],
+    "sources": [
+      "https://www.geany.org/download/third-party",
+      "https://archlinux.org/packages/extra/x86_64/geany/"
+    ]
+  },
+  "lapce": {
+    "methods": [
+      {
+        "method": "Flatpak",
+        "command": "flatpak install flathub dev.lapce.lapce",
+        "root": "no"
+      }
+    ],
+    "notes": [
+      "Arch availability is unclear (sources conflict); the Snap is unmaintained."
+    ],
+    "sources": [
+      "https://flathub.org/it/apps/dev.lapce.lapce"
+    ]
+  },
+  "intellij": {
+    "methods": [
+      {
+        "method": "JetBrains Toolbox App (recommended by JetBrains)",
+        "command": "download from https://www.jetbrains.com/toolbox-app/",
+        "root": "no"
+      },
+      {
+        "method": "Snap (official docs)",
+        "command": "sudo snap install intellij-idea-community --classic",
+        "root": "yes"
+      },
+      {
+        "method": "Flatpak (unofficial per some guides)",
+        "command": "flatpak install flathub com.jetbrains.IntelliJ-IDEA-Community",
+        "root": "no"
+      },
+      {
+        "method": "Tarball",
+        "command": "download Linux tar.gz from https://www.jetbrains.com/idea/download/",
+        "root": "no"
+      }
+    ],
+    "notes": [
+      "From 2025.3 the Community snap downloads the unified IntelliJ IDEA.",
+      "The Arch/AUR package name was not confirmed."
+    ],
+    "sources": [
+      "https://www.jetbrains.com/help/idea/2024.1/installation-guide.html",
+      "https://snapcraft.io/intellij-idea-community"
+    ]
+  },
+  "sqlserver": {
+    "methods": [
+      {
+        "method": "Docker container (official quickstart; free Developer edition)",
+        "command": "docker run -e \"ACCEPT_EULA=Y\" -e \"MSSQL_SA_PASSWORD=<strong-password>\" -e \"MSSQL_PID=Developer\" -p 1433:1433 --name sql1 --hostname sql1 -d mcr.microsoft.com/mssql/server:2022-latest",
+        "root": "docker group"
+      },
+      {
+        "method": "Podman (same image, rootless)",
+        "command": "podman run -e \"ACCEPT_EULA=Y\" -e \"MSSQL_SA_PASSWORD=<strong-password>\" -p 1433:1433 --name sql1 -d mcr.microsoft.com/mssql/server:2022-latest",
+        "root": "no"
+      }
+    ],
+    "notes": [
+      "The SA password must meet SQL Server's complexity rules or the container stops at start.",
+      "SA_PASSWORD is deprecated; use MSSQL_SA_PASSWORD.",
+      "The password is visible in process listings; change it after first start in production.",
+      "Needs at least 2 GB RAM (4 GB recommended); SQL Server takes 80% of RAM by default unless memory.memorylimitmb is set.",
+      "The Podman command follows the same image; it was not in Microsoft's quickstart."
+    ],
+    "sources": [
+      "https://learn.microsoft.com/en-us/sql/linux/quickstart-install-connect-docker",
+      "https://learn.microsoft.com/en-us/sql/linux/configure/environment-variables"
+    ]
+  },
+  "mongodb": {
+    "methods": [
+      {
+        "method": "AUR prebuilt binary (community)",
+        "command": "yay -S mongodb-bin",
+        "root": "no"
+      },
+      {
+        "method": "MongoDB shell",
+        "command": "yay -S mongosh-bin",
+        "root": "no"
+      }
+    ],
+    "notes": [
+      "Arch has no official MongoDB package; the AUR mongodb source build takes hours.",
+      "With mongodb-bin, the Arch Wiki says ExecStart must be wrapped with numactl --interleave=all.",
+      "PGP key import errors are a known install problem (see the AUR page)."
+    ],
+    "sources": [
+      "https://wiki.archlinux.org/title/MongoDB",
+      "https://aur.archlinux.org/packages/mongodb-bin"
+    ]
+  },
+  "pgadmin": {
+    "methods": [
+      {
+        "method": "Official APT repo (Debian/Ubuntu)",
+        "command": "follow https://www.pgadmin.org/download/pgadmin-4-apt/",
+        "root": "yes"
+      },
+      {
+        "method": "Official RPM repo (Fedora/RHEL)",
+        "command": "follow https://www.pgadmin.org/download/pgadmin-4-rpm",
+        "root": "yes"
+      },
+      {
+        "method": "Arch AUR (community, from a guide)",
+        "command": "yay -S pgadmin4-py",
+        "root": "no"
+      }
+    ],
+    "notes": [
+      "Arch has no official package.",
+      "The Flathub id org.pgadmin.pgadmin4 was not confirmed; the catalog's Flatpak source may be wrong."
+    ],
+    "sources": [
+      "https://www.pgadmin.org/download/pgadmin-4-apt/",
+      "https://www.baeldung.com/linux/pgadmin-4-desktop-installation"
+    ]
+  },
+  "azuredatastudio": {
+    "methods": [
+      {
+        "method": "Retired; use VS Code with the MSSQL extension",
+        "command": "flatpak install flathub com.visualstudio.code (then install the MSSQL extension)",
+        "root": "no"
+      }
+    ],
+    "notes": [
+      "Azure Data Studio support ended on 28 February 2026. Microsoft recommends VS Code with the MSSQL extension, and SSMS for full administration.",
+      "Remove or mark retired in the catalog."
+    ],
+    "sources": [
+      "https://learn.microsoft.com/en-us/azure-data-studio/whats-happening-azure-data-studio",
+      "https://devblogs.microsoft.com/azure-sql/azure-data-studio-is-retired-move-your-azure-sql-workflow-to-vs-code-in-10-minutes/"
+    ]
+  },
+  "tableplus": {
+    "methods": [
+      {
+        "method": "Official APT repo (Ubuntu)",
+        "command": "follow https://tableplus.com/linux/install",
+        "root": "yes"
+      },
+      {
+        "method": "AppImage (beta)",
+        "command": "download from https://tableplus.com/blog/2019/10/tableplus-linux-installation.html",
+        "root": "no"
+      }
+    ],
+    "notes": [
+      "The AUR tableplus package reportedly has not worked for about a year; use the AppImage on Arch.",
+      "TablePlus for Linux is labelled beta."
+    ],
+    "sources": [
+      "https://tableplus.com/linux/install",
+      "https://aur.archlinux.org/packages/tableplus"
+    ]
+  },
+  "gamemode": {
+    "methods": [
+      {
+        "method": "Arch packages (lib32 needs [multilib])",
+        "command": "sudo pacman -S gamemode lib32-gamemode",
+        "root": "yes"
+      },
+      {
+        "method": "Join the gamemode group",
+        "command": "sudo usermod -aG gamemode $USER",
+        "root": "yes"
+      }
+    ],
+    "notes": [
+      "Without the gamemode group the daemon cannot change CPU governor or niceness.",
+      "Steam launch option: gamemoderun %command%."
+    ],
+    "sources": [
+      "https://wiki.archlinux.org/title/GameMode",
+      "https://www.archlinux.org/packages/multilib/x86_64/lib32-gamemode"
+    ]
+  },
+  "mangohud": {
+    "methods": [
+      {
+        "method": "Arch packages (lib32 needs [multilib])",
+        "command": "sudo pacman -S mangohud lib32-mangohud",
+        "root": "yes"
+      }
+    ],
+    "notes": [
+      "32-bit games need lib32-mangohud.",
+      "With GameMode: mangohud gamemoderun %command% as the Steam launch option."
+    ],
+    "sources": [
+      "https://wiki.archlinux.org/title/MangoHud",
+      "https://www.archlinux.org/packages/multilib/x86_64/lib32-mangohud"
+    ]
+  },
+  "anki": {
+    "methods": [
+      {
+        "method": "Official tarball",
+        "command": "download from https://apps.ankiweb.net, then tar xaf anki-*-linux-qt6.tar.zst && cd anki-*-linux-qt6 && sudo ./install.sh",
+        "root": "yes"
+      },
+      {
+        "method": "Flatpak (community-maintained, unofficial)",
+        "command": "flatpak install flathub net.ankiweb.Anki",
+        "root": "no"
+      }
+    ],
+    "notes": [
+      "musl-based distros are not supported.",
+      "If Anki does not start, extra libraries may be missing (see the official docs)."
+    ],
+    "sources": [
+      "https://docs.ankiweb.net/platform/linux/installing.html"
+    ]
+  },
+  "gcompris": {
+    "methods": [
+      {
+        "method": "Flatpak (from a 2022 guide)",
+        "command": "flatpak install flathub org.kde.gcompris",
+        "root": "no"
+      }
+    ],
+    "notes": [
+      "Only an old source confirmed the id; check flathub.org before relying on it."
+    ],
+    "sources": [
+      "https://en.ubunlog.com/?p=38232"
+    ]
+  },
+  "goose": {
+    "methods": [
+      {
+        "method": "Official CLI install script (now under the Linux Foundation's aaif-goose)",
+        "command": "curl -fsSL https://github.com/aaif-goose/goose/releases/download/stable/download_cli.sh | bash",
+        "root": "no"
+      },
+      {
+        "method": "Desktop .deb (Debian/Ubuntu)",
+        "command": "download from https://github.com/aaif-goose/goose/releases, then sudo dpkg -i goose_*.deb",
+        "root": "yes"
+      },
+      {
+        "method": "Arch AUR (community, built from the .deb)",
+        "command": "yay -S goose-desktop-bin",
+        "root": "no"
+      }
+    ],
+    "notes": [
+      "The project moved from block/goose to aaif-goose; older URLs may still work.",
+      "The Linux Flatpak is a bundle file on the releases page, not a Flathub app.",
+      "Needs a model provider."
+    ],
+    "sources": [
+      "https://goose-docs.ai/docs/quickstart",
+      "https://aur.archlinux.org/packages/goose-desktop-bin"
+    ]
+  },
+  "lmstudio": {
+    "methods": [
+      {
+        "method": "AppImage (official download)",
+        "command": "download from https://lmstudio.ai/releases/latest/linux/x86_64/LMStudio.AppImage, then chmod +x LM-Studio-*.AppImage",
+        "root": "no"
+      },
+      {
+        "method": "Arch AUR (community)",
+        "command": "yay -S lmstudio-bin",
+        "root": "no"
+      }
+    ],
+    "notes": [
+      "Most common launch failure: missing FUSE 2 (fuse2 on Arch, libfuse2 or libfuse2t64 on Ubuntu, fuse-libs on Fedora).",
+      "Avoid running with --no-sandbox; it disables a security feature.",
+      "The lmstudio.ai page itself was not opened; the URL comes from guides."
+    ],
+    "sources": [
+      "https://www.tecmint.com/lm-studio-run-llms-linux/",
+      "https://aur.archlinux.org/packages/lmstudio-bin"
+    ]
+  },
+  "jan": {
+    "methods": [
+      {
+        "method": "AppImage (official docs)",
+        "command": "download from https://jan.ai/download, then chmod +x jan-linux-x86_64-*.AppImage",
+        "root": "no"
+      },
+      {
+        "method": ".deb (Debian/Ubuntu, official docs)",
+        "command": "sudo apt-get install ./jan-linux-amd64-*.deb",
+        "root": "yes"
+      }
+    ],
+    "notes": [
+      "Needs a CPU with AVX2; 8 GB RAM minimum, 16 GB recommended.",
+      "The Flatpak id ai.jan.Jan was only seen in third-party sources.",
+      "The licence is still unconfirmed (AGPL-3.0 vs Apache-2.0)."
+    ],
+    "sources": [
+      "https://jan.ai/docs/desktop/linux",
+      "https://docs.jan.ai/jan/installation/linux"
+    ]
+  },
+  "cursor": {
+    "methods": [
+      {
+        "method": "AppImage, .deb or RPM from the official download page",
+        "command": "download from https://cursor.com/download",
+        "root": "deb/rpm: yes"
+      },
+      {
+        "method": "Update a .deb install (repo added by the .deb)",
+        "command": "sudo apt update && sudo apt install --only-upgrade cursor",
+        "root": "yes"
+      }
+    ],
+    "notes": [
+      "In-app auto-update only works for the AppImage; .deb users update through apt.",
+      "AppImages need FUSE 2; some users report the AppImage needs --no-sandbox, which disables a security feature.",
+      "cursor.com itself was not opened."
+    ],
+    "sources": [
+      "https://forum.cursor.com/t/if-you-use-deb-version-auto-update-will-download-appimage/155066",
+      "https://linuxcapable.com/how-to-install-cursor-on-ubuntu-linux/"
+    ]
+  },
+  "gpt4all": {
+    "methods": [
+      {
+        "method": "Flatpak (community-maintained, unverified)",
+        "command": "flatpak install flathub io.gpt4all.gpt4all",
+        "root": "no"
+      },
+      {
+        "method": "Official installer (.run, x86-64 only)",
+        "command": "download from https://gpt4all.io, then chmod +x gpt4all-installer-linux.run && ./gpt4all-installer-linux.run",
+        "root": "no"
+      }
+    ],
+    "notes": [
+      "x86-64 only; no ARM build.",
+      "Ubuntu 23.04+ may also need libxcb-cursor."
+    ],
+    "sources": [
+      "https://flathub.org/apps/io.gpt4all.gpt4all",
+      "https://github.com/nomic-ai/gpt4all"
+    ]
+  },
+  "dockerdesktop": {
+    "methods": [
+      {
+        "method": "Experimental Arch package from Docker (untested by Docker)",
+        "command": "download the Arch package from https://docs.docker.com/desktop/release-notes/, then sudo pacman -U ./docker-desktop-*.pkg.tar.zst",
+        "root": "yes"
+      }
+    ],
+    "notes": [
+      "Docker has not tested or verified the Arch package.",
+      "Needs a 64-bit CPU with virtualization; KVM is reportedly not required from version 4.35.",
+      "GNOME tray icon needs gnome-shell-extension-appindicator.",
+      "On Linux, Docker Engine or Podman is lighter; Docker Desktop runs a VM."
+    ],
+    "sources": [
+      "https://docs.docker.com/desktop/setup/install/linux/",
+      "https://wiki.archlinux.org/title/Docker"
+    ]
+  },
+  "colima": {
+    "methods": [
+      {
+        "method": "Homebrew (64-bit Linux bottles)",
+        "command": "brew install colima",
+        "root": "no"
+      },
+      {
+        "method": "Release binary",
+        "command": "download from https://github.com/abiosoft/colima/releases",
+        "root": "no"
+      }
+    ],
+    "notes": [
+      "Colima runs a VM; on Linux, Podman or Docker Engine on the host is lighter.",
+      "Official docs: https://colima.run/docs (not opened)."
+    ],
+    "sources": [
+      "https://formulae.brew.sh/formula/colima",
+      "https://github.com/abiosoft/colima"
+    ]
+  },
+  "lens": {
+    "methods": [
+      {
+        "method": "Official APT or RPM repository, AppImage or snap (x86_64)",
+        "command": "follow https://docs.k8slens.dev/getting-started/install-lens",
+        "root": "repo: yes"
+      },
+      {
+        "method": "Arch AUR (community)",
+        "command": "yay -S lens-bin",
+        "root": "no"
+      }
+    ],
+    "notes": [
+      "The repo-installed command is lens-desktop.",
+      "GLIBC errors were reported on Ubuntu 20.04 for both .deb and AppImage."
+    ],
+    "sources": [
+      "https://docs.k8slens.dev/getting-started/install-lens",
+      "https://aur.archlinux.org/packages/lens-bin"
+    ]
+  },
+  "portainer": {
+    "methods": [
+      {
+        "method": "Create the data volume",
+        "command": "docker volume create portainer_data",
+        "root": "docker group"
+      },
+      {
+        "method": "Run Portainer CE (web UI on https://localhost:9443)",
+        "command": "docker run -d -p 8000:8000 -p 9443:9443 --name portainer --restart=always -v /var/run/docker.sock:/var/run/docker.sock -v portainer_data:/data portainer/portainer-ce:lts",
+        "root": "docker group"
+      }
+    ],
+    "notes": [
+      "Needs Docker running first.",
+      "Guides disagree on port 8000 (edge agent) and the image tag (latest, lts, or pinned); check docs.portainer.io.",
+      "Mounting the Docker socket gives Portainer root-equivalent control of the host."
+    ],
+    "sources": [
+      "https://oneuptime.com/blog/post/2026-03-20-portainer-docker-run-install/view",
+      "https://computingforgeeks.com/install-portainer-ubuntu-2604/"
+    ]
+  },
+  "vagrant": {
+    "methods": [
+      {
+        "method": "Arch package (extra, BUSL-1.1)",
+        "command": "sudo pacman -S vagrant",
+        "root": "yes"
+      }
+    ],
+    "notes": [
+      "The package page snapshot is from December 2024; confirm it is still in extra.",
+      "Vagrant needs a provider such as VirtualBox or libvirt."
+    ],
+    "sources": [
+      "https://archlinux.org/packages/extra/x86_64/vagrant"
+    ]
+  },
+  "itch": {
+    "methods": [
+      {
+        "method": "Official installer",
+        "command": "download itch-setup from https://itch.io/app, then chmod +x itch-setup && ./itch-setup",
+        "root": "no"
+      },
+      {
+        "method": "Arch AUR (community wrapper of the same installer)",
+        "command": "yay -S itch-setup-bin",
+        "root": "no"
+      }
+    ],
+    "notes": [
+      "Installs to ~/.itch; needs GTK3.",
+      "Uninstall: ~/.itch/itch-setup --uninstall (your library in ~/.config/itch stays)."
+    ],
+    "sources": [
+      "https://itch.io/docs/itch/installing/linux/",
+      "https://aur.archlinux.org/packages/itch-setup-bin"
+    ]
+  }
+}

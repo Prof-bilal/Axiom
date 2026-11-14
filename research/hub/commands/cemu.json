@@ -1,0 +1,1 @@
+{"id": "cemu", "commands": [{"method": "flathub", "command": "download https://flathub.org/apps/info.cemu.Cemu", "needs_root": false, "source": "https://github.com/cemu-project/Cemu"}], "status": "partly verified", "note": "The official README points Linux users to the Flathub listing; no install command is given there, and the official site covers Windows only."}

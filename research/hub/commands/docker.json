@@ -1,0 +1,8 @@
+{"id": "docker",
+ "screenshots": [],
+ "logo": null,
+ "commands": [{"method": "install docker-ce (Ubuntu apt)", "command": "sudo apt install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin", "needs_root": true, "source": "https://docs.docker.com/engine/install/ubuntu/"},
+  {"method": "test install (hello-world)", "command": "sudo docker run hello-world", "needs_root": true, "source": "https://docs.docker.com/engine/install/ubuntu/"}],
+ "min_ram_gb": null,
+ "status": "partly found",
+ "note": "Install and test commands found on the official Ubuntu page; no official Docker logo or screenshot image URL was found on the fetched pages, and the docker-group user step is only referenced, not shown as a command."}

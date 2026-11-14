@@ -1,0 +1,16 @@
+{"id": "waydroid",
+ "screenshots": [],
+ "logo": null,
+ "commands": [
+  {"method": "apt (Debian/Ubuntu)", "command": "sudo apt install curl ca-certificates -y", "needs_root": true, "source": "https://docs.waydro.id/usage/install-on-desktops"},
+  {"method": "apt (Debian/Ubuntu)", "command": "curl -s https://repo.waydro.id | sudo bash", "needs_root": true, "source": "https://docs.waydro.id/usage/install-on-desktops"},
+  {"method": "apt (Debian/Ubuntu)", "command": "sudo apt update", "needs_root": true, "source": "https://docs.waydro.id/usage/install-on-desktops"},
+  {"method": "apt (Debian/Ubuntu)", "command": "sudo apt install waydroid -y", "needs_root": true, "source": "https://docs.waydro.id/usage/install-on-desktops"},
+  {"method": "dnf (Fedora)", "command": "sudo dnf install waydroid", "needs_root": true, "source": "https://docs.waydro.id/usage/install-on-desktops"},
+  {"method": "start container", "command": "sudo waydroid container start", "needs_root": true, "source": "https://docs.waydro.id/usage/install-on-desktops"},
+  {"method": "start session", "command": "waydroid session start", "needs_root": false, "source": "https://docs.waydro.id/usage/install-on-desktops"},
+  {"method": "show UI", "command": "waydroid show-full-ui", "needs_root": false, "source": "https://docs.waydro.id/usage/install-on-desktops"}
+ ],
+ "min_ram_gb": null,
+ "status": "partly found",
+ "note": "Install and run commands found on the official docs page; the Arch pacman command is not on that page and no RAM figure is stated."}

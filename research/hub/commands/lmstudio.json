@@ -1,0 +1,19 @@
+{
+  "id": "lmstudio",
+  "commands": [
+    {
+      "method": "download desktop AppImage",
+      "command": "download https://lmstudio.ai/download/latest/linux/x64?format=AppImage (then chmod +x on the file and run it)",
+      "needs_root": false,
+      "source": "https://lmstudio.ai/download?os=linux"
+    },
+    {
+      "method": "headless daemon (llmster) install",
+      "command": "curl -fsSL https://lmstudio.ai/install.sh | bash",
+      "needs_root": false,
+      "source": "https://lmstudio.ai/download?os=linux"
+    }
+  ],
+  "status": "partly verified",
+  "note": "The official download page gives the AppImage link; the page does not confirm the chmod/run steps or root needs, and the install.sh script is for the headless daemon, not the desktop app."
+}

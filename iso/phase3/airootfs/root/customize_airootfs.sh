@@ -10,6 +10,9 @@ fi
 # `tty` is required so the session can write its readiness marker to the serial
 # console (used only for QEMU evidence, never a product dependency).
 usermod -aG wheel,video,input,audio,rfkill,tty axiom
+# Rootless podman (click-to-install .deb in distrobox, ADR-028) needs subordinate ID ranges.
+grep -q '^axiom:' /etc/subuid 2>/dev/null || echo 'axiom:100000:65536' >> /etc/subuid
+grep -q '^axiom:' /etc/subgid 2>/dev/null || echo 'axiom:100000:65536' >> /etc/subgid
 
 # Session entry points are executable.
 chmod 0755 /usr/local/bin/axiom-session /usr/local/bin/axiom-shell /usr/local/bin/axiom-greeting /usr/local/bin/axiom-terminal

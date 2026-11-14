@@ -1,0 +1,218 @@
+
+<!DOCTYPE html>
+<html lang="en">   <head>
+    <!-- # block head (placeholder in theme.html) -->
+        <!-- # block head (content inherited from layout.html) -->
+    <title>
+3-setup-starting.png on Screenshots – Attachment          – Oracle VirtualBox
+
+    </title>
+
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <!--[if IE]><script>
+        if (/^#__msie303:/.test(window.location.hash))
+        window.location.replace(window.location.hash.replace(/^#__msie303:/, '#'));
+        </script><![endif]-->
+
+    <link rel="search"  href="/search" />
+    <link rel="help"  href="/wiki/TracGuide" />
+    <link rel="alternate"  href="/raw-attachment/wiki/Screenshots/3-setup-starting.png" title="Original Format" type="image/png; charset=utf-8" />
+    <link rel="up"  href="/wiki/Screenshots" title="Screenshots" />
+    <link rel="start"  href="/wiki" />
+    <link rel="stylesheet"  href="/chrome/common/css/trac.css" type="text/css" />
+    <link rel="stylesheet"  href="/chrome/common/css/code.css" type="text/css" />
+    <link rel="icon"  href="/favicon.ico" type="image/x-icon" />
+    <noscript>
+      <style>
+        .trac-noscript { display: none !important }
+      </style>     </noscript>
+    <link type="application/opensearchdescription+xml" rel="search"
+          href="/search/opensearch"
+          title="Search Oracle VirtualBox"/>
+    <script src="/chrome/common/js/jquery.js"></script>
+    <script src="/chrome/common/js/jquery-migrate.js"></script>
+    <script src="/chrome/common/js/babel.js"></script>
+    <script src="/chrome/common/js/trac.js"></script>
+    <script src="/chrome/common/js/search.js"></script>
+    <script src="/chrome/common/js/folding.js"></script>
+    <script>
+      jQuery(function($) {
+        $(".trac-autofocus").focus();
+        $(".trac-target-new").attr("target", "_blank");
+        if ($.ui) { /* is jquery-ui added? */
+          $(".trac-datepicker:not([readonly])")
+            .prop("autocomplete", "off").datepicker();
+          // Input current date when today is pressed.
+          var _goToToday = $.datepicker._gotoToday;
+          $.datepicker._gotoToday = function(id) {
+            _goToToday.call(this, id);
+            this._selectDate(id)
+          };
+          $(".trac-datetimepicker:not([readonly])")
+            .prop("autocomplete", "off").datetimepicker();
+          $("#main").addClass("trac-nodatetimehint");
+        }
+        $(".trac-disable").disableSubmit(".trac-disable-determinant");
+        setTimeout(function() { $(".trac-scroll").scrollToTop() }, 1);
+        $(".trac-disable-on-submit").disableOnSubmit();
+      });
+    </script>
+    <!--   # include 'site_head.html' (layout.html) -->
+
+<link rel="stylesheet" type="text/css" href="/chrome/site/style.css"/>
+
+<script>
+  jQuery(function($) {
+    var $ntg = $("#newticketguide");
+    if ($ntg.length)
+      $("#propertyform").prepend($ntg.detach());
+  });
+
+</script>
+
+<script>
+  jQuery(function($) {
+        var $content = $("#content");
+        var $opener = $("#opener");
+        if ($("#opener").length) $content.toggleClass('narrow');
+  });
+</script>    <!--   end of site_head.html -->
+    <!-- # endblock head (content inherited from layout.html) -->
+
+    <script>
+      jQuery(function($) {
+        $('#preview table.code').enableCollapsibleColumns(
+          $('#preview table.code thead th.content'));
+      });
+    </script>
+    <!-- # endblock head (placeholder in theme.html) -->
+  </head> 
+  <body>
+    <!-- # block body (content inherited from theme.html) -->
+    <!--   # include 'site_header.html' (theme.html) -->
+
+  <!-- Add site-specific header -->
+  <div id="vboxstring">
+    <img src="/graphics/vboxlogodown.png" alt="VirtualBox"/>
+  </div>
+
+  <div id="center">    <!--   end of site_header.html -->
+
+    <div id="banner">
+      <form id="search" action="/search" method="get">
+        <div>
+          <label for="proj-search">Search:</label>
+          <input type="text" id="proj-search" name="q" size="18"
+                  value="" />
+          <input type="submit" value="Search" />
+        </div>
+      </form>
+    </div>
+        <div id="mainnav" class="nav">
+    </div>
+
+
+    <div id="main"
+         >
+      <div id="ctxtnav">
+        <li>
+          <a id="logo" href="https://www.virtualbox.org/"><img alt="Oracle VirtualBox" src="/graphics/vbox-new-logo.png"></a>
+        </li>
+        <ul>
+          <li><a href="https://www.virtualbox.org/">Home</a></li>
+          <li><a href="/wiki/Downloads">Download</a></li>
+          <li><a href="/wiki/Documentation">Documentation</a></li>
+          <li><a href="/wiki/Community">Community</a></li>
+          <li class="first">
+            <a id="profile" href="/login"><img src="/graphics/user.png" alt="User profile icon"></a>
+          </li>
+            <form style="text-align: right" action="/search" method="get">
+              <div>
+                <input id="vboxsearch" type="text" name="q" size="10" accesskey="f" value="Search:" onblur="if(this.value=='') this.value='Search:';" onfocus="if(this.value=='Search:') this.value='';">
+                <input type="hidden" name="wiki" value="on">
+                <input type="hidden" name="changeset" value="on">
+                <input type="hidden" name="ticket" value="on">
+              </div>
+            </form>
+          </li>
+        </ul>
+      </div>
+
+      
+
+      
+
+      <!-- # block content (placeholder in theme.html) -->
+    <div id="content" class="attachment">
+
+      <h1><a href="/wiki/Screenshots">Screenshots</a>:
+        3-setup-starting.png</h1>
+      <table id="info">
+        <tr>
+          <th scope="col">
+File 3-setup-starting.png,             <span title="358143 bytes">349.7 KB</span>
+ (added by <span class="trac-author">jose</span>, <a class="timeline" href="/timeline?from=2007-01-14T09%3A24%3A54Z&amp;precision=second" title="See timeline at 01/14/2007 09:24:54 AM">20 years ago</a>)          </th>
+        </tr>
+        <tr>
+          <td class="message searchable">
+            <p>
+Windows Vista setup begins!
+</p>
+
+          </td>
+        </tr>
+      </table>
+
+      <div id="preview" class="searchable">
+
+<div class="image-file"><img alt="3-setup-starting.png" src="/raw-attachment/wiki/Screenshots/3-setup-starting.png" /></div>
+
+      </div>
+    </div>
+        <!-- # block content (content inherited from layout.html) -->
+    <div id="altlinks">
+      <h3>Download in other formats:</h3>
+      <ul>
+        <li class="last first">
+          <a rel="nofollow" href="/raw-attachment/wiki/Screenshots/3-setup-starting.png"
+              class="">
+            Original Format</a>
+        </li>
+      </ul>
+    </div>
+    <!-- # endblock content (content inherited from layout.html) -->
+
+      <!-- # endblock content (placeholder in theme.html) -->
+    </div>
+
+    <div id="footer"><hr/>
+      <a id="tracpowered" href="https://trac.edgewall.org/"
+         ><img src="/chrome/common/trac_logo_mini.png" height="30"
+               width="107" alt="Trac Powered"/></a>
+      <p class="left">
+Powered by         <a href="/about"><strong>Trac 1.4.3.2</strong></a>
+        <br />
+ By         <a href="http://www.edgewall.org/">Edgewall Software</a>
+.      </p>
+      <p class="right"></p>
+    </div>
+    <!--   # include 'site_footer.html' (theme.html) -->
+
+</div><!-- center -->
+<div id="vboxfooter">
+  <p style="text-align:center">
+    <a href="https://www.oracle.com"><span style="background-image: url(/graphics/oracle-logo-new.svg); width: 100px; height: 24px; background-repeat: no-repeat; background-position: 0 11px; background-size: 100% 100%; display: inline-block"></span> &copy; 2025 Oracle</a>
+    <a href="https://www.oracle.com/virtualization/virtualbox/#rc30category-support-services">Support</a>
+    <a href="https://www.oracle.com/html/privacy.html">Privacy </a>
+    /
+    <a href="https://www.oracle.com/legal/privacy/privacy-choices.html"> Do Not Sell My Info</a>
+    <a href="https://www.oracle.com/html/terms.html">Terms of Use</a>
+    <a href="https://www.oracle.com/legal/trademarks.html">Trademark Policy</a>
+    <a href="/wiki/AutomatedAccessEtiquette">Automated Access Etiquette</a>
+  </p>
+</div>
+
+    <!--   end of site_footer.html -->
+    <!-- # endblock body (content inherited from theme.html) -->
+  </body> </html>

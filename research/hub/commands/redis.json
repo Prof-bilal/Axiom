@@ -1,0 +1,11 @@
+{"id": "redis",
+ "screenshots": [],
+ "logo": {"url": "https://valkey.io/img/valkey-horizontal.svg", "source": "https://valkey.io/download/"},
+ "commands": [
+  {"method": "apt", "command": "sudo apt update", "needs_root": true, "source": "https://valkey.io/topics/installation"},
+  {"method": "apt", "command": "sudo apt install valkey", "needs_root": true, "source": "https://valkey.io/topics/installation"},
+  {"method": "pacman", "command": "sudo pacman -Sy valkey", "needs_root": true, "source": "https://valkey.io/topics/installation"}
+ ],
+ "min_ram_gb": null,
+ "status": "partly found",
+ "note": "The Valkey docs give the install commands and an SVG logo, but no screenshots, and state no RAM requirement."}

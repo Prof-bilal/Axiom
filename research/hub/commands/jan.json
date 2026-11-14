@@ -1,0 +1,25 @@
+{
+  "id": "jan",
+  "commands": [
+    {
+      "method": "flatpak",
+      "command": "flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo && flatpak install flathub ai.jan.Jan",
+      "needs_root": false,
+      "source": "https://docs.jan.ai/desktop/install/linux"
+    },
+    {
+      "method": "deb",
+      "command": "download https://app.jan.ai/download/latest/linux-amd64-deb, then: sudo apt-get install ./Jan_{version}_amd64.deb",
+      "needs_root": true,
+      "source": "https://docs.jan.ai/desktop/install/linux"
+    },
+    {
+      "method": "AppImage",
+      "command": "download https://app.jan.ai/download/latest/linux-amd64-appimage, then: chmod +x ./Jan_{version}_amd64.AppImage && ./Jan_{version}_amd64.AppImage",
+      "needs_root": false,
+      "source": "https://docs.jan.ai/desktop/install/linux"
+    }
+  ],
+  "status": "verified",
+  "note": "Commands and download URLs are from the official Jan Linux install page; the flatpak root requirement is not stated on the page."
+}

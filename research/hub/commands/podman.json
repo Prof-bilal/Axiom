@@ -1,0 +1,9 @@
+{"id": "podman",
+ "screenshots": [],
+ "logo": null,
+ "commands": [{"method": "install (Arch/Manjaro, pacman)", "command": "sudo pacman -S podman", "needs_root": true, "source": "https://podman.io/docs/installation"},
+  {"method": "install (Ubuntu 20.10+, apt)", "command": "sudo apt-get update", "needs_root": true, "source": "https://podman.io/docs/installation"},
+  {"method": "install (Ubuntu 20.10+, apt)", "command": "sudo apt-get -y install podman", "needs_root": true, "source": "https://podman.io/docs/installation"}],
+ "min_ram_gb": null,
+ "status": "partly found",
+ "note": "Install commands found on the official page; the only logo found is a WebP file (rule requires PNG or SVG), no screenshots were found, and no RAM requirement is stated."}

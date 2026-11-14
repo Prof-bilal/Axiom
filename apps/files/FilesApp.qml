@@ -17,6 +17,8 @@ AppWindow {
 
     // path -> true
     property var selected: ({})
+    // "list" (columns) or "grid" (icon tiles).
+    property string viewMode: "list"
     property int currentIndex: -1
     property int anchorIndex: -1
     property string pendingSelect: ""
@@ -327,6 +329,7 @@ AppWindow {
                 spacing: 2
                 PanelButton { icon: "plus"; accessibleName: "New folder"; available: !backend.trashView; onClicked: root.promptNewFolder() }
                 PanelButton { icon: "eye"; accessibleName: "Show hidden files"; selected: backend.showHidden; available: !backend.trashView; onClicked: backend.showHidden = !backend.showHidden }
+                PanelButton { icon: root.viewMode === "list" ? "grid" : "list"; accessibleName: "Switch between list and grid"; onClicked: root.viewMode = root.viewMode === "list" ? "grid" : "list" }
                 PanelButton { icon: "terminal"; accessibleName: "Open terminal here"; onClicked: root.terminalHere() }
             }
 
@@ -375,6 +378,7 @@ AppWindow {
 
             Row {
                 id: header
+                visible: root.viewMode === "list"
                 anchors.top: parent.top
                 anchors.left: parent.left
                 anchors.right: parent.right
@@ -402,10 +406,11 @@ AppWindow {
                 HeaderCell { visible: !backend.trashView && root.showKind; width: root.kindW; label: "Kind" }
             }
 
-            Rectangle { anchors.top: header.bottom; width: parent.width; height: 1; color: Theme.borderSubtle }
+            Rectangle { visible: root.viewMode === "list"; anchors.top: header.bottom; width: parent.width; height: 1; color: Theme.borderSubtle }
 
             ListView {
                 id: list
+                visible: root.viewMode === "list"
                 anchors.top: header.bottom
                 anchors.topMargin: 1
                 anchors.bottom: parent.bottom
@@ -449,6 +454,67 @@ AppWindow {
                             var p = mapToItem(null, m.x, m.y)
                             root.showContext(p.x, p.y, true)
                         }
+                    }
+                }
+            }
+
+            // Grid: icon tiles, same selection and open behaviour as the list.
+            GridView {
+                id: grid
+                visible: root.viewMode === "grid"
+                anchors.fill: parent
+                anchors.margins: Theme.spacingSm
+                clip: true
+                cellWidth: 120
+                cellHeight: 108
+                model: backend.entries.length
+                boundsBehavior: Flickable.StopAtBounds
+                reuseItems: true
+
+                delegate: Item {
+                    required property int index
+                    readonly property var tileEntry: backend.entries[index]
+                    width: grid.cellWidth
+                    height: grid.cellHeight
+                    readonly property bool sel: tileEntry !== undefined && root.selected[tileEntry.path] === true
+
+                    Rectangle {
+                        anchors.fill: parent
+                        anchors.margins: 4
+                        radius: Theme.radiusSurface
+                        color: sel ? Theme.stateSelected : tileMouse.containsMouse ? Theme.stateHover : "transparent"
+                        border.width: sel ? 1 : 0
+                        border.color: Theme.stateSelectedBorder
+                    }
+                    AxiomIcon {
+                        id: tileIcon
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        anchors.top: parent.top
+                        anchors.topMargin: 14
+                        width: 40; height: 40
+                        name: tileEntry ? Files.iconName(tileEntry) : "file"
+                        color: sel ? Theme.cyanBright : Theme.textPrimary
+                        strokeWidth: 1.6
+                    }
+                    Text {
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        anchors.top: tileIcon.bottom
+                        anchors.topMargin: 10
+                        width: parent.width - 16
+                        horizontalAlignment: Text.AlignHCenter
+                        elide: Text.ElideMiddle
+                        text: tileEntry ? tileEntry.name : ""
+                        color: Theme.textPrimary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: Theme.fontCaption
+                    }
+                    MouseArea {
+                        id: tileMouse
+                        anchors.fill: parent
+                        hoverEnabled: true
+                        acceptedButtons: Qt.LeftButton | Qt.RightButton
+                        onPressed: function (m) { root.rowPressed(index, m.modifiers, m.button, m.x, m.y) }
+                        onDoubleClicked: root.openEntry(tileEntry)
                     }
                 }
             }
