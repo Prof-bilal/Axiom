@@ -46,7 +46,7 @@ PanelWindow {
         Keys.onEscapePressed: UiState.closeAllOverlays()
     }
 
-    Rectangle {
+    GlassPanel {
         id: card
         x: surface.alignRight ? parent.width - width - Theme.spacingSm : Theme.spacingSm
         y: Theme.panelHeight + Theme.spacingXs
@@ -54,20 +54,15 @@ PanelWindow {
         height: Math.min(column.implicitHeight + Theme.spacingSm * 2,
                          parent.height - y - Theme.spacingSm)
         radius: Theme.radiusOverlay
-        color: Theme.overlayBackground
-        border.width: 1
-        border.color: Theme.overlayBorder
-        clip: true
 
         // Swallow clicks inside the card.
         MouseArea { anchors.fill: parent }
 
         Column {
             id: column
-            anchors.left: parent.left
-            anchors.right: parent.right
-            anchors.top: parent.top
-            anchors.margins: Theme.spacingSm
+            x: Theme.spacingSm
+            y: Theme.spacingSm
+            width: parent.width - Theme.spacingSm * 2
             spacing: Theme.spacingXxs
         }
     }

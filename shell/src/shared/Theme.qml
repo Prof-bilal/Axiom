@@ -17,35 +17,50 @@ import qs.services
 Singleton {
     id: theme
 
+    // --- mode: dark / light / auto (auto: light 07:00-19:00, re-checked every minute) ---
+    property int hour: new Date().getHours()
+    Timer { interval: 60000; running: SettingsService.themeMode === "auto"; repeat: true; onTriggered: theme.hour = new Date().getHours() }
+    readonly property bool dark: SettingsService.themeMode === "dark"
+        || (SettingsService.themeMode === "auto" && (hour < 7 || hour >= 19))
+
     // --- base neutrals ---
-    readonly property color background: "#070B0D"
-    readonly property color surface: "#0C1215"
-    readonly property color surfaceElevated: "#11191D"
-    readonly property color surfaceHover: "#162126"
-    readonly property color border: "#233238"
-    readonly property color borderSubtle: "#182328"
-    readonly property color textPrimary: "#EDF5F5"
-    readonly property color textSecondary: "#8EA2A5"
-    readonly property color textDisabled: "#4E5E62"
+    readonly property color background: dark ? "#05080A" : "#F2F7F8"
+    readonly property color surface: dark ? "#0B1214" : "#FFFFFF"
+    readonly property color surfaceElevated: dark ? "#111B1E" : "#E8F0F2"
+    readonly property color surfaceHover: dark ? "#17252A" : "#DCE8EB"
+    readonly property color border: dark ? "#233238" : "#C3D3D7"
+    readonly property color borderSubtle: dark ? "#182328" : "#DAE5E8"
+    readonly property color textPrimary: dark ? "#FFFFFF" : "#0B1A1D"
+    readonly property color textSecondary: dark ? "#9DB0B3" : "#475C61"
+    readonly property color textDisabled: dark ? "#4E5E62" : "#8A9DA1"
 
-    // --- Axiom cyan (primary accent) ---
-    readonly property color cyan: "#20D6D2"
-    readonly property color cyanBright: "#37F0EA"
-    readonly property color cyanMuted: "#126E70"
+    // --- Axiom teal (primary accent; darker in light mode for AA contrast) ---
+    readonly property color cyan: dark ? "#22D3EE" : "#0A8FA6"
+    readonly property color cyanBright: dark ? "#2EE6D6" : "#0E9BB0"
+    readonly property color cyanMuted: dark ? "#126E70" : "#9ED9E3"
 
-    // --- Axiom orange (secondary accent; urgent/destructive only) ---
-    readonly property color orange: "#FF9418"
-    readonly property color orangeBright: "#FFB348"
-    readonly property color orangeMuted: "#804713"
+    // --- Axiom amber (secondary accent; urgent/destructive/warm highlights) ---
+    readonly property color orange: dark ? "#F5A623" : "#B86F00"
+    readonly property color orangeBright: dark ? "#FFC24D" : "#C77D0A"
+    readonly property color orangeMuted: dark ? "#805313" : "#F1D3A0"
+    readonly property color danger: dark ? "#EF5350" : "#C62828"
+    readonly property color success: dark ? "#4CD964" : "#1E8E3E"
 
-    // --- translucent surfaces (alpha over the wallpaper) ---
-    readonly property color panelBackground: Qt.rgba(5 / 255, 12 / 255, 15 / 255, 0.88)
-    readonly property color panelBorder: Qt.rgba(68 / 255, 230 / 255, 220 / 255, 0.10)
-    readonly property color dockBackground: Qt.rgba(1, 1, 1, 0.9)
-    readonly property color dockBorder: Qt.rgba(0, 0, 0, 0.1)
-    readonly property color overlayBackground: Qt.rgba(12 / 255, 18 / 255, 21 / 255, 0.97)
-    readonly property color overlayBorder: Qt.rgba(80 / 255, 235 / 255, 220 / 255, 0.14)
-    readonly property color scrim: Qt.rgba(2 / 255, 5 / 255, 7 / 255, 0.45)
+    // --- window controls (match the labwc theme) ---
+    readonly property color controlClose: "#E8645A"
+    readonly property color controlMinimize: "#2FB8C4"
+    readonly property color controlMaximize: "#E0A93A"
+
+    // --- glass: translucent fill + gradient stroke (teal -> amber) ---
+    readonly property color panelBackground: dark ? Qt.rgba(20 / 255, 32 / 255, 34 / 255, 0.62) : Qt.rgba(1, 1, 1, 0.68)
+    readonly property color panelBorder: dark ? Qt.rgba(1, 1, 1, 0.18) : Qt.rgba(0, 0, 0, 0.10)
+    readonly property color dockBackground: dark ? Qt.rgba(20 / 255, 32 / 255, 34 / 255, 0.58) : Qt.rgba(1, 1, 1, 0.66)
+    readonly property color dockBorder: dark ? Qt.rgba(1, 1, 1, 0.20) : Qt.rgba(0, 0, 0, 0.10)
+    readonly property color overlayBackground: dark ? Qt.rgba(14 / 255, 24 / 255, 27 / 255, 0.90) : Qt.rgba(1, 1, 1, 0.92)
+    readonly property color overlayBorder: dark ? Qt.rgba(1, 1, 1, 0.22) : Qt.rgba(0, 0, 0, 0.12)
+    readonly property color strokeStart: cyanBright
+    readonly property color strokeEnd: orange
+    readonly property color scrim: dark ? Qt.rgba(2 / 255, 5 / 255, 7 / 255, 0.50) : Qt.rgba(20 / 255, 35 / 255, 40 / 255, 0.30)
 
     // --- interaction states (one visual language for every component) ---
     // hover    -> slightly lighter surface
@@ -54,8 +69,8 @@ Singleton {
     // focus    -> cyan border
     // urgent   -> orange
     // disabled -> muted grey
-    readonly property color stateHover: Qt.rgba(1, 1, 1, 0.06)
-    readonly property color statePressed: Qt.rgba(1, 1, 1, 0.10)
+    readonly property color stateHover: dark ? Qt.rgba(1, 1, 1, 0.06) : Qt.rgba(0, 0, 0, 0.05)
+    readonly property color statePressed: dark ? Qt.rgba(1, 1, 1, 0.10) : Qt.rgba(0, 0, 0, 0.09)
     readonly property color stateSelected: Qt.rgba(32 / 255, 214 / 255, 210 / 255, 0.14)
     readonly property color stateSelectedBorder: Qt.rgba(32 / 255, 214 / 255, 210 / 255, 0.45)
     readonly property color stateActive: cyan
@@ -70,8 +85,7 @@ Singleton {
     readonly property color accent: cyan
     readonly property color accentDeep: cyanMuted
     readonly property color surfaceHigh: surfaceElevated
-    readonly property color danger: orange
-    readonly property color warning: orangeBright
+        readonly property color warning: orangeBright
 
     // --- spacing (4 px grid) ---
     readonly property int spacingXxs: 2
@@ -85,8 +99,10 @@ Singleton {
     readonly property int radiusSmall: 6
     readonly property int radiusControl: 6
     readonly property int radiusSurface: 10
-    readonly property int radiusOverlay: 12
-    readonly property int radiusDock: 22
+    readonly property int radiusOverlay: 16
+    readonly property int radiusDock: 18
+    readonly property int radiusWindow: 10
+    readonly property int radiusDialog: 20
 
     // --- surfaces ---
     readonly property int panelHeight: 40

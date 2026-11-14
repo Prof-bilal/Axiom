@@ -6,10 +6,10 @@
 # Budget: ~80% neutral graphite, ~15% cyan, ~5% orange.
 # Cyan = focus / selected / active. Orange = urgent / destructive / attention.
 
-mode = "dark"
+mode = "dark"   # default; [light] below is used when Settings > Appearance asks for it
 
 [base]
-background = "#070B0D"
+background = "#05080A"
 surface = "#0C1215"
 surface_elevated = "#11191D"
 surface_hover = "#162126"
@@ -20,12 +20,12 @@ text_secondary = "#8EA2A5"
 text_disabled = "#4E5E62"
 
 [cyan]
-primary = "#20D6D2"
-bright = "#37F0EA"
+primary = "#22D3EE"
+bright = "#2EE6D6"
 muted = "#126E70"
 
 [orange]
-primary = "#FF9418"
+primary = "#F5A623"
 bright = "#FFB348"
 muted = "#804713"
 
@@ -42,3 +42,22 @@ terminal = "rgba(10, 13, 15, 0.94)"
 # Axiom amber so warnings sit in the orange family.
 regular = ["#11191D", "#F2685E", "#7FD99A", "#FFB348", "#5AA9FF", "#C49BFF", "#20D6D2", "#C7D3D4"]
 bright = ["#4E5E62", "#FF8F84", "#9EE6B3", "#FFC978", "#8CC4FF", "#D9BEFF", "#37F0EA", "#EDF5F5"]
+
+# Window controls (labwc theme + shell). Same in both modes.
+[window_controls]
+close = "#E8645A"
+minimize = "#2FB8C4"
+maximize = "#E0A93A"
+
+# Light mode: designed by hand (the mockups are dark only). Teal/amber are
+# darkened so text and icons keep WCAG AA contrast on white glass.
+[light]
+background = "#F2F7F8"
+surface = "#FFFFFF"
+surface_elevated = "#E8F0F2"
+border = "#C3D3D7"
+border_subtle = "#DAE5E8"
+text_primary = "#0B1A1D"
+text_secondary = "#475C61"
+cyan = "#0A8FA6"
+orange = "#B86F00"

@@ -25,6 +25,26 @@ PageFrame {
     Component.onCompleted: scan()
 
     SettingsCard {
+        title: "Theme"
+
+        SettingRow {
+            first: true
+            label: "Dark or light"
+            description: "Auto switches to light from 07:00 to 19:00."
+
+            Repeater {
+                model: [{ name: "Dark", value: "dark" }, { name: "Light", value: "light" }, { name: "Auto", value: "auto" }]
+                delegate: AppButton {
+                    required property var modelData
+                    text: modelData.name
+                    primary: SettingsService.themeMode === modelData.value
+                    onClicked: SettingsService.setThemeMode(modelData.value)
+                }
+            }
+        }
+    }
+
+    SettingsCard {
         title: "Text size"
 
         SettingRow {

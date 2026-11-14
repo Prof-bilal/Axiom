@@ -81,6 +81,10 @@ def validate(root):
         module = runpy.run_path(str(root / 'scripts' / 'check-iso-profile.py'),
                                 run_name='iso_profile_check')
         errors += module['validate'](root)
+    gen = runpy.run_path(str(root / 'scripts' / 'gen-labwc-theme.py'), run_name='gen_theme')
+    for path, text in gen['render']().items():
+        if not path.is_file() or path.read_text() != text:
+            errors.append(f'Stale generated theme (run scripts/gen-labwc-theme.py): {path.relative_to(root)}')
     return errors
 
 if __name__ == '__main__':

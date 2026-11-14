@@ -31,6 +31,9 @@ Singleton {
     // Multiplier for every text size in the shell and the apps (1.0 default).
     readonly property real textScale: Math.max(0.9, Math.min(1.5, store.textScale))
 
+    // "dark", "light" or "auto" (auto follows the clock: light 07:00-19:00).
+    readonly property string themeMode: ["dark", "light", "auto"].indexOf(store.themeMode) >= 0 ? store.themeMode : "dark"
+
     // Do Not Disturb: toasts are suppressed (critical ones still show); history keeps everything.
     readonly property bool dnd: store.dnd
     // Application names whose toasts are muted (history still lists them).
@@ -57,6 +60,8 @@ Singleton {
         store.textScale = scale
         save()
     }
+
+    function setThemeMode(mode) { store.themeMode = mode; save() }
 
     function setDnd(on) { store.dnd = on; save() }
 
@@ -118,6 +123,7 @@ Singleton {
             property bool dockCustom: false
             property var dockPins: []
             property real textScale: 1.0
+            property string themeMode: "dark"
             property bool dnd: false
             property var mutedApps: []
             property int idleBlankMinutes: 0
