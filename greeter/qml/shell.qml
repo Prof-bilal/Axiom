@@ -21,13 +21,16 @@ ShellRoot {
     id: root
 
     // --- design tokens (kept in step with shell/src/shared/Theme.qml) ---
-    readonly property color background: "#070B0D"
-    readonly property color surfaceElevated: "#11191D"
+    // The greeter is dark-only by design (it runs before any user setting exists).
+    readonly property color background: "#05080A"
+    readonly property color surfaceElevated: "#111B1E"
     readonly property color border: "#233238"
-    readonly property color textPrimary: "#EDF5F5"
-    readonly property color textSecondary: "#8EA2A5"
-    readonly property color cyan: "#20D6D2"
-    readonly property color orangeBright: "#FFB348"
+    readonly property color textPrimary: "#FFFFFF"
+    readonly property color textSecondary: "#9DB0B3"
+    readonly property color cyan: "#22D3EE"
+    readonly property color cyanBright: "#2EE6D6"
+    readonly property color orange: "#F5A623"
+    readonly property color orangeBright: "#FFC24D"
 
     readonly property string wrongPassword: "That password didn't work. Try again."
     readonly property string lockedOut: "Too many wrong tries. Please wait a few minutes and try again."
@@ -195,6 +198,16 @@ ShellRoot {
             anchors.fill: parent
             focus: true
 
+            // Faint teal ground glow, as on the boot splash.
+            Rectangle {
+                anchors.left: parent.left; anchors.right: parent.right; anchors.bottom: parent.bottom
+                height: parent.height * 0.45
+                gradient: Gradient {
+                    GradientStop { position: 0; color: "transparent" }
+                    GradientStop { position: 1; color: Qt.rgba(34 / 255, 211 / 255, 238 / 255, 0.10) }
+                }
+            }
+
             // Penguin with a gentle bob (about 6 px, 2 s period), matching the Plymouth splash.
             Image {
                 id: penguin
@@ -235,22 +248,32 @@ ShellRoot {
                 font.pixelSize: 13
             }
 
+            // Pill with the teal -> amber gradient stroke (red-amber after a failed try).
             Rectangle {
                 id: field
                 anchors.horizontalCenter: parent.horizontalCenter
                 anchors.top: userLabel.bottom
                 anchors.topMargin: 22
-                width: 320; height: 44; radius: 8
-                color: root.surfaceElevated
-                border.color: root.authFailed ? root.orangeBright : root.cyan
-                border.width: 1
+                width: 320; height: 46; radius: 23
                 opacity: root.account() ? 1 : 0.5
+                gradient: Gradient {
+                    orientation: Gradient.Horizontal
+                    GradientStop { position: 0; color: root.authFailed ? "#EF5350" : root.cyanBright }
+                    GradientStop { position: 1; color: root.authFailed ? root.orange : root.orange }
+                }
+
+                Rectangle {
+                    anchors.fill: parent
+                    anchors.margins: 1
+                    radius: 22
+                    color: Qt.rgba(20 / 255, 32 / 255, 34 / 255, 0.92)
+                }
 
                 TextInput {
                     id: input
                     anchors.fill: parent
-                    anchors.leftMargin: 14
-                    anchors.rightMargin: 14
+                    anchors.leftMargin: 20
+                    anchors.rightMargin: 20
                     verticalAlignment: TextInput.AlignVCenter
                     color: root.textPrimary
                     font.pixelSize: 16

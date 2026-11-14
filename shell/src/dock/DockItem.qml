@@ -47,10 +47,10 @@ Item {
         anchors.fill: parent
         anchors.margins: 1
         radius: Theme.radiusSurface
-        color: root.focused ? Qt.rgba(32 / 255, 214 / 255, 210 / 255, 0.16)
-             : mouse.containsMouse ? Qt.rgba(1, 1, 1, 0.08) : "transparent"
+        color: root.focused ? Theme.stateSelected
+             : mouse.containsMouse ? Theme.stateHover : "transparent"
         border.width: root.focused ? 1 : 0
-        border.color: Qt.rgba(32 / 255, 214 / 255, 210 / 255, 0.35)
+        border.color: Theme.stateSelectedBorder
         Behavior on color { ColorAnimation { duration: Theme.motionFeedback } }
     }
 
@@ -87,7 +87,7 @@ Item {
         width: root.focused ? 12 : 4
         height: root.focused ? 3 : 4
         radius: height / 2
-        color: root.focused ? Theme.cyan : Qt.rgba(32 / 255, 214 / 255, 210 / 255, 0.7)
+        color: root.focused ? Theme.cyan : Theme.cyanMuted
         Behavior on width { NumberAnimation { duration: Theme.motionFeedback } }
     }
 

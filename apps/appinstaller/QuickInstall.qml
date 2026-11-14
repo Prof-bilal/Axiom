@@ -98,7 +98,7 @@ AppWindow {
                         var c = getContext("2d")
                         c.clearRect(0, 0, width, height)
                         c.lineWidth = 3; c.lineCap = "round"; c.lineJoin = "round"
-                        c.strokeStyle = ok ? "#37F0EA" : "#FFB348"
+                        c.strokeStyle = ok ? Theme.cyanBright : Theme.orangeBright
                         c.beginPath()
                         if (ok) { c.moveTo(5, 15); c.lineTo(11, 21); c.lineTo(23, 7) }
                         else { c.moveTo(7, 7); c.lineTo(21, 21); c.moveTo(21, 7); c.lineTo(7, 21) }

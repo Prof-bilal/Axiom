@@ -33,7 +33,7 @@ from axiom_tui import BG, CYAN, GHOST, GREEN, RED, TEXT, WHITE  # noqa: E402
 SESSION_CMD = ["/usr/local/bin/axiom-session"]
 SESSION_ENV = ["XDG_SESSION_TYPE=wayland", "XDG_SESSION_DESKTOP=axiom", "XDG_CURRENT_DESKTOP=Axiom"]
 WRONG = "That password didn't work. Try again."
-LOGIN_BG = "070B0D"  # the shell theme background (lock screen)
+LOGIN_BG = "05080A"  # the shell theme background (lock screen)
 ENTER = (10, 13, curses.KEY_ENTER)
 GRAPHICAL = os.path.join(HERE, "axiom-greeter-graphical")
 USERS_FILE = "axiom-greeter-users.json"

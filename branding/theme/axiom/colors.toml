@@ -10,13 +10,13 @@ mode = "dark"   # default; [light] below is used when Settings > Appearance asks
 
 [base]
 background = "#05080A"
-surface = "#0C1215"
-surface_elevated = "#11191D"
-surface_hover = "#162126"
+surface = "#0B1214"
+surface_elevated = "#111B1E"
+surface_hover = "#17252A"
 border = "#233238"
 border_subtle = "#182328"
-text_primary = "#EDF5F5"
-text_secondary = "#8EA2A5"
+text_primary = "#FFFFFF"
+text_secondary = "#9DB0B3"
 text_disabled = "#4E5E62"
 
 [cyan]

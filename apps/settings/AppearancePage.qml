@@ -111,7 +111,7 @@ PageFrame {
                         anchors.margins: 3
                         height: 24
                         radius: Theme.radiusSmall
-                        color: Qt.rgba(5 / 255, 12 / 255, 15 / 255, 0.78)
+                        color: Theme.panelBackground
                         Text {
                             anchors.fill: parent
                             anchors.leftMargin: Theme.spacingSm

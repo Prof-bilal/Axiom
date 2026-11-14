@@ -1,5 +1,5 @@
 import QtQuick
-import "hubstyle.js" as S
+import qs.src.shared
 
 // Rounded button. `primary` is the orange fill; otherwise an outline.
 Rectangle {
@@ -15,9 +15,9 @@ Rectangle {
     implicitHeight: small ? 26 : 34
     radius: 6
     opacity: enabled ? 1 : 0.45
-    color: primary ? (m.containsMouse ? S.accentHover : S.accent) : (m.containsMouse ? S.cardHover : "transparent")
+    color: primary ? (m.containsMouse ? Theme.cyanBright : Theme.cyan) : (m.containsMouse ? Theme.surfaceHover : "transparent")
     border.width: primary ? 0 : 1
-    border.color: S.border
+    border.color: Theme.border
 
     Accessible.role: Accessible.Button
     Accessible.name: text
@@ -26,8 +26,8 @@ Rectangle {
         id: label
         anchors.centerIn: parent
         text: b.text
-        color: b.primary ? "#FFFFFF" : S.text
-        font.family: S.font
+        color: b.primary ? Theme.background : Theme.textPrimary
+        font.family: Theme.fontFamily
         font.pixelSize: b.small ? 12 : 13
         font.weight: Font.Medium
     }

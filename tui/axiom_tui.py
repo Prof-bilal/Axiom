@@ -18,8 +18,8 @@ import penguin_art  # noqa: E402
 
 # Slots 0-7 are the pixel/background colours; 8-15 are brighter text variants (bold maps there).
 # Bold turns slot n into slot n+8, so each bright slot is the brighter twin of the one below it.
-PALETTE = ["070B0D", "FF5C5C", "3DDC97", "FF9418", "2A3A40", "EDF5F5", "20D6D2", "9FB4B7",
-           "4E5E62", "FF8A8A", "7CF0BE", "FFB348", "5F7A82", "FFFFFF", "37F0EA", "EDF5F5"]
+PALETTE = ["05080A", "FF5C5C", "4CD964", "F5A623", "2A3A40", "FFFFFF", "22D3EE", "9DB0B3",
+           "4E5E62", "FF8A8A", "7CF0BE", "FFC24D", "5F7A82", "FFFFFF", "2EE6D6", "FFFFFF"]
 BG, RED, GREEN, ORANGE, GHOST, WHITE, CYAN, TEXT = range(8)
 FONT = "latarcyrheb-sun32"
 CLASS_COLOR = {"b": CYAN, "w": WHITE, "o": ORANGE, "k": GHOST}  # dark slate, the reference body (a background-safe slot)

@@ -17,8 +17,8 @@ Rectangle {
     implicitHeight: 30
     radius: Theme.radiusControl
     opacity: enabled ? 1 : 0.45
-    color: destructive ? (mouse.containsMouse ? Qt.rgba(1, 148 / 255, 24 / 255, 0.26) : Theme.stateUrgentWash)
-         : primary ? (mouse.containsMouse ? Qt.rgba(32 / 255, 214 / 255, 210 / 255, 0.26) : Theme.stateSelected)
+    color: destructive ? (mouse.containsMouse ? Theme.stateUrgentWash : Theme.stateUrgentWash)
+         : primary ? (mouse.containsMouse ? Theme.stateSelected : Theme.stateSelected)
          : (mouse.containsMouse ? Theme.stateHover : Theme.surfaceElevated)
     border.width: 1
     border.color: destructive ? Theme.orangeMuted : primary ? Theme.stateSelectedBorder : Theme.border

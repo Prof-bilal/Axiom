@@ -1,5 +1,5 @@
 import QtQuick
-import "hubstyle.js" as S
+import qs.src.shared
 import "rules.js" as R
 
 // Installed apps from the catalog, with Update (when one exists) and Remove.
@@ -29,8 +29,8 @@ Flickable {
             height: 44
             Column {
                 anchors.verticalCenter: parent.verticalCenter
-                Text { text: "Your Applications"; color: S.text; font.family: S.font; font.pixelSize: 20; font.weight: Font.DemiBold }
-                Text { text: page.updatesOnly ? hub.be.updates.length + " update(s) available." : "Manage your installed software."; color: S.muted; font.family: S.font; font.pixelSize: 12 }
+                Text { text: "Your Applications"; color: Theme.textPrimary; font.family: Theme.fontFamily; font.pixelSize: 20; font.weight: Font.DemiBold }
+                Text { text: page.updatesOnly ? hub.be.updates.length + " update(s) available." : "Manage your installed software."; color: Theme.textSecondary; font.family: Theme.fontFamily; font.pixelSize: 12 }
             }
             HubButton {
                 anchors.right: parent.right
@@ -48,16 +48,16 @@ Flickable {
                 width: col.width
                 height: 62
                 radius: 10
-                color: S.card
+                color: Theme.surfaceElevated
                 border.width: 1
-                border.color: S.border
+                border.color: Theme.border
                 AppTile { id: t; app: modelData; size: 38; anchors.left: parent.left; anchors.leftMargin: 12; anchors.verticalCenter: parent.verticalCenter }
                 Column {
                     anchors.left: t.right
                     anchors.leftMargin: 12
                     anchors.verticalCenter: parent.verticalCenter
-                    Text { text: modelData.name; color: S.text; font.family: S.font; font.pixelSize: 13; font.weight: Font.Medium }
-                    Text { text: R.metaLine(modelData); color: S.muted; font.family: S.font; font.pixelSize: 11 }
+                    Text { text: modelData.name; color: Theme.textPrimary; font.family: Theme.fontFamily; font.pixelSize: 13; font.weight: Font.Medium }
+                    Text { text: R.metaLine(modelData); color: Theme.textSecondary; font.family: Theme.fontFamily; font.pixelSize: 11 }
                 }
                 Row {
                     anchors.right: parent.right
@@ -81,19 +81,19 @@ Flickable {
             Rectangle {
                 anchors.horizontalCenter: parent.horizontalCenter
                 width: 68; height: 68; radius: 16
-                color: S.card
+                color: Theme.surfaceElevated
                 border.width: 1
-                border.color: S.border
+                border.color: Theme.border
                 Image { anchors.centerIn: parent; width: 32; height: 32; source: Qt.resolvedUrl("icons/cat/empty.svg"); sourceSize.width: 64; sourceSize.height: 64; smooth: true }
             }
-            Text { anchors.horizontalCenter: parent.horizontalCenter; text: page.updatesOnly ? "Everything is up to date" : "Container not found"; color: S.text; font.family: S.fontMono; font.pixelSize: 16; font.weight: Font.Medium }
+            Text { anchors.horizontalCenter: parent.horizontalCenter; text: page.updatesOnly ? "Everything is up to date" : "Container not found"; color: Theme.textPrimary; font.family: Theme.fontFamilyMono; font.pixelSize: 16; font.weight: Font.Medium }
             Text {
                 anchors.horizontalCenter: parent.horizontalCenter
                 width: Math.min(parent.width, 420)
                 horizontalAlignment: Text.AlignHCenter
                 wrapMode: Text.WordWrap
                 text: page.updatesOnly ? "None of the apps installed from the Hub has a newer version." : "Nothing from the Hub is installed yet. Find software in Discover, or install a file you already downloaded."
-                color: S.muted; font.family: S.font; font.pixelSize: 12
+                color: Theme.textSecondary; font.family: Theme.fontFamily; font.pixelSize: 12
             }
             Row {
                 anchors.horizontalCenter: parent.horizontalCenter

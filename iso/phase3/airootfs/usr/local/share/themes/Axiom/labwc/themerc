@@ -8,12 +8,12 @@ window.titlebar.padding.height: 4
 window.active.border.color: #1d8f8d
 window.inactive.border.color: #233238
 
-window.active.title.bg.color: #0C1215
+window.active.title.bg.color: #0B1214
 window.inactive.title.bg.color: #0a0f12
 window.*.title.bg: Solid
 
-window.active.label.text.color: #EDF5F5
-window.inactive.label.text.color: #8EA2A5
+window.active.label.text.color: #FFFFFF
+window.inactive.label.text.color: #9DB0B3
 window.label.text.justify: left
 
 window.button.width: 30
@@ -22,7 +22,7 @@ window.button.spacing: 2
 window.button.hover.bg.color: #ffffff18
 window.button.hover.bg.corner-radius: 13
 
-window.active.button.unpressed.image.color: #8EA2A5
+window.active.button.unpressed.image.color: #9DB0B3
 window.inactive.button.unpressed.image.color: #4E5E62
 window.active.button.close.unpressed.image.color: #E8645A
 window.inactive.button.close.unpressed.image.color: #E8645A88
@@ -42,24 +42,24 @@ menu.width.min: 160
 menu.width.max: 280
 menu.border.width: 1
 menu.border.color: #233238
-menu.items.bg.color: #0C1215
-menu.items.text.color: #EDF5F5
+menu.items.bg.color: #0B1214
+menu.items.text.color: #FFFFFF
 menu.items.active.bg.color: #123e40
-menu.items.active.text.color: #EDF5F5
+menu.items.active.text.color: #FFFFFF
 menu.items.padding.x: 10
 menu.items.padding.y: 6
 menu.separator.width: 1
 menu.separator.padding.width: 8
 menu.separator.padding.height: 4
 menu.separator.color: #233238
-menu.title.bg.color: #0C1215
-menu.title.text.color: #8EA2A5
+menu.title.bg.color: #0B1214
+menu.title.text.color: #9DB0B3
 menu.title.text.justify: Left
 
-osd.bg.color: #0C1215
+osd.bg.color: #0B1214
 osd.border.color: #233238
 osd.border.width: 1
-osd.label.text.color: #EDF5F5
+osd.label.text.color: #FFFFFF
 osd.window-switcher.style-classic.width: 50%
 osd.window-switcher.style-classic.item.active.border.color: #22D3EE
 osd.window-switcher.style-classic.item.active.bg.color: #123e40

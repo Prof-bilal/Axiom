@@ -1,4 +1,5 @@
 import QtQuick
+import qs.src.shared
 import "hubstyle.js" as S
 
 // App icon: the bundled vendor icon (icons/<id>.png from Flathub's appstream data) when
@@ -8,7 +9,7 @@ Rectangle {
 
     property var app: null
     property int size: 44
-    readonly property color tone: app ? S.tint[app.category] : S.muted
+    readonly property color tone: app ? S.tint[app.category] : Theme.textSecondary
     readonly property bool hasIcon: img.status === Image.Ready
 
     width: size
@@ -35,7 +36,7 @@ Rectangle {
         anchors.centerIn: parent
         text: tile.app ? tile.app.name.charAt(0) : ""
         color: tile.tone
-        font.family: S.font
+        font.family: Theme.fontFamily
         font.pixelSize: tile.size * 0.46
         font.weight: Font.DemiBold
     }

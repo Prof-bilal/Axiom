@@ -1,6 +1,6 @@
 import QtQuick
+import qs.src.shared
 import Quickshell
-import "hubstyle.js" as S
 
 // Left navigation: logo, four sections, and the OS tag at the bottom.
 Rectangle {
@@ -15,9 +15,9 @@ Rectangle {
     ]
 
     width: 190
-    color: S.panel
+    color: Theme.surface
 
-    Rectangle { anchors.right: parent.right; width: 1; height: parent.height; color: S.border }
+    Rectangle { anchors.right: parent.right; width: 1; height: parent.height; color: Theme.border }
 
     Column {
         anchors.top: parent.top
@@ -34,8 +34,8 @@ Rectangle {
         Text {
             anchors.horizontalCenter: parent.horizontalCenter
             text: "AXIOM HUB"
-            color: S.text
-            font.family: S.font
+            color: Theme.textPrimary
+            font.family: Theme.fontFamily
             font.pixelSize: 12
             font.weight: Font.DemiBold
             font.letterSpacing: 1.5
@@ -58,34 +58,34 @@ Rectangle {
                 width: parent.width
                 height: 36
                 radius: 6
-                color: active ? "#2A1B12" : (m.containsMouse ? S.cardHover : "transparent")
+                color: active ? Theme.stateSelected : (m.containsMouse ? Theme.surfaceHover : "transparent")
 
                 Rectangle {
                     visible: parent.active
                     width: 3; height: 18; radius: 1.5
                     anchors.left: parent.left
                     anchors.verticalCenter: parent.verticalCenter
-                    color: S.accent
+                    color: Theme.cyan
                 }
                 Row {
                     anchors.left: parent.left
                     anchors.leftMargin: 16
                     anchors.verticalCenter: parent.verticalCenter
                     spacing: 10
-                    Text { text: modelData.glyph; color: parent.parent.active ? S.accent : S.muted; font.pixelSize: 14 }
+                    Text { text: modelData.glyph; color: parent.parent.active ? Theme.cyan : Theme.textSecondary; font.pixelSize: 14 }
                     Text {
                         text: modelData.label
-                        color: parent.parent.active ? S.text : S.muted
-                        font.family: S.font
+                        color: parent.parent.active ? Theme.textPrimary : Theme.textSecondary
+                        font.family: Theme.fontFamily
                         font.pixelSize: 13
                         font.weight: parent.parent.active ? Font.Medium : Font.Normal
                     }
                     Rectangle {
                         visible: modelData.page === "updates" && bar.hub.be.updates.length > 0
                         width: badge.implicitWidth + 12; height: 18; radius: 9
-                        color: S.accent
+                        color: Theme.cyan
                         anchors.verticalCenter: parent.verticalCenter
-                        Text { id: badge; anchors.centerIn: parent; text: bar.hub.be.updates.length; color: "#FFFFFF"; font.family: S.font; font.pixelSize: 10; font.weight: Font.Medium }
+                        Text { id: badge; anchors.centerIn: parent; text: bar.hub.be.updates.length; color: Theme.background; font.family: Theme.fontFamily; font.pixelSize: 10; font.weight: Font.Medium }
                     }
                 }
                 MouseArea {
@@ -107,8 +107,8 @@ Rectangle {
         anchors.left: parent.left
         anchors.leftMargin: 16
         text: "Axiom OS"
-        color: S.muted
-        font.family: S.font
+        color: Theme.textSecondary
+        font.family: Theme.fontFamily
         font.pixelSize: 11
     }
 }

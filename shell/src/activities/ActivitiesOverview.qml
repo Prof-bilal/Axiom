@@ -15,7 +15,7 @@ PanelWindow {
     screen: Quickshell.screens.length > 0 ? Quickshell.screens[0] : null
     anchors { top: true; bottom: true; left: true; right: true }
     exclusionMode: ExclusionMode.Ignore
-    color: Qt.rgba(2 / 255, 5 / 255, 7 / 255, 0.72)
+    color: Theme.scrim
     visible: UiState.activitiesOpen
     WlrLayershell.namespace: "axiom-activities"
     WlrLayershell.layer: WlrLayershell.Overlay
@@ -178,7 +178,7 @@ PanelWindow {
                         anchors { right: parent.right; top: parent.top; margins: 14 }
                         width: 26; height: 26; radius: 13
                         visible: cardMouse.containsMouse || closeMouse.containsMouse
-                        color: closeMouse.containsMouse ? Theme.orangeMuted : Qt.rgba(0, 0, 0, 0.6)
+                        color: closeMouse.containsMouse ? Theme.orangeMuted : Theme.overlayBackground
                         AxiomIcon {
                             anchors.centerIn: parent
                             width: 14; height: 14
