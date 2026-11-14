@@ -68,7 +68,7 @@ Item {
         AppIcon {
             id: icon
             anchors.centerIn: parent
-            size: Math.round(Theme.dockIconSize * 0.78)
+            size: Math.round(Theme.dockIconSize * 0.88)
             source: root.iconSource
         }
     }
