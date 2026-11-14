@@ -54,8 +54,8 @@ Singleton {
     // --- glass: translucent fill + gradient stroke (teal -> amber) ---
     readonly property color panelBackground: dark ? Qt.rgba(20 / 255, 32 / 255, 34 / 255, 0.62) : Qt.rgba(1, 1, 1, 0.68)
     readonly property color panelBorder: dark ? Qt.rgba(1, 1, 1, 0.18) : Qt.rgba(0, 0, 0, 0.10)
-    readonly property color dockBackground: dark ? Qt.rgba(175 / 255, 190 / 255, 196 / 255, 0.32) : Qt.rgba(1, 1, 1, 0.66)
-    readonly property color dockBorder: dark ? Qt.rgba(1, 1, 1, 0.28) : Qt.rgba(0, 0, 0, 0.10)
+    readonly property color dockBackground: dark ? Qt.rgba(200 / 255, 212 / 255, 217 / 255, 0.42) : Qt.rgba(1, 1, 1, 0.66)
+    readonly property color dockBorder: dark ? Qt.rgba(1, 1, 1, 0.34) : Qt.rgba(0, 0, 0, 0.10)
     readonly property color overlayBackground: dark ? Qt.rgba(14 / 255, 24 / 255, 27 / 255, 0.90) : Qt.rgba(1, 1, 1, 0.92)
     readonly property color overlayBorder: dark ? Qt.rgba(1, 1, 1, 0.22) : Qt.rgba(0, 0, 0, 0.12)
     readonly property color strokeStart: cyanBright
