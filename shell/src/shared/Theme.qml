@@ -41,8 +41,8 @@ Singleton {
     // --- translucent surfaces (alpha over the wallpaper) ---
     readonly property color panelBackground: Qt.rgba(5 / 255, 12 / 255, 15 / 255, 0.88)
     readonly property color panelBorder: Qt.rgba(68 / 255, 230 / 255, 220 / 255, 0.10)
-    readonly property color dockBackground: Qt.rgba(1, 1, 1, 0.9)
-    readonly property color dockBorder: Qt.rgba(0, 0, 0, 0.1)
+    readonly property color dockBackground: Qt.rgba(5 / 255, 12 / 255, 15 / 255, 0.88)
+    readonly property color dockBorder: Qt.rgba(68 / 255, 230 / 255, 220 / 255, 0.10)
     readonly property color overlayBackground: Qt.rgba(12 / 255, 18 / 255, 21 / 255, 0.97)
     readonly property color overlayBorder: Qt.rgba(80 / 255, 235 / 255, 220 / 255, 0.14)
     readonly property color scrim: Qt.rgba(2 / 255, 5 / 255, 7 / 255, 0.45)
@@ -96,7 +96,7 @@ Singleton {
     readonly property int panelNavHeight: 28
     readonly property int workspaceButtonWidth: 30
     readonly property int workspaceButtonHeight: 26
-    readonly property int dockIconSize: 54
+    readonly property int dockIconSize: 48
     readonly property int dockItemSize: 66
     readonly property int dockPadding: 7
     readonly property int dockEdgeGap: 12

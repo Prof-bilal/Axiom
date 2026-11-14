@@ -84,3 +84,17 @@ test("the step follows the command's own wording", () => {
   assert.equal(B.stepFromLine("Installing org.videolan.VLC"), 1);
   assert.equal(B.stepFromLine("hello"), -1);
 });
+
+test("npm and pipx installs are detected from their own listings", () => {
+  const cat = [
+    { id: "codex", sources: [{ type: "npm", ref: "@openai/codex" }] },
+    { id: "opencode", sources: [{ type: "npm", ref: "opencode-ai" }] },
+    { id: "aider", sources: [{ type: "pip", ref: "aider-chat" }] },
+    { id: "neovim", sources: [{ type: "pacman", ref: "neovim" }] },
+  ];
+  const npm = "/home/u/.local/lib/node_modules/@openai/codex\n/home/u/.local/lib/node_modules/opencode-ai\n";
+  const pipx = "aider-chat 0.50.1\n";
+  assert.deepEqual(B.installedIds(cat, "", "", npm, pipx), ["codex", "opencode", "aider"]);
+  assert.deepEqual(B.installedIds(cat, "", "", "", ""), []);
+  assert.deepEqual(B.installedIds(cat, "", "neovim", "", ""), ["neovim"]);
+});

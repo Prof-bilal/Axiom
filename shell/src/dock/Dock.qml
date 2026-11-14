@@ -84,9 +84,16 @@ PanelWindow {
     // body's height is reserved from the work area.
     readonly property int shadow: 10
 
+    // Room above the body for name tooltips (transparent; input passes through it).
+    readonly property int tipSpace: 34
+    property string tipText: ""
+    property real tipX: 0
+    function showTip(text, x) { tipText = text; tipX = x }
+    function hideTip(name) { if (tipText === name) tipText = "" }
+
     anchors { bottom: true }
     margins.bottom: Theme.dockEdgeGap - shadow
-    implicitHeight: body.height + shadow * 2
+    implicitHeight: body.height + shadow * 2 + tipSpace
     implicitWidth: body.width + shadow * 2
     exclusiveZone: body.height + Theme.dockEdgeGap - shadow
     color: "transparent"
@@ -113,13 +120,37 @@ PanelWindow {
     // Body: a white surface with a hairline edge.
     Rectangle {
         id: body
-        anchors.centerIn: parent
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.bottom: parent.bottom
+        anchors.bottomMargin: dock.shadow
         width: row.implicitWidth + Theme.dockPadding * 2
         height: Theme.dockItemSize + Theme.dockPadding * 2
         radius: Theme.radiusDock
         color: Theme.dockBackground
         border.width: 1
         border.color: Theme.dockBorder
+    }
+
+    // Name tooltip above the hovered entry.
+    Rectangle {
+        id: tip
+        visible: dock.tipText.length > 0
+        width: tipLabel.implicitWidth + 16
+        height: 24
+        radius: Theme.radiusSmall
+        color: Theme.panelBackground
+        border.width: 1
+        border.color: Theme.panelBorder
+        y: body.y - height - 6
+        x: Math.max(4, Math.min(dock.width - width - 4, dock.tipX - width / 2))
+        Text {
+            id: tipLabel
+            anchors.centerIn: parent
+            text: dock.tipText
+            color: Theme.textPrimary
+            font.family: Theme.fontFamily
+            font.pixelSize: Theme.fontCaption
+        }
     }
 
     Row {
@@ -129,6 +160,7 @@ PanelWindow {
 
         DockItem {
             launcher: true
+            dockWindow: dock
             name: "Applications"
             iconSource: Quickshell.shellPath("assets/mascots/launcher.png")
             focused: UiState.launcherOpen && UiState.launcherMode === "grid"
@@ -139,6 +171,7 @@ PanelWindow {
             delegate: DockItem {
                 required property var modelData
                 item: modelData
+                dockWindow: dock
             }
         }
 
@@ -160,6 +193,7 @@ PanelWindow {
             delegate: DockItem {
                 required property var modelData
                 item: modelData
+                dockWindow: dock
             }
         }
     }

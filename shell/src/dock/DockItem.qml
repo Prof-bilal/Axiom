@@ -15,6 +15,7 @@ Item {
     id: root
 
     property var item: null
+    property var dockWindow: null
     property bool launcher: false
     property string name: item ? item.name : ""
     property string iconSource: item ? item.icon : ""
@@ -46,10 +47,10 @@ Item {
         anchors.fill: parent
         anchors.margins: 1
         radius: Theme.radiusSurface
-        color: root.focused ? Qt.rgba(0, 150 / 255, 150 / 255, 0.16)
-             : mouse.containsMouse ? Qt.rgba(0, 0, 0, 0.07) : "transparent"
+        color: root.focused ? Qt.rgba(32 / 255, 214 / 255, 210 / 255, 0.16)
+             : mouse.containsMouse ? Qt.rgba(1, 1, 1, 0.08) : "transparent"
         border.width: root.focused ? 1 : 0
-        border.color: Qt.rgba(0, 150 / 255, 150 / 255, 0.35)
+        border.color: Qt.rgba(32 / 255, 214 / 255, 210 / 255, 0.35)
         Behavior on color { ColorAnimation { duration: Theme.motionFeedback } }
     }
 
@@ -86,14 +87,25 @@ Item {
         width: root.focused ? 12 : 4
         height: root.focused ? 3 : 4
         radius: height / 2
-        color: root.focused ? Qt.rgba(0, 130 / 255, 130 / 255, 1) : Qt.rgba(0, 0, 0, 0.55)
+        color: root.focused ? Theme.cyan : Qt.rgba(32 / 255, 214 / 255, 210 / 255, 0.7)
         Behavior on width { NumberAnimation { duration: Theme.motionFeedback } }
+    }
+
+    onNameChanged: if (mouse.containsMouse) root.announce()
+    function announce() {
+        if (!root.dockWindow || root.name.length === 0) return
+        var p = root.mapToItem(null, root.width / 2, 0)
+        root.dockWindow.showTip(root.name, p.x)
     }
 
     MouseArea {
         id: mouse
         anchors.fill: parent
         hoverEnabled: true
+        onContainsMouseChanged: {
+            if (containsMouse) root.announce()
+            else if (root.dockWindow) root.dockWindow.hideTip(root.name)
+        }
         cursorShape: root.launching ? Qt.BusyCursor : Qt.PointingHandCursor
         acceptedButtons: Qt.LeftButton | Qt.MiddleButton
         onClicked: function (mouse) {

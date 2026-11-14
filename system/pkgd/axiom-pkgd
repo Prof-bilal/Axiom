@@ -25,7 +25,8 @@ case "$op" in
     case "$pkg" in
       ""|-*|*[!a-z0-9@._+-]*) echo "axiom-pkgd: invalid package name" >&2; exit 2 ;;
     esac
-    if [ "$op" = sync ]; then exec pacman -S --noconfirm --needed -- "$pkg"; fi
+    # -Sy refreshes the package lists first (a live image may ship none); no full upgrade (-u).
+    if [ "$op" = sync ]; then exec pacman -Sy --noconfirm --needed -- "$pkg"; fi
     exec pacman -Rns --noconfirm -- "$pkg"
     ;;
   *) echo "axiom-pkgd: unknown operation" >&2; exit 2 ;;

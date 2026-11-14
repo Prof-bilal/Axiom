@@ -70,7 +70,15 @@ Item {
         if (Quickshell.env("AXIOM_HUB_DEMO_INSTALLED") === "1") return
         runner.run(["flatpak", "list", "--app", "--columns=application"], function (fp) {
             runner.run(["pacman", "-Qq"], function (pm) {
-                installed = B.installedIds(catalog, fp.code === 0 ? fp.out : "", pm.code === 0 ? pm.out : "")
+                local.resolveHome(function () {
+                    var prefix = local.home + "/.local"
+                    runner.run(["npm", "ls", "-g", "--prefix", prefix, "--depth=0", "--parseable"], function (np) {
+                        runner.run(["pipx", "list", "--short"], function (px) {
+                            installed = B.installedIds(catalog, fp.code === 0 ? fp.out : "", pm.code === 0 ? pm.out : "",
+                                                       np.out, px.code === 0 ? px.out : "")
+                        })
+                    })
+                })
             })
         })
     }

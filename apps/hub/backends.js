@@ -107,11 +107,18 @@ function parseLines(text) {
     return (text || "").split("\n").map(function (l) { return l.trim() }).filter(function (l) { return l.length > 0 })
 }
 
-function installedIds(catalog, flatpakOut, pacmanOut) {
+// npm and pipx installs are found from their own listings: `npm ls -g --parseable` prints
+// ".../node_modules/<name>" lines, `pipx list --short` prints "<name> <version>".
+function installedIds(catalog, flatpakOut, pacmanOut, npmOut, pipxOut) {
     var fp = parseLines(flatpakOut), pm = parseLines(pacmanOut)
+    var npm = parseLines(npmOut).map(function (l) { var i = l.indexOf("/node_modules/"); return i >= 0 ? l.slice(i + 14) : "" })
+    var pip = parseLines(pipxOut).map(function (l) { return l.split(/\s+/)[0] })
     return catalog.filter(function (a) {
         return a.sources.some(function (s) {
-            return (s.type === "flatpak" && fp.indexOf(s.ref) >= 0) || (s.type === "pacman" && pm.indexOf(s.ref) >= 0)
+            return (s.type === "flatpak" && fp.indexOf(s.ref) >= 0)
+                || (s.type === "pacman" && pm.indexOf(s.ref) >= 0)
+                || (s.type === "npm" && npm.indexOf(s.ref) >= 0)
+                || (s.type === "pip" && pip.indexOf(s.ref) >= 0)
         })
     }).map(function (a) { return a.id })
 }

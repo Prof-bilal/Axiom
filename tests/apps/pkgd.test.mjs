@@ -15,7 +15,7 @@ fs.writeFileSync(path.join(dir, "pacman"), '#!/bin/sh\necho "pacman $*"\n', { mo
 const run = (...args) => spawnSync("sh", [helper, ...args], { encoding: "utf8", env: { PATH: `${dir}:/usr/bin:/bin` } });
 
 test("sync and remove reach pacman with fixed flags", () => {
-  assert.equal(run("sync", "neovim").stdout.trim(), "pacman -S --noconfirm --needed -- neovim");
+  assert.equal(run("sync", "neovim").stdout.trim(), "pacman -Sy --noconfirm --needed -- neovim");
   assert.equal(run("remove", "neovim").stdout.trim(), "pacman -Rns --noconfirm -- neovim");
 });
 

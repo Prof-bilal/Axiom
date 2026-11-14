@@ -20,9 +20,11 @@ AppWindow {
     property var selected: null
     property string category: "All"
     property string query: ""
+    // The progress card is a modal over the current page, so the screen does not change.
+    property bool progressOpen: false
     readonly property alias be: backend
-    readonly property var pages: ["discover", "details", "installed", "updates", "local", "installing"]
-    readonly property var titles: ({ discover: "Discover", details: "App Details", installed: "Installed Apps", updates: "Updates", local: "Local Install", installing: "Installing Application" })
+    readonly property var pages: ["discover", "details", "installed", "updates", "local"]
+    readonly property var titles: ({ discover: "Discover", details: "App Details", installed: "Installed Apps", updates: "Updates", local: "Local Install" })
 
     HubBackend { id: backend }
 
@@ -31,13 +33,15 @@ AppWindow {
         var p = Quickshell.env("AXIOM_HUB_PAGE")
         if (!p || pages.indexOf(p) < 0) return
         if (p === "details") showApp(R.find(backend.catalog, "vscode")); else open(p)
+        if (Quickshell.env("AXIOM_HUB_PROGRESS") === "1") progressOpen = true
     }
 
     function isInstalled(id) { return backend.isInstalled(id) }
     function open(p) { page = p; navPage = p; if (p === "installed") backend.refreshInstalled(); if (p === "updates") backend.checkUpdates() }
     function showApp(app) { selected = app; page = "details" }
-    function startInstall(app, action) { backend.run(app, action); page = "installing" }
-    function startLocal(info) { backend.runLocal(info); page = "installing" }
+    function startInstall(app, action) { backend.run(app, action); progressOpen = true }
+    function startLocal(info) { backend.runLocal(info); progressOpen = true }
+    function closeProgress() { progressOpen = false }
 
     RowLayout {
         anchors.fill: parent
@@ -96,7 +100,6 @@ AppWindow {
                 InstalledPage { hub: root }
                 InstalledPage { hub: root; updatesOnly: true }
                 LocalInstallPage { hub: root }
-                InstallingPage { hub: root }
             }
 
             // status bar
@@ -115,6 +118,24 @@ AppWindow {
                 }
                 Text { anchors.right: parent.right; anchors.rightMargin: 16; anchors.verticalCenter: parent.verticalCenter; text: "Axiom Hub v1.0.0"; color: S.muted; font.family: S.font; font.pixelSize: 11 }
             }
+        }
+    }
+
+    // Progress modal: scrim over the whole window, a card in the middle.
+    Rectangle {
+        anchors.fill: parent
+        visible: root.progressOpen
+        color: S.scrimColor
+        z: 50
+        MouseArea { anchors.fill: parent; hoverEnabled: true; onWheel: function (w) { w.accepted = true } }
+        Rectangle {
+            anchors.centerIn: parent
+            width: 460; height: 480
+            radius: 16
+            color: S.panel
+            border.width: 1
+            border.color: S.border
+            InstallingPage { anchors.fill: parent; anchors.margins: 24; hub: root }
         }
     }
 }
