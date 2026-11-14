@@ -54,8 +54,8 @@ Singleton {
     // --- glass: translucent fill + gradient stroke (teal -> amber) ---
     readonly property color panelBackground: dark ? Qt.rgba(20 / 255, 32 / 255, 34 / 255, 0.62) : Qt.rgba(1, 1, 1, 0.68)
     readonly property color panelBorder: dark ? Qt.rgba(1, 1, 1, 0.18) : Qt.rgba(0, 0, 0, 0.10)
-    readonly property color dockBackground: dark ? Qt.rgba(20 / 255, 32 / 255, 34 / 255, 0.58) : Qt.rgba(1, 1, 1, 0.66)
-    readonly property color dockBorder: dark ? Qt.rgba(1, 1, 1, 0.20) : Qt.rgba(0, 0, 0, 0.10)
+    readonly property color dockBackground: dark ? Qt.rgba(1, 1, 1, 0.14) : Qt.rgba(1, 1, 1, 0.66)
+    readonly property color dockBorder: dark ? Qt.rgba(1, 1, 1, 0.24) : Qt.rgba(0, 0, 0, 0.10)
     readonly property color overlayBackground: dark ? Qt.rgba(14 / 255, 24 / 255, 27 / 255, 0.90) : Qt.rgba(1, 1, 1, 0.92)
     readonly property color overlayBorder: dark ? Qt.rgba(1, 1, 1, 0.22) : Qt.rgba(0, 0, 0, 0.12)
     readonly property color strokeStart: cyanBright
@@ -100,7 +100,7 @@ Singleton {
     readonly property int radiusControl: 6
     readonly property int radiusSurface: 10
     readonly property int radiusOverlay: 16
-    readonly property int radiusDock: 18
+    readonly property int radiusDock: 20
     readonly property int radiusWindow: 10
     readonly property int radiusDialog: 20
 
@@ -113,10 +113,10 @@ Singleton {
     readonly property int workspaceButtonWidth: 30
     readonly property int workspaceButtonHeight: 26
     readonly property int dockIconSize: 48
-    readonly property int dockItemSize: 66
-    readonly property int dockPadding: 7
+    readonly property int dockItemSize: 58
+    readonly property int dockPadding: 8
     readonly property int dockEdgeGap: 12
-    readonly property real dockHoverScale: 1.12
+    readonly property real dockHoverScale: 1.18
     readonly property int menuWidth: 280
 
     // --- type ---

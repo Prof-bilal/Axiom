@@ -42,26 +42,35 @@ Item {
     Accessible.role: Accessible.Button
     Accessible.name: name + (focused ? ", focused" : running ? ", running" : "")
 
-    // Focus wash (the only cyan "glow" in the dock).
-    Rectangle {
-        anchors.fill: parent
-        anchors.margins: 1
-        radius: Theme.radiusSurface
-        color: root.focused ? Theme.stateSelected
-             : mouse.containsMouse ? Theme.stateHover : "transparent"
-        border.width: root.focused ? 1 : 0
-        border.color: Theme.stateSelectedBorder
-        Behavior on color { ColorAnimation { duration: Theme.motionFeedback } }
-    }
-
-    AppIcon {
-        id: icon
+    // Glass squircle tile behind every icon so the row reads as one set.
+    Item {
+        id: tileHolder
         anchors.centerIn: parent
-        anchors.verticalCenterOffset: -1 + bounce.y
-        size: Theme.dockIconSize
-        source: root.iconSource
+        anchors.verticalCenterOffset: -3 + bounce.y
+        width: Theme.dockIconSize
+        height: Theme.dockIconSize
         scale: mouse.containsMouse ? Theme.dockHoverScale : 1.0
         Behavior on scale { NumberAnimation { duration: Theme.motionFeedback; easing.type: Easing.OutCubic } }
+
+        Rectangle {
+            id: tile
+            anchors.fill: parent
+            radius: Math.round(width * 0.26)
+            gradient: Gradient {
+                GradientStop { position: 0; color: Theme.dark ? "#33474C" : "#FFFFFF" }
+                GradientStop { position: 1; color: Theme.dark ? "#121C1F" : "#DCE8EB" }
+            }
+            border.width: 1
+            border.color: root.focused ? Theme.stateSelectedBorder : Theme.dockBorder
+            Behavior on border.color { ColorAnimation { duration: Theme.motionFeedback } }
+        }
+
+        AppIcon {
+            id: icon
+            anchors.centerIn: parent
+            size: Math.round(Theme.dockIconSize * 0.78)
+            source: root.iconSource
+        }
     }
 
     // Holds the bounce offset so stopping can settle back to rest.
@@ -82,12 +91,12 @@ Item {
     Rectangle {
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.bottom: parent.bottom
-        anchors.bottomMargin: 1
+        anchors.bottomMargin: 2
         visible: root.running || (root.launcher && root.focused)
-        width: root.focused ? 12 : 4
-        height: root.focused ? 3 : 4
+        width: 4
+        height: 4
         radius: height / 2
-        color: root.focused ? Theme.cyan : Theme.cyanMuted
+        color: root.focused ? Theme.textPrimary : Theme.textSecondary
         Behavior on width { NumberAnimation { duration: Theme.motionFeedback } }
     }
 
