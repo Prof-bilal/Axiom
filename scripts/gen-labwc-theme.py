@@ -40,7 +40,7 @@ window.*.title.bg: Solid
 
 window.active.label.text.color: {text}
 window.inactive.label.text.color: {text2}
-window.label.text.justify: left
+window.label.text.justify: center
 
 window.button.width: 30
 window.button.height: 26

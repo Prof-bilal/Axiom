@@ -29,7 +29,7 @@
     <icon>Adwaita</icon>
     <fallbackAppIcon>application-x-executable</fallbackAppIcon>
     <titlebar>
-      <layout>icon:iconify,max,close</layout>
+      <layout>close,iconify,max:</layout>
       <showTitle>yes</showTitle>
     </titlebar>
     <cornerRadius>12</cornerRadius>

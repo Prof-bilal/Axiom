@@ -68,7 +68,7 @@ for f in "${XDG_CONFIG_HOME:-$HOME/.config}/gtk-3.0/settings.ini" /etc/xdg/gtk-3
     v=$(sed -n 's/^gtk-application-prefer-dark-theme *= *//p' "$f" | tail -n 1)
     case "$v" in
       1|true) theme="Axiom Dark" ;;
-      0|false) theme="Axiom Light (not yet designed)" ;;
+      0|false) theme="Axiom Light" ;;
     esac
     [ -n "$theme" ] && break
   fi
@@ -85,71 +85,71 @@ fi
 
 # --- palette (24-bit) ---
 e=$(printf '\033')
-c="$e[38;2;32;214;210m"      # cyan
-o="$e[38;2;255;148;24m"      # orange
-t="$e[38;2;237;245;245m"     # primary text
-g="$e[38;2;142;162;165m"     # secondary text
-l="$e[38;2;35;50;56m"        # divider
+c="$e[38;2;34;211;238m"      # teal
+o="$e[38;2;245;166;35m"      # amber
+t="$e[38;2;255;255;255m"     # primary text
+g="$e[38;2;150;170;185m"     # penguin outline (blue-grey)
 b="$e[1m"
 r="$e[0m"
 
-# --- penguin (12 rows; cyan dashed outline, orange eyes, beak and feet) ---
-# Rows are padded to a fixed visible width by pad(), so colour codes do not
-# break the column alignment.
-W=22
+user=$(id -un 2>/dev/null)
+host=$(cat /proc/sys/kernel/hostname 2>/dev/null)
+mem=""
+if [ -r /proc/meminfo ]; then
+  mem=$(awk '/^MemTotal/{t=$2} /^MemAvailable/{a=$2} END{printf "%.1f GiB / %.1f GiB", (t-a)/1048576, t/1048576}' /proc/meminfo)
+fi
+cpu=$(sed -n 's/^model name[[:space:]]*:[[:space:]]*//p' /proc/cpuinfo 2>/dev/null | head -n 1)
+
+# --- penguin (dashed blue-grey outline, amber beak and feet) ---
+# Padded to a fixed visible width so colour codes do not break the columns.
+W=26
 pad() {
   vis=$(printf '%s' "$1" | sed "s/$e\[[0-9;]*m//g")
   n=$((W - ${#vis})); [ "$n" -lt 0 ] && n=0
   printf '%s%*s' "$1" "$n" ""
 }
-p1="       ${c}.-~~~~-.${r}"
-p2="     ${c}.'        '.${r}"
-p3="    ${c}:${r}  ${o}(o)${r}  ${o}(o)${r}  ${c}:${r}"
-p4="    ${c}:${r}     ${o}\\/${r}     ${c}:${r}"
-p5="    ${c}:.${r}   ${c}.--.${r}   ${c}.:${r}"
-p6="   ${c}.' :${r} ${c}:${r}    ${c}:${r} ${c}: '.${r}"
-p7="  ${c}:   :${r} ${c}:${r}    ${c}:${r} ${c}:   :${r}"
-p8="  ${c}:   :${r} ${c}:${r}    ${c}:${r} ${c}:   :${r}"
-p9="   ${c}'. :${r}  ${c}'--'${r}  ${c}: .'${r}"
-p10="     ${c}:          :${r}"
-p11="   ${o}__${c}'.________.'${o}__${r}"
+p1="       ${g}.-~~~~-.${r}"
+p2="     ${g}.'        '.${r}"
+p3="    ${g}:${r}  ${t}(o)${r}  ${t}(o)${r}  ${g}:${r}"
+p4="    ${g}:${r}     ${o}\\/${r}     ${g}:${r}"
+p5="    ${g}:.${r}   ${g}.--.${r}   ${g}.:${r}"
+p6="   ${g}.' :${r} ${g}:${r}    ${g}:${r} ${g}: '.${r}"
+p7="  ${g}:   :${r} ${g}:${r}    ${g}:${r} ${g}:   :${r}"
+p8="  ${g}:   :${r} ${g}:${r}    ${g}:${r} ${g}:   :${r}"
+p9="   ${g}'. :${r}  ${g}'--'${r}  ${g}: .'${r}"
+p10="     ${g}:          :${r}"
+p11="   ${o}__${g}'.________.'${o}__${r}"
 p12="  ${o}(______)  (______)${r}"
 
-div="  ${l}│${r}  "
-sixel=0
-case "$TERM" in foot|foot-*) [ -r "$logo" ] && sixel=1 ;; esac
-
-info() {  # icon label value
-  [ -n "$3" ] && printf '%s%s%s  %s%-9s%s%s:%s  %s%s%s' "$c" "$1" "$r" "$g" "$2" "$r" "$l" "$r" "$t" "$3" "$r"
+# neofetch-style rows: amber key, white value
+info() {  # label value
+  [ -n "$2" ] && printf '%s%s%-10s%s%s%s' "$b" "$o" "$1:" "$r" "$t" "$2$r"
 }
 
-# Reserve the block first so the logo cannot scroll it away.
-n=12
+# Eight-colour strip like the design mockup.
+strip=""
+for rgb in "17;25;29" "217;83;79" "92;184;92" "232;176;75" "74;143;199" "196;155;255" "60;199;184" "255;255;255"; do
+  strip="$strip$e[48;2;${rgb}m   "
+done
+strip="$strip$r"
+
+# Reserve the block first so nothing scrolls it away.
+n=13
 printf '\n'
 i=0; while [ "$i" -lt "$n" ]; do printf '\n'; i=$((i + 1)); done
 printf '%s[%dA' "$e" "$n"
 
-if [ "$sixel" -eq 1 ]; then
-  printf '%s7' "$e"              # save cursor
-  printf '%s[%dG' "$e" 28        # logo column (after penguin + divider)
-  cat "$logo"
-  printf '%s8' "$e"              # restore cursor
-  head2=""
-else
-  head2="${b}${t}Axiom ${o}OS${r}"
-fi
-
-printf '%s%s\n' "$(pad "$p1")" "$div"
-printf '%s%s%s\n' "$(pad "$p2")" "$div" "$head2"
-printf '%s%s\n' "$(pad "$p3")" "$div"
-printf '%s%s%s\n' "$(pad "$p4")" "$div" "${c}AI${g}-native Linux for Developers${r}"
-printf '%s%s\n' "$(pad "$p5")" "$div"
-printf '%s%s%s\n' "$(pad "$p6")" "$div" "$(info '▣' 'OS' "$os")"
-printf '%s%s%s\n' "$(pad "$p7")" "$div" "$(info '◈' 'Kernel' "$kernel")"
-printf '%s%s%s\n' "$(pad "$p8")" "$div" "$(info '❯' 'Shell' "$shell_info")"
-printf '%s%s%s\n' "$(pad "$p9")" "$div" "$(info '▤' 'Terminal' "$term")"
-printf '%s%s%s\n' "$(pad "$p10")" "$div" "$(info '◐' 'Theme' "$theme")"
-printf '%s%s%s\n' "$(pad "$p11")" "$div" "$(info '◷' 'Uptime' "$up")"
-printf '%s%s\n' "$(pad "$p12")" "$div"
+printf '%s  %s\n' "$(pad "$p1")" "${b}${o}${user}@${host}${r}"
+printf '%s  %s\n' "$(pad "$p2")" "${t}--------${r}"
+printf '%s  %s\n' "$(pad "$p3")" "$(info 'OS' "$os")"
+printf '%s  %s\n' "$(pad "$p4")" "$(info 'Kernel' "$kernel")"
+printf '%s  %s\n' "$(pad "$p5")" "$(info 'Uptime' "$up")"
+printf '%s  %s\n' "$(pad "$p6")" "$(info 'Shell' "$shell_info")"
+printf '%s  %s\n' "$(pad "$p7")" "$(info 'Theme' "$theme")"
+printf '%s  %s\n' "$(pad "$p8")" "$(info 'Terminal' "$term")"
+printf '%s  %s\n' "$(pad "$p9")" "$(info 'CPU' "$cpu")"
+printf '%s  %s\n' "$(pad "$p10")" "$(info 'Memory' "$mem")"
+printf '%s\n' "$(pad "$p11")"
+printf '%s  %s\n' "$(pad "$p12")" "$strip"
 printf '\n'
 exit 0

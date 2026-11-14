@@ -14,7 +14,7 @@ window.*.title.bg: Solid
 
 window.active.label.text.color: #0B1A1D
 window.inactive.label.text.color: #475C61
-window.label.text.justify: left
+window.label.text.justify: center
 
 window.button.width: 30
 window.button.height: 26

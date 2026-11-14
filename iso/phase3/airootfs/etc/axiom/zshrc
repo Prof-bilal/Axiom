@@ -15,7 +15,7 @@ if (( $+functions[prompt] )); then
   prompt off 2>/dev/null
 fi
 setopt PROMPT_SUBST
-PROMPT='%F{#F5A623}%n@%m%f %F{#FFFFFF}%~%f %(?.%F{#22D3EE}.%F{#D9534F})❯%f '
+PROMPT='%F{#F5A623}%n@%m%f %F{#FFFFFF}%~ %#%f '
 RPROMPT=''
 
 # --- Terminal integration (Phase 4) ------------------------------------------
