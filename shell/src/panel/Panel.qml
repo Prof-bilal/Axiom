@@ -17,18 +17,21 @@ PanelWindow {
     property var modelData
     screen: modelData
 
-    // Floating glass pill, inset from the screen edges.
+    // Frosted glass bar fixed flush to the top edge, inset from the sides; only the bottom corners are rounded.
     anchors { top: true; left: true; right: true }
-    margins { top: Theme.spacingSm - 2; left: Theme.spacingSm; right: Theme.spacingSm }
+    margins { left: Theme.spacingSm; right: Theme.spacingSm }
     implicitHeight: Theme.panelHeight
     color: "transparent"
-    exclusiveZone: Theme.panelHeight + Theme.spacingSm - 2
+    exclusiveZone: Theme.panelHeight
     WlrLayershell.namespace: "axiom-panel"
     WlrLayershell.layer: WlrLayershell.Top
     WlrLayershell.keyboardFocus: WlrLayershell.None
 
     GlassPanel {
-        anchors.fill: parent
+        // Extends above the window so the top corners are clipped flat.
+        x: 0; y: -Theme.radiusDock
+        width: parent.width
+        height: parent.height + Theme.radiusDock
         radius: Theme.radiusDock
         fill: Theme.panelBackground
         accentStroke: false
