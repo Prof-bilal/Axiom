@@ -52,7 +52,7 @@ Singleton {
     readonly property color controlMaximize: "#E0A93A"
 
     // --- glass: translucent fill + gradient stroke (teal -> amber) ---
-    readonly property color panelBackground: dark ? Qt.rgba(140 / 255, 156 / 255, 162 / 255, 0.48) : Qt.rgba(1, 1, 1, 0.68)
+    readonly property color panelBackground: dark ? Qt.rgba(205 / 255, 216 / 255, 220 / 255, 0.26) : Qt.rgba(1, 1, 1, 0.68)
     readonly property color panelBorder: dark ? Qt.rgba(1, 1, 1, 0.30) : Qt.rgba(0, 0, 0, 0.10)
     readonly property color dockBackground: dark ? Qt.rgba(200 / 255, 212 / 255, 217 / 255, 0.42) : Qt.rgba(1, 1, 1, 0.66)
     readonly property color dockBorder: dark ? Qt.rgba(1, 1, 1, 0.34) : Qt.rgba(0, 0, 0, 0.10)
