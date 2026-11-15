@@ -28,16 +28,14 @@ Item {
         onPressed: menu.open = false
     }
 
-    Rectangle {
+    GlassSurface {
         id: card
         width: 230
         // Never taller than the window: long menus (a list of applications)
         // scroll instead of running off the bottom.
         height: Math.min(col.implicitHeight + Theme.spacingSm * 2, menu.height - 16)
         radius: Theme.radiusOverlay
-        color: Theme.overlayBackground
-        border.width: 1
-        border.color: Theme.overlayBorder
+        strong: true
         clip: true
 
         Flickable {

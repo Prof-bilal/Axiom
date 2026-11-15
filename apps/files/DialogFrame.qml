@@ -20,15 +20,13 @@ FocusScope {
     Rectangle { anchors.fill: parent; color: Theme.scrim }
     MouseArea { anchors.fill: parent; onClicked: frame.dismissed() }
 
-    Rectangle {
+    GlassSurface {
         id: card
         anchors.centerIn: parent
         width: Math.min(frame.cardWidth, frame.width - 48)
         height: col.implicitHeight + Theme.spacingXl * 2
-        radius: Theme.radiusOverlay
-        color: Theme.overlayBackground
-        border.width: 1
-        border.color: Theme.overlayBorder
+        radius: Theme.radiusWindow
+        strong: true
 
         MouseArea { anchors.fill: parent }
 

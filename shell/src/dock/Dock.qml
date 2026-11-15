@@ -102,33 +102,16 @@ PanelWindow {
     WlrLayershell.layer: WlrLayershell.Top
     WlrLayershell.keyboardFocus: WlrLayershell.None
 
-    // Soft shadow: a few widening, fading copies of the body.
-    Repeater {
-        model: 4
-        delegate: Rectangle {
-            required property int index
-            readonly property int spread: (index + 1) * 2
-            anchors.centerIn: body
-            width: body.width + spread * 2
-            height: body.height + spread * 2
-            radius: Theme.radiusDock + spread
-            color: "black"
-            opacity: 0.14 - index * 0.03
-        }
-    }
-
-    // Body: a white surface with a hairline edge.
-    Rectangle {
+    // Body: glass card (ADR-029).
+    GlassSurface {
         id: body
+        strong: true
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.bottom: parent.bottom
         anchors.bottomMargin: dock.shadow
         width: row.implicitWidth + Theme.dockPadding * 2
         height: Theme.dockItemSize + Theme.dockPadding * 2
         radius: Theme.radiusDock
-        color: Theme.dockBackground
-        border.width: 1
-        border.color: Theme.dockBorder
     }
 
     // Name tooltip above the hovered entry.

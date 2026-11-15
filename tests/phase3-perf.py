@@ -133,20 +133,20 @@ def grab(label, cmd, marker):
 grab("systemd_analyze", "systemd-analyze 2>&1 | head -2", "SA")
 # Guest-monotonic timeline (seconds since kernel start) from /proc and the journal.
 grab("session_timeline",
-     "for p in labwc quickshell; do pid=$(pgrep -xo $p); "
+     "for p in Hyprland labwc quickshell; do pid=$(pgrep -xo $p); "
      "[ -n \"$pid\" ] && echo $p start_s=$(awk -v t=$(awk '{print $22}' /proc/$pid/stat) -v h=$(getconf CLK_TCK) 'BEGIN{printf \"%.1f\", t/h}'); done; "
      "echo uptime_s=$(cut -d' ' -f1 /proc/uptime)", "TL")
 print("idle for 40 s before sampling ...")
 time.sleep(40)
 
 grab("memory_kb",
-     "for p in quickshell labwc foot Xwayland; do for pid in $(pgrep -x $p); do "
+     "for p in quickshell Hyprland labwc foot Xwayland; do for pid in $(pgrep -x $p); do "
      "echo $p rss_kb=$(awk '/VmRSS/{print $2}' /proc/$pid/status) pss_kb=$(awk '/^Pss:/{print $2}' /proc/$pid/smaps_rollup); done; done; "
      "echo mem_used_kb=$(awk '/MemTotal/{t=$2}/MemAvailable/{a=$2}END{print t-a}' /proc/meminfo)", "MEM")
 
 # Idle CPU: utime+stime delta of each process over a 20 s window, as % of one core.
 cpu = run(
-    "for p in quickshell labwc; do pid=$(pgrep -xo $p); "
+    "for p in quickshell Hyprland labwc; do pid=$(pgrep -xo $p); [ -n \"$pid\" ] || continue; "
     "a=$(awk '{print $14+$15}' /proc/$pid/stat); echo $p $pid $a; done > /tmp/c1; sleep 20; "
     "while read p pid a; do b=$(awk '{print $14+$15}' /proc/$pid/stat); "
     "echo $p cpu_pct=$(awk -v a=$a -v b=$b -v h=$(getconf CLK_TCK) 'BEGIN{printf \"%.2f\", (b-a)/h/20*100}'); done < /tmp/c1", "CPU", 60)
@@ -162,8 +162,8 @@ lat = run(
 R["latency_ms"] = lat.strip() if lat else None
 
 grab("versions",
-     "echo qemu_guest_kernel=$(uname -r); pacman -Q quickshell labwc qt6-base foot 2>/dev/null | tr '\\n' ' '; echo; "
-     "echo renderer=$(su axiom -s /bin/sh -c 'tr \"\\0\" \"\\n\" < /proc/$(pgrep -xo labwc)/environ | grep -E ^WLR_RENDERER' 2>/dev/null)", "VER")
+     "echo qemu_guest_kernel=$(uname -r); pacman -Q quickshell hyprland labwc qt6-base foot 2>/dev/null | tr '\\n' ' '; echo; "
+     "echo renderer=$(su axiom -s /bin/sh -c 'tr \"\\0\" \"\\n\" < /proc/$(pgrep -xo \"Hyprland|labwc\")/environ | grep -E \"^(WLR_RENDERER|LIBGL_ALWAYS_SOFTWARE)\"' 2>/dev/null)", "VER")
 
 host = subprocess.run(["qemu-system-x86_64", "--version"], capture_output=True, text=True).stdout.splitlines()[0]
 R["environment"] = {"qemu": host, "kvm": True, "guest_ram_mib": 2048, "vcpus": 2, "gpu": "VGA (software rendering)",

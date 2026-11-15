@@ -27,7 +27,8 @@ Item {
         anchors.bottom: parent.bottom
         anchors.bottomMargin: Theme.spacingXs
         text: sep.caption.toUpperCase()
-        color: Theme.textDisabled
+        color: Theme.textPrimary
+        opacity: 0.75
         font.family: Theme.fontFamily
         font.pixelSize: 10
         font.weight: Font.DemiBold

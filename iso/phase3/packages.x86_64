@@ -143,6 +143,8 @@ libglvnd
 wayland
 wayland-protocols
 labwc
+# ADR-029: session compositor; labwc above stays as the fallback and for the greeter
+hyprland
 xdg-desktop-portal
 xdg-desktop-portal-wlr
 gvfs

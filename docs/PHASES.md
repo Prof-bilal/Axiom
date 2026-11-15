@@ -1,6 +1,8 @@
 # Axiom implementation phases
 
-Current phase: **Phase 6 — installable system (complete, 2026-11-08; see [ADR-020](decisions/020-installable-system.md))**. Phases 0 to 6 are complete. Next: **Phase 7**.
+Current phase: **Phase 6 — installable system (complete, 2026-11-08; see [ADR-020](decisions/020-installable-system.md))**. Phases 0 to 6 are complete. Next: **Release track (below): Phase 7 through Phase 10, the glass desktop migration (UI-M0 to UI-M6) and Phase 13 distribution**.
+
+**Release goal (2026-11-15):** a stable, downloadable Axiom Linux that a new user can install, update and use every day, with a visual identity that holds up next to other desktop distributions. Everything in Track 1 below must pass before any Track 2 or Track 3 item starts. AI features, the advanced security layer and new ideas do not block a release.
 Direction for phases 7 onward: [ADR-022](decisions/022-differentiation-direction.md) (usable core first, then the differentiators in phase D, with extension seams in every phase) and [ADR-023](decisions/023-ai-system-direction.md) (the AI system, accepted with defaults).
 Phases 6 onward were re-ordered on 2026-11-06: a complete, installable core
 distro (installer, packages, daily-driver, developer edition, hardware) comes
@@ -26,6 +28,56 @@ in a branch is not an exit criterion.
 | 11 | Security layer | Capability permissions, filesystem/network scopes, secret protection, audit and Warden disposition are evidence-backed. |
 | 12 | AI-native layer | Duet-style single agent and Team mode run user-built agents through typed, revocable grants; sessions preview; lessons only if their experiment passes. |
 | 13 | Distribution | Signed updates, release repository, channels and recovery media pass disposable-target gates (signature rejection, interruption). |
+
+## Release plan: three tracks
+
+Work is grouped by what it delivers. Phase numbers are unchanged; the track says
+when a phase is worked on.
+
+### Track 1: ship a stable, downloadable distro (current focus)
+
+Done when a signed ISO installs on a blank disk, updates itself, rolls back a
+bad update, and passes the daily-driver checklist on the installed system.
+
+| Item | What it covers | Depends on |
+| --- | --- | --- |
+| Phase 7 | Package management, updates, snapshots and rollback | Phase 6 |
+| Phase UI-M0 | Glass foundation: reference assets, tokens, `GlassSurface`, ADR-029 | none (started) |
+| Phase UI-M1 | Hyprland session with labwc fallback (started, verification pending) | UI-M0 |
+| Phase UI-M2 | Restyle existing shell: panel, dock, launcher, menus, notifications (done in source); still to do: lock screen, power menu, control center, Activities | UI-M1 |
+| Phase UI-M3 | Missing shell parts: OSD, Alt+Tab switcher, snap overlay, screenshot tool with preview, desktop and file context menus, polkit dialog | UI-M2 |
+| Phase UI-M4 | Apps: Files, Settings Personalization (theme, accent, glass on/off, reduce transparency), Software Center, System Monitor, file-open dialog | UI-M2 |
+| Phase UI-M5 | Icon theme and cursor theme built from the reference packs | UI-M2 |
+| Phase UI-M6 | Greeter, installer and Plymouth boot splash in the glass style | UI-M2 |
+| Phase 8 | Daily-driver completeness (includes clipboard history, idle lock, printing, removable media, accessibility) | Phase 7 |
+| Phase 9 | Developer edition (toolchains, containers, optional security-tools sets) | Phase 8 |
+| Phase 10 | Hardware and stability matrix on the installed system | Phase 9 |
+| Phase 13 | Signed updates, release repository, channels, recovery media. Moved up from the end of the roadmap: a downloadable release needs it. | Phase 10 |
+
+Track 1 additions from the gap analysis (2026-11-15), each with an exit test
+in QEMU before it is called done:
+- **Command palette** (Super+Alt+Space): one filterable menu over the same action
+  catalogue the Launcher uses (pulled forward from D2).
+- **Theme and wallpaper carousel** with live preview, built on the D1 look tokens.
+- **Do Not Disturb** and notification history.
+- **Reduce transparency** setting: opaque glass, blur off (accessibility and
+  low-GL machines).
+- **Screenshot with preview card** (Edit, Copy), as part of UI-M3.
+- **Keybinding overlay** and one-click "update all" in the Hub.
+- **Hyprland title bars:** Axiom apps draw their own title bar, since Hyprland does
+  not provide one (ADR-029).
+
+### Track 2: AI and advanced security (after the release)
+
+Phase 11 (security layer) and Phase 12 (AI-native layer), plus Phase D
+(differentiators). Each starts only after Track 1 has shipped. Phase 11 is
+kept as a prerequisite for Phase 12, and nothing in Track 1 depends on it.
+
+### Track 3: future ideas (not scheduled)
+
+Recorded so they are not lost. Each needs its own ADR and phase plan before work
+starts. See [Future phases](#future-phases-track-3-ideas-not-scheduled) at the end of
+this file.
 
 ## Phase 0 — architecture reset
 
@@ -321,3 +373,30 @@ publishing.
 Security review, privacy, license provenance and measured performance apply to
 every phase. No phase creates a reason to rewrite mature Linux infrastructure or
 to make AI a control loop for boot, session or resource management.
+
+## Future phases (Track 3: ideas, not scheduled)
+
+Each item is an idea, not a commitment. Nothing here starts before Track 1 ships.
+Each gets an ADR and an exit test when it is promoted.
+
+- **F1 Forensic live mode:** a live boot entry that does not touch local disks,
+  disables automount and swap, and mounts disks read-only. Kali's forensic
+  mode is the reference; ours needs its own QEMU evidence.
+- **F2 Encrypted persistence:** a live USB keeps changes in an encrypted volume,
+  scoped to the home directory only.
+- **F3 Web apps:** add a website as a launcher app, run in its own isolated
+  browser profile (as Omarchy does).
+- **F4 Global search:** one search across files, apps and settings in the
+  Launcher.
+- **F5 Quick Look:** press space on a file in Files for a preview.
+- **F6 Night light and per-app volume mixer** in the control center.
+- **F7 Backups UI:** a "restore point" screen on top of the Phase 7 snapshots.
+- **F8 Privacy dashboard:** a firewall view and camera, microphone and screen-capture
+  indicators (builds on Phase 8 and Phase 11).
+- **F9 Guest tools in the ISO:** QEMU and VirtualBox guest agents out of the box.
+  Also useful for our own QEMU tests.
+- **F10 Multi-monitor layout memory** beyond Phase 10.
+- **F11 Undercover or presentation profile:** a single profile that hides personal
+  names and notifications while presenting. Kali's undercover mode was considered
+  and not chosen as a feature.
+

@@ -355,3 +355,12 @@ The greetd command path is unchanged: `axiom-greeter` runs the graphical
 greeter first and falls back to the curses screen if the graphical stack cannot
 start, so a broken Wayland setup never locks the user out. Full record:
 [decisions/024-graphical-greeter.md](decisions/024-graphical-greeter.md).
+
+## ADR-029: Hyprland replaces labwc for the glass desktop (proposed)
+
+The glassmorphism direction needs backdrop blur, which labwc cannot do. The user
+session moves to Hyprland; blur is compositor-side only and Quickshell surfaces
+stay plain translucent rectangles. Not verified in QEMU yet, so labwc remains
+the shipped compositor until it is. Full record:
+[decisions/029-hyprland-glass-desktop.md](decisions/029-hyprland-glass-desktop.md).
+ADR-025 to ADR-028 have full records in `decisions/` but no entry in this index.

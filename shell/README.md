@@ -58,10 +58,10 @@ tests/                        shell-level tests
 ### Relationship to the session
 
 ```text
-Axiom session (iso/phase3) -> labwc (temporary harness, ADR-016) -> quickshell -> this shell
+Axiom session (iso/phase3) -> Hyprland (ADR-029), or labwc as the fallback (ADR-016) -> quickshell -> this shell
 ```
 
-labwc keybindings (`/etc/axiom/labwc/rc.xml`) drive shell IPC (`qs ipc -p /usr/local/share/axiom/shell call axiom …`;
+Compositor keybindings (`/etc/axiom/hypr/hyprland.lua`, and `/etc/axiom/labwc/rc.xml` for the fallback) drive shell IPC (`qs ipc -p /usr/local/share/axiom/shell call axiom …`;
 the session exports `QS_CONFIG_PATH` so a bare `qs ipc call` also works) for
 the Axiom menu (Super+A), launcher,
 notification centre, control centre and session menu.
@@ -72,6 +72,8 @@ notification centre, control centre and session menu.
   restarts all surfaces together (`axiom-shell` supervisor, which stops when
   the session ends).
 - Window chrome (title bars, buttons, corners, glow) belongs to the compositor
-  harness (labwc theme "Axiom"); the shell cannot decorate other apps.
+  harness; the shell cannot decorate other apps. labwc draws the Axiom title bar;
+  Hyprland draws none, so windows there move with Super+drag until Axiom apps
+  draw their own (ADR-029).
 - Quickshell is a replaceable dependency (LGPL-3.0-only); no third-party shell
   code is copied.

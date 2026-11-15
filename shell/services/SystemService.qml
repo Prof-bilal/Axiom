@@ -136,6 +136,25 @@ Singleton {
     readonly property bool bluetoothAvailable: bluetoothAdapter !== null
     readonly property bool bluetoothEnabled: bluetoothAvailable && bluetoothAdapter.enabled
 
+    // --- airplane mode: every available radio off; turning it off restores
+    // the radios to how they were before (both on if that is unknown) ---
+    readonly property bool airplane: (networkAvailable || bluetoothAvailable)
+        && (!networkAvailable || !wifiEnabled) && (!bluetoothAvailable || !bluetoothEnabled)
+    property bool _wifiBefore: true
+    property bool _bluetoothBefore: true
+    function setAirplane(on) {
+        if (on === airplane) return
+        if (on) {
+            _wifiBefore = wifiEnabled
+            _bluetoothBefore = bluetoothEnabled
+            if (networkAvailable) setWifi(false)
+            if (bluetoothAvailable) setBluetooth(false)
+        } else {
+            if (networkAvailable) setWifi(_wifiBefore || !_bluetoothBefore)
+            if (bluetoothAvailable) setBluetooth(_bluetoothBefore || !_wifiBefore)
+        }
+    }
+
     function setBluetooth(enabled) {
         if (bluetoothAdapter) bluetoothAdapter.enabled = enabled
     }

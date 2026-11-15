@@ -5,18 +5,27 @@ import Quickshell.Services.Notifications
 import qs.src.shared
 import qs.services
 
-// One notification. Untrusted content is rendered as plain text only.
-Rectangle {
+// One notification, in the reference style: a rounded icon tile, a bold title,
+// muted body text and pill action buttons, on a translucent glass card.
+// Untrusted content is rendered as plain text only.
+GlassSurface {
     id: card
     property var notification
     property bool toast: false
+    readonly property bool critical: notification && notification.urgency === NotificationUrgency.Critical
 
     implicitHeight: content.implicitHeight + Theme.spacingMd * 2
-    radius: Theme.radiusSurface
-    color: Theme.overlayBackground
-    border.width: 1
-    border.color: notification && notification.urgency === NotificationUrgency.Critical
-        ? Theme.danger : Theme.border
+    radius: Theme.radiusWindow
+
+    // Critical notifications keep an orange outline over the glass edge.
+    Rectangle {
+        anchors.fill: parent
+        radius: card.radius
+        color: "transparent"
+        border.width: 1
+        border.color: Theme.danger
+        visible: card.critical
+    }
 
     Timer {
         running: card.toast && card.notification
@@ -25,120 +34,119 @@ Rectangle {
         onTriggered: if (card.notification) card.notification.expire()
     }
 
-    ColumnLayout {
+    RowLayout {
         id: content
         anchors.fill: parent
         anchors.margins: Theme.spacingMd
-        spacing: Theme.spacingXs
+        spacing: Theme.spacingMd
 
-        RowLayout {
-            Layout.fillWidth: true
-            spacing: Theme.spacingSm
+        // Icon tile: the app's icon, or the Axiom mascot for toasts.
+        Rectangle {
+            Layout.alignment: Qt.AlignTop
+            Layout.preferredWidth: 40
+            Layout.preferredHeight: 40
+            radius: 10
+            color: card.critical ? Theme.orange : Theme.cyanMuted
 
-            // Mascot on toasts only; the history list stays compact.
             Image {
-                visible: card.toast
-                source: Quickshell.shellPath("assets/mascots/notification.png")
-                sourceSize.width: 80
-                sourceSize.height: 80
-                Layout.preferredWidth: 40
-                Layout.preferredHeight: 40
+                anchors.centerIn: parent
+                width: 24
+                height: 24
+                source: card.notification && card.notification.appIcon
+                    ? Quickshell.iconPath(card.notification.appIcon, "application-x-executable")
+                    : Quickshell.shellPath("assets/mascots/notification.png")
+                sourceSize.width: 48
+                sourceSize.height: 48
                 fillMode: Image.PreserveAspectFit
                 smooth: true
                 mipmap: true
             }
+        }
 
-            Image {
-                visible: card.notification && card.notification.appIcon
-                source: card.notification
-                    ? Quickshell.iconPath(card.notification.appIcon, "application-x-executable") : ""
-                sourceSize.width: 18
-                sourceSize.height: 18
-                Layout.preferredWidth: 18
-                Layout.preferredHeight: 18
-                fillMode: Image.PreserveAspectFit
+        ColumnLayout {
+            Layout.fillWidth: true
+            spacing: 4
+
+            RowLayout {
+                Layout.fillWidth: true
+                spacing: Theme.spacingSm
+
+                Text {
+                    Layout.fillWidth: true
+                    text: card.notification ? card.notification.summary : ""
+                    color: Theme.foreground
+                    wrapMode: Text.WordWrap
+                    textFormat: Text.PlainText
+                    font.family: Theme.fontFamily
+                    font.pixelSize: Theme.fontLabel
+                    font.weight: Font.DemiBold
+                }
+
+                // Dismiss: a small close mark, visible on hover.
+                Text {
+                    text: "✕"
+                    visible: closeHover.hovered
+                    color: Theme.muted
+                    font.pixelSize: Theme.fontCaption
+                    HoverHandler { id: closeHover }
+                    MouseArea {
+                        anchors.fill: parent
+                        anchors.margins: -Theme.spacingXs
+                        onClicked: if (card.notification) card.notification.dismiss()
+                    }
+                }
             }
 
             Text {
                 Layout.fillWidth: true
-                text: card.notification ? (card.notification.appName || "Application") : ""
+                visible: card.notification && card.notification.body.length > 0
+                text: card.notification ? card.notification.body : ""
                 color: Theme.muted
+                wrapMode: Text.WordWrap
+                maximumLineCount: 4
                 elide: Text.ElideRight
+                textFormat: Text.PlainText
                 font.family: Theme.fontFamily
-                font.pixelSize: Theme.fontCaption
+                font.pixelSize: Theme.fontBody
             }
 
-            Text {
-                text: "\u2715"
-                color: hoverClose.hovered ? Theme.danger : Theme.muted
-                font.pixelSize: Theme.fontCaption
-                HoverHandler { id: hoverClose }
-                MouseArea {
-                    anchors.fill: parent
-                    anchors.margins: -Theme.spacingXs
-                    onClicked: if (card.notification) card.notification.dismiss()
-                }
-            }
-        }
+            // Pill buttons, as in the reference: one row, centred on the card.
+            Flow {
+                Layout.fillWidth: true
+                Layout.topMargin: Theme.spacingXs
+                spacing: Theme.spacingSm
+                visible: card.notification && card.notification.actions.length > 0
 
-        Text {
-            Layout.fillWidth: true
-            text: card.notification ? card.notification.summary : ""
-            color: Theme.foreground
-            wrapMode: Text.WordWrap
-            textFormat: Text.PlainText
-            font.family: Theme.fontFamily
-            font.pixelSize: Theme.fontBody
-            font.weight: Font.DemiBold
-        }
+                Repeater {
+                    model: card.notification ? card.notification.actions : []
 
-        Text {
-            Layout.fillWidth: true
-            visible: card.notification && card.notification.body.length > 0
-            text: card.notification ? card.notification.body : ""
-            color: Theme.muted
-            wrapMode: Text.WordWrap
-            maximumLineCount: 4
-            elide: Text.ElideRight
-            textFormat: Text.PlainText
-            font.family: Theme.fontFamily
-            font.pixelSize: Theme.fontBody
-        }
+                    Rectangle {
+                        required property var modelData
+                        implicitWidth: actionLabel.implicitWidth + Theme.spacingLg * 2
+                        implicitHeight: 28
+                        radius: height / 2
+                        color: actionHover.hovered ? Theme.stateHover : Theme.glassFill
+                        border.width: 1
+                        border.color: Theme.borderSubtle
 
-        RowLayout {
-            Layout.fillWidth: true
-            visible: card.notification && card.notification.actions.length > 0
-            spacing: Theme.spacingSm
+                        HoverHandler { id: actionHover }
 
-            Repeater {
-                model: card.notification ? card.notification.actions : []
+                        Text {
+                            id: actionLabel
+                            anchors.centerIn: parent
+                            text: modelData.text
+                            color: Theme.foreground
+                            font.family: Theme.fontFamily
+                            font.pixelSize: Theme.fontCaption
+                        }
 
-                Rectangle {
-                    required property var modelData
-                    implicitWidth: actionLabel.implicitWidth + Theme.spacingMd * 2
-                    implicitHeight: 26
-                    radius: Theme.radiusControl
-                    color: actionHover.hovered ? Theme.accentDeep : Theme.surfaceHigh
-
-                    HoverHandler { id: actionHover }
-
-                    Text {
-                        id: actionLabel
-                        anchors.centerIn: parent
-                        text: modelData.text
-                        color: Theme.foreground
-                        font.family: Theme.fontFamily
-                        font.pixelSize: Theme.fontCaption
-                    }
-
-                    MouseArea {
-                        anchors.fill: parent
-                        onClicked: modelData.invoke()
+                        MouseArea {
+                            anchors.fill: parent
+                            onClicked: modelData.invoke()
+                        }
                     }
                 }
             }
-
-            Item { Layout.fillWidth: true }
         }
     }
 }

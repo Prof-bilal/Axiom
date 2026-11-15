@@ -3,13 +3,16 @@ pragma Singleton
 // WorkspaceService — the Axiom session contract for workspace state.
 //
 // Adapter: the standard ext-workspace-v1 protocol (Quickshell.WindowManager
-// "windowsets"), implemented by the labwc compositor harness (ADR-016) and by
-// any compositor Axiom adopts later. No compositor-specific IPC is used.
-// A future Axiom compositor replaces the backend without changing callers.
+// "windowsets") for state, under both Hyprland (ADR-029) and labwc (ADR-016).
+// Hyprland lists workspaces through it but does not let a client activate one
+// (canActivate is false; checked on Hyprland 0.56), so switching there goes
+// through Hyprland's own IPC. A future Axiom compositor replaces the backend
+// without changing callers.
 
 import QtQuick
 import Quickshell
 import Quickshell.WindowManager
+import Quickshell.Hyprland
 
 Singleton {
     id: ws
@@ -37,8 +40,14 @@ Singleton {
         return null
     }
 
+    // Only read the Hyprland singleton inside a Hyprland session.
+    readonly property bool onHyprland: !!Quickshell.env("HYPRLAND_INSTANCE_SIGNATURE")
+
     function activate(workspace) {
-        if (workspace && workspace.canActivate) workspace.activate()
+        if (!workspace) return
+        if (workspace.canActivate) { workspace.activate(); return }
+        var n = parseInt(workspace.name)
+        if (onHyprland && !isNaN(n)) Hyprland.dispatch("hl.dsp.focus({ workspace = " + n + " })")
     }
 
     function switchTo(number) {

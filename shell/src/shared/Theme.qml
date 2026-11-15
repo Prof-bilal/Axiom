@@ -18,9 +18,9 @@ Singleton {
     id: theme
 
     // --- base neutrals ---
-    readonly property color background: "#070B0D"
-    readonly property color surface: "#0C1215"
-    readonly property color surfaceElevated: "#11191D"
+    readonly property color background: Qt.rgba(1, 1, 1, 0.24)  // launcher glass (ADR-029)
+    readonly property color surface: Qt.rgba(1, 1, 1, 0.16)
+    readonly property color surfaceElevated: Qt.rgba(1, 1, 1, 0.24)
     readonly property color surfaceHover: "#162126"
     readonly property color border: "#233238"
     readonly property color borderSubtle: "#182328"
@@ -39,13 +39,19 @@ Singleton {
     readonly property color orangeMuted: "#804713"
 
     // --- translucent surfaces (alpha over the wallpaper) ---
-    readonly property color panelBackground: Qt.rgba(5 / 255, 12 / 255, 15 / 255, 0.88)
+    readonly property color panelBackground: Qt.rgba(1, 1, 1, 0.24)
     readonly property color panelBorder: Qt.rgba(68 / 255, 230 / 255, 220 / 255, 0.10)
-    readonly property color dockBackground: Qt.rgba(5 / 255, 12 / 255, 15 / 255, 0.88)
+    readonly property color dockBackground: Qt.rgba(1, 1, 1, 0.24)
     readonly property color dockBorder: Qt.rgba(68 / 255, 230 / 255, 220 / 255, 0.10)
-    readonly property color overlayBackground: Qt.rgba(12 / 255, 18 / 255, 21 / 255, 0.97)
+    readonly property color overlayBackground: Qt.rgba(1, 1, 1, 0.24)
     readonly property color overlayBorder: Qt.rgba(80 / 255, 235 / 255, 220 / 255, 0.14)
     readonly property color scrim: Qt.rgba(2 / 255, 5 / 255, 7 / 255, 0.45)
+
+    // --- glass (ADR-029): fill over compositor blur, cyan-to-amber edge ---
+    readonly property color glassFill: Qt.rgba(1, 1, 1, 0.16)
+    readonly property color glassFillStrong: Qt.rgba(1, 1, 1, 0.24)
+    readonly property color glassEdgeStart: Qt.rgba(55 / 255, 240 / 255, 234 / 255, 0.70)
+    readonly property color glassEdgeEnd: Qt.rgba(1, 179 / 255, 72 / 255, 0.70)
 
     // --- interaction states (one visual language for every component) ---
     // hover    -> slightly lighter surface
@@ -87,17 +93,23 @@ Singleton {
     readonly property int radiusSurface: 10
     readonly property int radiusOverlay: 12
     readonly property int radiusDock: 22
+    readonly property int radiusWindow: 16
 
     // --- surfaces ---
     readonly property int panelHeight: 40
+    // The panel floats (ADR-029): gap above it, and everything that opens
+    // below it starts at panelBottom.
+    readonly property int panelGap: 8
+    readonly property int panelSideGap: 10
+    readonly property int panelBottom: panelHeight + panelGap
     readonly property int panelIconSize: 17
     readonly property int panelMarkSize: 26
     readonly property int panelButtonSize: 30
     readonly property int panelNavHeight: 28
     readonly property int workspaceButtonWidth: 30
     readonly property int workspaceButtonHeight: 26
-    readonly property int dockIconSize: 48
-    readonly property int dockItemSize: 66
+    readonly property int dockIconSize: 68
+    readonly property int dockItemSize: 86
     readonly property int dockPadding: 7
     readonly property int dockEdgeGap: 12
     readonly property real dockHoverScale: 1.12

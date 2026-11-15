@@ -1,6 +1,7 @@
 import QtQuick
 import Quickshell
 import Quickshell.Wayland
+import Quickshell.Hyprland
 import qs.src.shared
 import qs.services
 
@@ -15,7 +16,7 @@ PanelWindow {
     screen: Quickshell.screens.length > 0 ? Quickshell.screens[0] : null
     anchors { top: true; bottom: true; left: true; right: true }
     exclusionMode: ExclusionMode.Ignore
-    color: Qt.rgba(2 / 255, 5 / 255, 7 / 255, 0.72)
+    color: Qt.rgba(2 / 255, 5 / 255, 7 / 255, 0.45)
     visible: UiState.activitiesOpen
     WlrLayershell.namespace: "axiom-activities"
     WlrLayershell.layer: WlrLayershell.Overlay
@@ -26,6 +27,26 @@ PanelWindow {
     WlrLayershell.keyboardFocus: UiState.activitiesOpen ? WlrLayershell.Exclusive : WlrLayershell.None
 
     readonly property var windows: WindowService.list()
+    readonly property var screenInfo: Quickshell.screens.length > 0 ? Quickshell.screens[0] : null
+
+    // Windows of each workspace for the thumbnails, from the compositor's own
+    // positions; refreshed while the overview is open.
+    readonly property var hyprWindows: Hyprland.toplevels ? Hyprland.toplevels.values : []
+    function windowsOf(workspaceNumber) {
+        var out = []
+        for (var i = 0; i < hyprWindows.length; i++) {
+            var o = hyprWindows[i].lastIpcObject
+            if (o && o.mapped && o.workspace && o.workspace.id === workspaceNumber) out.push(o)
+        }
+        return out
+    }
+    Timer {
+        interval: 400
+        running: overview.visible
+        repeat: true
+        triggeredOnStart: true
+        onTriggered: Hyprland.refreshToplevels()
+    }
 
     onVisibleChanged: if (visible) keys.forceActiveFocus()
 
@@ -42,40 +63,86 @@ PanelWindow {
         id: content
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.top: parent.top
-        anchors.topMargin: Theme.panelHeight + Theme.spacingXl
+        anchors.topMargin: Theme.panelBottom + Theme.spacingXl
         width: Math.min(parent.width - 96, 1400)
         spacing: Theme.spacingXl
 
-        // --- workspaces ---
-        Row {
+        // --- workspaces: a glass strip of cards, as in the reference ---
+        GlassSurface {
             anchors.horizontalCenter: parent.horizontalCenter
-            spacing: Theme.spacingMd
+            strong: true
+            radius: Theme.radiusWindow
+            width: wsRow.implicitWidth + Theme.spacingXl * 2
+            height: wsRow.implicitHeight + Theme.spacingXl * 2
 
-            Repeater {
-                model: WorkspaceService.list
-                delegate: Rectangle {
-                    required property var modelData
-                    width: 132
-                    height: 78
-                    radius: Theme.radiusSurface
-                    color: modelData.active ? Theme.stateSelected : (wsMouse.containsMouse ? Theme.surfaceHover : Theme.surface)
-                    border.width: 1
-                    border.color: modelData.active ? Theme.cyan : Theme.border
+            Row {
+                id: wsRow
+                anchors.centerIn: parent
+                spacing: Theme.spacingLg
 
-                    Text {
-                        anchors.centerIn: parent
-                        text: modelData.name
-                        color: modelData.active ? Theme.cyanBright : Theme.textSecondary
-                        font.family: Theme.fontFamily
-                        font.pixelSize: Theme.fontDisplay
-                        font.weight: Font.DemiBold
-                    }
-                    MouseArea {
-                        id: wsMouse
-                        anchors.fill: parent
-                        hoverEnabled: true
-                        cursorShape: Qt.PointingHandCursor
-                        onClicked: WorkspaceService.activate(modelData)
+                Repeater {
+                    model: WorkspaceService.list
+                    delegate: Item {
+                        id: ws
+                        required property var modelData
+                        readonly property int number: parseInt(modelData.name)
+                        readonly property var inside: overview.windowsOf(number)
+                        width: 224
+                        height: 150
+
+                        // Thumbnail: the wallpaper with the workspace's windows
+                        // drawn at their real, scaled positions.
+                        Rectangle {
+                            id: thumb
+                            width: parent.width
+                            height: 126
+                            radius: 12
+                            color: Theme.background
+                            clip: true
+                            border.width: ws.modelData.active ? 2 : 1
+                            border.color: ws.modelData.active ? Theme.cyan : Theme.borderSubtle
+
+                            Image {
+                                anchors.fill: parent
+                                source: SettingsService.wallpaper.length > 0
+                                    ? "file://" + SettingsService.wallpaper
+                                    : Quickshell.shellPath("assets/wallpaper.png")
+                                fillMode: Image.PreserveAspectCrop
+                                sourceSize.width: 448
+                            }
+
+                            Repeater {
+                                model: ws.inside
+                                delegate: Rectangle {
+                                    required property var modelData
+                                    readonly property real sx: overview.screenInfo ? thumb.width / overview.screenInfo.width : 0.1
+                                    readonly property real sy: overview.screenInfo ? thumb.height / overview.screenInfo.height : 0.1
+                                    x: modelData.at[0] * sx
+                                    y: modelData.at[1] * sy
+                                    width: Math.max(8, modelData.size[0] * sx)
+                                    height: Math.max(6, modelData.size[1] * sy)
+                                    radius: 3
+                                    color: Theme.glassFillStrong
+                                    border.width: 1
+                                    border.color: Theme.stateSelectedBorder
+                                }
+                            }
+
+                            MouseArea {
+                                anchors.fill: parent
+                                cursorShape: Qt.PointingHandCursor
+                                onClicked: WorkspaceService.activate(ws.modelData)
+                            }
+                        }
+
+                        Text {
+                            anchors.horizontalCenter: parent.horizontalCenter
+                            anchors.bottom: parent.bottom
+                            text: "Workspace " + ws.modelData.name
+                            color: Theme.textPrimary
+                            font.family: Theme.fontFamily
+                            font.pixelSize: Theme.fontBody
+                        }
                     }
                 }
             }
@@ -110,7 +177,7 @@ PanelWindow {
                     width: grid.cardWidth
                     height: 214
                     radius: Theme.radiusOverlay
-                    color: Theme.surface
+                    color: Theme.glassFill
                     border.width: 1
                     border.color: modelData.activated ? Theme.cyan
                                 : cardMouse.containsMouse ? Theme.stateSelectedBorder : Theme.border

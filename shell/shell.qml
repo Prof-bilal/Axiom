@@ -18,6 +18,8 @@ import qs.src.session
 import qs.src.status
 import qs.src.menu
 import qs.src.activities
+import qs.src.terminal
+import qs.src.switcher
 import qs.services
 
 ShellRoot {
@@ -48,10 +50,14 @@ ShellRoot {
         }
     }
 
+    // Axiom title bars for terminal windows (Hyprland draws none; ADR-029).
+    TerminalTitleBars {}
+
     // Single-instance overlays on the primary output.
     Launcher {}
     AxiomMenu {}
     ActivitiesOverview {}
+    WindowSwitcher { id: windowSwitcher }
     NotificationToasts {}
     NotificationCenter {}
     SessionMenu {}
@@ -72,6 +78,10 @@ ShellRoot {
         function toggleNotificationCenter(): void { UiState.toggleNotificationCenter() }
         function toggleControlCenter(): void { UiState.toggleControlCenter() }
         function closeOverlays(): void { UiState.closeAllOverlays() }
+        // Alt+Tab switcher: the compositor binds Alt+Tab and the release of Alt.
+        function switcherNext(): void { windowSwitcher.next(1) }
+        function switcherPrev(): void { windowSwitcher.next(-1) }
+        function switcherCommit(): void { windowSwitcher.commit() }
         function lock(): void { lockScreen.lock() }
         function isLocked(): bool { return lockScreen.locked }
 
@@ -81,7 +91,7 @@ ShellRoot {
         function terminalGeometry(): string {
             var s = Quickshell.screens.length > 0 ? Quickshell.screens[0] : null
             if (!s) return ""
-            var usableH = s.height - Theme.panelHeight - (Theme.dockItemSize + Theme.dockPadding * 2 + Theme.dockEdgeGap)
+            var usableH = s.height - Theme.panelBottom - (Theme.dockItemSize + Theme.dockPadding * 2 + Theme.dockEdgeGap)
             // Content size: the compositor adds its ~34 px title bar on top.
             return Math.round(s.width * 0.70) + "x" + Math.max(200, Math.round(usableH * 0.68) - 34)
         }

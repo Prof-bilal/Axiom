@@ -121,7 +121,8 @@ Item {
             }
             if (root.toplevels.length > 0) {
                 var idx = root.toplevels.indexOf(WindowService.active)
-                WindowService.activate(root.toplevels[(idx + 1) % root.toplevels.length])
+                var target = root.toplevels[(idx + 1) % root.toplevels.length]
+                if (!WindowService.restore(target)) WindowService.activate(target)
                 return
             }
             root.launchEntry()

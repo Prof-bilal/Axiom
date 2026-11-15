@@ -12,11 +12,11 @@ PanelWindow {
 
     screen: Quickshell.screens.length > 0 ? Quickshell.screens[0] : null
     anchors { top: true; right: true }
-    margins.top: Theme.panelHeight + Theme.spacingSm
+    margins.top: Theme.panelBottom + Theme.spacingSm
     margins.right: Theme.spacingSm
     implicitWidth: 380
     implicitHeight: Math.min(520, content.implicitHeight + Theme.spacingMd * 2)
-    color: Theme.overlayBackground
+    color: "transparent"
     visible: UiState.notificationCenterOpen
     exclusionMode: ExclusionMode.Ignore
     WlrLayershell.namespace: "axiom-notification-center"
@@ -40,45 +40,62 @@ PanelWindow {
     readonly property var items: NotificationService.tracked
         ? NotificationService.tracked.values.slice().reverse() : []
 
+    GlassSurface {
+        anchors.fill: parent
+        z: -2
+        strong: true
+    }
+
     Column {
         id: content
         anchors.fill: parent
         anchors.margins: Theme.spacingMd
-        spacing: Theme.spacingSm
+        spacing: Theme.spacingMd
 
+        // Header: title and a "Clear All" pill, as in the reference.
         Row {
             width: parent.width
-            height: 24
+            height: 32
 
             Text {
+                id: headerTitle
+                anchors.verticalCenter: parent.verticalCenter
                 text: "Notifications"
                 color: Theme.foreground
                 font.family: Theme.fontFamily
-                font.pixelSize: Theme.fontBody
+                font.pixelSize: Theme.fontTitle
                 font.weight: Font.DemiBold
             }
 
             Item {
-                width: Math.max(0, parent.width - clearLabel.implicitWidth - 80)
+                width: Math.max(0, parent.width - headerTitle.implicitWidth - clearPill.width)
                 height: 1
             }
 
-            Text {
-                id: clearLabel
-                text: "Clear all"
-                color: clearHover.hovered ? Theme.accent : Theme.muted
-                font.family: Theme.fontFamily
-                font.pixelSize: Theme.fontCaption
+            Rectangle {
+                id: clearPill
+                anchors.verticalCenter: parent.verticalCenter
+                width: clearLabel.implicitWidth + Theme.spacingLg * 2
+                height: 28
+                radius: height / 2
+                color: clearHover.hovered ? Theme.stateHover : Theme.glassFill
+                border.width: 1
+                border.color: Theme.borderSubtle
                 HoverHandler { id: clearHover }
+                Text {
+                    id: clearLabel
+                    anchors.centerIn: parent
+                    text: "Clear All"
+                    color: Theme.foreground
+                    font.family: Theme.fontFamily
+                    font.pixelSize: Theme.fontCaption
+                }
                 MouseArea {
                     anchors.fill: parent
-                    anchors.margins: -Theme.spacingXs
                     onClicked: NotificationService.dismissAll()
                 }
             }
         }
-
-        Rectangle { width: parent.width; height: 1; color: Theme.border }
 
         Text {
             width: parent.width
@@ -92,7 +109,7 @@ PanelWindow {
         Column {
             id: history
             width: parent.width
-            spacing: Theme.spacingSm
+            spacing: Theme.spacingMd
 
             Repeater {
                 model: center.items

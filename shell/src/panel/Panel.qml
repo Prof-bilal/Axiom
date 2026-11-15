@@ -18,25 +18,25 @@ PanelWindow {
     screen: modelData
 
     anchors { top: true; left: true; right: true }
+    margins { top: Theme.panelGap; left: Theme.panelSideGap; right: Theme.panelSideGap }
     implicitHeight: Theme.panelHeight
-    color: Theme.panelBackground
+    color: "transparent"
     exclusiveZone: Theme.panelHeight
     WlrLayershell.namespace: "axiom-panel"
     WlrLayershell.layer: WlrLayershell.Top
     WlrLayershell.keyboardFocus: WlrLayershell.None
 
-    // Hairline separating the panel from the desktop.
-    Rectangle {
-        anchors { left: parent.left; right: parent.right; bottom: parent.bottom }
-        height: 1
-        color: Theme.panelBorder
+    // Floating glass pill (ADR-029); the compositor blurs behind it.
+    GlassSurface {
+        anchors.fill: parent
+        radius: Theme.panelHeight / 2
     }
 
     // --- left ---
     Row {
         id: left
         anchors.left: parent.left
-        anchors.leftMargin: Theme.spacingSm
+        anchors.leftMargin: Theme.spacingMd
         anchors.verticalCenter: parent.verticalCenter
         spacing: Theme.spacingXs
 
@@ -151,7 +151,7 @@ PanelWindow {
     Row {
         id: right
         anchors.right: parent.right
-        anchors.rightMargin: Theme.spacingSm
+        anchors.rightMargin: Theme.spacingMd
         anchors.verticalCenter: parent.verticalCenter
         spacing: Theme.spacingXxs
 

@@ -40,6 +40,7 @@ file_permissions=(
   ["/usr/local/lib/axiom-provision/axiom-provision"]="0:0:755"
   ["/etc/axiom"]="0:0:755"
   ["/etc/axiom/labwc"]="0:0:755"
+  ["/etc/axiom/hypr"]="0:0:755"
   ["/etc/axiom/os-release"]="0:0:644"
   ["/etc/axiom/zshrc"]="0:0:644"
   ["/usr/local/share/axiom"]="0:0:755"

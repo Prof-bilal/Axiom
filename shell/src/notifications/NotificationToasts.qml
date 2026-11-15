@@ -11,7 +11,7 @@ PanelWindow {
 
     screen: Quickshell.screens.length > 0 ? Quickshell.screens[0] : null
     anchors { top: true; right: true }
-    margins.top: Theme.panelHeight + Theme.spacingSm
+    margins.top: Theme.panelBottom + Theme.spacingSm
     margins.right: Theme.spacingSm
     implicitWidth: 340
     implicitHeight: toastColumn.childrenRect.height

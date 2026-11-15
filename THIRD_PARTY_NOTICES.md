@@ -39,6 +39,7 @@ repository). See [DESKTOP_DESIGN](docs/DESKTOP_DESIGN.md).
 | Inter | `inter-font` 4.1 | OFL-1.1 (Reserved Font Name) | Shell UI and title-bar font |
 | JetBrains Mono | `ttf-jetbrains-mono` 2.304 | OFL-1.1 | Terminal and code font |
 | foot | `foot` 1.28 | MIT | Axiom Terminal (configured, not modified) |
+| Hyprland | `hyprland` (Arch `extra`) | BSD-3-Clause | Session compositor (ADR-029, proposed); unmodified separate program, Axiom config only |
 | labwc | `labwc` 0.20 | GPL-2.0-only | Phase 3 compositor harness (ADR-016); unmodified separate program, Axiom theme/config only |
 | Code - OSS | `code` 1.138 | MIT | Pinned code editor (Arch build of VS Code OSS; no Microsoft branding or marketplace) |
 | GVfs | `gvfs` | LGPL-2.0-or-later | `trash:///` backend for the Trash dock item |

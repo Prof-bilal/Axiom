@@ -14,11 +14,13 @@ AppWindow {
     title: backend.trashView ? "Trash" : (Files.baseName(backend.path) || "File System")
     implicitWidth: 1060
     implicitHeight: 660
+    // Glass window: the compositor blurs what is behind it (ADR-029).
+    color: "transparent"
 
     // path -> true
     property var selected: ({})
     // "list" (columns) or "grid" (icon tiles).
-    property string viewMode: "list"
+    property string viewMode: "grid"
     property int currentIndex: -1
     property int anchorIndex: -1
     property string pendingSelect: ""
@@ -305,7 +307,7 @@ AppWindow {
             anchors.left: parent.left
             anchors.right: parent.right
             height: 48
-            color: Theme.surface
+            color: Theme.glassFill
 
             Rectangle { anchors.bottom: parent.bottom; width: parent.width; height: 1; color: Theme.borderSubtle }
 
@@ -465,8 +467,8 @@ AppWindow {
                 anchors.fill: parent
                 anchors.margins: Theme.spacingSm
                 clip: true
-                cellWidth: 120
-                cellHeight: 108
+                cellWidth: 150
+                cellHeight: 150
                 model: backend.entries.length
                 boundsBehavior: Flickable.StopAtBounds
                 reuseItems: true
@@ -486,15 +488,13 @@ AppWindow {
                         border.width: sel ? 1 : 0
                         border.color: Theme.stateSelectedBorder
                     }
-                    AxiomIcon {
+                    FileGlyph {
                         id: tileIcon
                         anchors.horizontalCenter: parent.horizontalCenter
                         anchors.top: parent.top
-                        anchors.topMargin: 14
-                        width: 40; height: 40
-                        name: tileEntry ? Files.iconName(tileEntry) : "file"
-                        color: sel ? Theme.cyanBright : Theme.textPrimary
-                        strokeWidth: 1.6
+                        anchors.topMargin: 12
+                        size: 84
+                        entry: tileEntry
                     }
                     Text {
                         anchors.horizontalCenter: parent.horizontalCenter
@@ -506,7 +506,7 @@ AppWindow {
                         text: tileEntry ? tileEntry.name : ""
                         color: Theme.textPrimary
                         font.family: Theme.fontFamily
-                        font.pixelSize: Theme.fontCaption
+                        font.pixelSize: Theme.fontBody
                     }
                     MouseArea {
                         id: tileMouse
@@ -546,7 +546,7 @@ AppWindow {
             anchors.left: parent.left
             anchors.right: parent.right
             height: 28
-            color: Theme.surface
+            color: Theme.glassFill
 
             Rectangle { anchors.top: parent.top; width: parent.width; height: 1; color: Theme.borderSubtle }
 
