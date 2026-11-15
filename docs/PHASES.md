@@ -1,6 +1,6 @@
 # Axiom implementation phases
 
-Current phase: **Phase 6 — installable system (complete, 2026-11-08; see [ADR-020](decisions/020-installable-system.md))**. Phases 0 to 6 are complete. Next: **Phase 7**.
+Current phase: **Phase 6 — installable system (complete, 2026-11-08; see [ADR-020](decisions/020-installable-system.md))**. Phases 0 to 6 are complete. Phase 7 is in testing.
 Direction for phases 7 onward: [ADR-022](decisions/022-differentiation-direction.md) (usable core first, then the differentiators in phase D, with extension seams in every phase) and [ADR-023](decisions/023-ai-system-direction.md) (the AI system, accepted with defaults).
 Phases 6 onward were re-ordered on 2026-11-06: a complete, installable core
 distro (installer, packages, daily-driver, developer edition, hardware) comes

@@ -35,3 +35,11 @@ __pycache__/
 # Local multi-project workspace: sibling first-party repos cloned for
 # cross-project work. Not part of Axiom; never commit them here.
 workspace/
+
+# Local AI-tool configuration and agent state: never committed.
+.opencode/
+.commandcode/
+.agents/
+.contextgit/
+.serena/
+.claude/

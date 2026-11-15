@@ -33,11 +33,11 @@ class Foundation(unittest.TestCase):
         self.root = Path(self.temp.name)
 
     def fixture(self):
-        for folder in ('docs', 'portable-skills', '.opencode', '.commandcode',
+        for folder in ('docs', 'portable-skills',
                        'scripts', 'iso', 'tests', '.github'):
             if (ROOT / folder).exists():
                 # iso/ holds multi-GB build output; copy only the reviewed profile.
-                ignore = shutil.ignore_patterns('work*', 'out', '*.iso') if folder == 'iso' else None
+                ignore = shutil.ignore_patterns('work*', 'out*', '*.iso', '*.sock') if folder == 'iso' else None
                 shutil.copytree(ROOT / folder, self.root / folder, symlinks=True,
                                 ignore_dangling_symlinks=True, ignore=ignore)
         for file in ('README.md', 'AGENTS.md'):
@@ -207,7 +207,7 @@ class Evidence(unittest.TextTestResult):
 def preflight():
     commands = ('qemu-system-x86_64', 'qemu-img', 'mkarchiso', 'btrfs', 'snapper',
                 'qmllint', 'dbus-daemon', 'busctl', 'systemctl', 'rustc', 'cargo',
-                'codex', 'opencode', 'commandcode', 'freebuff')
+                'codex', 'freebuff')
     cgroup = Path('/sys/fs/cgroup/cgroup.controllers')
     manager = {'accessible': False}
     if shutil.which('systemctl'):

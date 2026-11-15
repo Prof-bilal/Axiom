@@ -26,7 +26,7 @@ def validate(root):
         if not path.is_file() or len(path.read_text().strip()) < 200:
             errors.append(f'Missing or insubstantial required document: {item}')
     paths = list((root / 'docs').rglob('*.md')) + [root / 'README.md', root / 'AGENTS.md']
-    for base in ('portable-skills/skills', '.agents/skills', '.opencode/agents', '.commandcode/agents'):
+    for base in ('portable-skills/skills', '.agents/skills'):
         folder = root / base
         if folder.exists():
             paths += list(folder.rglob('*.md'))
@@ -62,13 +62,6 @@ def validate(root):
                 errors.append(f'Invalid skill name/description: {path}')
             if len(fields.get('name','')) > 64 or len(fields.get('description','')) > 1024:
                 errors.append(f'Skill metadata too long: {path}')
-    for folder, expected in (('.opencode/agents',11),('.commandcode/agents',6)):
-        adapters = list((root / folder).glob('*.md'))
-        if len(adapters) != expected:
-            errors.append(f'Adapter inventory mismatch: {folder}')
-        for path in adapters:
-            if 'docs/SUBAGENTS.md' not in path.read_text():
-                errors.append(f'Adapter lacks canonical role reference: {path}')
     phase1 = ('iso/profile/profiledef.sh', 'scripts/build-iso.sh',
               'scripts/check-iso-profile.py', 'tests/qemu-boot.sh',
               '.github/workflows/validate.yml',

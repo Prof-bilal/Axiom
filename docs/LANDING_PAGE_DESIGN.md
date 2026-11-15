@@ -51,10 +51,10 @@ direction or boundary, never as shipped functionality.
 
 | Concept | Best use | Trade-off |
 | --- | --- | --- |
-| [Calm command center](../branding/landing-concepts/01-calm-command-center.png) | Strongest default hero; makes Axiom feel like a finished product | Must pair with evidence below so it does not overstate maturity |
-| [System map](../branding/landing-concepts/02-system-map.png) | Architecture and ownership section | More technical; needs a simpler hero above it |
-| [Work in motion](../branding/landing-concepts/03-work-in-motion.png) | Workflow storytelling for developers | More expressive and less suited to the evidence-first message |
-| [Proof over promise](../branding/landing-concepts/04-proof-over-promise.png) | Best fit for the current open engineering stage | Less emotionally immediate as a first-screen hero |
+| Calm command center (concept image not kept in repo) | Strongest default hero; makes Axiom feel like a finished product | Must pair with evidence below so it does not overstate maturity |
+| System map (concept image not kept in repo) | Architecture and ownership section | More technical; needs a simpler hero above it |
+| Work in motion (concept image not kept in repo) | Workflow storytelling for developers | More expressive and less suited to the evidence-first message |
+| Proof over promise (concept image not kept in repo) | Best fit for the current open engineering stage | Less emotionally immediate as a first-screen hero |
 
 Recommendation: combine the calm command center hero with the proof-over-
 promise evidence section and use the system map lower on the page. This keeps
