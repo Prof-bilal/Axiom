@@ -1,14 +1,15 @@
 import QtQuick
 import Quickshell
 import Quickshell.Wayland
-import Quickshell.Hyprland
 import qs.src.shared
 import qs.services
 
-// Alt+Tab window switcher (reference style): a centred glass card with one tile
+// Alt+Tab window switcher (reference style): a centred solid card with one tile
 // per open window, the selected tile outlined in cyan, and page dots below.
 // The compositor binds Alt+Tab to `switcherNext` and the release of Alt to
-// `switcherCommit` (hyprland.lua); the overlay itself takes no keyboard focus.
+// `switcherCommit` (hyprland.lua, opt-in). While open the overlay also takes the
+// keyboard, so Alt being let go is seen here even if the compositor's release
+// binding does not fire (it did not in QEMU): Alt up commits, Escape cancels.
 // Minimized windows are listed too and come back when chosen.
 PanelWindow {
     id: switcher
@@ -20,7 +21,7 @@ PanelWindow {
     visible: open
     WlrLayershell.namespace: "axiom-switcher"
     WlrLayershell.layer: WlrLayershell.Overlay
-    WlrLayershell.keyboardFocus: WlrLayershell.None
+    WlrLayershell.keyboardFocus: open ? WlrLayershell.Exclusive : WlrLayershell.None
     // Clicks pass through: the switcher is keyboard-driven.
     mask: Region {}
 
@@ -32,16 +33,30 @@ PanelWindow {
     readonly property int pageCount: Math.max(1, Math.ceil(entries.length / perPage))
     readonly property int page: Math.floor(index / perPage)
 
-    // Windows of the session, most recently used first (focusHistoryID 0 is the
-    // focused window).
+    // Windows most recently used first. The compositor's foreign-toplevel list has
+    // no focus order, so the shell remembers it: each time a window becomes the
+    // active one it moves to the front of `mru`.
+    property var mru: []
+    Connections {
+        target: ToplevelManager
+        function onActiveToplevelChanged() {
+            var a = ToplevelManager.activeToplevel
+            if (!a) return
+            var next = [a]
+            for (var i = 0; i < switcher.mru.length; i++) if (switcher.mru[i] !== a) next.push(switcher.mru[i])
+            switcher.mru = next
+        }
+    }
+
     function collect() {
-        var all = Hyprland.toplevels ? Hyprland.toplevels.values : []
+        var all = WindowService.list()
         var out = []
         for (var i = 0; i < all.length; i++) {
-            var o = all[i].lastIpcObject
-            if (!o || !o.mapped || !o.class || !all[i].wayland) continue
-            out.push({ hl: all[i], wl: all[i].wayland, cls: String(o.class),
-                       title: String(o.title || ""), order: o.focusHistoryID })
+            var t = all[i]
+            if (!t.appId) continue
+            var order = mru.indexOf(t)
+            out.push({ wl: t, cls: String(t.appId), title: String(t.title || ""),
+                       order: order < 0 ? 1000 + i : order })
         }
         out.sort(function (a, b) { return a.order - b.order })
         return out
@@ -49,7 +64,6 @@ PanelWindow {
 
     function next(step) {
         if (!open) {
-            Hyprland.refreshToplevels()
             entries = collect()
             if (entries.length === 0) return
             // Alt+Tab goes to the previous window; Alt+Shift+Tab to the oldest.
@@ -71,7 +85,22 @@ PanelWindow {
 
     function cancel() { open = false }
 
-    GlassSurface {
+    Item {
+        anchors.fill: parent
+        focus: switcher.open
+        Keys.onPressed: function (event) {
+            if (event.key === Qt.Key_Escape) { switcher.cancel(); event.accepted = true }
+            else if (event.key === Qt.Key_Tab) { switcher.next(1); event.accepted = true }
+            else if (event.key === Qt.Key_Backtab) { switcher.next(-1); event.accepted = true }
+            else if (event.key === Qt.Key_Right) { switcher.next(1); event.accepted = true }
+            else if (event.key === Qt.Key_Left) { switcher.next(-1); event.accepted = true }
+        }
+        Keys.onReleased: function (event) {
+            if (event.key === Qt.Key_Alt) { switcher.commit(); event.accepted = true }
+        }
+    }
+
+    SolidSurface {
         id: card
         anchors.centerIn: parent
         strong: true

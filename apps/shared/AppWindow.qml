@@ -5,18 +5,13 @@ import qs.services
 
 // Common top-level window for Axiom core apps. Content goes in `content`.
 //
-// Under labwc the compositor draws the title bar. Hyprland draws none (ADR-029),
-// so there the window draws its own bar inside itself: traffic-light buttons, a
-// centred title, drag to move and double-click to maximize. Because the bar is
-// part of the window it moves with it and shares its rounded corners.
+// The compositor (labwc, ADR-016) draws the title bar and window frame, themed
+// in themes/Axiom/labwc/themerc, so the app draws none of its own. Close,
+// minimize and maximize are on the keyboard (Super+Q/W, Super+H, Super+M).
 FloatingWindow {
     id: win
 
     default property alias content: area.data
-
-    // Hyprland session: draw our own title bar.
-    readonly property bool ownTitleBar: !!Quickshell.env("HYPRLAND_INSTANCE_SIGNATURE")
-    readonly property int titleBarHeight: ownTitleBar ? 38 : 0
 
     implicitWidth: 960
     implicitHeight: 640
@@ -24,52 +19,19 @@ FloatingWindow {
     color: Theme.background
     visible: true
 
-    Item {
-        id: bar
-        visible: win.ownTitleBar
-        anchors { top: parent.top; left: parent.left; right: parent.right }
-        height: win.titleBarHeight
-
-        Rectangle {
-            anchors.fill: parent
-            color: Theme.glassFillStrong
-        }
-        Rectangle {
-            anchors { left: parent.left; right: parent.right; bottom: parent.bottom }
-            height: 1
-            color: Theme.borderSubtle
-        }
-
-        MouseArea {
-            anchors.fill: parent
-            onPressed: win.startSystemMove()
-            onDoubleClicked: WindowService.toggleMaximizeActive()
-        }
-
-        TrafficLights {
-            x: 14
-            anchors.verticalCenter: parent.verticalCenter
-            onCloseClicked: Qt.quit()
-            onMinimizeClicked: WindowService.minimizeActive()
-            onMaximizeClicked: WindowService.toggleMaximizeActive()
-        }
-
-        Text {
-            anchors.centerIn: parent
-            width: parent.width - 160
-            horizontalAlignment: Text.AlignHCenter
-            elide: Text.ElideRight
-            textFormat: Text.PlainText
-            text: win.title
-            color: Theme.textPrimary
-            opacity: 0.8
-            font.family: Theme.fontFamily
-            font.pixelSize: Theme.fontBody
+    // Background: the card metal material (same as the cards), drawn first so the
+    // window's content sits on top of it. No blur.
+    Rectangle {
+        anchors.fill: parent
+        gradient: Gradient {
+            GradientStop { position: 0.0; color: "#8C888D" }
+            GradientStop { position: 0.5; color: "#6B666C" }
+            GradientStop { position: 1.0; color: "#3E3A3E" }
         }
     }
 
     Item {
         id: area
-        anchors { top: bar.bottom; left: parent.left; right: parent.right; bottom: parent.bottom }
+        anchors.fill: parent
     }
 }

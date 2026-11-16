@@ -21,8 +21,9 @@ PageFrame {
         HostService.refresh()
         runner.run(["cat", "/proc/cpuinfo"], function (r) { page.cpu = St.parseCpuModel(r.out) })
         runner.run(["cat", "/proc/meminfo"], function (r) { page.memory = St.formatKb(St.parseMemTotalKb(r.out)) })
-        // The running compositor: Hyprland (ADR-029) or the labwc fallback.
-        var hypr = Quickshell.env("HYPRLAND_INSTANCE_SIGNATURE")
+        // The running compositor: labwc (default, ADR-016) or the opt-in Hyprland.
+        // axiom-session exports AXIOM_COMPOSITOR.
+        var hypr = Quickshell.env("AXIOM_COMPOSITOR") === "hyprland"
         runner.run([hypr ? "Hyprland" : "labwc", "--version"], function (r) {
             // "Hyprland 0.56.2 built from branch ..." -> "Hyprland 0.56.2"
             page.compositor = r.code !== 0 ? "" : hypr ? St.firstLine(r.out).split(/\s+/).slice(0, 2).join(" ") : St.shortVersion(r.out)

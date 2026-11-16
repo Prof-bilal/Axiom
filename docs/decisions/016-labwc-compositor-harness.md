@@ -60,3 +60,25 @@ the product owner on 2026-11-02.
 
 The Axiom compositor milestone starts, or labwc blocks a required behavior
 (per-output workspaces, secure lock, gradient/blur effects).
+
+## Amendment 2026-11-16: labwc is the default compositor again
+
+[ADR-029](029-hyprland-glass-desktop.md) chose Hyprland for backdrop blur and glass. Both were removed for
+performance and a solid look, so labwc is the default session again.
+
+- `axiom-session` starts labwc. Hyprland runs only if `/etc/axiom/compositor` contains `hyprland`
+  (opt-in), with the old 15 s fallback to labwc. The session exports `AXIOM_COMPOSITOR=labwc|hyprland`;
+  the shell and apps read that, never a compositor-specific variable. Software GL is forced only in a VM.
+- The shell has no Hyprland dependency: `WindowService` uses `ToplevelManager`
+  (wlr-foreign-toplevel: activate, close, `minimized`, `maximized`), `WorkspaceService` uses
+  `WindowManager.windowsets` (ext-workspace). The window switcher keeps its own most-recently-used list.
+- labwc draws every window's title bar (server-side decorations), themed in `themerc` with the card metal
+  gradient and no buttons. The shell-drawn bars (`TerminalTitleBars`) and the apps' own title bar were removed.
+- Key bindings (`rc.xml`) match the former Hyprland set: Omarchy-style Super+Left/Right = previous/next window
+  (labwc has no directional focus), Super+Alt+Left/Right = snap with the shell's zone hint, Super+Alt+Down =
+  centre, Super+Tab = next workspace, Super+Q/W close, Super+H minimize (Iconify), media keys, Print capture,
+  Caps Lock OSD, and Alt+Tab through the shell switcher (release of Alt commits).
+- Losses, accepted: labwc's toplevel protocol gives no window geometry, so the Activities overview shows
+  plain workspace thumbnails and the capture bar has no window mode (region and screen only).
+- Unverified until the labwc ISO is booted in QEMU: `canActivate` for workspaces, `MoveTo x=center`,
+  Caps Lock key passthrough, release binding of `Alt_L`, and restore of a minimized window from the dock.

@@ -60,7 +60,7 @@ PanelWindow {
         onClicked: UiState.closeAllOverlays()
     }
 
-    GlassSurface {
+    SolidSurface {
         id: card
         width: launcher.gridMode ? Math.min(860, launcher.width - 96) : Math.min(560, launcher.width - 96)
         height: launcher.gridMode ? Math.min(600, launcher.height - 180) : Math.min(460, launcher.height - 180)

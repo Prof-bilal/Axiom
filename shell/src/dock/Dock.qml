@@ -102,16 +102,14 @@ PanelWindow {
     WlrLayershell.layer: WlrLayershell.Top
     WlrLayershell.keyboardFocus: WlrLayershell.None
 
-    // Body: glass card (ADR-029).
-    GlassSurface {
+    // Body: transparent, so the wallpaper shows behind the icons; no border.
+    Item {
         id: body
-        strong: true
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.bottom: parent.bottom
         anchors.bottomMargin: dock.shadow
         width: row.implicitWidth + Theme.dockPadding * 2
         height: Theme.dockItemSize + Theme.dockPadding * 2
-        radius: Theme.radiusDock
     }
 
     // Name tooltip above the hovered entry.

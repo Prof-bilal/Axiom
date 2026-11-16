@@ -16,7 +16,8 @@ PanelWindow {
     exclusionMode: ExclusionMode.Ignore
     WlrLayershell.namespace: "axiom-wallpaper"
     WlrLayershell.layer: WlrLayershell.Background
-    WlrLayershell.keyboardFocus: WlrLayershell.None
+    // On-demand keyboard so the desktop can take a name or Delete/F2 when clicked.
+    WlrLayershell.keyboardFocus: WlrLayershell.OnDemand
 
     // The Axiom default stays underneath, so a missing or unreadable custom
     // image falls back to it instead of leaving a blank desktop.
@@ -36,5 +37,13 @@ PanelWindow {
         // Large photos are scaled once to the output, not kept at full size.
         sourceSize.width: wallpaper.width
         sourceSize.height: wallpaper.height
+    }
+
+    // Desktop icons and menus on the primary output only.
+    Loader {
+        anchors.fill: parent
+        active: wallpaper.screen !== null && Quickshell.screens.length > 0
+                && wallpaper.screen.name === Quickshell.screens[0].name
+        source: "DesktopLayer.qml"
     }
 }

@@ -46,7 +46,7 @@ PanelWindow {
         Keys.onEscapePressed: UiState.closeAllOverlays()
     }
 
-    GlassSurface {
+    SolidSurface {
         id: card
         x: surface.alignRight ? parent.width - width - Theme.spacingSm : Theme.spacingSm
         y: Theme.panelBottom + Theme.spacingXs

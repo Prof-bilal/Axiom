@@ -1,7 +1,6 @@
 import QtQuick
 import Quickshell
 import Quickshell.Wayland
-import Quickshell.Hyprland
 import qs.src.shared
 import qs.services
 
@@ -29,25 +28,6 @@ PanelWindow {
     readonly property var windows: WindowService.list()
     readonly property var screenInfo: Quickshell.screens.length > 0 ? Quickshell.screens[0] : null
 
-    // Windows of each workspace for the thumbnails, from the compositor's own
-    // positions; refreshed while the overview is open.
-    readonly property var hyprWindows: Hyprland.toplevels ? Hyprland.toplevels.values : []
-    function windowsOf(workspaceNumber) {
-        var out = []
-        for (var i = 0; i < hyprWindows.length; i++) {
-            var o = hyprWindows[i].lastIpcObject
-            if (o && o.mapped && o.workspace && o.workspace.id === workspaceNumber) out.push(o)
-        }
-        return out
-    }
-    Timer {
-        interval: 400
-        running: overview.visible
-        repeat: true
-        triggeredOnStart: true
-        onTriggered: Hyprland.refreshToplevels()
-    }
-
     onVisibleChanged: if (visible) keys.forceActiveFocus()
 
     MouseArea { anchors.fill: parent; onClicked: UiState.closeAllOverlays() }
@@ -67,8 +47,8 @@ PanelWindow {
         width: Math.min(parent.width - 96, 1400)
         spacing: Theme.spacingXl
 
-        // --- workspaces: a glass strip of cards, as in the reference ---
-        GlassSurface {
+        // --- workspaces: a strip of cards, as in the reference ---
+        SolidSurface {
             anchors.horizontalCenter: parent.horizontalCenter
             strong: true
             radius: Theme.radiusWindow
@@ -85,13 +65,10 @@ PanelWindow {
                     delegate: Item {
                         id: ws
                         required property var modelData
-                        readonly property int number: parseInt(modelData.name)
-                        readonly property var inside: overview.windowsOf(number)
-                        width: 224
+                                                width: 224
                         height: 150
 
-                        // Thumbnail: the wallpaper with the workspace's windows
-                        // drawn at their real, scaled positions.
+                        // Thumbnail: the wallpaper (window positions are not available from labwc).
                         Rectangle {
                             id: thumb
                             width: parent.width
@@ -109,23 +86,6 @@ PanelWindow {
                                     : Quickshell.shellPath("assets/wallpaper.png")
                                 fillMode: Image.PreserveAspectCrop
                                 sourceSize.width: 448
-                            }
-
-                            Repeater {
-                                model: ws.inside
-                                delegate: Rectangle {
-                                    required property var modelData
-                                    readonly property real sx: overview.screenInfo ? thumb.width / overview.screenInfo.width : 0.1
-                                    readonly property real sy: overview.screenInfo ? thumb.height / overview.screenInfo.height : 0.1
-                                    x: modelData.at[0] * sx
-                                    y: modelData.at[1] * sy
-                                    width: Math.max(8, modelData.size[0] * sx)
-                                    height: Math.max(6, modelData.size[1] * sy)
-                                    radius: 3
-                                    color: Theme.glassFillStrong
-                                    border.width: 1
-                                    border.color: Theme.stateSelectedBorder
-                                }
                             }
 
                             MouseArea {
@@ -177,7 +137,7 @@ PanelWindow {
                     width: grid.cardWidth
                     height: 214
                     radius: Theme.radiusOverlay
-                    color: Theme.glassFill
+                    color: Theme.cardFill
                     border.width: 1
                     border.color: modelData.activated ? Theme.cyan
                                 : cardMouse.containsMouse ? Theme.stateSelectedBorder : Theme.border

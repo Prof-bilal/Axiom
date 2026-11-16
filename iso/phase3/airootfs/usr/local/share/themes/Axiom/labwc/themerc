@@ -1,29 +1,32 @@
 # Axiom window theme for the labwc compositor harness (ADR-016).
 # Palette: branding/theme/axiom/colors.toml. Rules: docs/DESKTOP_DESIGN.md.
 #
-# Focused window: cyan-muted border plus a soft cyan glow (drop shadow tinted
-# with Axiom cyan; labwc cannot draw gradient borders). Unfocused: neutral
-# border, dark shadow, dimmer title text. Close is the only orange element.
+# Title bar: the Axiom card metal gradient (light at the top, as in the shell's
+# cards and app windows), dark title text, a light hairline border and a neutral
+# dark shadow. Unfocused windows are a step darker. Title-bar
+# buttons: macOS-style close, minimize, maximize circles (svg files in this folder).
 
 border.width: 1
 window.titlebar.padding.width: 8
 window.titlebar.padding.height: 4
 
-window.active.border.color: #1d8f8d
-window.inactive.border.color: #233238
+window.active.border.color: #aaa6ac
+window.inactive.border.color: #5b575d
 
-window.active.title.bg.color: #0c1215
-window.inactive.title.bg.color: #0a0f12
-window.*.title.bg: Solid
+window.*.title.bg: Gradient Vertical
+window.active.title.bg.color: #8c888d
+window.active.title.bg.colorTo: #6b666c
+window.inactive.title.bg.color: #6b666c
+window.inactive.title.bg.colorTo: #4e4a52
 
-window.active.label.text.color: #edf5f5
-window.inactive.label.text.color: #8ea2a5
-window.label.text.justify: left
+window.active.label.text.color: #14181b
+window.inactive.label.text.color: #2f3237
+window.label.text.justify: center
 
 window.button.width: 30
 window.button.height: 26
 window.button.spacing: 2
-window.button.hover.bg.color: #ffffff18
+window.button.hover.bg.color: #00000000
 window.button.hover.bg.corner-radius: 6
 
 window.active.button.unpressed.image.color: #c7d3d4
@@ -33,7 +36,7 @@ window.inactive.button.close.unpressed.image.color: #804713
 
 window.active.shadow.size: 28
 window.inactive.shadow.size: 18
-window.active.shadow.color: #20d6d238
+window.active.shadow.color: #00000070
 window.inactive.shadow.color: #00000050
 
 menu.overlap.x: 0
@@ -41,10 +44,10 @@ menu.overlap.y: 0
 menu.width.min: 160
 menu.width.max: 280
 menu.border.width: 1
-menu.border.color: #233238
-menu.items.bg.color: #0c1215
+menu.border.color: #aaa6ac
+menu.items.bg.color: #1d1f23
 menu.items.text.color: #edf5f5
-menu.items.active.bg.color: #123e40
+menu.items.active.bg.color: #0a1215
 menu.items.active.text.color: #edf5f5
 menu.items.padding.x: 10
 menu.items.padding.y: 6
@@ -52,7 +55,7 @@ menu.separator.width: 1
 menu.separator.padding.width: 8
 menu.separator.padding.height: 4
 menu.separator.color: #182328
-menu.title.bg.color: #0c1215
+menu.title.bg.color: #1d1f23
 menu.title.text.color: #8ea2a5
 menu.title.text.justify: Left
 

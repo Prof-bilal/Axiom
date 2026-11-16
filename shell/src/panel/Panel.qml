@@ -26,10 +26,9 @@ PanelWindow {
     WlrLayershell.layer: WlrLayershell.Top
     WlrLayershell.keyboardFocus: WlrLayershell.None
 
-    // Floating glass pill (ADR-029); the compositor blurs behind it.
-    GlassSurface {
+    // Transparent bar: the wallpaper shows through; the content stays readable.
+    Item {
         anchors.fill: parent
-        radius: Theme.panelHeight / 2
     }
 
     // --- left ---

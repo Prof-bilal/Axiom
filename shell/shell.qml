@@ -18,8 +18,11 @@ import qs.src.session
 import qs.src.status
 import qs.src.menu
 import qs.src.activities
-import qs.src.terminal
 import qs.src.switcher
+import qs.src.osd
+import qs.src.snap
+import qs.src.capture
+import qs.src.transition
 import qs.services
 
 ShellRoot {
@@ -50,8 +53,6 @@ ShellRoot {
         }
     }
 
-    // Axiom title bars for terminal windows (Hyprland draws none; ADR-029).
-    TerminalTitleBars {}
 
     // Single-instance overlays on the primary output.
     Launcher {}
@@ -59,11 +60,16 @@ ShellRoot {
     ActivitiesOverview {}
     WindowSwitcher { id: windowSwitcher }
     NotificationToasts {}
+    Osd { id: osd }
+    SnapHint { id: snapZone }
+    CaptureBar { id: captureBar }
+    TransitionFx {}
     NotificationCenter {}
     SessionMenu {}
     ControlCenter {}
     IdleBlank {}
     LockScreen { id: lockScreen }
+    PolkitDialog {}
 
     // Surface control for compositor keybindings, plus session actions so the
     // same PowerService path is reachable from a keybinding or a script. The
@@ -82,6 +88,17 @@ ShellRoot {
         function switcherNext(): void { windowSwitcher.next(1) }
         function switcherPrev(): void { windowSwitcher.next(-1) }
         function switcherCommit(): void { windowSwitcher.commit() }
+        // Media keys (hyprland.lua): change the level and show the on-screen display.
+        function volumeStep(delta: int): void { osd.volumeStep(delta) }
+        function volumeMute(): void { osd.volumeMute() }
+        function brightnessStep(delta: int): void { osd.brightnessStep(delta) }
+        function capsLock(): void { osd.capsLock() }
+        // Screenshot and recording bar (Print, Super+Shift+S).
+        function toggleCapture(): void { captureBar.toggle() }
+        // Zone feedback for the compositor's snap keys ("left" or "right").
+        function snapHint(side: string): void { snapZone.show(side) }
+        // Show a level in the on-screen display ("volume" or "brightness", 0 to 100).
+        function showOsd(kind: string, value: int): void { osd.show(kind, value, false) }
         function lock(): void { lockScreen.lock() }
         function isLocked(): bool { return lockScreen.locked }
 

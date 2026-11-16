@@ -6,9 +6,9 @@ import qs.src.shared
 import qs.services
 
 // One notification, in the reference style: a rounded icon tile, a bold title,
-// muted body text and pill action buttons, on a translucent glass card.
+// muted body text and pill action buttons, on a solid card.
 // Untrusted content is rendered as plain text only.
-GlassSurface {
+SolidSurface {
     id: card
     property var notification
     property bool toast: false
@@ -17,7 +17,7 @@ GlassSurface {
     implicitHeight: content.implicitHeight + Theme.spacingMd * 2
     radius: Theme.radiusWindow
 
-    // Critical notifications keep an orange outline over the glass edge.
+    // Critical notifications keep an orange outline over the card edge.
     Rectangle {
         anchors.fill: parent
         radius: card.radius
@@ -125,7 +125,7 @@ GlassSurface {
                         implicitWidth: actionLabel.implicitWidth + Theme.spacingLg * 2
                         implicitHeight: 28
                         radius: height / 2
-                        color: actionHover.hovered ? Theme.stateHover : Theme.glassFill
+                        color: actionHover.hovered ? Theme.stateHover : Theme.cardFill
                         border.width: 1
                         border.color: Theme.borderSubtle
 

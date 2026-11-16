@@ -40,7 +40,7 @@ PanelWindow {
     readonly property var items: NotificationService.tracked
         ? NotificationService.tracked.values.slice().reverse() : []
 
-    GlassSurface {
+    SolidSurface {
         anchors.fill: parent
         z: -2
         strong: true
@@ -78,7 +78,7 @@ PanelWindow {
                 width: clearLabel.implicitWidth + Theme.spacingLg * 2
                 height: 28
                 radius: height / 2
-                color: clearHover.hovered ? Theme.stateHover : Theme.glassFill
+                color: clearHover.hovered ? Theme.stateHover : Theme.cardFill
                 border.width: 1
                 border.color: Theme.borderSubtle
                 HoverHandler { id: clearHover }

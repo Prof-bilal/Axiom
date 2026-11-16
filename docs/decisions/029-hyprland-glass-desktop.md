@@ -1,10 +1,10 @@
-# ADR 029: Hyprland replaces labwc for the glass desktop
+# ADR 029: Hyprland replaces labwc for the glass desktop (superseded)
 
 **Date:** 2026-11-15
-**Status:** Proposed direction, chosen by the product owner on 2026-11-15. Nothing in this ADR is
-verified yet: Hyprland has not been packaged, booted or measured in QEMU. labwc stays the shipped
-compositor until the Verification section passes. Supersedes [ADR-016](016-labwc-compositor-harness.md)
-once accepted.
+**Status:** Superseded on 2026-11-16 by [ADR-016](016-labwc-compositor-harness.md) (amended).
+The product owner dropped blur and glass for solid surfaces, which removed this ADR's main reason.
+Hyprland stays in the ISO as an opt-in compositor (`/etc/axiom/compositor` = `hyprland`) but is
+no longer the default, and the shell no longer depends on it.
 
 ## Context
 The new visual direction (23 reference screens in `branding/reference/glass/`) is glassmorphism:

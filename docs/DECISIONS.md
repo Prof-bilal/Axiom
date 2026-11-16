@@ -356,7 +356,7 @@ greeter first and falls back to the curses screen if the graphical stack cannot
 start, so a broken Wayland setup never locks the user out. Full record:
 [decisions/024-graphical-greeter.md](decisions/024-graphical-greeter.md).
 
-## ADR-029: Hyprland replaces labwc for the glass desktop (proposed)
+## ADR-029: Hyprland replaces labwc for the glass desktop (superseded by ADR-016 on 2026-11-16)
 
 The glassmorphism direction needs backdrop blur, which labwc cannot do. The user
 session moves to Hyprland; blur is compositor-side only and Quickshell surfaces
@@ -364,3 +364,13 @@ stay plain translucent rectangles. Not verified in QEMU yet, so labwc remains
 the shipped compositor until it is. Full record:
 [decisions/029-hyprland-glass-desktop.md](decisions/029-hyprland-glass-desktop.md).
 ADR-025 to ADR-028 have full records in `decisions/` but no entry in this index.
+
+## ADR-030: Screenshots and screen recording use grim and wf-recorder, driven by the shell (proposed)
+
+The shell's capture bar (Print, Super+Shift+S) builds the argument list and runs `grim` (image),
+`wf-recorder` (video) and `wl-clipboard`. No new daemon or privileged component; recording shows a
+visible Stop pill. Full record: [decisions/030-screen-capture.md](decisions/030-screen-capture.md).
+
+## ADR-016 amendment (2026-11-16): labwc is the default compositor again
+Blur and glass were dropped, so labwc is the default; Hyprland is opt-in. The shell is compositor-neutral
+(Quickshell ToplevelManager and WindowManager). See [decisions/016-labwc-compositor-harness.md](decisions/016-labwc-compositor-harness.md).

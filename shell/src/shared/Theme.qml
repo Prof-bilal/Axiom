@@ -18,9 +18,9 @@ Singleton {
     id: theme
 
     // --- base neutrals ---
-    readonly property color background: Qt.rgba(1, 1, 1, 0.24)  // launcher glass (ADR-029)
-    readonly property color surface: Qt.rgba(1, 1, 1, 0.16)
-    readonly property color surfaceElevated: Qt.rgba(1, 1, 1, 0.24)
+    readonly property color background: "#0E1619"
+    readonly property color surface: "#131D21"
+    readonly property color surfaceElevated: "#18242A"
     readonly property color surfaceHover: "#162126"
     readonly property color border: "#233238"
     readonly property color borderSubtle: "#182328"
@@ -38,20 +38,26 @@ Singleton {
     readonly property color orangeBright: "#FFB348"
     readonly property color orangeMuted: "#804713"
 
-    // --- translucent surfaces (alpha over the wallpaper) ---
-    readonly property color panelBackground: Qt.rgba(1, 1, 1, 0.24)
+    // Solid surfaces only: flat graphite like a native desktop, no blur or transparency.
+    readonly property color panelBackground: "#0E1619"
+    readonly property color dockBackground: "#0E1619"
+    readonly property color overlayBackground: "#0E1619"
     readonly property color panelBorder: Qt.rgba(68 / 255, 230 / 255, 220 / 255, 0.10)
-    readonly property color dockBackground: Qt.rgba(1, 1, 1, 0.24)
     readonly property color dockBorder: Qt.rgba(68 / 255, 230 / 255, 220 / 255, 0.10)
-    readonly property color overlayBackground: Qt.rgba(1, 1, 1, 0.24)
-    readonly property color overlayBorder: Qt.rgba(80 / 255, 235 / 255, 220 / 255, 0.14)
-    readonly property color scrim: Qt.rgba(2 / 255, 5 / 255, 7 / 255, 0.45)
+    // Dim behind modal dialogs and the power menu.
+    readonly property color scrim: Qt.rgba(2 / 255, 5 / 255, 7 / 255, 0.55)
 
-    // --- glass (ADR-029): fill over compositor blur, cyan-to-amber edge ---
-    readonly property color glassFill: Qt.rgba(1, 1, 1, 0.16)
-    readonly property color glassFillStrong: Qt.rgba(1, 1, 1, 0.24)
-    readonly property color glassEdgeStart: Qt.rgba(55 / 255, 240 / 255, 234 / 255, 0.70)
-    readonly property color glassEdgeEnd: Qt.rgba(1, 179 / 255, 72 / 255, 0.70)
+    // --- card fills and their hairline edge (all solid) ---
+    readonly property color cardFill: "#131D21"
+    readonly property color cardFillStrong: "#0E1619"
+    readonly property color cardEdge: "#2A3A40"
+
+    // --- menus: solid card, light text, dark row on hover ---
+    readonly property color menuSurface: "#141E22"
+    readonly property color menuBorder: "#2A3A40"
+    readonly property color menuHover: "#0A1215"
+    readonly property color menuText: "#E8F0F2"
+    readonly property color menuTextDisabled: "#55656B"
 
     // --- interaction states (one visual language for every component) ---
     // hover    -> slightly lighter surface
@@ -108,8 +114,8 @@ Singleton {
     readonly property int panelNavHeight: 28
     readonly property int workspaceButtonWidth: 30
     readonly property int workspaceButtonHeight: 26
-    readonly property int dockIconSize: 68
-    readonly property int dockItemSize: 86
+    readonly property int dockIconSize: 60
+    readonly property int dockItemSize: 76
     readonly property int dockPadding: 7
     readonly property int dockEdgeGap: 12
     readonly property real dockHoverScale: 1.12

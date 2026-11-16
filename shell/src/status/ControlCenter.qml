@@ -75,7 +75,7 @@ MenuSurface {
         }
     }
 
-    // --- brightness and volume: one glass card each ---
+    // --- brightness and volume: one solid card each ---
     Item {
         width: parent.width
         height: 88
@@ -119,7 +119,7 @@ MenuSurface {
             anchors.fill: parent
             anchors.margins: Theme.spacingSm
             radius: 18
-            color: Theme.glassFill
+            color: Theme.cardFill
             border.width: 1
             border.color: Theme.borderSubtle
 
@@ -262,7 +262,7 @@ MenuSurface {
         height: 56
         radius: height / 2
         // On: bright cyan with dark icon and label (readable on the fill).
-        color: active ? Theme.cyan : (tileMouse.containsMouse ? Theme.stateHover : Theme.glassFill)
+        color: active ? Theme.cyan : (tileMouse.containsMouse ? Theme.stateHover : Theme.cardFill)
         border.width: 1
         border.color: active ? Theme.cyanBright : Theme.borderSubtle
 
@@ -295,7 +295,7 @@ MenuSurface {
         }
     }
 
-    // A glass card with a caption, a slider and an end mark on each side (a sun
+    // A card with a caption, a slider and an end mark on each side (a sun
     // pair for brightness, volume icons for sound), like the reference.
     component SliderCard: Rectangle {
         id: card
@@ -310,7 +310,7 @@ MenuSurface {
         signal moved(int v)
 
         radius: 18
-        color: Theme.glassFill
+        color: Theme.cardFill
         border.width: 1
         border.color: Theme.borderSubtle
 
