@@ -26,9 +26,13 @@ PanelWindow {
     WlrLayershell.layer: WlrLayershell.Top
     WlrLayershell.keyboardFocus: WlrLayershell.None
 
-    // Transparent bar: the wallpaper shows through; the content stays readable.
-    Item {
+    // Solid bar from the mockups: charcoal in dark mode, white in light mode.
+    Rectangle {
         anchors.fill: parent
+        radius: Theme.radiusSurface
+        color: Theme.panelBackground
+        border.color: Theme.border
+        border.width: 1
     }
 
     // --- left ---

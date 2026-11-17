@@ -43,9 +43,9 @@ Singleton {
     readonly property color orangeMuted: "#804713"
 
     // Solid surfaces only: flat graphite like a native desktop, no blur or transparency.
-    readonly property color panelBackground: "#222325"
-    readonly property color dockBackground: "#222325"
-    readonly property color overlayBackground: "#2A2B2E"
+    readonly property color panelBackground: light ? "#FFFFFF" : "#222325"
+    readonly property color dockBackground: light ? "#FFFFFF" : "#222325"
+    readonly property color overlayBackground: light ? "#F4F6F7" : "#2A2B2E"
     readonly property color panelBorder: Qt.rgba(68 / 255, 230 / 255, 220 / 255, 0.10)
     readonly property color dockBorder: Qt.rgba(68 / 255, 230 / 255, 220 / 255, 0.10)
     // Dim behind modal dialogs and the power menu.
