@@ -1,3 +1,4 @@
-// Axiom default: use the system title bar (drawn by the Axiom shell) instead of
-// putting tabs in the title bar, so the window looks like every other window.
+// Axiom default: Firefox uses the compositor's title bar (labwc, Axiom theme) so
+// its close, minimise and maximise are the same Axiom buttons as every other app.
+// Tabs sit below that bar.
 pref("browser.tabs.inTitlebar", 0);
