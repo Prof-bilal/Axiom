@@ -57,11 +57,11 @@ Singleton {
     readonly property color cardEdge: light ? "#C9D3D8" : "#4A4C50"
 
     // --- menus: solid card, light text, dark row on hover ---
-    readonly property color menuSurface: "#38393B"
-    readonly property color menuBorder: "#4A4C50"
-    readonly property color menuHover: "#4A4C50"
-    readonly property color menuText: "#E6E6E8"
-    readonly property color menuTextDisabled: "#6B6E73"
+    readonly property color menuSurface: light ? "#FFFFFF" : "#38393B"
+    readonly property color menuBorder: light ? "#C9D3D8" : "#4A4C50"
+    readonly property color menuHover: light ? "#EEF2F4" : "#4A4C50"
+    readonly property color menuText: light ? "#14181B" : "#E6E6E8"
+    readonly property color menuTextDisabled: light ? "#9AA6AA" : "#6B6E73"
 
     // --- interaction states (one visual language for every component) ---
     // hover    -> slightly lighter surface
