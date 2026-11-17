@@ -110,6 +110,15 @@ PanelWindow {
         anchors.bottomMargin: dock.shadow
         width: row.implicitWidth + Theme.dockPadding * 2
         height: Theme.dockItemSize + Theme.dockPadding * 2
+
+        // The dock plate: solid in dark mode, translucent white in light mode.
+        Rectangle {
+            anchors.fill: parent
+            radius: Theme.radiusDock
+            color: Theme.dockBackground
+            border.width: 1
+            border.color: Theme.dockBorder
+        }
     }
 
     // Name tooltip above the hovered entry.

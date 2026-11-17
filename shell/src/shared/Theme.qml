@@ -44,7 +44,7 @@ Singleton {
 
     // Solid surfaces only: flat graphite like a native desktop, no blur or transparency.
     readonly property color panelBackground: light ? "#FFFFFF" : "#222325"
-    readonly property color dockBackground: light ? "#FFFFFF" : "#222325"
+    readonly property color dockBackground: light ? Qt.rgba(1, 1, 1, 0.85) : "#222325"
     readonly property color overlayBackground: light ? "#F4F6F7" : "#2A2B2E"
     readonly property color panelBorder: Qt.rgba(68 / 255, 230 / 255, 220 / 255, 0.10)
     readonly property color dockBorder: Qt.rgba(68 / 255, 230 / 255, 220 / 255, 0.10)
