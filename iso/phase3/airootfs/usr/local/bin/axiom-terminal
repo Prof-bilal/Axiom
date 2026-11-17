@@ -61,4 +61,15 @@ case "$geometry" in
   [0-9]*x[0-9]*) set -- "--window-size-pixels=$geometry" "$@" ;;
 esac
 
+if [ "$AXIOM_THEME" = light ]; then
+  # foot only picks its light section when the desktop reports light mode, so
+  # for Axiom light mode build a config whose colours section is the light one.
+  fcfg="${XDG_RUNTIME_DIR:-/tmp}/axiom-foot-light.ini"
+  awk '
+    /^\[colors-dark\]/ { skip = 1; next }
+    /^\[/ { skip = 0 }
+    !skip { if ($0 ~ /^\[colors-light\]/) print "[colors-dark]"; else print }
+  ' /etc/xdg/foot/foot.ini > "$fcfg" && set -- "--config=$fcfg" "$@"
+fi
+
 exec foot "$@"
