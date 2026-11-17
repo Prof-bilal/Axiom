@@ -282,6 +282,15 @@ var ICONS = {
 
 function iconName(entry) { return ICONS[category(entry)] }
 
+// Freedesktop icon-theme names (Adwaita is installed in the ISO), so the list
+// shows the system's real icons instead of drawn glyphs.
+var THEME_ICONS = {
+    folder: "folder", image: "image-x-generic", audio: "audio-x-generic",
+    video: "video-x-generic", archive: "package-x-generic", document: "x-office-document",
+    code: "text-x-script", text: "text-x-generic", file: "text-x-generic", broken: "dialog-error"
+}
+function themeIcon(entry) { return THEME_ICONS[category(entry)] }
+
 var KIND = {
     folder: "Folder", image: "Image", audio: "Audio", video: "Video",
     archive: "Archive", document: "Document", code: "Source / data",

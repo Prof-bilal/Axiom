@@ -25,13 +25,13 @@ Rectangle {
     }
 
     readonly property var rows: {
-        var a = [{ section: "Places" },
+        var a = [{ section: "Favourites" },
                  { name: "Home", icon: "home", path: backend.home }]
         backend.places.forEach(function (p) { a.push({ name: p.name, icon: bar.iconFor(p.name), path: p.path }) })
         a.push({ name: "Trash", icon: "trash", path: backend.trashUri })
         a.push({ name: "File System", icon: "disk", path: "/" })
         if (backend.devices.length > 0) {
-            a.push({ section: "Devices" })
+            a.push({ section: "Locations" })
             backend.devices.forEach(function (d) { a.push({ name: d.name, icon: "disk", path: d.path }) })
         }
         return a

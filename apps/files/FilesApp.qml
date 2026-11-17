@@ -19,7 +19,7 @@ AppWindow {
     // path -> true
     property var selected: ({})
     // "list" (columns) or "grid" (icon tiles).
-    property string viewMode: "grid"
+    property string viewMode: "list"
     property int currentIndex: -1
     property int anchorIndex: -1
     property string pendingSelect: ""

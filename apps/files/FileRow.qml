@@ -1,4 +1,5 @@
 import QtQuick
+import Quickshell
 import qs.src.shared
 import "files.js" as Files
 
@@ -38,14 +39,16 @@ Rectangle {
         anchors.rightMargin: Theme.spacingMd
         spacing: Theme.spacingMd
 
-        AxiomIcon {
+        Image {
+            id: rowIcon
             anchors.verticalCenter: parent.verticalCenter
-            width: 20
-            height: 20
-            name: entry ? Files.iconName(entry) : "file"
-            color: entry && entry.isDir ? Theme.cyan : (entry && entry.broken ? Theme.orange : Theme.textSecondary)
-            strokeWidth: 1.5
+            width: 22
+            height: 22
+            sourceSize: Qt.size(22, 22)
+            source: entry ? Quickshell.iconPath(Files.themeIcon(entry), "text-x-generic") : ""
             opacity: row.dim ? 0.6 : 1
+            fillMode: Image.PreserveAspectFit
+            smooth: true
         }
 
         Text {
