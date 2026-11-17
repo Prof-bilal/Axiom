@@ -30,7 +30,7 @@
     <fallbackAppIcon>application-x-executable</fallbackAppIcon>
     <titlebar>
       <layout>close,iconify,max:</layout>
-      <showTitle>yes</showTitle>
+      <showTitle>no</showTitle>
     </titlebar>
     <cornerRadius>16</cornerRadius>
     <keepBorder>yes</keepBorder>
