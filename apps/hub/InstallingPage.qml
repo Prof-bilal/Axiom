@@ -1,6 +1,7 @@
 import QtQuick
 import "hubstyle.js" as S
 import "backends.js" as B
+import qs.src.shared
 
 // Progress card for one install, update or removal. Shown as a modal over the
 // current page (HubApp.progressOpen), so the screen itself does not change.
@@ -33,9 +34,9 @@ Item {
                     ctx.clearRect(0, 0, width, height)
                     ctx.lineWidth = 8
                     ctx.lineCap = "round"
-                    ctx.strokeStyle = S.border
+                    ctx.strokeStyle = Theme.border
                     ctx.beginPath(); ctx.arc(width / 2, height / 2, 66, 0, Math.PI * 2); ctx.stroke()
-                    ctx.strokeStyle = page.failed ? S.bad : S.accent
+                    ctx.strokeStyle = page.failed ? S.bad : Theme.orange
                     ctx.beginPath()
                     ctx.arc(width / 2, height / 2, 66, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * Math.max(page.shownPct, 2) / 100)
                     ctx.stroke()
@@ -48,7 +49,7 @@ Item {
                 Text {
                     anchors.horizontalCenter: parent.horizontalCenter
                     text: page.failed ? "!" : page.be.done ? "✓" : page.shownPct + "%"
-                    color: S.text; font.family: S.font; font.pixelSize: 26; font.weight: Font.DemiBold
+                    color: Theme.textPrimary; font.family: S.font; font.pixelSize: 26; font.weight: Font.DemiBold
                 }
             }
         }
@@ -56,10 +57,10 @@ Item {
         // Linear bar: the same percentage, easy to read at a glance.
         Rectangle {
             width: parent.width; height: 6; radius: 3
-            color: S.border
+            color: Theme.border
             Rectangle {
                 height: parent.height; radius: 3
-                color: page.failed ? S.bad : S.accent
+                color: page.failed ? S.bad : Theme.orange
                 width: parent.width * page.shownPct / 100
                 Behavior on width { NumberAnimation { duration: 300; easing.type: Easing.OutCubic } }
             }
@@ -71,7 +72,7 @@ Item {
             wrapMode: Text.WordWrap
             text: page.be.done ? (page.failed ? "Something went wrong" : "All done")
                                : page.verb + " " + (page.be.current ? page.be.current.name : "") + "…"
-            color: S.text; font.family: S.font; font.pixelSize: 16; font.weight: Font.DemiBold
+            color: Theme.textPrimary; font.family: S.font; font.pixelSize: 16; font.weight: Font.DemiBold
         }
         Text {
             width: parent.width
@@ -82,7 +83,7 @@ Item {
             text: page.failed ? page.be.error
                               : page.be.done ? (page.be.action === "remove" ? "Removed from this system." : "Ready to use.")
                               : "Setting up dependencies and integrating with your system."
-            color: page.failed ? S.bad : S.muted; font.family: S.font; font.pixelSize: 12
+            color: page.failed ? S.bad : Theme.textSecondary; font.family: S.font; font.pixelSize: 12
         }
 
         Column {
@@ -96,8 +97,8 @@ Item {
                     readonly property bool finished: page.be.done ? !page.failed : index < page.be.step
                     readonly property bool active: !page.be.done && index === page.be.step
                     spacing: 10
-                    Text { text: finished ? "✔" : (active ? "◐" : "○"); color: finished ? S.ok : (active ? S.accent : S.border); font.pixelSize: 13 }
-                    Text { text: modelData; color: finished || active ? S.text : S.muted; font.family: S.font; font.pixelSize: 12 }
+                    Text { text: finished ? "✔" : (active ? "◐" : "○"); color: finished ? S.ok : (active ? Theme.orange : Theme.border); font.pixelSize: 13 }
+                    Text { text: modelData; color: finished || active ? Theme.textPrimary : Theme.textSecondary; font.family: S.font; font.pixelSize: 12 }
                 }
             }
         }

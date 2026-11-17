@@ -1,6 +1,7 @@
 import QtQuick
 import "hubstyle.js" as S
 import "rules.js" as R
+import qs.src.shared
 
 // One app card, as in the reference: icon, name, two lines of summary, and a small outlined Install.
 Rectangle {
@@ -12,9 +13,9 @@ Rectangle {
 
     height: 124
     radius: 10
-    color: m.containsMouse ? S.cardHover : S.card
+    color: m.containsMouse ? Theme.surfaceHover : Theme.cardFill
     border.width: 1
-    border.color: S.border
+    border.color: Theme.border
 
     MouseArea {
         id: m
@@ -34,8 +35,8 @@ Rectangle {
         anchors.top: parent.top
         anchors.topMargin: 14
         spacing: 3
-        Text { width: parent.width; text: card.app.name; elide: Text.ElideRight; color: S.text; font.family: S.fontMono; font.pixelSize: 13; font.weight: Font.Medium }
-        Text { width: parent.width; text: card.app.summary; elide: Text.ElideRight; maximumLineCount: 2; wrapMode: Text.WordWrap; color: S.muted; font.family: S.font; font.pixelSize: 11 }
+        Text { width: parent.width; text: card.app.name; elide: Text.ElideRight; color: Theme.textPrimary; font.family: S.fontMono; font.pixelSize: 13; font.weight: Font.Medium }
+        Text { width: parent.width; text: card.app.summary; elide: Text.ElideRight; maximumLineCount: 2; wrapMode: Text.WordWrap; color: Theme.textSecondary; font.family: S.font; font.pixelSize: 11 }
     }
 
     Text {
@@ -44,7 +45,7 @@ Rectangle {
         anchors.bottom: parent.bottom
         anchors.bottomMargin: 12
         text: R.metaLine(card.app)
-        color: S.muted
+        color: Theme.textSecondary
         font.family: S.font
         font.pixelSize: 10
     }
@@ -60,8 +61,8 @@ Rectangle {
         radius: 5
         color: "transparent"
         border.width: 1
-        border.color: installed ? S.border : S.accent
-        Text { id: btnText; anchors.centerIn: parent; text: installed ? "Installed" : "Install"; color: installed ? S.muted : S.accent; font.family: S.font; font.pixelSize: 11 }
+        border.color: installed ? Theme.border : Theme.orange
+        Text { id: btnText; anchors.centerIn: parent; text: installed ? "Installed" : "Install"; color: installed ? Theme.textSecondary : Theme.orange; font.family: S.font; font.pixelSize: 11 }
         MouseArea {
             anchors.fill: parent
             cursorShape: Qt.PointingHandCursor

@@ -1,5 +1,6 @@
 import QtQuick
 import "hubstyle.js" as S
+import qs.src.shared
 
 // App icon: the bundled vendor icon (icons/<id>.png from Flathub's appstream data) when
 // there is one, otherwise the app's first letter on a tinted rounded square.
@@ -8,7 +9,7 @@ Rectangle {
 
     property var app: null
     property int size: 44
-    readonly property color tone: app ? S.tint[app.category] : S.muted
+    readonly property color tone: app ? S.tint[app.category] : Theme.textSecondary
     readonly property bool hasIcon: img.status === Image.Ready
 
     width: size

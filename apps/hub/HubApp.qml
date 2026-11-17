@@ -4,6 +4,7 @@ import Quickshell
 import qs.apps.shared
 import "hubstyle.js" as S
 import "rules.js" as R
+import qs.src.shared
 
 // Axiom Hub: find, install, update and remove software. Six screens: Discover,
 // App details, Installed, Local install and the Installing progress.
@@ -13,7 +14,7 @@ AppWindow {
     title: "Axiom Hub"
     implicitWidth: 1040
     implicitHeight: 680
-    color: S.bg
+    color: Theme.background
 
     property string page: "discover"
     property string navPage: "discover"
@@ -58,34 +59,34 @@ AppWindow {
             Rectangle {
                 Layout.fillWidth: true
                 Layout.preferredHeight: 52
-                color: S.panel
-                Rectangle { anchors.bottom: parent.bottom; width: parent.width; height: 1; color: S.border }
+                color: Theme.surfaceElevated
+                Rectangle { anchors.bottom: parent.bottom; width: parent.width; height: 1; color: Theme.border }
                 Text {
                     anchors.left: parent.left
                     anchors.leftMargin: 20
                     anchors.verticalCenter: parent.verticalCenter
                     text: root.titles[root.page]
-                    color: S.text; font.family: S.font; font.pixelSize: 14; font.weight: Font.DemiBold
+                    color: Theme.textPrimary; font.family: S.font; font.pixelSize: 14; font.weight: Font.DemiBold
                 }
                 Rectangle {
                     anchors.right: parent.right
                     anchors.rightMargin: 20
                     anchors.verticalCenter: parent.verticalCenter
                     width: 260; height: 30; radius: 15
-                    color: S.card
+                    color: Theme.cardFill
                     border.width: 1
-                    border.color: search.activeFocus ? S.accent : S.border
-                    Text { anchors.left: parent.left; anchors.leftMargin: 12; anchors.verticalCenter: parent.verticalCenter; text: "⌕"; color: S.muted; font.pixelSize: 14 }
+                    border.color: search.activeFocus ? Theme.orange : Theme.border
+                    Text { anchors.left: parent.left; anchors.leftMargin: 12; anchors.verticalCenter: parent.verticalCenter; text: "⌕"; color: Theme.textSecondary; font.pixelSize: 14 }
                     TextInput {
                         id: search
                         anchors.fill: parent
                         anchors.leftMargin: 32
                         anchors.rightMargin: 12
                         verticalAlignment: TextInput.AlignVCenter
-                        color: S.text; font.family: S.font; font.pixelSize: 12
+                        color: Theme.textPrimary; font.family: S.font; font.pixelSize: 12
                         selectByMouse: true
                         onTextChanged: { root.query = text; if (text.length > 0 && root.page !== "discover") root.open("discover") }
-                        Text { visible: parent.text.length === 0; anchors.verticalCenter: parent.verticalCenter; text: "Search applications"; color: S.muted; font.family: S.font; font.pixelSize: 12 }
+                        Text { visible: parent.text.length === 0; anchors.verticalCenter: parent.verticalCenter; text: "Search applications"; color: Theme.textSecondary; font.family: S.font; font.pixelSize: 12 }
                     }
                 }
             }
@@ -106,17 +107,17 @@ AppWindow {
             Rectangle {
                 Layout.fillWidth: true
                 Layout.preferredHeight: 28
-                color: S.panel
-                Rectangle { anchors.top: parent.top; width: parent.width; height: 1; color: S.border }
+                color: Theme.surfaceElevated
+                Rectangle { anchors.top: parent.top; width: parent.width; height: 1; color: Theme.border }
                 Row {
                     anchors.left: parent.left
                     anchors.leftMargin: 16
                     anchors.verticalCenter: parent.verticalCenter
                     spacing: 8
-                    Rectangle { width: 8; height: 8; radius: 4; anchors.verticalCenter: parent.verticalCenter; color: backend.busy ? S.accent : S.ok }
-                    Text { text: backend.status; color: S.muted; font.family: S.font; font.pixelSize: 11 }
+                    Rectangle { width: 8; height: 8; radius: 4; anchors.verticalCenter: parent.verticalCenter; color: backend.busy ? Theme.orange : S.ok }
+                    Text { text: backend.status; color: Theme.textSecondary; font.family: S.font; font.pixelSize: 11 }
                 }
-                Text { anchors.right: parent.right; anchors.rightMargin: 16; anchors.verticalCenter: parent.verticalCenter; text: "Axiom Hub v1.0.0"; color: S.muted; font.family: S.font; font.pixelSize: 11 }
+                Text { anchors.right: parent.right; anchors.rightMargin: 16; anchors.verticalCenter: parent.verticalCenter; text: "Axiom Hub v1.0.0"; color: Theme.textSecondary; font.family: S.font; font.pixelSize: 11 }
             }
         }
     }
@@ -125,16 +126,16 @@ AppWindow {
     Rectangle {
         anchors.fill: parent
         visible: root.progressOpen
-        color: S.scrimColor
+        color: Theme.scrim
         z: 50
         MouseArea { anchors.fill: parent; hoverEnabled: true; onWheel: function (w) { w.accepted = true } }
         Rectangle {
             anchors.centerIn: parent
             width: 460; height: 480
             radius: 16
-            color: S.panel
+            color: Theme.surfaceElevated
             border.width: 1
-            border.color: S.border
+            border.color: Theme.border
             InstallingPage { anchors.fill: parent; anchors.margins: 24; hub: root }
         }
     }

@@ -73,5 +73,5 @@ function sourceLabel(app) {
 // "Flatpak · 312 MB", or just "Flatpak" when no verified size exists.
 function metaLine(app) {
     var size = formatSize(app.size_mb)
-    return sourceLabel(app) + (size ? " · " + size : "")
+    return sourceLabel(app) + (size ? " · " + size : "") + (app.verified ? "" : " · not verified")
 }
