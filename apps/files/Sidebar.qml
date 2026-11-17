@@ -10,7 +10,7 @@ Rectangle {
     property var backend
 
     width: 200
-    color: Theme.glassFill
+    color: "transparent"
 
     function iconFor(name) {
         switch (name) {

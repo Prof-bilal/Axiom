@@ -16,7 +16,7 @@ Rectangle {
 
     implicitHeight: 32
     radius: Theme.radiusControl
-    color: Theme.background
+    color: Qt.rgba(0, 0, 0, 0.22)
     border.width: 1
     border.color: editing ? Theme.stateFocus : Theme.border
 

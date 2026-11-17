@@ -16,6 +16,10 @@ Item {
     // ---- state --------------------------------------------------------------
     property string home: Quickshell.env("HOME")
     property string path: home
+    // The desktop uses a second backend on ~/Desktop: it starts there and must
+    // not read or overwrite the Files app's saved location and sort order.
+    property string initialPath: ""
+    property bool persistState: true
     readonly property bool trashView: path === trashUri
     property var rawEntries: []
     property var entries: []              // sorted, hidden-filtered view of rawEntries
@@ -383,6 +387,7 @@ Item {
             property bool sortAscending: true
         }
         onLoaded: {
+            if (!backend.persistState) { stateReady.start(); return }
             backend.showHidden = saved.showHidden
             backend.sortKey = saved.sortKey === "size" || saved.sortKey === "modified" ? saved.sortKey : "name"
             backend.sortAscending = saved.sortAscending
@@ -401,7 +406,7 @@ Item {
     property bool saving: false
     Timer { id: stateReady; interval: 10; onTriggered: backend.saving = true }
 
-    function scheduleSave() { if (saving) saveTimer.restart() }
+    function scheduleSave() { if (saving && persistState) saveTimer.restart() }
     Timer { id: saveTimer; interval: 1000; onTriggered: makeStateDir.running = true }
     Process {
         id: makeStateDir
@@ -430,7 +435,8 @@ Item {
 
     function begin() {
         if (restoreApplied) return
-        navigate(startArg.length > 0 ? argToPath(startArg) : home, true)
+        navigate(initialPath.length > 0 ? initialPath
+                 : startArg.length > 0 ? argToPath(startArg) : home, true)
     }
 
     Component.onCompleted: {

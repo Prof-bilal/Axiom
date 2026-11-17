@@ -14,8 +14,7 @@ AppWindow {
     title: backend.trashView ? "Trash" : (Files.baseName(backend.path) || "File System")
     implicitWidth: 1060
     implicitHeight: 660
-    // Glass window: the compositor blurs what is behind it (ADR-029).
-    color: "transparent"
+    color: Theme.background
 
     // path -> true
     property var selected: ({})
@@ -307,7 +306,7 @@ AppWindow {
             anchors.left: parent.left
             anchors.right: parent.right
             height: 48
-            color: Theme.glassFill
+            color: "transparent"
 
             Rectangle { anchors.bottom: parent.bottom; width: parent.width; height: 1; color: Theme.borderSubtle }
 
@@ -546,7 +545,7 @@ AppWindow {
             anchors.left: parent.left
             anchors.right: parent.right
             height: 28
-            color: Theme.glassFill
+            color: "transparent"
 
             Rectangle { anchors.top: parent.top; width: parent.width; height: 1; color: Theme.borderSubtle }
 
