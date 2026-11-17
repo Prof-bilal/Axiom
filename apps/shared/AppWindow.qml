@@ -19,21 +19,10 @@ FloatingWindow {
     color: Theme.background
     visible: true
 
-    // Background: solid card surface, drawn first so the window's content sits on
-    // top of it. Light mode is a flat white surface; dark keeps the metal gradient.
+    // Background: a flat solid surface in both modes (white in light, near-black in dark).
     Rectangle {
         anchors.fill: parent
-        color: Theme.light ? Theme.surface : "transparent"
-        visible: Theme.light
-    }
-    Rectangle {
-        anchors.fill: parent
-        visible: !Theme.light
-        gradient: Gradient {
-            GradientStop { position: 0.0; color: "#8C888D" }
-            GradientStop { position: 0.5; color: "#6B666C" }
-            GradientStop { position: 1.0; color: "#3E3A3E" }
-        }
+        color: Theme.light ? Theme.surface : "#161719"
     }
 
     Item {
