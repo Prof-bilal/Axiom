@@ -17,16 +17,20 @@ import qs.services
 Singleton {
     id: theme
 
+    // Light mode is opt-in (AXIOM_THEME=light) until the shell has a mode switch.
+    readonly property bool light: Quickshell.env("AXIOM_THEME") === "light"
+
     // --- base neutrals ---
-    readonly property color background: "#0E1619"
-    readonly property color surface: "#131D21"
-    readonly property color surfaceElevated: "#18242A"
-    readonly property color surfaceHover: "#162126"
-    readonly property color border: "#233238"
-    readonly property color borderSubtle: "#182328"
-    readonly property color textPrimary: "#EDF5F5"
-    readonly property color textSecondary: "#8EA2A5"
-    readonly property color textDisabled: "#4E5E62"
+    // Dark charcoal, sampled from the reference screenshot; light mockup otherwise.
+    readonly property color background: light ? "#F4F6F7" : "#2A2B2E"
+    readonly property color surface: light ? "#FFFFFF" : "#38393B"
+    readonly property color surfaceElevated: light ? "#FFFFFF" : "#38393B"
+    readonly property color surfaceHover: light ? "#EEF2F4" : "#4A4C50"
+    readonly property color border: light ? "#C9D3D8" : "#2E2F32"
+    readonly property color borderSubtle: light ? "#D8DEE2" : "#2E2F32"
+    readonly property color textPrimary: light ? "#14181B" : "#E6E6E8"
+    readonly property color textSecondary: light ? "#5F6F74" : "#9A9CA0"
+    readonly property color textDisabled: light ? "#9AA6AA" : "#6B6E73"
 
     // --- Axiom cyan (primary accent) ---
     readonly property color cyan: "#20D6D2"
@@ -39,25 +43,25 @@ Singleton {
     readonly property color orangeMuted: "#804713"
 
     // Solid surfaces only: flat graphite like a native desktop, no blur or transparency.
-    readonly property color panelBackground: "#0E1619"
-    readonly property color dockBackground: "#0E1619"
-    readonly property color overlayBackground: "#0E1619"
+    readonly property color panelBackground: "#222325"
+    readonly property color dockBackground: "#222325"
+    readonly property color overlayBackground: "#2A2B2E"
     readonly property color panelBorder: Qt.rgba(68 / 255, 230 / 255, 220 / 255, 0.10)
     readonly property color dockBorder: Qt.rgba(68 / 255, 230 / 255, 220 / 255, 0.10)
     // Dim behind modal dialogs and the power menu.
     readonly property color scrim: Qt.rgba(2 / 255, 5 / 255, 7 / 255, 0.55)
 
     // --- card fills and their hairline edge (all solid) ---
-    readonly property color cardFill: "#131D21"
-    readonly property color cardFillStrong: "#0E1619"
-    readonly property color cardEdge: "#2A3A40"
+    readonly property color cardFill: "#38393B"
+    readonly property color cardFillStrong: "#2A2B2E"
+    readonly property color cardEdge: "#4A4C50"
 
     // --- menus: solid card, light text, dark row on hover ---
-    readonly property color menuSurface: "#141E22"
-    readonly property color menuBorder: "#2A3A40"
-    readonly property color menuHover: "#0A1215"
-    readonly property color menuText: "#E8F0F2"
-    readonly property color menuTextDisabled: "#55656B"
+    readonly property color menuSurface: "#38393B"
+    readonly property color menuBorder: "#4A4C50"
+    readonly property color menuHover: "#4A4C50"
+    readonly property color menuText: "#E6E6E8"
+    readonly property color menuTextDisabled: "#6B6E73"
 
     // --- interaction states (one visual language for every component) ---
     // hover    -> slightly lighter surface

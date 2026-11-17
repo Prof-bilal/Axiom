@@ -85,6 +85,15 @@ start_labwc() {
     export LIBGL_ALWAYS_SOFTWARE=1
     export WLR_RENDERER="${WLR_RENDERER:-pixman}"
   fi
+  # Light mode picks the Axiom-Light theme. labwc reads the theme name only from
+  # rc.xml at start, so use a generated copy of the config for that mode.
+  if [ "$AXIOM_THEME" = light ]; then
+    lcfg="${XDG_RUNTIME_DIR:-/tmp}/axiom-labwc-light"
+    mkdir -p "$lcfg"
+    sed 's|<name>Axiom</name>|<name>Axiom-Light</name>|' /etc/axiom/labwc/rc.xml > "$lcfg/rc.xml"
+    cp /etc/axiom/labwc/menu.xml /etc/axiom/labwc/autostart "$lcfg/" 2>/dev/null || true
+    exec dbus-run-session -- labwc -C "$lcfg"
+  fi
   exec dbus-run-session -- labwc -C /etc/axiom/labwc
 }
 

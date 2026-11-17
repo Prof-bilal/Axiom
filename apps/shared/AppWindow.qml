@@ -19,10 +19,16 @@ FloatingWindow {
     color: Theme.background
     visible: true
 
-    // Background: the card metal material (same as the cards), drawn first so the
-    // window's content sits on top of it. No blur.
+    // Background: solid card surface, drawn first so the window's content sits on
+    // top of it. Light mode is a flat white surface; dark keeps the metal gradient.
     Rectangle {
         anchors.fill: parent
+        color: Theme.light ? Theme.surface : "transparent"
+        visible: Theme.light
+    }
+    Rectangle {
+        anchors.fill: parent
+        visible: !Theme.light
         gradient: Gradient {
             GradientStop { position: 0.0; color: "#8C888D" }
             GradientStop { position: 0.5; color: "#6B666C" }
