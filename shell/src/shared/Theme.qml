@@ -52,9 +52,9 @@ Singleton {
     readonly property color scrim: Qt.rgba(2 / 255, 5 / 255, 7 / 255, 0.55)
 
     // --- card fills and their hairline edge (all solid) ---
-    readonly property color cardFill: "#38393B"
-    readonly property color cardFillStrong: "#2A2B2E"
-    readonly property color cardEdge: "#4A4C50"
+    readonly property color cardFill: light ? "#EEF2F4" : "#38393B"
+    readonly property color cardFillStrong: light ? "#FFFFFF" : "#2A2B2E"
+    readonly property color cardEdge: light ? "#C9D3D8" : "#4A4C50"
 
     // --- menus: solid card, light text, dark row on hover ---
     readonly property color menuSurface: "#38393B"
