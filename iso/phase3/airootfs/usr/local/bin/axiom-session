@@ -29,6 +29,12 @@ export XCURSOR_SIZE=24
 # accel); on real hardware the GPU is used. Applied per compositor below.
 if systemd-detect-virt -q 2>/dev/null; then axiom_virt=1; else axiom_virt=0; fi
 export MOZ_ENABLE_WAYLAND=1
+# Every app gets the compositor's Axiom title bar, not its own: toolkits that
+# draw client-side decorations are asked to use server-side ones (labwc draws
+# the Axiom close, minimise and maximise buttons). Apps that ignore these hints
+# keep their own bar; Firefox also has browser.tabs.inTitlebar=0 in the profile.
+export QT_WAYLAND_DISABLE_WINDOWDECORATION=1
+export GTK_CSD=0
 
 # Appearance: "light" or "dark" from the user's setting; dark is the default.
 # An explicit AXIOM_THEME in the environment wins (used by development runs).
