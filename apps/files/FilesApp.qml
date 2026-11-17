@@ -319,7 +319,6 @@ AppWindow {
                 PanelButton { icon: "arrow-left"; accessibleName: "Back"; available: backend.canGoBack; onClicked: backend.goBack() }
                 PanelButton { icon: "arrow-right"; accessibleName: "Forward"; available: backend.canGoForward; onClicked: backend.goForward() }
                 PanelButton { icon: "arrow-up"; accessibleName: "Up one folder"; available: backend.canGoUp; onClicked: backend.goUp() }
-                PanelButton { icon: "refresh"; accessibleName: "Refresh"; onClicked: backend.refresh() }
             }
 
             Row {
@@ -349,15 +348,19 @@ AppWindow {
                 onSubmitted: keyTarget.forceActiveFocus()
             }
 
-            PathBar {
-                id: pathBar
-                anchors.left: navButtons.right
-                anchors.leftMargin: Theme.spacingMd
-                anchors.right: searchBox.left
-                anchors.rightMargin: Theme.spacingMd
-                anchors.verticalCenter: parent.verticalCenter
-                backend: backend
-                onEditFinished: keyTarget.forceActiveFocus()
+            // Finder-style title: the current folder's name, centred in the toolbar.
+            // Navigation stays in the sidebar and the back, forward and up buttons.
+            Text {
+                id: toolbarTitle
+                anchors.centerIn: parent
+                width: Math.min(implicitWidth, parent.width - 520)
+                elide: Text.ElideRight
+                horizontalAlignment: Text.AlignHCenter
+                text: backend.trashView ? "Trash" : (Files.baseName(backend.path) || "File System")
+                color: Theme.textPrimary
+                font.family: Theme.fontFamily
+                font.pixelSize: Theme.fontBody
+                font.weight: Font.DemiBold
             }
         }
 
