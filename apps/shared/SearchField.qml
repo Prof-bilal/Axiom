@@ -22,7 +22,7 @@ Rectangle {
     implicitWidth: 220
     implicitHeight: 32
     radius: Theme.radiusControl
-    color: Theme.background
+    color: Theme.light ? Theme.surface : Qt.rgba(0, 0, 0, 0.22)
     border.width: 1
     border.color: input.activeFocus ? Theme.stateFocus : Theme.border
     opacity: enabled ? 1 : 0.45
