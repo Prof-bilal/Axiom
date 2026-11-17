@@ -98,7 +98,7 @@ AppWindow {
                         var c = getContext("2d")
                         c.clearRect(0, 0, width, height)
                         c.lineWidth = 3; c.lineCap = "round"; c.lineJoin = "round"
-                        c.strokeStyle = ok ? "#37F0EA" : "#FFB348"
+                        c.strokeStyle = ok ? (Theme.light ? "#0F8F8C" : "#37F0EA") : (Theme.light ? "#B45F00" : "#FFB348")
                         c.beginPath()
                         if (ok) { c.moveTo(5, 15); c.lineTo(11, 21); c.lineTo(23, 7) }
                         else { c.moveTo(7, 7); c.lineTo(21, 21); c.moveTo(21, 7); c.lineTo(7, 21) }
@@ -161,18 +161,6 @@ AppWindow {
                     color: Theme.cyan
                     width: Math.max(parent.height, parent.width * root.percent / 100)
                     Behavior on width { NumberAnimation { duration: 300; easing.type: Easing.OutCubic } }
-                    // A light sweep while work is in progress, so a long step still looks alive.
-                    Rectangle {
-                        visible: root.phase === "working"
-                        width: 48; height: parent.height
-                        gradient: Gradient {
-                            orientation: Gradient.Horizontal
-                            GradientStop { position: 0; color: "transparent" }
-                            GradientStop { position: 0.5; color: Qt.rgba(1, 1, 1, 0.35) }
-                            GradientStop { position: 1; color: "transparent" }
-                        }
-                        NumberAnimation on x { from: -48; to: fill.width; duration: 1100; loops: Animation.Infinite }
-                    }
                 }
             }
 

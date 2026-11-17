@@ -43,7 +43,7 @@ PanelWindow {
     Rectangle {
         anchors.fill: parent
         radius: Theme.radiusWindow
-        color: "#18242A"
+        color: Theme.surfaceElevated
     }
 
     Canvas {
@@ -80,9 +80,9 @@ PanelWindow {
             anchors.horizontalCenter: parent.horizontalCenter
             spacing: 6
             layoutDirection: hint.side === "left" ? Qt.LeftToRight : Qt.RightToLeft
-            Rectangle { width: 30; height: 56; radius: 6; color: "#E8F0F2" }
+            Rectangle { width: 30; height: 56; radius: 6; color: Theme.textPrimary }
             Rectangle { width: 30; height: 56; radius: 6; color: "transparent"
-                        border.width: 2; border.color: "#E8F0F2" }
+                        border.width: 2; border.color: Theme.textPrimary }
         }
 
         Text {

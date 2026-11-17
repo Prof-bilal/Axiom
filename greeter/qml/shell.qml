@@ -21,11 +21,13 @@ ShellRoot {
     id: root
 
     // --- design tokens (kept in step with shell/src/shared/Theme.qml) ---
-    readonly property color background: "#070B0D"
-    readonly property color surfaceElevated: "#11191D"
-    readonly property color border: "#233238"
-    readonly property color textPrimary: "#EDF5F5"
-    readonly property color textSecondary: "#8EA2A5"
+    // Light mode follows AXIOM_THEME=light, the same switch the desktop uses.
+    readonly property bool light: Quickshell.env("AXIOM_THEME") === "light"
+    readonly property color background: light ? "#F4F6F7" : "#070B0D"
+    readonly property color surfaceElevated: light ? "#FFFFFF" : "#11191D"
+    readonly property color border: light ? "#C9D3D8" : "#233238"
+    readonly property color textPrimary: light ? "#14181B" : "#EDF5F5"
+    readonly property color textSecondary: light ? "#5F6F74" : "#8EA2A5"
     readonly property color cyan: "#20D6D2"
     readonly property color orangeBright: "#FFB348"
 
@@ -195,99 +197,135 @@ ShellRoot {
             anchors.fill: parent
             focus: true
 
-            // Penguin with a gentle bob (about 6 px, 2 s period), matching the Plymouth splash.
+            // The Axiom wallpaper, darkened. The throwaway compositor has no blur,
+            // so the card below is a solid tint.
             Image {
-                id: penguin
-                anchors.horizontalCenter: parent.horizontalCenter
-                y: parent.height / 2 - 250
-                width: 140; height: 140
-                source: Qt.resolvedUrl("assets/axiom-penguin.png")
-                fillMode: Image.PreserveAspectFit
-                smooth: true
-                SequentialAnimation on y {
-                    loops: Animation.Infinite
-                    NumberAnimation { to: page.height / 2 - 258; duration: 1000; easing.type: Easing.InOutSine }
-                    NumberAnimation { to: page.height / 2 - 242; duration: 1000; easing.type: Easing.InOutSine }
-                }
+                anchors.fill: parent
+                source: Qt.resolvedUrl("assets/wallpaper.jpg")
+                fillMode: Image.PreserveAspectCrop
+                asynchronous: true
             }
+            Rectangle { anchors.fill: parent; color: Qt.rgba(0, 0, 0, 0.5) }
 
-            // Big Axiom wordmark under the penguin, as on the installer and lock screen.
-            Image {
-                id: nameLabel
-                anchors.horizontalCenter: parent.horizontalCenter
-                anchors.top: penguin.bottom
-                anchors.topMargin: 18
-                height: 76
-                fillMode: Image.PreserveAspectFit
-                source: Qt.resolvedUrl("assets/axiom-wordmark.png")
-                smooth: true
-            }
-
+            // Date and time, top right (read from the clock, nothing else).
             Text {
-                id: userLabel
-                anchors.horizontalCenter: parent.horizontalCenter
-                anchors.top: nameLabel.bottom
-                anchors.topMargin: 14
-                text: root.account()
-                      ? (root.accounts.length > 1 ? "< " : "") + root.account().display + (root.accounts.length > 1 ? " >" : "")
-                      : "No local accounts are available."
-                color: root.textSecondary
-                font.pixelSize: 13
+                anchors { top: parent.top; right: parent.right; topMargin: 22; rightMargin: 28 }
+                color: root.textPrimary
+                font.pixelSize: 14
+                text: Qt.formatDateTime(clock.now, "ddd, MMM d, h:mm AP")
+                QtObject { id: clock; property date now: new Date() }
+                Timer { interval: 15000; running: true; repeat: true; onTriggered: clock.now = new Date() }
             }
 
             Rectangle {
-                id: field
-                anchors.horizontalCenter: parent.horizontalCenter
-                anchors.top: userLabel.bottom
-                anchors.topMargin: 22
-                width: 320; height: 44; radius: 8
-                color: root.surfaceElevated
-                border.color: root.authFailed ? root.orangeBright : root.cyan
+                id: card
+                anchors.centerIn: parent
+                width: 340; height: 330
+                radius: 28
+                color: root.light ? "#FFFFFF" : "#131D21"
                 border.width: 1
-                opacity: root.account() ? 1 : 0.5
+                border.color: root.border
 
-                TextInput {
-                    id: input
-                    anchors.fill: parent
-                    anchors.leftMargin: 14
-                    anchors.rightMargin: 14
-                    verticalAlignment: TextInput.AlignVCenter
-                    color: root.textPrimary
-                    font.pixelSize: 16
-                    echoMode: root.secret ? TextInput.Password : TextInput.Normal
-                    passwordCharacter: "*"
-                    readOnly: root.busy || root.greeting || !root.account()
-                    enabled: root.account() !== null
-                    focus: true
-                    onAccepted: root.submit()
-                    Keys.onEscapePressed: root.resetPrompt()
-                    // Left/Right switch the account when there is more than one (TextInput would
-                    // otherwise use them for cursor movement; BeforeItem lets this run first).
-                    Keys.priority: Keys.BeforeItem
-                    Keys.onLeftPressed: (event) => { if (root.accounts.length > 1 && !root.busy && !root.greeting && input.text.length === 0) { root.selected = (root.selected + root.accounts.length - 1) % root.accounts.length; event.accepted = true } }
-                    Keys.onRightPressed: (event) => { if (root.accounts.length > 1 && !root.busy && !root.greeting && input.text.length === 0) { root.selected = (root.selected + 1) % root.accounts.length; event.accepted = true } }
-                    Text {
+                // Avatar: the penguin in a round frame, with a gentle bob.
+                Rectangle {
+                    id: avatar
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    y: 30
+                    width: 104; height: 104; radius: 52
+                    color: root.surfaceElevated
+                    border.width: 2
+                    border.color: root.cyan
+                    Image {
+                        id: penguin
                         anchors.fill: parent
-                        verticalAlignment: Text.AlignVCenter
-                        visible: input.text.length === 0
-                        text: root.awaiting ? root.prompt : "Password"
-                        color: root.textSecondary
-                        font.pixelSize: 16
+                        anchors.margins: 12
+                        source: Qt.resolvedUrl("assets/axiom-penguin.png")
+                        fillMode: Image.PreserveAspectFit
+                        smooth: true
+                    }
+                    SequentialAnimation on y {
+                        loops: Animation.Infinite
+                        NumberAnimation { to: 26; duration: 1000; easing.type: Easing.InOutSine }
+                        NumberAnimation { to: 34; duration: 1000; easing.type: Easing.InOutSine }
                     }
                 }
-            }
 
-            Text {
-                id: messageLabel
-                anchors.horizontalCenter: parent.horizontalCenter
-                anchors.top: field.bottom
-                anchors.topMargin: 14
-                width: 420
-                horizontalAlignment: Text.AlignHCenter
-                wrapMode: Text.WordWrap
-                text: root.message
-                color: root.messageIsError ? root.orangeBright : root.textSecondary
-                font.pixelSize: 14
+                Text {
+                    id: userLabel
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    anchors.top: avatar.bottom
+                    anchors.topMargin: 22
+                    text: root.account()
+                          ? (root.accounts.length > 1 ? "< " : "") + root.account().display + (root.accounts.length > 1 ? " >" : "")
+                          : "No local accounts are available."
+                    color: root.textPrimary
+                    font.pixelSize: 20
+                }
+
+                Rectangle {
+                    id: field
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    anchors.top: userLabel.bottom
+                    anchors.topMargin: 18
+                    width: 262; height: 42; radius: 21
+                    color: root.light ? "#F4F6F7" : "#0A1215"
+                    border.color: root.authFailed ? root.orangeBright : root.cyan
+                    border.width: 1
+                    opacity: root.account() ? 1 : 0.5
+
+                    TextInput {
+                        id: input
+                        anchors.fill: parent
+                        anchors.leftMargin: 18
+                        anchors.rightMargin: 48
+                        verticalAlignment: TextInput.AlignVCenter
+                        color: root.textPrimary
+                        font.pixelSize: 16
+                        echoMode: root.secret ? TextInput.Password : TextInput.Normal
+                        passwordCharacter: "*"
+                        clip: true
+                        readOnly: root.busy || root.greeting || !root.account()
+                        enabled: root.account() !== null
+                        focus: true
+                        onAccepted: root.submit()
+                        Keys.onEscapePressed: root.resetPrompt()
+                        // Left/Right switch the account when there is more than one (TextInput would
+                        // otherwise use them for cursor movement; BeforeItem lets this run first).
+                        Keys.priority: Keys.BeforeItem
+                        Keys.onLeftPressed: (event) => { if (root.accounts.length > 1 && !root.busy && !root.greeting && input.text.length === 0) { root.selected = (root.selected + root.accounts.length - 1) % root.accounts.length; event.accepted = true } }
+                        Keys.onRightPressed: (event) => { if (root.accounts.length > 1 && !root.busy && !root.greeting && input.text.length === 0) { root.selected = (root.selected + 1) % root.accounts.length; event.accepted = true } }
+                        Text {
+                            anchors.fill: parent
+                            verticalAlignment: Text.AlignVCenter
+                            visible: input.text.length === 0
+                            text: root.awaiting ? root.prompt : "Password"
+                            color: root.textSecondary
+                            font.pixelSize: 16
+                        }
+                    }
+
+                    // Arrow button: the same as pressing Enter.
+                    Rectangle {
+                        anchors { right: parent.right; rightMargin: 4; verticalCenter: parent.verticalCenter }
+                        width: 34; height: 34; radius: 17
+                        color: root.cyan
+                        Text { anchors.centerIn: parent; text: "\u2192"; color: "#06161A"; font.pixelSize: 18; font.bold: true }
+                        MouseArea { anchors.fill: parent; cursorShape: Qt.PointingHandCursor; onClicked: root.submit() }
+                    }
+                }
+
+                Text {
+                    id: messageLabel
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    anchors.top: field.bottom
+                    anchors.topMargin: 12
+                    width: parent.width - 40
+                    horizontalAlignment: Text.AlignHCenter
+                    wrapMode: Text.WordWrap
+                    text: root.message
+                    color: root.messageIsError ? root.orangeBright : root.textSecondary
+                    font.pixelSize: 14
+                }
             }
         }
 
