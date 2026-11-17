@@ -116,7 +116,7 @@ Scope {
                     id: field
                     anchors { horizontalCenter: parent.horizontalCenter; bottom: parent.bottom; bottomMargin: 56 }
                     width: 240; height: 40; radius: 20
-                    color: "#0A1215"
+                    color: Theme.light ? "#F4F6F7" : "#0A1215"
                     border.color: Theme.cyan
                     border.width: 1
 
