@@ -14,8 +14,8 @@ window.active.border.color: #aaa6ac
 window.inactive.border.color: #5b575d
 
 window.*.title.bg: Solid Color
-window.active.title.bg.color: #1c1d20
-window.inactive.title.bg.color: #141517
+window.active.title.bg.color: #121212
+window.inactive.title.bg.color: #121212
 
 window.active.label.text.color: #edf5f5
 window.inactive.label.text.color: #8ea2a5

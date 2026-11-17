@@ -22,7 +22,7 @@ FloatingWindow {
     // Background: a flat solid surface in both modes (white in light, near-black in dark).
     Rectangle {
         anchors.fill: parent
-        color: Theme.light ? Theme.surface : "#161719"
+        color: Theme.light ? Theme.surface : "#121212"
     }
 
     Item {
