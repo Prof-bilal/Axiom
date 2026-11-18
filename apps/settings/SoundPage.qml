@@ -65,11 +65,11 @@ PageFrame {
             value: row.node && row.node.audio ? row.node.audio.volume * 100 : 0
             onMoved: function (p) { if (row.node && row.node.audio) row.node.audio.volume = p / 100 }
         }
-        AppButton {
+        SettingsButton {
             text: row.node && row.node.audio && row.node.audio.muted ? "Unmute" : "Mute"
             onClicked: row.node.audio.muted = !row.node.audio.muted
         }
-        AppButton {
+        SettingsButton {
             visible: !row.stream && !(row.node && row.defaultNode && row.node.id === row.defaultNode.id)
             text: "Use"
             primary: true

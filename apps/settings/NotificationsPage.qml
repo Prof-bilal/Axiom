@@ -46,7 +46,7 @@ PageFrame {
             first: true
             label: "Notification history"
             description: NotificationService.count + " in the notification centre."
-            AppButton { text: "Clear all"; destructive: true; enabled: NotificationService.count > 0; onClicked: NotificationService.dismissAll() }
+            SettingsButton { text: "Clear all"; destructive: true; enabled: NotificationService.count > 0; onClicked: NotificationService.dismissAll() }
         }
     }
 

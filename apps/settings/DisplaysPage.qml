@@ -52,13 +52,13 @@ PageFrame {
             anchors.rightMargin: Theme.spacingLg
             anchors.verticalCenter: parent.verticalCenter
             spacing: Theme.spacingSm
-            AppButton {
+            SettingsButton {
                 id: keepButton
                 text: "Keep"; primary: true
                 onClicked: DisplayService.confirm()
                 Keys.onReturnPressed: DisplayService.confirm()
             }
-            AppButton { text: "Revert"; onClicked: DisplayService.revert() }
+            SettingsButton { text: "Revert"; onClicked: DisplayService.revert() }
         }
     }
 
@@ -81,7 +81,7 @@ PageFrame {
                             for (var j = 0; j < all.length; j++) if (all[j].width === m.width && all[j].height === m.height && all[j].refresh > m.refresh) return false
                             return true
                         }).slice(0, 4)
-                        delegate: AppButton {
+                        delegate: SettingsButton {
                             required property var modelData
                             text: modelData.width + "×" + modelData.height
                             primary: modelData.current
@@ -97,7 +97,7 @@ PageFrame {
                     spacing: Theme.spacingXs
                     Repeater {
                         model: page.scales
-                        delegate: AppButton {
+                        delegate: SettingsButton {
                             required property var modelData
                             text: modelData + "×"
                             primary: Math.abs(card.modelData.scale - modelData) < 0.01
@@ -113,7 +113,7 @@ PageFrame {
                     spacing: Theme.spacingXs
                     Repeater {
                         model: page.rotations
-                        delegate: AppButton {
+                        delegate: SettingsButton {
                             required property var modelData
                             text: modelData.label
                             primary: card.modelData.transform === modelData.value

@@ -57,7 +57,7 @@ PageFrame {
                 spacing: Theme.spacingXs
                 Repeater {
                     model: page.profiles
-                    delegate: AppButton {
+                    delegate: SettingsButton {
                         required property var modelData
                         text: modelData.label
                         primary: SystemService.powerProfile === modelData.value
@@ -79,7 +79,7 @@ PageFrame {
                 spacing: Theme.spacingXs
                 Repeater {
                     model: page.blankChoices
-                    delegate: AppButton {
+                    delegate: SettingsButton {
                         required property var modelData
                         text: modelData === 0 ? "Never" : modelData + " min"
                         primary: SettingsService.idleBlankMinutes === modelData
@@ -110,7 +110,7 @@ PageFrame {
             first: true
             label: "Suspend"
             description: "Suspend is available from the session menu once the hardware reports support."
-            AppButton { text: "Suspend now"; onClicked: PowerService.suspend() }
+            SettingsButton { text: "Suspend now"; onClicked: PowerService.suspend() }
         }
     }
 }

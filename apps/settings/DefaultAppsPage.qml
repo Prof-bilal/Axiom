@@ -93,7 +93,7 @@ PageFrame {
                     font.family: Theme.fontFamily
                     font.pixelSize: Theme.fontBody
                 }
-                AppButton {
+                SettingsButton {
                     id: change
                     text: "Change"
                     enabled: page.mimeState[roleRow.index] !== undefined && page.mimeState[roleRow.index].registered.length > 0

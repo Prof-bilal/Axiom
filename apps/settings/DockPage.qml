@@ -52,9 +52,9 @@ PageFrame {
                 label: entry ? entry.name : modelData
                 description: entry ? "" : "Not installed, so it is not shown in the dock"
 
-                AppButton { text: "Up"; enabled: index > 0; onClicked: SettingsService.setDockPins(St.movePin(page.pins, index, -1)) }
-                AppButton { text: "Down"; enabled: index < page.pins.length - 1; onClicked: SettingsService.setDockPins(St.movePin(page.pins, index, 1)) }
-                AppButton { text: "Remove"; onClicked: SettingsService.setDockPins(St.removePin(page.pins, index)) }
+                SettingsButton { text: "Up"; enabled: index > 0; onClicked: SettingsService.setDockPins(St.movePin(page.pins, index, -1)) }
+                SettingsButton { text: "Down"; enabled: index < page.pins.length - 1; onClicked: SettingsService.setDockPins(St.movePin(page.pins, index, 1)) }
+                SettingsButton { text: "Remove"; onClicked: SettingsService.setDockPins(St.removePin(page.pins, index)) }
             }
         }
 
@@ -69,7 +69,7 @@ PageFrame {
     Row {
         spacing: Theme.spacingSm
 
-        AppButton {
+        SettingsButton {
             id: addButton
             text: "Add application…"
             primary: true
@@ -78,7 +78,7 @@ PageFrame {
                 page.pickApplication(p.x, p.y, page.addable(), function (id) { SettingsService.setDockPins(St.addPin(page.pins, id)) })
             }
         }
-        AppButton {
+        SettingsButton {
             text: "Reset to defaults"
             enabled: SettingsService.dockCustom
             onClicked: SettingsService.resetDock()

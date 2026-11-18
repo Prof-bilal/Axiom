@@ -64,11 +64,11 @@ PageFrame {
                 first: index === 0
                 label: modelData.name || modelData.address
                 description: page.stateText(modelData) + (page.stateText(modelData) && modelData.batteryAvailable ? " · " : "") + (modelData.batteryAvailable ? Math.round(modelData.battery * 100) + "%" : "")
-                AppButton { visible: !modelData.paired && !modelData.pairing; text: "Pair"; primary: true; onClicked: modelData.pair() }
-                AppButton { visible: modelData.pairing; text: "Cancel"; onClicked: modelData.cancelPair() }
-                AppButton { visible: modelData.paired && !modelData.connected; text: "Connect"; primary: true; onClicked: modelData.connect() }
-                AppButton { visible: modelData.connected; text: "Disconnect"; onClicked: modelData.disconnect() }
-                AppButton { visible: modelData.paired; text: "Forget"; destructive: true; onClicked: modelData.forget() }
+                SettingsButton { visible: !modelData.paired && !modelData.pairing; text: "Pair"; primary: true; onClicked: modelData.pair() }
+                SettingsButton { visible: modelData.pairing; text: "Cancel"; onClicked: modelData.cancelPair() }
+                SettingsButton { visible: modelData.paired && !modelData.connected; text: "Connect"; primary: true; onClicked: modelData.connect() }
+                SettingsButton { visible: modelData.connected; text: "Disconnect"; onClicked: modelData.disconnect() }
+                SettingsButton { visible: modelData.paired; text: "Forget"; destructive: true; onClicked: modelData.forget() }
             }
         }
     }

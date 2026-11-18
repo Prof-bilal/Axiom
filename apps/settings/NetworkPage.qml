@@ -84,7 +84,7 @@ PageFrame {
                         first: net.index === 0
                         label: net.modelData.name
                         description: page.describe(net.modelData)
-                        AppButton {
+                        SettingsButton {
                             visible: !net.modelData.connected && net.modelData.state !== ConnectionState.Connecting
                             text: "Connect"
                             primary: true
@@ -93,17 +93,17 @@ PageFrame {
                                 else net.modelData.connect()
                             }
                         }
-                        AppButton {
+                        SettingsButton {
                             visible: net.modelData.connected
                             text: "Disconnect"
                             onClicked: net.modelData.disconnect()
                         }
-                        AppButton {
+                        SettingsButton {
                             visible: net.modelData.known && page.secured(net.modelData) && !net.modelData.connected
                             text: "Password…"
                             onClicked: page.askingFor = net.modelData.name
                         }
-                        AppButton {
+                        SettingsButton {
                             visible: net.modelData.known
                             text: "Forget"
                             destructive: true
@@ -139,14 +139,14 @@ PageFrame {
                                     Keys.onReturnPressed: submit.clicked()
                                 }
                             }
-                            AppButton {
+                            SettingsButton {
                                 id: submit
                                 text: "Join"
                                 primary: true
                                 enabled: psk.text.length >= 8
                                 onClicked: { net.modelData.connectWithPsk(psk.text); psk.text = ""; page.askingFor = "" }
                             }
-                            AppButton { text: "Cancel"; onClicked: { psk.text = ""; page.askingFor = "" } }
+                            SettingsButton { text: "Cancel"; onClicked: { psk.text = ""; page.askingFor = "" } }
                         }
                     }
                 }

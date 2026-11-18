@@ -28,7 +28,7 @@ PageFrame {
         }
         SettingRow {
             label: "Time zone"
-            AppButton {
+            SettingsButton {
                 text: TimeService.timezone || "Unknown"
                 enabled: TimeService.zones.length > 0
                 onClicked: {

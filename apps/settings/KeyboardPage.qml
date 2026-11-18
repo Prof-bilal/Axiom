@@ -39,13 +39,13 @@ PageFrame {
             first: true
             label: "Layout"
             description: "Active now: " + KeyboardService.active
-            AppButton { text: page.name(KeyboardService.primary); onClicked: { var p = mapToItem(null, 0, height); page.choose("primary", p.x, p.y) } }
+            SettingsButton { text: page.name(KeyboardService.primary); onClicked: { var p = mapToItem(null, 0, height); page.choose("primary", p.x, p.y) } }
         }
         SettingRow {
             label: "Second layout"
             description: KeyboardService.secondary ? "Switch between the two with Alt+Shift." : "Optional."
-            AppButton { text: KeyboardService.secondary ? page.name(KeyboardService.secondary) : "None"; onClicked: { var p = mapToItem(null, 0, height); page.choose("secondary", p.x, p.y) } }
-            AppButton { visible: KeyboardService.secondary.length > 0; text: "Remove"; destructive: true; onClicked: KeyboardService.setLayouts(KeyboardService.primary, "") }
+            SettingsButton { text: KeyboardService.secondary ? page.name(KeyboardService.secondary) : "None"; onClicked: { var p = mapToItem(null, 0, height); page.choose("secondary", p.x, p.y) } }
+            SettingsButton { visible: KeyboardService.secondary.length > 0; text: "Remove"; destructive: true; onClicked: KeyboardService.setLayouts(KeyboardService.primary, "") }
         }
     }
 
