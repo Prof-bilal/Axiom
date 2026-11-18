@@ -50,8 +50,29 @@ hl.config({
     },
 })
 
+-- Window animations (Hyprland owns window motion; the shell keeps only its overlays).
+-- Curves and speeds follow the Hyprland animation reference used by Omarchy.
+hl.curve("easeOutQuint", { type = "bezier", points = { { 0.23, 1 }, { 0.32, 1 } } })
+hl.curve("easeInOutCubic", { type = "bezier", points = { { 0.65, 0.05 }, { 0.36, 1 } } })
+hl.curve("linear", { type = "bezier", points = { { 0, 0 }, { 1, 1 } } })
+hl.curve("almostLinear", { type = "bezier", points = { { 0.5, 0.5 }, { 0.75, 1.0 } } })
+hl.curve("quick", { type = "bezier", points = { { 0.15, 0 }, { 0.1, 1 } } })
+hl.animation({ leaf = "global", enabled = true, speed = 10, bezier = "default" })
+hl.animation({ leaf = "border", enabled = true, speed = 5.39, bezier = "easeOutQuint" })
+hl.animation({ leaf = "windows", enabled = true, speed = 3.79, bezier = "easeOutQuint" })
+hl.animation({ leaf = "windowsIn", enabled = true, speed = 4.1, bezier = "easeOutQuint", style = "popin 87%" })
+hl.animation({ leaf = "windowsOut", enabled = true, speed = 1.49, bezier = "linear", style = "popin 87%" })
+hl.animation({ leaf = "fade", enabled = true, speed = 3.03, bezier = "quick" })
+hl.animation({ leaf = "fadeIn", enabled = true, speed = 1.73, bezier = "almostLinear" })
+hl.animation({ leaf = "fadeOut", enabled = true, speed = 1.46, bezier = "almostLinear" })
+hl.animation({ leaf = "workspaces", enabled = true, speed = 3, bezier = "easeOutQuint", style = "slide" })
+
 -- Axiom is a floating desktop: every window floats, as under labwc.
 hl.window_rule({ name = "axiom-float", match = { class = ".*" }, float = true })
+-- Floating windows are centred below the top panel (Theme.panelBottom = 48 px).
+-- Without this, a window taller than the free area starts under the panel.
+hl.window_rule({ name = "axiom-place", match = { class = ".*" },
+                 move = { "(monitor_w-window_w)*0.5", "48+(monitor_h-48-window_h)*0.5" } })
 
 -- Big third-party windows (browser, editor) open centred and sized to fit under the
 -- panel and above the dock, instead of at their own large default size.
