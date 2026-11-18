@@ -1,5 +1,6 @@
 import QtQuick
 import Quickshell
+import Quickshell.Io
 import qs.src.shared
 import qs.services
 import qs.apps.shared
@@ -23,6 +24,49 @@ PageFrame {
     }
 
     Component.onCompleted: scan()
+
+    // Light or dark for the whole desktop. The session reads this file at login
+    // (see axiom-session), so a change applies at the next sign-in.
+    property string themeMode: "dark"
+    readonly property string themeDir: Quickshell.env("HOME") + "/.config/axiom"
+
+    FileView {
+        id: themeFile
+        path: page.themeDir + "/theme"
+        printErrors: false
+        onLoaded: {
+            var m = text().trim()
+            page.themeMode = (m === "light" || m === "dark") ? m : "dark"
+        }
+        onLoadFailed: page.themeMode = "dark"
+    }
+
+    function setThemeMode(m) {
+        runner.run(["mkdir", "-p", page.themeDir], function () {
+            themeFile.setText(m + "\n")
+            page.themeMode = m
+        })
+    }
+
+    SettingsCard {
+        title: "Appearance"
+
+        SettingRow {
+            first: true
+            label: "Light or dark"
+            description: "Applies the next time you sign in."
+
+            Repeater {
+                model: [{ name: "Dark", value: "dark" }, { name: "Light", value: "light" }]
+                delegate: AppButton {
+                    required property var modelData
+                    text: modelData.name
+                    primary: page.themeMode === modelData.value
+                    onClicked: page.setThemeMode(modelData.value)
+                }
+            }
+        }
+    }
 
     SettingsCard {
         title: "Text size"
@@ -91,7 +135,7 @@ PageFrame {
                         anchors.margins: 3
                         height: 24
                         radius: Theme.radiusSmall
-                        color: Qt.rgba(5 / 255, 12 / 255, 15 / 255, 0.78)
+                        color: "#0A1215"
                         Text {
                             anchors.fill: parent
                             anchors.leftMargin: Theme.spacingSm
