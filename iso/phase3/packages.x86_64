@@ -132,6 +132,8 @@ zsh
 networkmanager
 wpa_supplicant
 polkit
+bubblewrap
+minisign
 dbus
 pipewire
 pipewire-pulse
@@ -175,6 +177,10 @@ power-profiles-daemon
 upower
 wlr-randr
 brightnessctl
+# screenshots and screen recording from the capture bar (ADR-030)
+grim
+wf-recorder
+wl-clipboard
 xkeyboard-config
 # test fixture only: simulated access point on mac80211_hwsim for the Wi-Fi tests
 hostapd

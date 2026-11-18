@@ -25,6 +25,16 @@ FloatingWindow {
         color: Theme.light ? Theme.surface : "#121212"
     }
 
+    // Drag strip along the top: a press starts a compositor move. It sits under the
+    // content, so buttons and fields in the app header still get their own clicks.
+    MouseArea {
+        anchors.top: parent.top
+        anchors.left: parent.left
+        anchors.right: parent.right
+        height: 44
+        onPressed: function (mouse) { if (mouse.button === Qt.LeftButton) win.startSystemMove() }
+    }
+
     Item {
         id: area
         anchors.fill: parent
