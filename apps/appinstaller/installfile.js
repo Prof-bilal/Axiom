@@ -161,3 +161,21 @@ function auditLine(record) {
 
 function sha256Argv(filePath) { return ["sha256sum", "--", filePath] }
 
+// Admin approval for an unsigned user install: the existing polkit action runs the helper's
+// approve verb with the file's SHA-256 (64 hex digits, checked here and in the helper).
+function approveArgv(sha256) {
+    return ["pkexec", "/usr/local/bin/axiom-pkgd", "approve", sha256]
+}
+function validSha256(s) { return /^[0-9a-f]{64}$/.test(s || "") }
+
+// Exec line for the desktop entry: the AppImage starts inside the bubblewrap sandbox.
+function sandboxExecLine(appPath) {
+    return sandboxArgv(appPath).map(quoteExec).join(" ") + " %U"
+}
+// Desktop entry with a ready-made Exec line (use with sandboxExecLine).
+function desktopEntryLine(name, execLine) {
+    var safeName = (name || "App").replace(/[\r\n]/g, " ")
+    return ["[Desktop Entry]", "Type=Application", "Name=" + safeName, "Exec=" + execLine,
+            "Terminal=false", "Categories=Utility;", ""].join("\n")
+}
+

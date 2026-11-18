@@ -64,20 +64,69 @@ Item {
         })
     }
 
-    // AppImage: copy into ~/Applications, make it executable, add a launcher entry.
+    // Trusted minisign public key shipped in the ISO (read-only). ADR-032.
+    readonly property string keyPath: "/usr/share/axiom/keys/axiom.pub"
+
+    // AppImage (user scope, ADR-032): stage a copy, hash it, check its minisign signature,
+    // apply the policy (failed = blocked, unsigned = admin approval), then install it into
+    // ~/Applications with a sandboxed launcher and write one audit line.
     function installAppImage(path, name, callback, onStep) {
+        var staging = home + "/.cache/axiom-staging"
+        var staged = staging + "/" + name.replace(/[^A-Za-z0-9._-]/g, "_")
         var dest = IF.appImageTarget(home, name)
-        report(onStep, 1, 3, "Copying the app…")
-        runner.run(["install", "-D", "-m", "755", path, dest], function (r) {
-            if (r.code !== 0) return callback({ ok: false, message: (r.err || "Copy failed.").trim() })
-            var apps = home + "/.local/share/applications"
-            report(onStep, 2, 3, "Adding it to your app menu…")
-            runner.run(["mkdir", "-p", apps], function () {
-                entryFile.path = apps + "/axiom-" + name.replace(/[^A-Za-z0-9._-]/g, "_") + ".desktop"
-                entryFile.setText(IF.desktopEntry(name.replace(/\.AppImage$/i, ""), dest))
-                callback({ ok: true, message: "Installed " + name + " to ~/Applications" })
+        var total = 4
+        function fail(msg) { runner.run(["rm", "-f", staged, staged + ".minisig"], function () {}); callback({ ok: false, message: msg }) }
+
+        report(onStep, 1, total, "Checking the file…")
+        runner.run(["install", "-D", "-m", "600", path, staged], function (cp) {
+            if (cp.code !== 0) return fail((cp.err || "Copy failed.").trim())
+            runner.run(["sha256sum", staged], function (hs) {
+                var sha = hs.out.split(" ")[0]
+                if (!IF.validSha256(sha)) return fail("Could not read the file's checksum.")
+                runner.run(["test", "-f", path + ".minisig"], function (sig) {
+                    if (sig.code !== 0) return decide(sha, "unsigned")
+                    runner.run(["install", "-D", "-m", "644", path + ".minisig", staged + ".minisig"], function () {
+                        runner.run(IF.minisignArgv(keyPath, staged), function (v) {
+                            decide(sha, v.code === 0 ? "verified" : "failed")
+                        })
+                    })
+                })
             })
         })
+
+        function decide(sha, sigState) {
+            var policy = IF.installPolicy("appimage", "user", sigState)
+            if (policy.blocked) return fail(policy.reason)
+            if (!policy.requiresAdmin) return finish(sha, sigState, policy)
+            report(onStep, 2, total, "Waiting for admin approval…")
+            runner.run(IF.approveArgv(sha), function (a) {
+                if (a.code !== 0) return fail("Admin approval was not given.")
+                finish(sha, sigState, policy)
+            })
+        }
+
+        function finish(sha, sigState, policy) {
+            report(onStep, 3, total, "Copying the app…")
+            runner.run(["install", "-D", "-m", "755", staged, dest], function (cp2) {
+                if (cp2.code !== 0) return fail((cp2.err || "Copy failed.").trim())
+                runner.run(["rm", "-f", staged, staged + ".minisig"], function () {})
+                var apps = home + "/.local/share/applications"
+                report(onStep, 4, total, "Adding it to your app menu…")
+                runner.run(["mkdir", "-p", apps], function () {
+                    entryFile.path = apps + "/axiom-" + name.replace(/[^A-Za-z0-9._-]/g, "_") + ".desktop"
+                    entryFile.setText(IF.desktopEntryLine(name.replace(/\.AppImage$/i, ""), IF.sandboxExecLine(dest)))
+                    var id = "ax-" + sha.slice(0, 12) + "-" + Date.now().toString(36)
+                    var line = IF.auditLine({ id: id, time: new Date().toISOString(), file: name, sha256: sha,
+                        signature: sigState, policy: policy.requiresAdmin ? "admin-approved" : "allowed",
+                        sandbox: "bubblewrap", target: dest, result: "installed" })
+                    var audit = home + "/.local/state/axiom/install-audit.jsonl"
+                    runner.run(["sh", "-c", "mkdir -p \"$(dirname \"$1\")\" && printf '%s\\n' \"$2\" >> \"$1\"", "_", audit, line],
+                        function () {
+                            callback({ ok: true, message: "Installed " + name + " · audit " + id, auditId: id, signature: sigState })
+                        })
+                })
+            })
+        }
     }
 
     // .deb: stage the file in ~/.cache, install it with apt inside the rootless

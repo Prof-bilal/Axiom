@@ -5,7 +5,7 @@ import test from "node:test";
 
 const src = readFileSync(new URL("../../apps/appinstaller/installfile.js", import.meta.url), "utf8")
   .replace(/^\.pragma library/m, "");
-const lib = new Function(src + "; return { classify, appImageTarget, formatSize, quoteExec, desktopEntry, flatpakArgv, debStagePath, containerListed, validDebName, displayName, debListArgv, debCreateArgv, debEnterArgv, debNameArgv, debInstallArgv, debExportArgv, minisignArgv, signatureState, installPolicy, sandboxArgv, auditLine, sha256Argv };")();
+const lib = new Function(src + "; return { classify, appImageTarget, formatSize, quoteExec, desktopEntry, flatpakArgv, debStagePath, containerListed, validDebName, displayName, debListArgv, debCreateArgv, debEnterArgv, debNameArgv, debInstallArgv, debExportArgv, minisignArgv, signatureState, installPolicy, sandboxArgv, auditLine, sha256Argv, approveArgv, validSha256, sandboxExecLine, desktopEntryLine };")();
 
 test("classifies AppImage, Flatpak and Arch packages", () => {
   assert.equal(lib.classify("Foo-x86_64.AppImage").kind, "appimage");
@@ -145,4 +145,24 @@ test("audit line is one JSON object with the audit id", () => {
     policy: "admin", sandbox: "bwrap", target: "/home/u/Applications/a", result: "installed" });
   assert.equal(line.includes("\n"), false);
   assert.equal(JSON.parse(line).id, "ax-1");
+});
+
+test("approve argv is pkexec + the helper; digest must be 64 lowercase hex", () => {
+  assert.deepEqual(lib.approveArgv("a".repeat(64)), ["pkexec", "/usr/local/bin/axiom-pkgd", "approve", "a".repeat(64)]);
+  assert.equal(lib.validSha256("a".repeat(64)), true);
+  assert.equal(lib.validSha256("A".repeat(64)), false);
+  assert.equal(lib.validSha256("a; rm -rf ~"), false);
+});
+
+test("sandboxed Exec line quotes the path and ends with %U", () => {
+  const line = lib.sandboxExecLine('/home/u/My Apps/a$b.AppImage');
+  assert.ok(line.startsWith('"bwrap"'));
+  assert.ok(line.includes('"/home/u/My Apps/a\\$b.AppImage"'));
+  assert.ok(line.endsWith(" %U"));
+});
+
+test("desktop entry with an Exec line keeps the line as given", () => {
+  const e = lib.desktopEntryLine("Demo", 'bwrap x -- "/p" %U');
+  assert.ok(e.includes("Exec=bwrap x -- \"/p\" %U"));
+  assert.ok(e.startsWith("[Desktop Entry]"));
 });

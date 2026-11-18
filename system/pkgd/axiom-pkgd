@@ -2,7 +2,8 @@
 # Privileged helper for Axiom App Installer: install one pacman package file.
 # Runs only as root through pkexec, after polkit approves org.axiom.installer.install.
 # Operations: install <abs path to .pkg.tar.*> (copied to a root-only dir first so it
-# cannot be swapped after the check), sync <repo package>, remove <package>.
+# cannot be swapped after the check), sync <repo package>, remove <package>,
+# approve <sha256> (admin approval for an unsigned user install, logged).
 set -u
 
 [ "$(id -u)" -eq 0 ] || { echo "axiom-pkgd: must run as root" >&2; exit 1; }
@@ -19,6 +20,15 @@ case "$op" in
     rc=$?
     rm -rf "$tmp"
     exit $rc
+    ;;
+  approve)
+    # Admin approval for a user-scope install that is unsigned (ADR-032). Changes nothing:
+    # the polkit prompt is the approval and the hash is logged for the audit trail.
+    sha=${2:-}
+    case "$sha" in *[!0-9a-f]*|"") echo "axiom-pkgd: invalid digest" >&2; exit 2 ;; esac
+    [ "${#sha}" -eq 64 ] || { echo "axiom-pkgd: invalid digest" >&2; exit 2; }
+    logger -t axiom-pkgd "approved unsigned user install sha256=$sha uid=${PKEXEC_UID:-unknown}"
+    exit 0
     ;;
   sync|remove)
     pkg=${2:-}
