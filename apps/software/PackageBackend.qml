@@ -86,6 +86,26 @@ Item {
         })
     }
 
+    // Flatpak apps (ADR-034): user scope, no root.
+    property var flatpaks: []
+    property string flatpakMessage: ""
+    function loadFlatpaks() {
+        runner.run(Sw.flatpakListArgv(), function (r) { flatpaks = r.code === 0 ? Sw.parseFlatpakList(r.out) : [] })
+    }
+    function flatpakDo(argv, busy, done) {
+        if (!argv) { flatpakMessage = "Enter a valid app id, for example org.gnome.Calculator"; return }
+        flatpakMessage = busy
+        runner.run(Sw.flatpakRemoteAddArgv(), function () {
+            runner.run(argv, function (r) {
+                flatpakMessage = r.code === 0 ? done : (r.err || "Failed").trim().split("\n").pop()
+                loadFlatpaks()
+            })
+        })
+    }
+    function flatpakInstall(id) { flatpakDo(Sw.flatpakInstallArgv(id), "Installing " + id + "…", "Installed " + id) }
+    function flatpakRemove(id) { flatpakDo(Sw.flatpakUninstallArgv(id), "Removing " + id + "…", "Removed " + id) }
+    function flatpakUpdate(id) { flatpakDo(Sw.flatpakUpdateArgv(id), "Updating " + id + "…", "Updated " + id) }
+
     function packageFiles(name, cb) {
         runner.runC(["pacman", "-Ql", "--", name], function (r) { cb(r.code === 0 ? Sw.parseFiles(r.out, 200) : { count: 0, files: [], error: r.err.split("\n")[0] }) })
     }
@@ -105,5 +125,5 @@ Item {
         tryNext(0)
     }
 
-    Component.onCompleted: { load(); loadUpdates() }
+    Component.onCompleted: { load(); loadUpdates(); loadFlatpaks() }
 }
