@@ -21,8 +21,8 @@ ShellRoot {
     id: root
 
     // --- design tokens (kept in step with shell/src/shared/Theme.qml) ---
-    // Light mode follows AXIOM_THEME=light, the same switch the desktop uses.
-    readonly property bool light: Quickshell.env("AXIOM_THEME") === "light"
+    // The sign-in screen is always dark: greetd does not know the user's choice.
+    readonly property bool light: false
     readonly property color background: light ? "#F4F6F7" : "#070B0D"
     readonly property color surfaceElevated: light ? "#FFFFFF" : "#11191D"
     readonly property color border: light ? "#C9D3D8" : "#233238"
