@@ -33,13 +33,23 @@ DialogFrame {
 
     onDismissed: open = false
 
+    // "Name" label above the field, as in the macOS save and rename sheets.
+    Text {
+        width: parent.width
+        text: "Name"
+        color: Theme.menuText
+        font.family: Theme.fontFamily
+        font.pixelSize: Theme.fontCaption
+        font.weight: Font.Medium
+    }
+
     Rectangle {
         width: parent.width
-        height: 36
-        radius: Theme.radiusControl
+        height: 38
+        radius: 10
         color: Theme.background
         border.width: 1
-        border.color: field.activeFocus ? Theme.stateFocus : Theme.border
+        border.color: field.activeFocus ? Theme.stateSelectedBorder : Theme.menuBorder
 
         TextInput {
             id: field

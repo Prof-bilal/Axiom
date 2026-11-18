@@ -9,7 +9,8 @@ FocusScope {
 
     property bool open: false
     property string title: ""
-    property int cardWidth: 420
+    property int cardWidth: 440
+    property string subtitle: ""
     default property alias content: body.data
 
     signal dismissed()
@@ -41,14 +42,26 @@ FocusScope {
             anchors.margins: 20
             spacing: 14
 
+            // Centred title and an optional location line, as in the macOS sheets.
             Text {
                 width: parent.width
+                horizontalAlignment: Text.AlignHCenter
                 text: frame.title
                 color: Theme.menuText
                 font.family: Theme.fontFamily
                 font.pixelSize: 17
                 font.weight: Font.DemiBold
                 elide: Text.ElideRight
+            }
+            Text {
+                visible: frame.subtitle.length > 0
+                width: parent.width
+                horizontalAlignment: Text.AlignHCenter
+                text: frame.subtitle
+                color: Theme.menuTextDisabled
+                font.family: Theme.fontMono
+                font.pixelSize: Theme.fontCaption
+                elide: Text.ElideMiddle
             }
 
             Column {
