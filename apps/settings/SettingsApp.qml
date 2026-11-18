@@ -70,9 +70,18 @@ AppWindow {
             anchors.bottom: parent.bottom
             anchors.left: parent.left
             width: 220
-            color: Theme.surface
+            color: "transparent"
 
             Rectangle { anchors.right: parent.right; width: 1; height: parent.height; color: Theme.borderSubtle }
+
+            // Axiom badge colours per section (palette: cyan, orange, graphite).
+            readonly property var badge: ({
+                about: Theme.textSecondary, appearance: Theme.cyan, dock: Theme.orange,
+                apps: Theme.cyanMuted, displays: Theme.textSecondary, network: Theme.cyan,
+                bluetooth: Theme.cyanMuted, sound: Theme.orange, power: Theme.orangeMuted,
+                notifications: Theme.orange, keyboard: Theme.textSecondary, datetime: Theme.cyanMuted,
+                users: Theme.textSecondary
+            })
 
             Column {
                 anchors.fill: parent
@@ -80,8 +89,42 @@ AppWindow {
                 anchors.topMargin: Theme.spacingLg
                 spacing: 2
 
+                // Search: filters the sections by name.
+                Rectangle {
+                    width: parent.width
+                    height: 30
+                    radius: Theme.radiusControl
+                    color: Theme.stateHover
+                    border.width: 1
+                    border.color: searchInput.activeFocus ? Theme.stateSelectedBorder : Theme.borderSubtle
+                    TextInput {
+                        id: searchInput
+                        anchors.fill: parent
+                        anchors.leftMargin: Theme.spacingSm
+                        anchors.rightMargin: Theme.spacingSm
+                        verticalAlignment: TextInput.AlignVCenter
+                        color: Theme.textPrimary
+                        selectionColor: Theme.cyanMuted
+                        font.family: Theme.fontFamily
+                        font.pixelSize: Theme.fontCaption
+                        clip: true
+                        Text {
+                            visible: searchInput.text.length === 0
+                            anchors.verticalCenter: parent.verticalCenter
+                            text: "Search"
+                            color: Theme.textSecondary
+                            font: searchInput.font
+                        }
+                        Keys.onEscapePressed: { text = ""; keyTarget.forceActiveFocus() }
+                    }
+                }
+
+                Item { width: 1; height: Theme.spacingSm }
+
                 Repeater {
-                    model: root.pages
+                    model: root.pages.filter(function (p) {
+                        return searchInput.text.length === 0 || p.label.toLowerCase().indexOf(searchInput.text.toLowerCase()) >= 0
+                    })
                     delegate: Rectangle {
                         required property var modelData
                         readonly property bool active: root.page === modelData.key
@@ -97,16 +140,24 @@ AppWindow {
 
                         Row {
                             anchors.left: parent.left
-                            anchors.leftMargin: Theme.spacingMd
+                            anchors.leftMargin: Theme.spacingSm
                             anchors.verticalCenter: parent.verticalCenter
                             spacing: Theme.spacingMd
-                            AxiomIcon {
+                            // Coloured badge with the section icon in white.
+                            Rectangle {
                                 anchors.verticalCenter: parent.verticalCenter
-                                width: 18
-                                height: 18
-                                name: modelData.icon
-                                color: parent.parent.active ? Theme.cyanBright : Theme.textSecondary
-                                strokeWidth: 1.5
+                                width: 24
+                                height: 24
+                                radius: 6
+                                color: sidebar.badge[modelData.key] || Theme.textSecondary
+                                AxiomIcon {
+                                    anchors.centerIn: parent
+                                    width: 14
+                                    height: 14
+                                    name: modelData.icon
+                                    color: "#0A0C0E"
+                                    strokeWidth: 1.6
+                                }
                             }
                             Text {
                                 anchors.verticalCenter: parent.verticalCenter
