@@ -204,6 +204,74 @@ PageFrame {
               : page.images.length + (page.images.length === 1 ? " image" : " images") + " found in " + page.pictures + "."
     }
 
+    // Any image on this machine: type or paste its path. It must exist and be an image.
+    SettingsCard {
+        title: "Use another image"
+
+        SettingRow {
+            first: true
+            label: "Image file"
+            description: "A full path, for example /home/you/Pictures/photo.jpg"
+
+            Rectangle {
+                width: 240
+                height: 32
+                radius: 16
+                color: Theme.stateHover
+                border.width: 1
+                border.color: pathInput.activeFocus ? Theme.stateSelectedBorder : Theme.borderSubtle
+                TextInput {
+                    id: pathInput
+                    anchors.fill: parent
+                    anchors.leftMargin: Theme.spacingMd
+                    anchors.rightMargin: Theme.spacingMd
+                    verticalAlignment: TextInput.AlignVCenter
+                    clip: true
+                    color: Theme.textPrimary
+                    selectionColor: Theme.cyanMuted
+                    font.family: Theme.fontFamily
+                    font.pixelSize: Theme.fontCaption
+                    onAccepted: page.useImage(text)
+                }
+            }
+            SettingsButton {
+                text: "Use"
+                primary: true
+                onClicked: page.useImage(pathInput.text)
+            }
+            SettingsButton {
+                text: "Axiom default"
+                onClicked: SettingsService.setWallpaper("")
+            }
+        }
+    }
+
+    // Result or error of the path check above.
+    Text {
+        id: pickMsg
+        width: parent.width
+        wrapMode: Text.Wrap
+        color: Theme.orangeBright
+        font.family: Theme.fontFamily
+        font.pixelSize: Theme.fontCaption
+        text: ""
+    }
+
+    function useImage(p) {
+        var path = p.trim()
+        if (path.length === 0) return
+        // Only an absolute path to an existing file with an image extension is accepted.
+        var dot = path.lastIndexOf(".")
+        var ext = dot > 0 ? path.substring(dot + 1).toLowerCase() : ""
+        if (path.charAt(0) !== "/" || St.IMAGE_EXT.indexOf(ext) < 0) { pickMsg.text = "Enter a full path to a PNG, JPEG, WebP, BMP or AVIF image."; return }
+        runner.run(["test", "-f", path], function (r) {
+            if (r.code !== 0) { pickMsg.text = "No such image: " + path; return }
+            pickMsg.text = ""
+            SettingsService.setWallpaper(path)
+            pathInput.text = ""
+        })
+    }
+
     Text {
         width: parent.width
         visible: SettingsService.loadError.length > 0
