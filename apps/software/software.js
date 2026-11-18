@@ -167,3 +167,13 @@ function parseFlatpakList(text) {
     })
     return out
 }
+
+// `snapper -c root list --columns number,date,description` -> [{ number, date, description }].
+function parseSnapshots(text) {
+    var out = []
+    ;(text || "").split("\n").forEach(function (l) {
+        var c = l.split("|").map(function (x) { return x.trim() })
+        if (c.length >= 3 && /^\d+$/.test(c[0])) out.push({ number: parseInt(c[0], 10), date: c[1], description: c[2] })
+    })
+    return out
+}

@@ -106,6 +106,26 @@ Item {
     function flatpakRemove(id) { flatpakDo(Sw.flatpakUninstallArgv(id), "Removing " + id + "…", "Removed " + id) }
     function flatpakUpdate(id) { flatpakDo(Sw.flatpakUpdateArgv(id), "Updating " + id + "…", "Updated " + id) }
 
+    // Snapshots and rollback (ADR-033). Listing reads snapper; rollback goes through its own
+    // polkit action (org.axiom.installer.rollback) and needs a reboot to finish.
+    property var snapshots: []
+    property string snapshotMessage: ""
+    property int pendingRollback: -1
+    function loadSnapshots() {
+        runner.run(["snapper", "-c", "root", "list", "--columns", "number,date,description"], function (r) {
+            snapshots = r.code === 0 ? Sw.parseSnapshots(r.out) : []
+            snapshotMessage = r.code === 0 ? "" : "Snapshots are not available on this system."
+        })
+    }
+    function askRollback(n) { pendingRollback = n }
+    function confirmRollback(n) {
+        pendingRollback = -1
+        snapshotMessage = "Waiting for admin approval…"
+        runner.run(["pkexec", "/usr/local/bin/axiom-pkg-rollback", String(n)], function (r) {
+            snapshotMessage = r.code === 0 ? "Rolled back to snapshot " + n + ". Restart to finish." : (r.err || "Rollback was not approved or failed.").trim().split("\n").pop()
+        })
+    }
+
     function packageFiles(name, cb) {
         runner.runC(["pacman", "-Ql", "--", name], function (r) { cb(r.code === 0 ? Sw.parseFiles(r.out, 200) : { count: 0, files: [], error: r.err.split("\n")[0] }) })
     }
@@ -125,5 +145,5 @@ Item {
         tryNext(0)
     }
 
-    Component.onCompleted: { load(); loadUpdates(); loadFlatpaks() }
+    Component.onCompleted: { load(); loadUpdates(); loadFlatpaks(); loadSnapshots() }
 }

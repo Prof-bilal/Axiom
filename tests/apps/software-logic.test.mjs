@@ -143,3 +143,13 @@ import { readFileSync as _rf } from "node:fs";
     assert.deepEqual(_fp.parseFlatpakList("org.x.App\tApp\t1.2\n\n"), [{ id: "org.x.App", name: "App", version: "1.2" }]);
   });
 }
+
+// Snapshot list parser (ADR-033).
+{
+  const _s2 = _rf(new URL("../../apps/software/software.js", import.meta.url), "utf8").replace(/^\.pragma library/m, "");
+  const _sn = new Function(_s2 + "; return { parseSnapshots };")();
+  test("snapper list rows parse to number, date and description", () => {
+    assert.deepEqual(_sn.parseSnapshots("# | Date | Description\n-+-\n1 | Mon 09:00 | before update\n2 | Tue 10:00 | \n"),
+      [{ number: 1, date: "Mon 09:00", description: "before update" }, { number: 2, date: "Tue 10:00", description: "" }]);
+  });
+}

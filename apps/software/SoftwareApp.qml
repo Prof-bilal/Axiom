@@ -85,7 +85,7 @@ AppWindow {
             anchors.left: parent.left
             anchors.right: parent.right
             height: 48
-            color: Theme.surface
+            color: "transparent"
 
             Rectangle { anchors.bottom: parent.bottom; width: parent.width; height: 1; color: Theme.borderSubtle }
 
@@ -124,7 +124,7 @@ AppWindow {
             anchors.bottom: parent.bottom
             anchors.left: parent.left
             width: 236
-            color: Theme.surface
+            color: "transparent"
 
             Rectangle { anchors.right: parent.right; width: 1; height: parent.height; color: Theme.borderSubtle }
 
@@ -210,11 +210,196 @@ AppWindow {
 
                 SideSection { label: "Discover" }
                 SideItem { label: "Applications"; key: "apps"; glyph: "application"; count: backend.visibleApps.length > 0 || backend.query.length === 0 ? String(ApplicationService.all.filter(function (e) { return !e.noDisplay }).length) : "" }
+                SideItem { label: "Updates"; key: "updates"; glyph: "refresh"; count: String(backend.updates.length) }
+                SideItem { label: "Flatpak apps"; key: "flatpak"; glyph: "archive"; count: String(backend.flatpaks.length) }
+                SideItem { label: "Snapshots"; key: "snapshots"; glyph: "refresh"; count: String(backend.snapshots.length) }
                 SideSection { label: "Installed packages" }
                 SideItem { label: "All packages"; key: "all"; glyph: "archive"; count: String(backend.packages.length) }
                 SideItem { label: "Chosen"; key: "explicit"; glyph: "download"; count: String(backend.explicitCount) }
                 SideItem { label: "Dependencies"; key: "deps"; glyph: "code"; count: String(backend.packages.length - backend.explicitCount) }
                 SideItem { label: "Unused dependencies"; key: "unused"; glyph: "broken-link"; count: String(backend.unusedCount) }
+            }
+        }
+
+        // ---- snapshots and rollback (ADR-033): rolling back needs a second click to confirm ----
+        Rectangle {
+            id: snapPanel
+            anchors.top: toolbar.bottom
+            anchors.left: sidebar.right
+            anchors.right: parent.right
+            anchors.bottom: parent.bottom
+            visible: backend.view === "snapshots"
+            color: "transparent"
+
+            Text {
+                id: snapNote
+                anchors.top: parent.top
+                anchors.left: parent.left
+                anchors.margins: Theme.spacingLg
+                width: parent.width - 2 * Theme.spacingLg
+                wrapMode: Text.Wrap
+                text: backend.snapshotMessage.length > 0 ? backend.snapshotMessage
+                      : "Rolling back returns the system to that snapshot. Restart afterwards. Your files in /home are kept."
+                color: Theme.textSecondary
+                font.family: Theme.fontFamily
+                font.pixelSize: Theme.fontCaption
+            }
+            ListView {
+                anchors.top: snapNote.bottom
+                anchors.topMargin: Theme.spacingLg
+                anchors.bottom: parent.bottom
+                anchors.left: parent.left
+                anchors.right: parent.right
+                clip: true
+                model: backend.snapshots
+                delegate: Rectangle {
+                    required property var modelData
+                    width: ListView.view.width
+                    height: 52
+                    color: "transparent"
+                    Column {
+                        anchors.left: parent.left
+                        anchors.leftMargin: Theme.spacingLg
+                        anchors.verticalCenter: parent.verticalCenter
+                        Text { text: modelData.description || "Snapshot " + modelData.number; color: Theme.textPrimary; font.family: Theme.fontFamily; font.pixelSize: Theme.fontBody; font.weight: Font.Medium }
+                        Text { text: "#" + modelData.number + "  ·  " + modelData.date; color: Theme.textSecondary; font.family: Theme.fontFamily; font.pixelSize: Theme.fontCaption }
+                    }
+                    AppButton {
+                        anchors.right: parent.right
+                        anchors.rightMargin: Theme.spacingLg
+                        anchors.verticalCenter: parent.verticalCenter
+                        text: backend.pendingRollback === modelData.number ? "Confirm roll back" : "Roll back"
+                        destructive: backend.pendingRollback === modelData.number
+                        onClicked: backend.pendingRollback === modelData.number ? backend.confirmRollback(modelData.number) : backend.askRollback(modelData.number)
+                    }
+                }
+            }
+        }
+
+        // ---- Flatpak apps (ADR-034): list, update, remove, and install from Flathub ----
+        Rectangle {
+            id: flatpakPanel
+            anchors.top: toolbar.bottom
+            anchors.left: sidebar.right
+            anchors.right: parent.right
+            anchors.bottom: parent.bottom
+            visible: backend.view === "flatpak"
+            color: "transparent"
+
+            Row {
+                id: flatpakInstallRow
+                anchors.top: parent.top
+                anchors.left: parent.left
+                anchors.margins: Theme.spacingLg
+                spacing: Theme.spacingSm
+                Rectangle {
+                    width: 300
+                    height: 32
+                    radius: 16
+                    color: Theme.stateHover
+                    border.width: 1
+                    border.color: flatpakId.activeFocus ? Theme.stateSelectedBorder : Theme.borderSubtle
+                    TextInput {
+                        id: flatpakId
+                        anchors.fill: parent
+                        anchors.leftMargin: Theme.spacingMd
+                        anchors.rightMargin: Theme.spacingMd
+                        verticalAlignment: TextInput.AlignVCenter
+                        clip: true
+                        color: Theme.textPrimary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: Theme.fontCaption
+                        onAccepted: backend.flatpakInstall(text.trim())
+                    }
+                }
+                AppButton { text: "Install from Flathub"; primary: true; onClicked: backend.flatpakInstall(flatpakId.text.trim()) }
+            }
+            Text {
+                anchors.top: flatpakInstallRow.bottom
+                anchors.left: parent.left
+                anchors.margins: Theme.spacingLg
+                text: backend.flatpakMessage
+                color: Theme.textSecondary
+                font.family: Theme.fontFamily
+                font.pixelSize: Theme.fontCaption
+            }
+            ListView {
+                anchors.top: flatpakInstallRow.bottom
+                anchors.topMargin: Theme.spacingXl
+                anchors.bottom: parent.bottom
+                anchors.left: parent.left
+                anchors.right: parent.right
+                clip: true
+                model: backend.flatpaks
+                delegate: Rectangle {
+                    required property var modelData
+                    width: ListView.view.width
+                    height: 52
+                    color: "transparent"
+                    Column {
+                        anchors.left: parent.left
+                        anchors.leftMargin: Theme.spacingLg
+                        anchors.verticalCenter: parent.verticalCenter
+                        Text { text: modelData.name; color: Theme.textPrimary; font.family: Theme.fontFamily; font.pixelSize: Theme.fontBody; font.weight: Font.Medium }
+                        Text { text: modelData.id + (modelData.version ? "  ·  " + modelData.version : ""); color: Theme.textSecondary; font.family: Theme.fontFamily; font.pixelSize: Theme.fontCaption }
+                    }
+                    Row {
+                        anchors.right: parent.right
+                        anchors.rightMargin: Theme.spacingLg
+                        anchors.verticalCenter: parent.verticalCenter
+                        spacing: Theme.spacingSm
+                        AppButton { text: "Update"; onClicked: backend.flatpakUpdate(modelData.id) }
+                        AppButton { text: "Remove"; destructive: true; onClicked: backend.flatpakRemove(modelData.id) }
+                    }
+                }
+            }
+        }
+
+        // ---- updates (ADR-033): one admin approval updates the system, after a snapshot ----
+        Rectangle {
+            id: updateBar
+            anchors.top: toolbar.bottom
+            anchors.left: sidebar.right
+            anchors.right: parent.right
+            height: visible ? 64 : 0
+            visible: backend.view === "updates"
+            color: "transparent"
+            Column {
+                anchors.left: parent.left
+                anchors.leftMargin: Theme.spacingLg
+                anchors.verticalCenter: parent.verticalCenter
+                spacing: 4
+                Text {
+                    text: backend.updates.length === 0 ? "The system is up to date."
+                          : backend.updates.length + (backend.updates.length === 1 ? " update available" : " updates available")
+                    color: Theme.textPrimary
+                    font.family: Theme.fontFamily
+                    font.pixelSize: Theme.fontBody
+                    font.weight: Font.DemiBold
+                }
+                Text {
+                    text: backend.snapshotsAvailable ? "A snapshot is taken first, so you can roll back."
+                          : "Updates need snapshots (btrfs with snapper). This system has none, so updates are off."
+                    color: Theme.textSecondary
+                    font.family: Theme.fontFamily
+                    font.pixelSize: Theme.fontCaption
+                }
+                Text {
+                    visible: backend.updateMessage.length > 0
+                    text: backend.updateMessage
+                    color: Theme.textSecondary
+                    font.family: Theme.fontFamily
+                    font.pixelSize: Theme.fontCaption
+                }
+            }
+            AppButton {
+                anchors.right: parent.right
+                anchors.rightMargin: Theme.spacingLg
+                anchors.verticalCenter: parent.verticalCenter
+                text: "Update all"
+                primary: true
+                enabled: backend.snapshotsAvailable && backend.updates.length > 0
+                onClicked: backend.updateAll()
             }
         }
 
@@ -244,7 +429,8 @@ AppWindow {
         // ---- list ----
         ListView {
             id: list
-            anchors.top: notice.bottom
+            visible: backend.view !== "updates" && backend.view !== "flatpak" && backend.view !== "snapshots"
+            anchors.top: updateBar.visible ? updateBar.bottom : notice.bottom
             anchors.bottom: parent.bottom
             anchors.left: sidebar.right
             anchors.right: detail.visible ? detail.left : parent.right
