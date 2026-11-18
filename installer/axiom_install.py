@@ -32,7 +32,7 @@ ENV = {"PATH": "/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin", "LC_ALL": "C.UTF-
 
 # Desktop set mirrors the Phase 3/5 package list (iso/phase3/packages.x86_64).
 BASE_PACKAGES = [
-    "base-devel", "git", "nano", "vim", "openssh", "sudo", "zsh", "btrfs-progs", "cryptsetup",
+    "base-devel", "git", "nano", "vim", "openssh", "sudo", "zsh", "btrfs-progs", "snapper", "cryptsetup",
     "networkmanager", "wpa_supplicant", "polkit", "dbus", "pipewire", "pipewire-pulse", "pipewire-alsa",
     "wireplumber", "alsa-utils", "mesa", "libglvnd", "wayland", "wayland-protocols", "labwc",
     "xdg-desktop-portal", "xdg-desktop-portal-wlr", "xdg-desktop-portal-gtk", "gvfs", "quickshell",
@@ -43,6 +43,19 @@ BASE_PACKAGES = [
     "qemu-guest-agent", "mkinitcpio", "intel-ucode", "amd-ucode", "kbd", "plymouth",
 ]
 SERVICES = ["NetworkManager", "bluetooth", "power-profiles-daemon", "systemd-timesyncd", "qemu-guest-agent"]
+
+# Snapshots for updates and rollback (ADR-033). The @snapshots subvolume is mounted at
+# /.snapshots by fstab; snapper's create-config makes its own .snapshots, so the directory is
+# replaced first, then the subvolume is mounted again. Run once, after the system is installed.
+SNAPPER_SETUP = [
+    "umount /.snapshots",
+    "rm -r /.snapshots",
+    "snapper -c root create-config /",
+    "btrfs subvolume delete /.snapshots",
+    "mkdir /.snapshots",
+    "mount -a",
+    "chmod 750 /.snapshots",
+]
 # Axiom-owned files copied from the live medium into the target (nothing else).
 OVERLAY = [
     "/etc/axiom", "/etc/polkit-1/rules.d/50-axiom-session-power.rules",
@@ -178,7 +191,7 @@ def build_config(f, disk_path, disk_bytes):
         "hostname": f["hostname"], "kernels": ["linux", "linux-lts"],
         "locale_config": {"kb_layout": f["keyboard"], "sys_enc": "UTF-8", "sys_lang": f["locale"]},
         "network_config": {"type": "nm"}, "ntp": True, "offline": False,
-        "packages": BASE_PACKAGES, "services": SERVICES,
+        "packages": BASE_PACKAGES, "services": SERVICES, "custom_commands": SNAPPER_SETUP,
         "swap": {"enabled": True, "algorithm": "zstd"}, "timezone": f["timezone"], "script": "guided",
     }
     if f["luks"]:
