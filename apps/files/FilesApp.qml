@@ -134,14 +134,21 @@ AppWindow {
         confirm.acceptedAction = function () { backend.emptyTrash() }
     }
 
+    // The folder shown in the name sheets, like the macOS location line.
+    function locationLine() {
+        return backend.trashView ? "Trash" : backend.path
+    }
+
     function promptNewFolder() {
         if (backend.trashView) return
+        prompt.subtitle = root.locationLine()
         prompt.show("New folder", Files.uniqueNewName("New folder", backend.entries.map(function (e) { return e.name })), "Create")
         prompt.acceptedAction = function (t) { root.pendingSelect = t; backend.createFolder(t) }
     }
 
     function promptNewFile() {
         if (backend.trashView) return
+        prompt.subtitle = root.locationLine()
         prompt.show("New File", Files.uniqueNewName("untitled" + Files.TEMPLATES[0].ext, backend.entries.map(function (e) { return e.name })), "Create File")
         prompt.templates = Files.TEMPLATES
         prompt.templateIndex = 0
@@ -155,6 +162,7 @@ AppWindow {
         var sel = selectedEntries()
         if (sel.length !== 1 || backend.trashView) return
         var e = sel[0]
+        prompt.subtitle = root.locationLine()
         prompt.show("Rename", e.name, "Rename")
         prompt.acceptedAction = function (t) { root.pendingSelect = t; backend.rename(e, t) }
     }

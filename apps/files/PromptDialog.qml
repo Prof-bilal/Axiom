@@ -143,7 +143,7 @@ DialogFrame {
     Row {
         anchors.right: parent.right
         spacing: Theme.spacingSm
-        AppButton { text: "Cancel"; onClicked: dlg.open = false }
-        AppButton { text: dlg.acceptText; primary: true; enabled: dlg.problem === ""; onClicked: dlg.accept() }
+        AppButton { text: "Cancel  Esc"; onClicked: dlg.open = false }
+        AppButton { text: dlg.acceptText + "  ↵"; primary: true; enabled: dlg.problem === ""; onClicked: dlg.accept() }
     }
 }
