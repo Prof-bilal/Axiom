@@ -5,7 +5,7 @@ import test from "node:test";
 
 const src = readFileSync(new URL("../../apps/appinstaller/installfile.js", import.meta.url), "utf8")
   .replace(/^\.pragma library/m, "");
-const lib = new Function(src + "; return { classify, appImageTarget, formatSize, quoteExec, desktopEntry, flatpakArgv, debStagePath, containerListed, validDebName, displayName, debListArgv, debCreateArgv, debEnterArgv, debNameArgv, debInstallArgv, debExportArgv };")();
+const lib = new Function(src + "; return { classify, appImageTarget, formatSize, quoteExec, desktopEntry, flatpakArgv, debStagePath, containerListed, validDebName, displayName, debListArgv, debCreateArgv, debEnterArgv, debNameArgv, debInstallArgv, debExportArgv, minisignArgv, signatureState, installPolicy, sandboxArgv, auditLine, sha256Argv };")();
 
 test("classifies AppImage, Flatpak and Arch packages", () => {
   assert.equal(lib.classify("Foo-x86_64.AppImage").kind, "appimage");
@@ -104,4 +104,45 @@ test("friendly app name drops extension, architecture and version", () => {
   assert.equal(lib.displayName("google-chrome-stable_current_amd64.deb"), "Google chrome");
   assert.equal(lib.displayName("1.2.3.AppImage"), "1.2.3.AppImage");
   assert.equal(lib.displayName(""), "App");
+});
+
+test("signature state: unsigned when no .minisig, verified or failed otherwise", () => {
+  assert.equal(lib.signatureState({ present: false, verified: false }), "unsigned");
+  assert.equal(lib.signatureState({ present: true, verified: true }), "verified");
+  assert.equal(lib.signatureState({ present: true, verified: false }), "failed");
+  assert.equal(lib.signatureState(null), "unsigned");
+});
+
+test("policy: failed signature blocked; unsigned allowed only with admin; system always admin", () => {
+  const failed = lib.installPolicy("appimage", "user", "failed");
+  assert.equal(failed.blocked, true);
+  const unsigned = lib.installPolicy("appimage", "user", "unsigned");
+  assert.equal(unsigned.blocked, false);
+  assert.equal(unsigned.requiresAdmin, true);
+  const signed = lib.installPolicy("appimage", "user", "verified");
+  assert.equal(signed.requiresAdmin, false);
+  const sys = lib.installPolicy("arch", "user", "verified");
+  assert.equal(sys.requiresAdmin, true);
+  assert.equal(lib.installPolicy("appimage", "system", "verified").requiresAdmin, true);
+});
+
+test("minisign argv is an array with the paths as separate arguments", () => {
+  const argv = lib.minisignArgv("/usr/share/axiom/keys/axiom.pub", "/tmp/x; rm -rf ~.AppImage");
+  assert.deepEqual(argv.slice(0, 3), ["minisign", "-V", "-p"]);
+  assert.equal(argv[argv.length - 1], "/tmp/x; rm -rf ~.AppImage");
+});
+
+test("sandbox argv never mounts the home directory", () => {
+  const argv = lib.sandboxArgv("/home/u/Applications/App.AppImage");
+  assert.equal(argv[0], "bwrap");
+  assert.ok(!argv.some((a) => a.startsWith("/home")) || argv.indexOf("/home/u/Applications/App.AppImage") > 0);
+  assert.ok(!argv.includes("--bind"), "no read-write binds");
+  assert.equal(argv[argv.length - 1], "/home/u/Applications/App.AppImage");
+});
+
+test("audit line is one JSON object with the audit id", () => {
+  const line = lib.auditLine({ id: "ax-1", time: "t", file: "a.AppImage", sha256: "ab", signature: "unsigned",
+    policy: "admin", sandbox: "bwrap", target: "/home/u/Applications/a", result: "installed" });
+  assert.equal(line.includes("\n"), false);
+  assert.equal(JSON.parse(line).id, "ax-1");
 });

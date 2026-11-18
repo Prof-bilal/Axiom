@@ -104,3 +104,60 @@ function debNameArgv(stagedPath) { return debEnterArgv(["dpkg-deb", "-f", staged
 function debInstallArgv(stagedPath) { return debEnterArgv(["sudo", "apt-get", "install", "-y", stagedPath]) }
 // distrobox-export puts the app's launcher in the host's ~/.local/share/applications.
 function debExportArgv(pkg) { return debEnterArgv(["distrobox-export", "--app", pkg]) }
+
+// ---- Signatures (minisign), policy, sandbox and audit (ADR-032) ----
+// The verifier is run through CommandRunner, never a shell. Keys are shipped read-only in
+// /usr/share/axiom/keys/. A missing .minisig is "unsigned"; a present one that does not verify is "failed".
+
+var KEY_DIR = "/usr/share/axiom/keys"
+
+function minisignArgv(keyPath, filePath) {
+    return ["minisign", "-V", "-p", keyPath, "-m", filePath]
+}
+
+// signature: { present: bool, verified: bool }
+function signatureState(signature) {
+    if (!signature || !signature.present) return "unsigned"
+    return signature.verified ? "verified" : "failed"
+}
+
+// Decides what the install needs. Returns { blocked, requiresAdmin, reason }.
+// System-wide installs always need admin. A failed signature is blocked outright.
+// An unsigned user-scope file is allowed, but only after an admin approval.
+function installPolicy(kind, scope, sigState) {
+    if (sigState === "failed")
+        return { blocked: true, requiresAdmin: false, reason: "Signature does not match this file. Install blocked." }
+    if (scope === "system" || (KINDS[kind] && KINDS[kind].root))
+        return { blocked: false, requiresAdmin: true, reason: "System-wide install needs admin approval." }
+    if (sigState === "unsigned")
+        return { blocked: false, requiresAdmin: true, reason: "Unsigned source: admin approval required." }
+    return { blocked: false, requiresAdmin: false, reason: "Signed and verified: installs in your account." }
+}
+
+// Launch argv for an AppImage inside bubblewrap. No home directory is mounted: the app
+// sees the system read-only and its own file, so it cannot read ~/.ssh or other files.
+function sandboxArgv(appPath) {
+    return [
+        "bwrap", "--die-with-parent", "--unshare-pid", "--unshare-ipc",
+        "--ro-bind", "/usr", "/usr",
+        "--ro-bind-try", "/lib", "/lib",
+        "--ro-bind-try", "/lib64", "/lib64",
+        "--ro-bind-try", "/bin", "/bin",
+        "--ro-bind-try", "/etc", "/etc",
+        "--proc", "/proc", "--dev", "/dev", "--tmpfs", "/tmp",
+        "--ro-bind", appPath, appPath,
+        "--", appPath
+    ]
+}
+
+// One audit line (JSON, no trailing newline). The id is returned to the UI as the audit ID.
+function auditLine(record) {
+    return JSON.stringify({
+        id: record.id, time: record.time, file: record.file, sha256: record.sha256,
+        signature: record.signature, policy: record.policy, sandbox: record.sandbox,
+        target: record.target, result: record.result
+    })
+}
+
+function sha256Argv(filePath) { return ["sha256sum", "--", filePath] }
+
