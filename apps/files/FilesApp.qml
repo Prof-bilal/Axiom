@@ -412,6 +412,32 @@ AppWindow {
 
             Rectangle { visible: root.viewMode === "list"; anchors.top: header.bottom; width: parent.width; height: 1; color: Theme.borderSubtle }
 
+            // Finder-style striped rows behind the list, so the empty space below the
+            // files keeps the alternating bands. Drawn before the list (behind it).
+            Item {
+                id: stripes
+                visible: root.viewMode === "list"
+                anchors.top: header.bottom
+                anchors.topMargin: 1
+                anchors.bottom: parent.bottom
+                anchors.left: parent.left
+                anchors.right: parent.right
+                anchors.margins: Theme.spacingSm
+                clip: true
+                Column {
+                    width: parent.width
+                    Repeater {
+                        model: Math.ceil(stripes.height / 34) + 1
+                        Rectangle {
+                            required property int index
+                            width: parent.width
+                            height: 34
+                            color: index % 2 === 0 ? Theme.stateHover : "transparent"
+                        }
+                    }
+                }
+            }
+
             ListView {
                 id: list
                 visible: root.viewMode === "list"
