@@ -16,9 +16,9 @@ AppWindow {
 
     title: "Installing"
     implicitWidth: 460
-    implicitHeight: 340
-    minimumSize: Qt.size(460, 340)
-    maximumSize: Qt.size(460, 340)
+    implicitHeight: 560
+    minimumSize: Qt.size(460, 560)
+    maximumSize: Qt.size(460, 560)
 
     property string path: ""
     property string fileName: ""
@@ -30,6 +30,9 @@ AppWindow {
     property string message: ""
     // Facts from the install (ADR-032): signature result and where the app goes.
     property string signature: "checking"   // checking | verified | unsigned | failed | not-checked
+    property string auditId: ""
+    property string target: ""      // where the app was installed (for Launch app)
+    readonly property bool blocked: phase === "error" && signature === "failed"
     readonly property string scope: fileName.toLowerCase().endsWith(".appimage") ? "User sandbox · no root" : "System-wide · admin"
 
     readonly property string appName: IF.displayName(fileName)
@@ -55,9 +58,13 @@ AppWindow {
         var preview = Quickshell.env("AXIOM_QUICKINSTALL_PREVIEW")
         if (preview) {
             fileName = "Axiom-Demo-App-1.2.3-x86_64.AppImage"; kindLabel = "AppImage"
-            phase = preview === "done" ? "done" : preview === "error" ? "error" : "working"
+            phase = preview === "done" ? "done" : (preview === "error" || preview === "blocked") ? "error" : "working"
+            if (preview === "done") { auditId = "ax-7f3a91c20b4e-m3k9x2"; target = "/home/user/Applications/Axiom-Demo-App-1.2.3-x86_64.AppImage"; signature = "verified" }
+            if (preview === "blocked") signature = "failed"
             step = 2; total = 3; stepText = "Adding it to your app menu…"
-            message = preview === "error" ? "The file could not be copied: no space left on device." : "Installed to ~/Applications"
+            message = preview === "error" ? "The file could not be copied: no space left on device."
+                    : preview === "blocked" ? "Signature does not match this file. Install blocked."
+                    : "Installed to ~/Applications"
             return
         }
         path = toPath(Quickshell.env("AXIOM_APP_ARG"))
@@ -70,6 +77,8 @@ AppWindow {
             phase = r.ok ? "done" : "error"
             message = r.message
             if (r.signature) root.signature = r.signature
+            if (r.auditId) root.auditId = r.auditId
+            if (r.target) root.target = r.target
             else if (!r.ok && root.signature === "checking") root.signature = "not-checked"
             if (r.ok) { step = total; autoClose.start() }
         }, function (s, t, text) { step = s; total = t; stepText = text })
@@ -196,6 +205,146 @@ AppWindow {
             }
         }
 
+        // ---- format pills (the file's type is highlighted) ----
+        Row {
+            width: parent.width
+            spacing: 6
+            visible: root.phase !== "done" && !root.blocked
+            Repeater {
+                model: ["AppImage · Portable", ".deb", ".pkg.tar.zst"]
+                delegate: Rectangle {
+                    required property string modelData
+                    readonly property bool on: root.kindLabel.indexOf(modelData.split(" ")[0].replace(".", "")) >= 0
+                              || (modelData === ".pkg.tar.zst" && root.kindLabel.indexOf("Arch") >= 0)
+                              || (modelData === ".deb" && root.kindLabel.indexOf("Debian") >= 0)
+                    height: 26
+                    width: pillLabel.implicitWidth + 22
+                    radius: 13
+                    color: on ? Theme.stateSelected : "transparent"
+                    border.width: 1
+                    border.color: on ? Theme.stateSelectedBorder : Theme.borderSubtle
+                    Text {
+                        id: pillLabel
+                        anchors.centerIn: parent
+                        text: modelData
+                        color: parent.on ? Theme.cyanBright : Theme.textSecondary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: Theme.fontCaption
+                    }
+                }
+            }
+        }
+
+        // ---- policy blocked (signature does not match) ----
+        Rectangle {
+            visible: root.blocked
+            width: parent.width
+            height: blockCol.implicitHeight + 20
+            radius: 10
+            color: Theme.stateUrgentWash
+            border.width: 1
+            border.color: Theme.orangeMuted
+            Column {
+                id: blockCol
+                anchors.left: parent.left
+                anchors.right: parent.right
+                anchors.top: parent.top
+                anchors.margins: 10
+                spacing: 4
+                Text {
+                    text: "Installation blocked by policy"
+                    color: Theme.orangeBright
+                    font.family: Theme.fontFamily
+                    font.pixelSize: Theme.fontBody
+                    font.weight: Font.DemiBold
+                }
+                Text {
+                    width: parent.width
+                    wrapMode: Text.WordWrap
+                    text: "The signature does not match this file. Policy: failed signatures are never installed."
+                    color: Theme.textSecondary
+                    font.family: Theme.fontFamily
+                    font.pixelSize: Theme.fontCaption
+                }
+            }
+        }
+
+        // ---- progress checklist (each step turns on from the real install step) ----
+        Column {
+            width: parent.width
+            spacing: 6
+            visible: root.phase === "working"
+            Repeater {
+                model: [
+                    { t: "SHA-256 verified", on: root.step >= 1 },
+                    { t: "Sandbox isolated", on: root.step >= 3 },
+                    { t: "Registering desktop entry", on: root.step >= 4 }
+                ]
+                delegate: Row {
+                    required property var modelData
+                    spacing: 8
+                    Text {
+                        text: modelData.on ? "✔" : "○"
+                        color: modelData.on ? Theme.cyanBright : Theme.textDisabled
+                        font.family: Theme.fontFamily
+                        font.pixelSize: Theme.fontCaption
+                    }
+                    Text {
+                        text: modelData.t
+                        color: modelData.on ? Theme.textPrimary : Theme.textSecondary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: Theme.fontCaption
+                    }
+                }
+            }
+        }
+
+        // ---- done card: status, audit ID and desktop entry ----
+        Rectangle {
+            visible: root.phase === "done"
+            width: parent.width
+            height: doneCol.implicitHeight + 20
+            radius: 10
+            color: Theme.stateSelected
+            border.width: 1
+            border.color: Theme.stateSelectedBorder
+            Column {
+                id: doneCol
+                anchors.left: parent.left
+                anchors.right: parent.right
+                anchors.top: parent.top
+                anchors.margins: 10
+                spacing: 6
+                Repeater {
+                    model: [
+                        { k: "Status", v: root.signature === "verified" ? "Verified & sandboxed" : "Installed to user sandbox" },
+                        { k: "Audit ID", v: root.auditId.length > 0 ? root.auditId : "not recorded" },
+                        { k: "Desktop entry", v: root.target.length > 0 ? root.target : "" }
+                    ]
+                    delegate: Row {
+                        required property var modelData
+                        width: doneCol.width
+                        visible: modelData.v.length > 0
+                        Text {
+                            width: 100
+                            text: modelData.k
+                            color: Theme.textSecondary
+                            font.family: Theme.fontFamily
+                            font.pixelSize: Theme.fontCaption
+                        }
+                        Text {
+                            width: parent.width - 100
+                            elide: Text.ElideMiddle
+                            text: modelData.v
+                            color: Theme.textPrimary
+                            font.family: Theme.fontMono
+                            font.pixelSize: Theme.fontCaption
+                        }
+                    }
+                }
+            }
+        }
+
         // ---- progress ----
         Column {
             width: parent.width
@@ -263,14 +412,22 @@ AppWindow {
         }
     }
 
-    // Done or Close; hidden while the install is running, because closing would stop it.
-    AppButton {
+    // Launch app (sandboxed) and Done; hidden while the install is running, because closing would stop it.
+    Row {
         anchors.right: parent.right
         anchors.bottom: parent.bottom
         anchors.margins: 24
+        spacing: 8
         visible: root.phase !== "working"
-        primary: root.phase === "done"
-        text: root.phase === "done" ? "Done" : "Close"
-        onClicked: Qt.quit()
+        AppButton {
+            visible: root.phase === "done" && root.target.length > 0
+            text: "Launch app"
+            primary: true
+            onClicked: Quickshell.execDetached(IF.sandboxArgv(root.target))
+        }
+        AppButton {
+            text: root.phase === "done" ? "Done" : "Close"
+            onClicked: Qt.quit()
+        }
     }
 }

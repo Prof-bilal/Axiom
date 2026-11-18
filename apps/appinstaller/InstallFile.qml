@@ -125,7 +125,7 @@ Item {
                     var audit = home + "/.local/state/axiom/install-audit.jsonl"
                     runner.run(["sh", "-c", "mkdir -p \"$(dirname \"$1\")\" && printf '%s\\n' \"$2\" >> \"$1\"", "_", audit, line],
                         function () {
-                            callback({ ok: true, message: "Installed " + name + " · audit " + id, auditId: id, signature: sigState })
+                            callback({ ok: true, message: "Installed " + name, auditId: id, signature: sigState, target: dest })
                         })
                 })
             })
