@@ -26,13 +26,14 @@ PanelWindow {
     WlrLayershell.layer: WlrLayershell.Top
     WlrLayershell.keyboardFocus: WlrLayershell.None
 
-    // Solid bar from the mockups: charcoal in dark mode, white in light mode.
+    // Solid menu bar fixed to the top edge: charcoal in dark mode, white in light mode.
     Rectangle {
         anchors.fill: parent
-        radius: Theme.radiusSurface
+        // Flush with the top edge, square corners, a hairline underneath (macOS menu bar).
+        radius: 0
         color: Theme.panelBackground
-        border.color: Theme.border
-        border.width: 1
+        border.color: "transparent"
+        border.width: 0
     }
 
     // --- left ---

@@ -106,16 +106,16 @@ Singleton {
     readonly property int radiusWindow: 16
 
     // --- surfaces ---
-    readonly property int panelHeight: 40
+    readonly property int panelHeight: 26
     // The panel floats (ADR-029): gap above it, and everything that opens
     // below it starts at panelBottom.
-    readonly property int panelGap: 8
-    readonly property int panelSideGap: 10
+    readonly property int panelGap: 0
+    readonly property int panelSideGap: 0
     readonly property int panelBottom: panelHeight + panelGap
-    readonly property int panelIconSize: 17
-    readonly property int panelMarkSize: 26
-    readonly property int panelButtonSize: 30
-    readonly property int panelNavHeight: 28
+    readonly property int panelIconSize: 14
+    readonly property int panelMarkSize: 18
+    readonly property int panelButtonSize: 24
+    readonly property int panelNavHeight: 22
     readonly property int workspaceButtonWidth: 30
     readonly property int workspaceButtonHeight: 26
     readonly property int dockIconSize: 60
