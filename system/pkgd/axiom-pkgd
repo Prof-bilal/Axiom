@@ -3,7 +3,8 @@
 # Runs only as root through pkexec, after polkit approves org.axiom.installer.install.
 # Operations: install <abs path to .pkg.tar.*> (copied to a root-only dir first so it
 # cannot be swapped after the check), sync <repo package>, remove <package>,
-# approve <sha256> (admin approval for an unsigned user install, logged).
+# approve <sha256> (admin approval for an unsigned user install, logged),
+# snapshot <description>, update (snapshot then pacman -Syu), rollback <number>, snapshots (ADR-033).
 set -u
 
 [ "$(id -u)" -eq 0 ] || { echo "axiom-pkgd: must run as root" >&2; exit 1; }
@@ -29,6 +30,35 @@ case "$op" in
     [ "${#sha}" -eq 64 ] || { echo "axiom-pkgd: invalid digest" >&2; exit 2; }
     logger -t axiom-pkgd "approved unsigned user install sha256=$sha uid=${PKEXEC_UID:-unknown}"
     exit 0
+    ;;
+  snapshot|update|rollback|snapshots)
+    # Snapshot-backed operations (ADR-033). snapper manages btrfs snapshots of the root.
+    # A system without snapper cannot update or roll back: the helper refuses rather than
+    # update without a way back.
+    command -v snapper >/dev/null 2>&1 || { echo "axiom-pkgd: snapshots are not available on this system" >&2; exit 3; }
+    case "$op" in
+      snapshot)
+        desc=${2:-}
+        case "$desc" in ""|*[!A-Za-z0-9\ ._-]*) echo "axiom-pkgd: invalid description" >&2; exit 2 ;; esac
+        [ "${#desc}" -le 60 ] || { echo "axiom-pkgd: description too long" >&2; exit 2; }
+        exec snapper -c root create --type single --description "$desc"
+        ;;
+      update)
+        # Snapshot first; only then a full upgrade. If the snapshot fails, nothing is upgraded.
+        snapper -c root create --type single --description "before update" || exit 1
+        pacman -Syu --noconfirm
+        exit $?
+        ;;
+      rollback)
+        id=${2:-}
+        case "$id" in ""|*[!0-9]*) echo "axiom-pkgd: invalid snapshot number" >&2; exit 2 ;; esac
+        logger -t axiom-pkgd "rollback to snapshot $id requested uid=${PKEXEC_UID:-unknown}"
+        exec snapper -c root rollback "$id"
+        ;;
+      snapshots)
+        exec snapper -c root list --columns number,date,description
+        ;;
+    esac
     ;;
   sync|remove)
     pkg=${2:-}

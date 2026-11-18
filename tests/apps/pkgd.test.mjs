@@ -39,3 +39,37 @@ test("a non-root caller is refused", () => {
   assert.equal(run("sync", "neovim").status, 1);
   fs.writeFileSync(path.join(dir, "id"), "#!/bin/sh\necho 0\n", { mode: 0o755 });
 });
+
+// Snapshot-backed verbs (ADR-033): snapper and pacman are stubbed; the order of calls is checked.
+const sdir = fs.mkdtempSync(path.join(os.tmpdir(), "pkgd-snap-"));
+fs.writeFileSync(path.join(sdir, "id"), "#!/bin/sh\necho 0\n", { mode: 0o755 });
+fs.writeFileSync(path.join(sdir, "pacman"), '#!/bin/sh\necho "pacman $*"\n', { mode: 0o755 });
+fs.writeFileSync(path.join(sdir, "snapper"), '#!/bin/sh\necho "snapper $*"\n', { mode: 0o755 });
+const srun = (...args) => spawnSync("sh", [helper, ...args], { encoding: "utf8", env: { PATH: `${sdir}:/usr/bin:/bin` } });
+
+test("update takes a snapshot before the full upgrade", () => {
+  const r = srun("update");
+  assert.equal(r.status, 0);
+  const lines = r.stdout.trim().split("\n");
+  assert.equal(lines[0], "snapper -c root create --type single --description before update");
+  assert.equal(lines[1], "pacman -Syu --noconfirm");
+});
+
+test("rollback needs a numeric snapshot id", () => {
+  assert.equal(srun("rollback", "12").stdout.trim(), "snapper -c root rollback 12");
+  for (const bad of ["", "1;2", "x", "-1"]) assert.equal(srun("rollback", bad).status, 2, JSON.stringify(bad));
+});
+
+test("snapshot descriptions are checked", () => {
+  assert.equal(srun("snapshot", "before install 2").status, 0);
+  for (const bad of ["", "a;rm", "$(id)", "x".repeat(61)]) assert.equal(srun("snapshot", bad).status, 2, JSON.stringify(bad));
+});
+
+test("without snapper the snapshot-backed verbs refuse and never run pacman", () => {
+  const nodir = fs.mkdtempSync(path.join(os.tmpdir(), "pkgd-nosnap-"));
+  fs.writeFileSync(path.join(nodir, "id"), "#!/bin/sh\necho 0\n", { mode: 0o755 });
+  fs.writeFileSync(path.join(nodir, "pacman"), '#!/bin/sh\necho "pacman $*"\n', { mode: 0o755 });
+  const r = spawnSync("/bin/sh", [helper, "update"], { encoding: "utf8", env: { PATH: nodir } });
+  assert.equal(r.status, 3);
+  assert.ok(!r.stdout.includes("pacman"));
+});
