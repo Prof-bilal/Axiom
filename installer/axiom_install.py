@@ -44,18 +44,39 @@ BASE_PACKAGES = [
 ]
 SERVICES = ["NetworkManager", "bluetooth", "power-profiles-daemon", "systemd-timesyncd", "qemu-guest-agent"]
 
-# Snapshots for updates and rollback (ADR-033). The @snapshots subvolume is mounted at
-# /.snapshots by fstab; snapper's create-config makes its own .snapshots, so the directory is
-# replaced first, then the subvolume is mounted again. Run once, after the system is installed.
-SNAPPER_SETUP = [
-    "umount /.snapshots",
-    "rm -r /.snapshots",
-    "snapper -c root create-config /",
-    "btrfs subvolume delete /.snapshots",
-    "mkdir /.snapshots",
-    "mount -a",
-    "chmod 750 /.snapshots",
-]
+# Snapshots for updates and rollback (ADR-033). Inside the installer's chroot /.snapshots is busy,
+# so the setup is a one-time service that runs on the first boot of the installed system, when
+# fstab has mounted @snapshots at /.snapshots as a normal mount. The service is enabled here.
+SNAPPER_SETUP = ["""cat > /usr/local/sbin/axiom-snapper-setup <<'EOS'
+#!/bin/sh
+set -e
+[ -f /etc/axiom/snapper-done ] && exit 0
+umount /.snapshots
+rm -r /.snapshots
+snapper -c root create-config /
+btrfs subvolume delete /.snapshots
+mkdir /.snapshots
+mount -a
+chmod 750 /.snapshots
+mkdir -p /etc/axiom
+touch /etc/axiom/snapper-done
+EOS
+chmod 755 /usr/local/sbin/axiom-snapper-setup
+cat > /etc/systemd/system/axiom-snapper-setup.service <<'EOU'
+[Unit]
+Description=Axiom snapshot setup (once)
+After=local-fs.target
+ConditionPathExists=!/etc/axiom/snapper-done
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/sbin/axiom-snapper-setup
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target
+EOU
+systemctl enable axiom-snapper-setup.service"""]
 # Axiom-owned files copied from the live medium into the target (nothing else).
 OVERLAY = [
     "/etc/axiom", "/etc/polkit-1/rules.d/50-axiom-session-power.rules",

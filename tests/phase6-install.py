@@ -264,14 +264,30 @@ def stage_install(iso, out, luks=False):
     g = Guest(iso, out, mem=2560, smp=2)
     disk = mk_disk(out)
     kern, initrd = live_kernel(iso, out)
+    # AXIOM_PKG_CACHE=/var/cache/pacman/pkg shares the host's package cache read-only, so the
+    # install reuses packages already downloaded instead of fetching them over the slow link.
+    cache = os.environ.get("AXIOM_PKG_CACHE", "")
     g.extra = ["-nic", "user,model=virtio-net-pci", *disk_args(disk), "-kernel", kern, "-initrd", initrd,
                "-append", f"archisobasedir=axiom archisodevice=/dev/sr0 axiom.installer=1 {LIVE_CMDLINE}"]
+    if cache:
+        g.extra += ["-virtfs", f"local,path={cache},mount_tag=axcache,security_model=none,readonly=on"]
     g.start()
     try:
         if not g.check(g.wait_login(), "live medium booted in installer mode"):
             return g
         time.sleep(15)
         g.check(g.login_root(), "root serial shell available")
+        if cache:
+            # Overlay: host cache is the read-only lower layer; new downloads go to the upper layer.
+            # The upper layer must not be on the live overlay (overlayfs cannot stack on overlayfs), so it is tmpfs.
+            rc, _ = g.sh("mkdir -p /run/pkg-ro /run/pkgup/upper /run/pkgup/work /var/cache/pacman/pkg && "
+                         "mount -t tmpfs -o size=1G tmpfs /run/pkgup && mkdir -p /run/pkgup/upper /run/pkgup/work && "
+                         "mount -t 9p -o trans=virtio,version=9p2000.L,ro axcache /run/pkg-ro && "
+                         "mount -t overlay overlay -o lowerdir=/run/pkg-ro,upperdir=/run/pkgup/upper,"
+                         "workdir=/run/pkgup/work /var/cache/pacman/pkg", 120)
+            ok = g.check(rc == 0, "host package cache is the installer's pacman cache (read-only lower layer)")
+            if not ok:
+                print("cache mount output:", g.sh("grep -c 9p /proc/filesystems; ls /run/pkg-ro | head -3; dmesg | tail -5", 30)[1])
         if not NO_REFRESH:
             refresh_installer(g)  # iterate on the working tree without an ISO rebuild
         else:
