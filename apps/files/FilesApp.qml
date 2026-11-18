@@ -142,8 +142,13 @@ AppWindow {
 
     function promptNewFile() {
         if (backend.trashView) return
-        prompt.show("New file", Files.uniqueNewName("New file.txt", backend.entries.map(function (e) { return e.name })), "Create")
-        prompt.acceptedAction = function (t) { root.pendingSelect = t; backend.createFile(t) }
+        prompt.show("New File", Files.uniqueNewName("untitled" + Files.TEMPLATES[0].ext, backend.entries.map(function (e) { return e.name })), "Create File")
+        prompt.templates = Files.TEMPLATES
+        prompt.templateIndex = 0
+        prompt.acceptedAction = function (t) {
+            root.pendingSelect = t
+            backend.createFile(t, Files.TEMPLATES[prompt.templateIndex].body)
+        }
     }
 
     function promptRename() {
@@ -432,7 +437,7 @@ AppWindow {
                             required property int index
                             width: parent.width
                             height: 34
-                            color: index % 2 === 0 ? Theme.stateHover : "transparent"
+                            color: index % 2 === 0 ? (Theme.light ? "#F1F4F6" : Theme.stateHover) : "transparent"
                         }
                     }
                 }

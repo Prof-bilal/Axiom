@@ -227,12 +227,13 @@ Item {
         run(["mkdir", "--", full], function (code, err) { finish("Created folder “" + name + "”", code, err) })
     }
 
-    function createFile(name) {
+    function createFile(name, body) {
         var bad = Files.validateName(name)
         if (bad) { setMessage(bad, true); return }
         var full = Files.joinPath(path, name)
-        // noclobber: fails instead of truncating an existing file.
-        run(["sh", "-c", "set -C; : > \"$1\"", "_", full],
+        // noclobber: fails instead of truncating an existing file. The starting text is
+        // passed as its own argument, never spliced into the shell command.
+        run(["sh", "-c", "set -C; printf '%s' \"$2\" > \"$1\"", "_", full, body || ""],
             function (code, err) { finish("Created file “" + name + "”", code, err) })
     }
 

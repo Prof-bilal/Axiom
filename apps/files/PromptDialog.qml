@@ -10,6 +10,8 @@ DialogFrame {
 
     property string acceptText: "OK"
     property string existingError: ""       // set by the owner for name clashes
+    property var templates: []              // optional: [{ label, ext }] shown as pills
+    property int templateIndex: 0
     readonly property string problem: Files.validateName(field.text)
 
     signal accepted(string text)
@@ -22,6 +24,16 @@ DialogFrame {
         field.forceActiveFocus()
         var dot = initial.lastIndexOf(".")
         field.select(0, dot > 0 ? dot : initial.length)
+    }
+
+    // Picking a type swaps the extension of the name, keeping the base name.
+    function pickTemplate(i) {
+        var old = templates[templateIndex] ? templates[templateIndex].ext : ""
+        templateIndex = i
+        var nx = templates[i].ext
+        var t = field.text
+        if (old && t.slice(-old.length) === old) t = t.slice(0, -old.length)
+        field.text = t + nx
     }
 
     function accept() {
@@ -67,6 +79,54 @@ DialogFrame {
             Keys.onEnterPressed: dlg.accept()
             Accessible.role: Accessible.EditableText
             Accessible.name: dlg.title
+        }
+    }
+
+    // Type pills (Markdown, Rust, TOML, Empty File), shown only for new files.
+    Column {
+        visible: dlg.templates.length > 0
+        width: parent.width
+        spacing: Theme.spacingSm
+        Text {
+            text: "Template / Type"
+            color: Theme.menuText
+            font.family: Theme.fontFamily
+            font.pixelSize: Theme.fontCaption
+            font.weight: Font.Medium
+        }
+        Flow {
+            width: parent.width
+            spacing: 6
+            Repeater {
+                model: dlg.templates
+                delegate: Rectangle {
+                    required property var modelData
+                    required property int index
+                    readonly property bool on: dlg.templateIndex === index
+                    height: 28
+                    width: pillText.implicitWidth + 24
+                    radius: 14
+                    color: on ? Theme.stateSelected : (pillHit.containsMouse ? Theme.stateHover : "transparent")
+                    border.width: 1
+                    border.color: on ? Theme.stateSelectedBorder : Theme.menuBorder
+                    Text {
+                        id: pillText
+                        anchors.centerIn: parent
+                        text: modelData.label
+                        color: parent.on ? Theme.textPrimary : Theme.menuText
+                        font.family: Theme.fontFamily
+                        font.pixelSize: Theme.fontCaption
+                        font.weight: parent.on ? Font.Medium : Font.Normal
+                    }
+                    MouseArea {
+                        id: pillHit
+                        anchors.fill: parent
+                        hoverEnabled: true
+                        cursorShape: Qt.PointingHandCursor
+                        onClicked: dlg.pickTemplate(index)
+                    }
+                }
+            }
         }
     }
 

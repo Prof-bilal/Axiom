@@ -301,3 +301,12 @@ function kindLabel(entry) {
     var k = KIND[category(entry)]
     return entry.isLink && !entry.broken ? k + " (link)" : k
 }
+
+// New-file templates offered in the name sheet: label, extension and starting text.
+var TEMPLATES = [
+    { id: "md", label: "Markdown (.md)", ext: ".md", body: "# \n" },
+    { id: "rs", label: "Rust (.rs)", ext: ".rs", body: "fn main() {\n    println!(\"Hello, world!\");\n}\n" },
+    { id: "toml", label: "TOML (.toml)", ext: ".toml", body: "[package]\nname = \"\"\nversion = \"0.1.0\"\n" },
+    { id: "empty", label: "Empty File", ext: "", body: "" }
+]
+
