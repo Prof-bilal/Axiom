@@ -16,9 +16,9 @@ AppWindow {
 
     title: "Installing"
     implicitWidth: 460
-    implicitHeight: 230
-    minimumSize: Qt.size(460, 230)
-    maximumSize: Qt.size(460, 230)
+    implicitHeight: 340
+    minimumSize: Qt.size(460, 340)
+    maximumSize: Qt.size(460, 340)
 
     property string path: ""
     property string fileName: ""
@@ -28,6 +28,9 @@ AppWindow {
     property int total: 1
     property string stepText: "Starting…"
     property string message: ""
+    // Facts from the install (ADR-032): signature result and where the app goes.
+    property string signature: "checking"   // checking | verified | unsigned | failed | not-checked
+    readonly property string scope: fileName.toLowerCase().endsWith(".appimage") ? "User sandbox · no root" : "System-wide · admin"
 
     readonly property string appName: IF.displayName(fileName)
     // Step progress: each finished stage moves the bar. Held below 100 until the install really ends.
@@ -66,6 +69,8 @@ AppWindow {
         installer.install(path, function (r) {
             phase = r.ok ? "done" : "error"
             message = r.message
+            if (r.signature) root.signature = r.signature
+            else if (!r.ok && root.signature === "checking") root.signature = "not-checked"
             if (r.ok) { step = total; autoClose.start() }
         }, function (s, t, text) { step = s; total = t; stepText = text })
     }
@@ -137,6 +142,56 @@ AppWindow {
                     color: root.phase === "error" ? Theme.orangeBright : root.phase === "done" ? Theme.cyanBright : Theme.textSecondary
                     font.family: Theme.fontFamily
                     font.pixelSize: Theme.fontBody
+                }
+            }
+        }
+
+        // ---- capability, scope and signature (ADR-032) ----
+        Rectangle {
+            width: parent.width
+            height: facts.implicitHeight + 20
+            radius: 10
+            color: Theme.surfaceElevated
+            border.width: 1
+            border.color: Theme.borderSubtle
+            Column {
+                id: facts
+                anchors.left: parent.left
+                anchors.right: parent.right
+                anchors.top: parent.top
+                anchors.margins: 10
+                spacing: 6
+                Repeater {
+                    model: [
+                        { k: "Capability", v: root.kindLabel.length > 0 ? "Install " + root.kindLabel : "Install a file" },
+                        { k: "Scope", v: root.scope },
+                        { k: "Signature", v: root.signature === "verified" ? "Verified (minisign)"
+                                          : root.signature === "unsigned" ? "Unsigned · needs admin approval"
+                                          : root.signature === "failed" ? "Does not match: blocked"
+                                          : root.signature === "not-checked" ? "Not checked"
+                                          : "Checking…" }
+                    ]
+                    delegate: Row {
+                        required property var modelData
+                        width: facts.width
+                        Text {
+                            width: 90
+                            text: modelData.k
+                            color: Theme.textSecondary
+                            font.family: Theme.fontFamily
+                            font.pixelSize: Theme.fontCaption
+                        }
+                        Text {
+                            width: parent.width - 90
+                            elide: Text.ElideRight
+                            text: modelData.v
+                            color: modelData.k === "Signature" && root.signature === "verified" ? Theme.cyanBright
+                                 : modelData.k === "Signature" && (root.signature === "failed" || root.signature === "unsigned") ? Theme.orangeBright
+                                 : Theme.textPrimary
+                            font.family: Theme.fontFamily
+                            font.pixelSize: Theme.fontCaption
+                        }
+                    }
                 }
             }
         }

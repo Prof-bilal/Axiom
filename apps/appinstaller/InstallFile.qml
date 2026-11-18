@@ -75,7 +75,10 @@ Item {
         var staged = staging + "/" + name.replace(/[^A-Za-z0-9._-]/g, "_")
         var dest = IF.appImageTarget(home, name)
         var total = 4
-        function fail(msg) { runner.run(["rm", "-f", staged, staged + ".minisig"], function () {}); callback({ ok: false, message: msg }) }
+        function fail(msg, sigState) {
+            runner.run(["rm", "-f", staged, staged + ".minisig"], function () {})
+            callback({ ok: false, message: msg, signature: sigState || "" })
+        }
 
         report(onStep, 1, total, "Checking the file…")
         runner.run(["install", "-D", "-m", "600", path, staged], function (cp) {
@@ -96,11 +99,11 @@ Item {
 
         function decide(sha, sigState) {
             var policy = IF.installPolicy("appimage", "user", sigState)
-            if (policy.blocked) return fail(policy.reason)
+            if (policy.blocked) return fail(policy.reason, sigState)
             if (!policy.requiresAdmin) return finish(sha, sigState, policy)
             report(onStep, 2, total, "Waiting for admin approval…")
             runner.run(IF.approveArgv(sha), function (a) {
-                if (a.code !== 0) return fail("Admin approval was not given.")
+                if (a.code !== 0) return fail("Admin approval was not given.", sigState)
                 finish(sha, sigState, policy)
             })
         }
