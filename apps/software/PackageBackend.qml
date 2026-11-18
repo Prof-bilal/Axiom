@@ -67,6 +67,25 @@ Item {
     }
 
     // Detail lookups (called by the detail pane).
+    // Updates from the local sync database (no root). Needs a refreshed database to be current.
+    property var updates: []
+    property bool snapshotsAvailable: false
+    property string updateMessage: ""
+    function loadUpdates() {
+        runner.runC(["pacman", "-Qu"], function (r) {
+            updates = r.code === 0 || r.code === 1 ? Sw.parseUpdates(r.out) : []
+        })
+        runner.run(["sh", "-c", "command -v snapper >/dev/null 2>&1"], function (r) { snapshotsAvailable = r.code === 0 })
+    }
+    // Admin approval through its own polkit action; the helper snapshots before upgrading.
+    function updateAll() {
+        updateMessage = "Waiting for admin approval…"
+        runner.run(["pkexec", "/usr/local/bin/axiom-pkg-update"], function (r) {
+            updateMessage = r.code === 0 ? "System updated." : (r.err || "Update was not approved or failed.").trim().split("\n").pop()
+            loadUpdates()
+        })
+    }
+
     function packageFiles(name, cb) {
         runner.runC(["pacman", "-Ql", "--", name], function (r) { cb(r.code === 0 ? Sw.parseFiles(r.out, 200) : { count: 0, files: [], error: r.err.split("\n")[0] }) })
     }
@@ -86,5 +105,5 @@ Item {
         tryNext(0)
     }
 
-    Component.onCompleted: load()
+    Component.onCompleted: { load(); loadUpdates() }
 }

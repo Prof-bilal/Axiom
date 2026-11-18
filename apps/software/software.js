@@ -139,3 +139,13 @@ function humanSize(bytes) {
     while (v >= 1024 && i < units.length - 1) { v /= 1024; i++ }
     return (i === 0 ? v : v.toFixed(v < 10 ? 1 : 0)) + " " + units[i]
 }
+
+// `pacman -Qu` lines ("name old -> new") -> [{ name, from, to }] (ADR-033 update list).
+function parseUpdates(text) {
+    var out = []
+    ;(text || "").split("\n").forEach(function (l) {
+        var m = /^(\S+)\s+(\S+)\s+->\s+(\S+)\s*$/.exec(l.trim())
+        if (m) out.push({ name: m[1], from: m[2], to: m[3] })
+    })
+    return out
+}

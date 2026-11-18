@@ -1,0 +1,4 @@
+#!/bin/sh
+# Polkit-gated wrapper for `axiom-pkgd update` (ADR-033). Its own polkit action
+# (org.axiom.installer.update) so approving an install does not approve an update.
+exec /usr/local/bin/axiom-pkgd update

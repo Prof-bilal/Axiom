@@ -1,0 +1,4 @@
+#!/bin/sh
+# Polkit-gated wrapper for `axiom-pkgd rollback <number>` (ADR-033). Its own polkit action
+# (org.axiom.installer.rollback). The number is checked again by axiom-pkgd.
+exec /usr/local/bin/axiom-pkgd rollback "$1"

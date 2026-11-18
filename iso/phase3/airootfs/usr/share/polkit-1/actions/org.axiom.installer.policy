@@ -11,4 +11,24 @@
     </defaults>
     <annotate key="org.freedesktop.policykit.exec.path">/usr/local/bin/axiom-pkgd</annotate>
   </action>
+  <action id="org.axiom.installer.update">
+    <description>Update the system packages (snapshot first)</description>
+    <message>Authentication is required to update the system</message>
+    <defaults>
+      <allow_any>auth_admin</allow_any>
+      <allow_inactive>auth_admin</allow_inactive>
+      <allow_active>auth_admin</allow_active>
+    </defaults>
+    <annotate key="org.freedesktop.policykit.exec.path">/usr/local/bin/axiom-pkg-update</annotate>
+  </action>
+  <action id="org.axiom.installer.rollback">
+    <description>Roll the system back to a snapshot</description>
+    <message>Authentication is required to roll the system back</message>
+    <defaults>
+      <allow_any>auth_admin</allow_any>
+      <allow_inactive>auth_admin</allow_inactive>
+      <allow_active>auth_admin</allow_active>
+    </defaults>
+    <annotate key="org.freedesktop.policykit.exec.path">/usr/local/bin/axiom-pkg-rollback</annotate>
+  </action>
 </policyconfig>
