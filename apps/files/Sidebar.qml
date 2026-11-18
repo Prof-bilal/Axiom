@@ -76,9 +76,9 @@ Rectangle {
                     anchors.fill: parent
                     radius: Theme.radiusControl
                     readonly property bool active: modelData.path === bar.backend.path
-                    color: active ? Theme.stateSelected : (hit.containsMouse ? Theme.stateHover : "transparent")
+                    color: active ? (Theme.light ? "#E3E8EB" : "#2E3136") : (hit.containsMouse ? Theme.stateHover : "transparent")
                     border.width: active ? 1 : 0
-                    border.color: Theme.stateSelectedBorder
+                    border.color: active ? (Theme.light ? "#C9D3D8" : "#3A3E45") : "transparent"
 
                     Accessible.role: Accessible.Button
                     Accessible.name: modelData.name || ""
@@ -94,7 +94,7 @@ Rectangle {
                             width: 18
                             height: 18
                             name: modelData.icon || "folder"
-                            color: parent.parent.active ? Theme.cyanBright : Theme.textSecondary
+                            color: parent.parent.active ? Theme.textPrimary : Theme.textSecondary
                             strokeWidth: 1.5
                         }
                         Text {
