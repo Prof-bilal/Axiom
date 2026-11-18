@@ -127,3 +127,19 @@ test("hasSyncDatabases and humanSize", () => {
   assert.equal(L.humanSize(1536), "1.5 KiB");
   assert.equal(L.humanSize(5 * 1048576), "5.0 MiB");
 });
+
+// Flatpak argv (ADR-034): user scope, and ids are checked before use.
+import { readFileSync as _rf } from "node:fs";
+{
+  const _src = _rf(new URL("../../apps/software/software.js", import.meta.url), "utf8").replace(/^\.pragma library/m, "");
+  const _fp = new Function(_src + "; return { flatpakInstallArgv, flatpakUninstallArgv, flatpakUpdateArgv, parseFlatpakList };")();
+  test("flatpak argv is user-scoped and refuses bad ids", () => {
+    assert.deepEqual(_fp.flatpakInstallArgv("org.gnome.Calculator"), ["flatpak", "install", "--user", "--noninteractive", "flathub", "org.gnome.Calculator"]);
+    assert.equal(_fp.flatpakInstallArgv("a;rm -rf ~"), null);
+    assert.equal(_fp.flatpakUninstallArgv("$(id)"), null);
+    assert.ok(_fp.flatpakUpdateArgv("org.x.App").includes("--user"));
+  });
+  test("flatpak list parser reads tab-separated rows", () => {
+    assert.deepEqual(_fp.parseFlatpakList("org.x.App\tApp\t1.2\n\n"), [{ id: "org.x.App", name: "App", version: "1.2" }]);
+  });
+}

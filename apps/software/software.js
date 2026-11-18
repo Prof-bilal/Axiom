@@ -149,3 +149,21 @@ function parseUpdates(text) {
     })
     return out
 }
+
+// Flatpak argv builders (ADR-034). User scope only, no root.
+var FLATPAK_ID = /^[A-Za-z0-9._-]+$/
+function flatpakListArgv() { return ["flatpak", "list", "--app", "--user", "--columns=application,name,version"] }
+function flatpakUpdatesArgv() { return ["flatpak", "remote-ls", "--updates", "--user", "--columns=application"] }
+function flatpakRemoteAddArgv() { return ["flatpak", "remote-add", "--user", "--if-not-exists", "flathub", "https://dl.flathub.org/repo/flathub.flatpakrepo"] }
+function flatpakInstallArgv(id) { return FLATPAK_ID.test(id || "") ? ["flatpak", "install", "--user", "--noninteractive", "flathub", id] : null }
+function flatpakUninstallArgv(id) { return FLATPAK_ID.test(id || "") ? ["flatpak", "uninstall", "--user", "--noninteractive", id] : null }
+function flatpakUpdateArgv(id) { return FLATPAK_ID.test(id || "") ? ["flatpak", "update", "--user", "--noninteractive", id] : null }
+// `flatpak list` lines ("application<TAB>name<TAB>version") -> [{ id, name, version }].
+function parseFlatpakList(text) {
+    var out = []
+    ;(text || "").split("\n").forEach(function (l) {
+        var c = l.split("\t")
+        if (c.length >= 2 && c[0].trim()) out.push({ id: c[0].trim(), name: (c[1] || c[0]).trim(), version: (c[2] || "").trim() })
+    })
+    return out
+}
