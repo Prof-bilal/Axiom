@@ -48,6 +48,35 @@ PageFrame {
         })
     }
 
+    // Brand mark at the top of the Appearance page.
+    Row {
+        spacing: Theme.spacingMd
+        Image {
+            width: 44
+            height: 44
+            source: Quickshell.shellPath("assets/axiom-penguin.png")
+            fillMode: Image.PreserveAspectFit
+            smooth: true
+            sourceSize: Qt.size(88, 88)
+        }
+        Column {
+            anchors.verticalCenter: parent.verticalCenter
+            Text {
+                text: "Appearance"
+                color: Theme.textPrimary
+                font.family: Theme.fontFamily
+                font.pixelSize: Theme.fontBody + 2
+                font.weight: Font.DemiBold
+            }
+            Text {
+                text: "Light or dark, text size and wallpaper"
+                color: Theme.textSecondary
+                font.family: Theme.fontFamily
+                font.pixelSize: Theme.fontCaption
+            }
+        }
+    }
+
     SettingsCard {
         title: "Appearance"
 
@@ -56,14 +85,10 @@ PageFrame {
             label: "Light or dark"
             description: "Applies the next time you sign in."
 
-            Repeater {
-                model: [{ name: "Dark", value: "dark" }, { name: "Light", value: "light" }]
-                delegate: AppButton {
-                    required property var modelData
-                    text: modelData.name
-                    primary: page.themeMode === modelData.value
-                    onClicked: page.setThemeMode(modelData.value)
-                }
+            SegmentControl {
+                options: [{ name: "Dark", value: "dark" }, { name: "Light", value: "light" }]
+                current: page.themeMode
+                onPicked: function (v) { page.setThemeMode(v) }
             }
         }
     }
@@ -76,14 +101,10 @@ PageFrame {
             label: "Size of text in the desktop and apps"
             description: "The terminal keeps its own font size."
 
-            Repeater {
-                model: [{ name: "Default", value: 1.0 }, { name: "Large", value: 1.125 }, { name: "Larger", value: 1.25 }]
-                delegate: AppButton {
-                    required property var modelData
-                    text: modelData.name
-                    primary: Math.abs(SettingsService.textScale - modelData.value) < 0.01
-                    onClicked: SettingsService.setTextScale(modelData.value)
-                }
+            SegmentControl {
+                options: [{ name: "Default", value: 1.0 }, { name: "Large", value: 1.125 }, { name: "Larger", value: 1.25 }]
+                current: Math.round(SettingsService.textScale * 1000) / 1000
+                onPicked: function (v) { SettingsService.setTextScale(v) }
             }
         }
     }
