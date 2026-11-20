@@ -1,0 +1,12 @@
+#!/bin/sh
+# Start the Axiom QML installer under labwc, as the live user `axiom` (never root; ADR 026).
+# systemd falls back to the curses installer (axiom-installer-tui.service) if this exits non-zero.
+set -u
+QML=/usr/local/lib/axiom-installer/qml
+# Quickshell silently exits 0 when the config is missing; refuse here so the fallback runs.
+[ -f "$QML/shell.qml" ] || { echo "axiom-installer-gui: missing $QML/shell.qml" >&2; exit 1; }
+export XDG_SESSION_TYPE=wayland
+export XDG_SESSION_DESKTOP=axiom
+export XDG_CURRENT_DESKTOP=Axiom
+export QT_QPA_PLATFORM=wayland
+exec labwc -C /usr/local/lib/axiom-greeter/labwc -S "/usr/bin/qs -p $QML"

@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#25454c"/><stop offset="1" stop-color="#0b1619"/></linearGradient>
+    <linearGradient id="edge" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#37F0EA"/><stop offset="1" stop-color="#FFB348"/></linearGradient>
+    <linearGradient id="sheen" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".16"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient>
+    <clipPath id="clip"></clipPath>
+  </defs>
+  <g><path d="M145.6,97.8 L158.4,103.6 L158.4,128.4 L145.6,134.2 L148.0,128.4 L153.0,141.5 L135.5,159.0 L122.4,154.0 L128.2,151.6 L122.4,164.4 L97.6,164.4 L91.8,151.6 L97.6,154.0 L84.5,159.0 L67.0,141.5 L72.0,128.4 L74.4,134.2 L61.6,128.4 L61.6,103.6 L74.4,97.8 L72.0,103.6 L67.0,90.5 L84.5,73.0 L97.6,78.0 L91.8,80.4 L97.6,67.6 L122.4,67.6 L128.2,80.4 L122.4,78.0 L135.5,73.0 L153.0,90.5 L148.0,103.6 Z M126.0,116.0 A16,16 0 1 0 94.0,116.0 A16,16 0 1 0 126.0,116.0 Z" fill="#37F0EA" fill-rule="evenodd"/><path d="M191.4,157.9 L200.3,162.1 L200.3,181.9 L191.4,186.1 L193.9,181.8 L194.7,191.6 L177.6,201.5 L169.5,195.9 L174.5,195.9 L166.4,201.5 L149.3,191.6 L150.1,181.8 L152.6,186.1 L143.7,181.9 L143.7,162.1 L152.6,157.9 L150.1,162.2 L149.3,152.4 L166.4,142.5 L174.5,148.1 L169.5,148.1 L177.6,142.5 L194.7,152.4 L193.9,162.2 Z M182.0,172.0 A10,10 0 1 0 162.0,172.0 A10,10 0 1 0 182.0,172.0 Z" fill="#FFB348" fill-rule="evenodd"/></g>
+</svg>

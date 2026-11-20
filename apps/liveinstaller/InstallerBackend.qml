@@ -27,6 +27,12 @@ Item {
     })
     property string confirmText: ""
     property var tzGroups: ({ UTC: ["UTC"] })
+    // Where each time zone is (tzdata zone.tab) and what country it is in, for the map pin.
+    property var zoneTable: ({})
+    readonly property var pin: zoneTable[form.timezone] || null
+    readonly property string pinText: Ins.pinLabel(form.timezone, zoneTable)
+    // The shared dropdown list, set by the app window (it draws above every page).
+    property var popup: null
     property string region: "UTC"
     property string city: "UTC"
 
@@ -72,6 +78,11 @@ Item {
         cmd.run(["timedatectl", "list-timezones"], function (r) {
             if (r.code === 0) tzGroups = Ins.tzGroups(r.out)
             applyZone(Quickshell.env("AXIOM_TZ") || "UTC")
+        })
+        cmd.run(["cat", "/usr/share/zoneinfo/iso3166.tab"], function (c) {
+            cmd.run(["cat", "/usr/share/zoneinfo/zone.tab"], function (z) {
+                if (z.code === 0) zoneTable = Ins.parseZoneTab(z.out, c.code === 0 ? Ins.parseCountries(c.out) : {})
+            })
         })
         refreshDisks()
         probeOnline()

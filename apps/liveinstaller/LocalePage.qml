@@ -7,49 +7,62 @@ Item {
     readonly property string primaryText: "Next"
     readonly property string secondaryText: "Back"
     readonly property bool primaryDanger: false
-    readonly property string status: "You can change these later in Settings."
+    readonly property string status: be.pinText.length > 0 ? "Time zone: " + be.form.timezone + ". You can change this later in Settings."
+                                                         : "You can change these later in Settings."
     function doPrimary() { be.next() }
     function doSecondary() { be.back() }
+
+    readonly property var cities: page.be.tzGroups[page.be.region] || []
+    readonly property var cityNames: {
+        var o = {}
+        cities.forEach(function (c) { o[c] = Ins.prettyZone(c) })
+        return o
+    }
 
     PageHead {
         id: head
         anchors.top: parent.top
         anchors.topMargin: 6
         title: "Where are you?"
-        subtitle: "Axiom uses this to set the clock and regional formats."
+        subtitle: "Pick your region and time zone. Axiom sets the clock from it."
     }
-    Column {
+
+    // The pin follows the chosen time zone: Karachi lights up Pakistan.
+    WorldMap {
+        id: map
         anchors.top: head.bottom
-        anchors.topMargin: 28
+        anchors.topMargin: 14
         anchors.horizontalCenter: parent.horizontalCenter
-        width: Math.min(parent.width - 80, 460)
-        spacing: 12
-        Chooser {
-            width: parent.width
+        width: Math.min(parent.width - 20, 580)
+        pin: page.be.pin
+        highlight: page.be.pin ? page.be.pin.cc : ""
+        label: page.be.pinText
+    }
+
+    Row {
+        anchors.top: map.bottom
+        anchors.topMargin: 12
+        anchors.horizontalCenter: parent.horizontalCenter
+        width: map.width
+        spacing: 16
+        Dropdown {
+            be: page.be
+            width: (parent.width - 16) / 2
+            stacked: true
             label: "Region"
             model: Object.keys(page.be.tzGroups).sort()
             value: page.be.region
             onPicked: function (r) { page.be.setZone(r, page.be.tzGroups[r][0]) }
         }
-        Chooser {
-            width: parent.width
+        Dropdown {
+            be: page.be
+            width: (parent.width - 16) / 2
+            stacked: true
             label: "Time zone"
-            model: page.be.tzGroups[page.be.region] || []
+            model: page.cities
+            names: page.cityNames
             value: page.be.city
             onPicked: function (c) { page.be.setZone(page.be.region, c) }
-        }
-        Rectangle {
-            width: parent.width
-            height: 58
-            radius: 10
-            color: Ins.C.card
-            Column {
-                anchors.verticalCenter: parent.verticalCenter
-                anchors.left: parent.left
-                anchors.leftMargin: 14
-                IText { text: Qt.formatDateTime(new Date(), "hh:mm AP, dddd d MMMM"); font.weight: Font.Medium; color: "#ffffff" }
-                IText { text: page.be.form.timezone; color: Ins.C.dim; font.pixelSize: 12 }
-            }
         }
     }
 }

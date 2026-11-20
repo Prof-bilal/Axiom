@@ -45,6 +45,54 @@ function tzGroups(text) {
     return groups
 }
 
+// "America/Argentina/Buenos_Aires" -> "Buenos Aires": the part a person recognises.
+function prettyZone(zone) { return String(zone).split("/").pop().replace(/_/g, " ") }
+
+// tzdata's zone.tab coordinates: +DDMM or +DDMMSS latitude then +DDDMM or +DDDMMSS longitude.
+function dms(s, degDigits) {
+    var sign = s.charAt(0) === "-" ? -1 : 1
+    var d = s.slice(1)
+    var deg = parseInt(d.slice(0, degDigits), 10)
+    var min = parseInt(d.slice(degDigits, degDigits + 2), 10)
+    var sec = d.length > degDigits + 2 ? parseInt(d.slice(degDigits + 2, degDigits + 4), 10) : 0
+    return sign * (deg + min / 60 + sec / 3600)
+}
+
+function parseCoords(text) {
+    var m = /^([+-]\d{4}(?:\d{2})?)([+-]\d{5}(?:\d{2})?)$/.exec(text)
+    return m ? { lat: dms(m[1], 2), lon: dms(m[2], 3) } : null
+}
+
+// iso3166.tab: "PK<TAB>Pakistan" -> { PK: "Pakistan" }
+function parseCountries(text) {
+    var out = {}
+    String(text || "").split("\n").forEach(function (l) {
+        if (!l || l.charAt(0) === "#") return
+        var c = l.split("\t")
+        if (c.length >= 2) out[c[0]] = c[1]
+    })
+    return out
+}
+
+// zone.tab: "PK<TAB>+2452+06703<TAB>Asia/Karachi" -> { "Asia/Karachi": { lat, lon, cc, country } }
+function parseZoneTab(text, countries) {
+    var out = {}
+    String(text || "").split("\n").forEach(function (l) {
+        if (!l || l.charAt(0) === "#") return
+        var c = l.split("\t")
+        var pos = c.length >= 3 ? parseCoords(c[1]) : null
+        if (!pos) return
+        out[c[2]] = { lat: pos.lat, lon: pos.lon, cc: c[0], country: (countries && countries[c[0]]) || c[0] }
+    })
+    return out
+}
+
+// "Karachi, Pakistan" for the pin label; "" when the zone has no place (UTC).
+function pinLabel(zone, table) {
+    var z = table[zone]
+    return z ? prettyZone(zone) + ", " + z.country : ""
+}
+
 function tzName(region, city) { return region === city ? region : region + "/" + city }
 
 // Step through a list with wrap-around (the arrows on a chooser).

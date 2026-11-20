@@ -14,6 +14,9 @@ usermod -aG wheel,video,input,audio,rfkill,tty axiom
 grep -q '^axiom:' /etc/subuid 2>/dev/null || echo 'axiom:100000:65536' >> /etc/subuid
 grep -q '^axiom:' /etc/subgid 2>/dev/null || echo 'axiom:100000:65536' >> /etc/subgid
 
+# Compile the Axiom GSettings overrides (window button layout for GTK title bars).
+glib-compile-schemas /usr/share/glib-2.0/schemas
+
 # Session entry points are executable.
 chmod 0755 /usr/local/bin/axiom-session /usr/local/bin/axiom-shell /usr/local/bin/axiom-greeting /usr/local/bin/axiom-terminal
 

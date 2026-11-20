@@ -287,14 +287,15 @@ if SHORT:
         ser.sendall(_line[_i:_i + 24]); time.sleep(0.08)
 else:
     # Session menu is still open: the first click only arms Shut Down.
-    # Row y follows the 88 px mascot above the menu rows (see 12-shutdown-armed.png).
-    shut_down = (W - 8 - 230 + 8 + 115, 297)  # Phase 6 added a Lock Screen row (36 px pitch)
+    # The session dialog is a centred 460 x 308 glass card; Shut Down is the first of four
+    # round buttons (84 px cells, 22 px apart), 128 px below the card top (SessionMenu.qml).
+    shut_down = (W // 2 - 159, H // 2 + 6)
     click(*shut_down, settle=1.0); shot("12-shutdown-armed")
     if qemu.poll() is None:
         ok("single click on Shut Down did not power off (confirmation required)")
     else:
         bad("Shut Down fired without confirmation")
-    # The row disarms after 4 s (MenuItem). A screendump plus pointer move can
+    # The button disarms after 4 s (SessionMenu). A screendump plus pointer move can
     # take that long on a loaded host, so a confirming click that lands after
     # the timeout only re-arms; click once more, as a user would.
     click(*shut_down, settle=3.0)

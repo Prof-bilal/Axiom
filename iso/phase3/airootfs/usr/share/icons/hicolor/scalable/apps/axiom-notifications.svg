@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#25454c"/><stop offset="1" stop-color="#0b1619"/></linearGradient>
+    <linearGradient id="edge" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#37F0EA"/><stop offset="1" stop-color="#FFB348"/></linearGradient>
+    <linearGradient id="sheen" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".16"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient>
+    <clipPath id="clip"></clipPath>
+  </defs>
+  <g>
+      <path d="M82 176 C96 154 96 124 106 102 C112 88 144 88 150 102 C160 124 160 154 174 176 Z" fill="#37F0EA" opacity=".95" transform="translate(-2 0)"/>
+      <circle cx="126" cy="80" r="8" fill="#37F0EA"/>
+      <circle cx="126" cy="192" r="13" fill="#FFB348"/></g>
+</svg>

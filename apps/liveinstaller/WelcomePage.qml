@@ -61,7 +61,8 @@ Item {
         anchors.horizontalCenter: parent.horizontalCenter
         width: Math.min(parent.width - 80, 460)
         spacing: 8
-        Chooser {
+        Dropdown {
+            be: page.be
             width: parent.width
             label: "Select language:"
             model: Ins.LOCALES
@@ -69,7 +70,8 @@ Item {
             value: page.be.form.locale
             onPicked: function (v) { page.be.set("locale", v) }
         }
-        Chooser {
+        Dropdown {
+            be: page.be
             width: parent.width
             label: "Keyboard:"
             model: Ins.KEYMAPS

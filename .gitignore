@@ -35,3 +35,7 @@ __pycache__/
 # Local multi-project workspace: sibling first-party repos cloned for
 # cross-project work. Not part of Axiom; never commit them here.
 workspace/
+/home/abullah/Projects/Axiom/social/
+# Local-only: social post drafts and Serena editor state
+social/
+.serena/

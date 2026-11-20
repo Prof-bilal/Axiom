@@ -38,8 +38,9 @@ KEYNAMES = {" ": "spc", "-": "minus", ".": "dot", "/": "slash", "\n": "ret", ";"
 
 
 class Guest:
-    def __init__(self, iso, outdir, res="1920x1080", mem=2048, smp=2, extra=(), display="none"):
+    def __init__(self, iso, outdir, res="1920x1080", mem=2048, smp=2, extra=(), display="none", net=False):
         self.extra = list(extra)
+        self.net = net  # user-mode NAT only (Hub installs); default stays offline
         self.iso, self.out, self.res, self.mem, self.smp = iso, outdir, res, mem, smp
         self.display = display
         self.w, self.h = (int(v) for v in res.split("x"))
@@ -82,7 +83,7 @@ class Guest:
             "-vga", "none", "-device", f"VGA,edid=on,xres={self.w},yres={self.h}",
             "-device", "qemu-xhci", "-device", "usb-tablet", "-display", self.display,
         ] + (["-cdrom", self.iso, "-boot", "order=d"] if self.iso else []) + [
-            "-nic", "none",
+            "-nic", "user,model=virtio-net-pci" if self.net else "none",
             "-serial", f"unix:{self.p('serial.sock')},server,nowait",
             "-monitor", f"unix:{self.p('mon.sock')},server,nowait",
             "-qmp", f"unix:{self.p('qmp.sock')},server,nowait",

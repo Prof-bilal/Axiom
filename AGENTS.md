@@ -65,3 +65,29 @@ regression and documentation updated. Foundation changes use
 `python3 scripts/check-iso-profile.py`, `sudo scripts/build-iso.sh` and
 `tests/qemu-boot.sh`. New base/VM commands require their own reviewed phase
 contract.
+
+<!-- contextgit:begin -->
+## Parallel runs (managed by ContextGit)
+
+Each run works in its own git worktree. Stay inside the files you own;
+if you must touch a file owned by another run, say so before editing.
+
+<!-- contextgit:end -->
+
+<!-- contextgit:team:begin -->
+## Team: Ungrouped runs (managed by ContextGit)
+
+Base: axiom. Work only inside the files your task
+owns; if you need a file another task owns, post a message instead of editing it.
+
+With MCP configured (see `.mcp.json`), the same board is available live:
+`team_status`, `list_tasks`, `read_board`, `claim_task`, `complete_task`,
+`post_update`, `check_ownership`, `publish_contract`, `peers`.
+
+Quality gate (run before you call `complete_task`): `python -m pytest -q`
+
+### To do
+- **hi** [worker] (opencode)
+- **check** [worker] (opencode)
+- **hehe** [worker] (opencode)
+<!-- contextgit:team:end -->

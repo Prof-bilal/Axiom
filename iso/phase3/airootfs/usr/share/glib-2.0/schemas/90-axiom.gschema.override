@@ -1,0 +1,4 @@
+# Axiom: window buttons (minimize, maximize, close) on the right of GTK title bars,
+# so Firefox and other GTK apps that draw their own bar have the controls.
+[org.gnome.desktop.wm.preferences]
+button-layout='appmenu:minimize,maximize,close'

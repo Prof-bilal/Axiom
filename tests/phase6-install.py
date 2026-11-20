@@ -214,17 +214,12 @@ def fill_form(g, t, luks=False):
     g.check(t.wait("Git identity", 30), "valid account accepted")
     t.say(GIT_NAME); t.enter()
     t.say(GIT_EMAIL); t.enter()
-    g.check(t.wait("Choose your tools", 20), "step 5 (tools) shown")
-    scr = t.last
-    g.check("Git + GitHub CLI" in scr and "Neovim" in scr, "Hub lists catalogue items")
-    g.key("down", 0.4)
-    g.key("spc", 0.5)  # Neovim (second editor)
-    t.enter()
+    if t.wait("Choose your tools", 10):  # ISOs built before the tools step was removed still show it
+        t.enter()
     g.check(t.wait("Check and install", 20), "review screen shown")
     scr = t.last
     g.check("will be erased" in scr and "/dev/vda" in scr, "review shows the destructive plan with the target")
     g.check(PW not in scr and LUKS_PW not in scr, "review does not echo secrets")
-    g.check("neovim" in scr and "git" in scr, "review lists the selected Hub items")
 
 
 def inspect_target(g, out, luks):
@@ -277,6 +272,10 @@ def stage_install(iso, out, luks=False):
             return g
         time.sleep(15)
         g.check(g.login_root(), "root serial shell available")
+        override = os.environ.get("AXIOM_INSTALLER_OVERRIDE")  # test-only: a fixed installer before the ISO is rebuilt
+        if override:
+            g.put_file("/usr/local/lib/axiom-installer/axiom_install.py", open(override).read(), "755")
+            print(f"NOTE: live installer replaced with {override} (test-only; the ISO itself is unchanged)", flush=True)
         if cache:
             # Overlay: host cache is the read-only lower layer; new downloads go to the upper layer.
             # The upper layer must not be on the live overlay (overlayfs cannot stack on overlayfs), so it is tmpfs.

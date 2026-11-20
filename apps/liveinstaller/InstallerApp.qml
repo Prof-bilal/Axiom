@@ -16,7 +16,7 @@ AppWindow {
     minimumSize: Qt.size(860, 580)
     maximumSize: Qt.size(860, 580)
 
-    InstallerBackend { id: be; Component.onCompleted: load() }
+    InstallerBackend { id: be; popup: dropdownList; Component.onCompleted: load() }
 
     readonly property var pages: [pWelcome, pNetwork, pLocale, pDisk, pIdentity, pConfirm, pProgress, pFinish]
     readonly property var cur: pages[be.page]
@@ -144,4 +144,7 @@ AppWindow {
             }
         }
     }
+
+    // Above everything: the list every Dropdown opens.
+    DropdownList { id: dropdownList; anchors.fill: parent; z: 100 }
 }

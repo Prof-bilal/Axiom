@@ -77,3 +77,16 @@ test("bundled icons are real PNG files, and most apps have one (letter tile othe
   for (const f of files) assert.deepEqual([...fs.readFileSync(path.join(dir, f)).subarray(0, 4)], [0x89, 0x50, 0x4e, 0x47], f);
   assert.ok(files.length >= 40, `only ${files.length} icons`);
 });
+
+test("every entry states whether its install source is verified, and cards say so", () => {
+  for (const a of R.CATALOG) assert.equal(typeof a.verified, "boolean", `${a.id}: verified`);
+  const unverified = R.CATALOG.find((a) => a.verified === false);
+  assert.ok(unverified, "catalog has unverified entries to mark");
+  assert.match(R.metaLine(unverified), /· not verified$/);
+});
+
+test("apps without a bundled icon fall back to a letter tile (known gap, listed here)", () => {
+  const iconDir = path.join(here, "../../apps/hub/icons");
+  const missing = R.CATALOG.filter((a) => !fs.existsSync(path.join(iconDir, a.id + ".png"))).map((a) => a.id).sort();
+  assert.deepEqual(missing, ["cemu", "plex", "rockstar-launcher", "text-generation-webui", "yabridge"]);
+});
