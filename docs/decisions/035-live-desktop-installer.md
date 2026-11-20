@@ -27,7 +27,15 @@ boot a live desktop first, then run an installer from the desktop.
    as the live user (`axiom_install.py --validate`, `--list-disks`).
    Rule `52-axiom-live-installer.rules` grants that one action to the live user `axiom`, local and active. It is
    not in the installer's overlay list, so it never reaches an installed system.
-5. **Offline package source is not decided here.** Installing from a local repository or the live squashfs
+5. **Locale map from real outlines.** The Locale step shows a world map (`apps/liveinstaller/WorldMap.qml`) with the
+   chosen time zone's country filled and a pin on the city. City coordinates and country names come from the system's
+   tzdata (`zone.tab`, `iso3166.tab`). Outlines are Natural Earth 50m countries (public domain), simplified once by
+   `scripts/gen-worldmap.py` into `worldmap.js` (about 120 KB, keyed by `ISO_A2_EH`, equirectangular); the raw download
+   is not kept. A first version used a 2.5 degree dot grid and was rejected: too coarse to show a country. Checked by
+   `tests/apps/installer-logic.test.mjs`: 30 cities land inside their own country, Karachi inside Pakistan and not India.
+   Known limit: small territories and remote islands (Aruba, Bermuda, Monaco, Easter Island) have no outline at 50m, so
+   they get a pin but no country fill.
+6. **Offline package source is not decided here.** Installing from a local repository or the live squashfs
    needs its own ADR; this one keeps pacstrap over the network.
 
 ## Why not ADR-026's daemon
