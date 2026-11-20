@@ -86,7 +86,7 @@ OVERLAY = [
     "/etc/systemd/system/power-profiles-daemon.service.d",
     "/usr/local/bin/axiom-app", "/usr/local/bin/axiom-greeting", "/usr/local/bin/axiom-session",
     "/usr/local/bin/axiom-shell", "/usr/local/bin/axiom-terminal", "/usr/local/share/axiom",
-    "/usr/local/share/applications", "/usr/local/share/icons",
+    "/usr/local/share/applications", "/usr/share/icons/axiom-cursors", "/usr/share/icons/hicolor/256x256/apps",
 ]
 
 
@@ -536,8 +536,26 @@ def install(f, disk_path, disk_bytes, target=TARGET):
     emit("done", pct=100)
 
 
+def query(mode):
+    """Unprivileged helpers for the desktop installer: one JSON object on stdout, never an install."""
+    try:
+        if mode == "--list-disks":
+            return {"ok": True, "disks": list_disks()}
+        if mode == "--validate":
+            validate_form(json.loads(sys.stdin.readline()))
+            return {"ok": True}
+    except FormError as e:
+        return {"ok": False, "error": str(e)}
+    except (OSError, ValueError, subprocess.SubprocessError) as e:
+        return {"ok": False, "error": f"Could not check this: {e}"}
+    return {"ok": False, "error": "unknown mode"}
+
+
 def main(argv):
-    form = json.load(sys.stdin)
+    if len(argv) > 1:
+        print(json.dumps(query(argv[1])), flush=True)
+        return 0
+    form = json.loads(sys.stdin.readline())  # one line, so a caller need not close the pipe
     try:
         f = validate_form(form)
         install(f, form["disk"], int(form["disk_bytes"]))

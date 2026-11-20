@@ -19,11 +19,8 @@ for p in (HERE, "/usr/local/lib/axiom-tui", os.path.join(HERE, "..", "tui")):
         sys.path.insert(0, p)
 import axiom_install as ai  # noqa: E402
 import axiom_tui as tui  # noqa: E402
-from axiom_tui import BG, CYAN, GHOST, GREEN, ORANGE, RED, TEXT, WHITE  # noqa: E402
+from axiom_tui import BG, CYAN, GHOST, GREEN, RED, TEXT, WHITE  # noqa: E402
 
-CATALOG = next((p for p in (os.path.join(HERE, "catalog", "developer-hub.json"),
-                            "/usr/local/share/axiom/catalog/developer-hub.json",
-                            os.path.join(HERE, "..", "catalog", "developer-hub.json")) if os.path.exists(p)), None)
 ENTER = (10, 13, curses.KEY_ENTER)
 HINT_FORM = "Up/Down  move      Left/Right  change      Enter  continue      Esc  go back"
 # Curated pick-lists: arrow-key choices only, never free text. Every entry passes axiom_install's checks
@@ -218,67 +215,6 @@ def menu(ui, title, items, intro="", penguin_fill=1.0):
             raise Back()
 
 
-def load_catalog():
-    try:
-        return json.load(open(CATALOG))
-    except (OSError, TypeError, ValueError):
-        return {"items": [], "presets": {}, "categories": {}}
-
-
-def hub(ui, step, total, form_data, catalog):
-    items = catalog["items"]
-    cats = catalog.get("categories", {})
-    chosen = set(form_data.get("hub") or [i["id"] for i in items if i.get("default")])
-    order = [i for c in cats for i in items if i["category"] == c] or items
-    presets = ["custom"] + list(catalog.get("presets", {}))
-    pos, pi, top = 0, 0, 0
-    while True:
-        y = page(ui, step, total, "Choose your tools")
-        cx, cw, _ = ui.card_geometry(0, y)
-        for line in tui.wrap("Pick the tools you want ready on your first start. They are set up for you after "
-                             "the first restart. Nothing is installed until you confirm.", cw - 6):
-            ui.put(y, cx + 2, line)
-            y += 1
-        ui.put(y, cx + 2, f"Starter set: {presets[pi]}    {len(chosen)} chosen", fg=CYAN)
-        y += 2
-        rows = max(3, ui.h - y - 3)
-        top = min(max(top, pos - rows + 1), pos)
-        shown = order[top:top + rows]
-        for n, it in enumerate(shown, start=top):
-            sel = n == pos
-            box = "[x]" if it["id"] in chosen else "[ ]"
-            label = f" {box}  {it['name']}"
-            ui.put(y, cx + 2, label.ljust(cw - 4), fg=BG if sel else WHITE, bg=CYAN if sel else BG, bold=sel)
-            ui.put(y, cx + cw - 2 - len(cats.get(it["category"], it["category"]).split(" (")[0]) - 1,
-                   cats.get(it["category"], it["category"]).split(" (")[0], fg=BG if sel else GHOST, bg=CYAN if sel else BG)
-            y += 1
-        ui.footer("Up/Down  move      Space  choose      P  change starter set      Enter  continue      Esc  back")
-        ui.s.refresh()
-        k = ui.s.getch()
-        if k == curses.KEY_UP and pos > 0:
-            pos -= 1
-        elif k == curses.KEY_DOWN and pos < len(order) - 1:
-            pos += 1
-        elif k == 32 and order:
-            it = order[pos]
-            if it["id"] in chosen:
-                chosen.discard(it["id"])
-                chosen -= {i["id"] for i in items if it["id"] in i.get("requires", [])}
-            else:
-                chosen.add(it["id"])
-                chosen |= set(it.get("requires", []))
-        elif k in (ord("p"), ord("P")):
-            pi = (pi + 1) % len(presets)
-            if presets[pi] != "custom":
-                chosen = set(catalog["presets"][presets[pi]])
-        elif k in ENTER:
-            form_data["hub"] = [i["id"] for i in items if i["id"] in chosen]
-            return
-        elif k == 27:
-            raise Back()
-
-
-# ---- install screen -------------------------------------------------------------------------------
 def draw_progress(ui, pct, stage, detail, eta):
     ui.s.erase()
     art = tui.pick_penguin(ui.h - 9)
@@ -366,11 +302,10 @@ def probe(f):
 
 
 def start_setup(ui):
-    catalog = load_catalog()
     f = {"fullname": "", "username": "", "hostname": "axiom", "password": "", "password2": "",
          "timezone": os.environ.get("AXIOM_TZ", "UTC"), "keyboard": "us", "locale": "en_US", "git_name": "",
          "git_email": "", "luks": False, "luks_passphrase": "", "hub": []}
-    disk_choice, step, total = {"value": ""}, 1, 6
+    disk_choice, step, total = {"value": ""}, 1, 5
     while True:
         try:
             if step == 1:
@@ -440,16 +375,13 @@ def start_setup(ui):
                      lambda: ai.validate_form(dict(probe(f), **{x["key"]: x["value"] for x in fs})))
                 f.update({x["key"]: x["value"] for x in fs})
             elif step == 5:
-                hub(ui, step, total, f, catalog)
-            elif step == 6:
                 d = f["_disk"]
                 rows = [("Disk", f"{d['path']}  ({d['size'] / 2 ** 30:.0f} GB)  - will be erased"),
                         ("Protection", "Password-protected disk" if f["luks"] else "None"),
                         ("Account", f"{f['fullname']}  ({f['username']})"),
                         ("Computer", f["hostname"]),
                         ("Language", f"{f['locale']}   keyboard {f['keyboard']}   {f['timezone']}"),
-                        ("Git", f"{f['git_name']} <{f['git_email']}>" if f["git_name"] else "Not set"),
-                        ("Tools", ", ".join(f["hub"]) or "None")]
+                        ("Git", f"{f['git_name']} <{f['git_email']}>" if f["git_name"] else "Not set")]
                 fs = [{"key": "confirm", "label": "Type ERASE to start", "value": "",
                        "hint": f"This permanently deletes everything on {d['path']}."}]
 

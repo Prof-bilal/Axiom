@@ -31,4 +31,14 @@
     </defaults>
     <annotate key="org.freedesktop.policykit.exec.path">/usr/local/bin/axiom-pkg-rollback</annotate>
   </action>
+  <action id="org.axiom.installer.system-install">
+    <description>Install Axiom onto a disk from the live desktop</description>
+    <message>Authentication is required to erase a disk and install Axiom</message>
+    <defaults>
+      <allow_any>no</allow_any>
+      <allow_inactive>no</allow_inactive>
+      <allow_active>auth_admin</allow_active>
+    </defaults>
+    <annotate key="org.freedesktop.policykit.exec.path">/usr/local/bin/axiom-install-run</annotate>
+  </action>
 </policyconfig>

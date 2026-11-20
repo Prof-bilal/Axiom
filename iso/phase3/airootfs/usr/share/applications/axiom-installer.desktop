@@ -1,0 +1,14 @@
+[Desktop Entry]
+# Install Axiom (ADR-035). Lives in /usr/share/applications, which the installer does not copy to the
+# installed system, so this entry exists on the live medium only.
+Type=Application
+Icon=axiom-installer
+Name=Install Axiom
+GenericName=Installer
+Comment=Install Axiom on this computer
+Categories=System;
+Keywords=install;installer;setup;disk;
+Exec=axiom-app installer
+StartupWMClass=org.axiom.Installer
+StartupNotify=true
+Terminal=false

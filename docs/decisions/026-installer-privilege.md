@@ -1,6 +1,6 @@
 # ADR 026: Installer privilege split (QML UI and root backend)
 
-Status: Accepted for Phase 6 Phase 3 (QML installer). Implementation pending QEMU verification.
+Status: Superseded by [ADR-035](035-live-desktop-installer.md) for the privilege mechanism (a one-shot pkexec helper replaced the `axiom-installd` daemon). The privilege split itself still holds: the UI never runs as root.
 
 ## Context
 The graphical installer (QML, `docs/updatephase6.md` Phase 3) must not run as root (AGENTS.md:

@@ -374,3 +374,10 @@ visible Stop pill. Full record: [decisions/030-screen-capture.md](decisions/030-
 ## ADR-016 amendment (2026-11-16): labwc is the default compositor again
 Blur and glass were dropped, so labwc is the default; Hyprland is opt-in. The shell is compositor-neutral
 (Quickshell ToplevelManager and WindowManager). See [decisions/016-labwc-compositor-harness.md](decisions/016-labwc-compositor-harness.md).
+
+## ADR-035: The installer runs from the live desktop as a native QML app (proposed)
+
+The boot menu shows only the Axiom live desktop. An Install Axiom icon on that desktop opens
+`apps/liveinstaller` (Welcome, Network, Locale, Partitioning, Identity, Installation, Finish). The UI runs as the
+live user; the one root step is `axiom-install-run` through `pkexec` and polkit, live medium only. This replaces
+the `axiom-installd` daemon of ADR-026. Full record: [decisions/035-live-desktop-installer.md](decisions/035-live-desktop-installer.md).

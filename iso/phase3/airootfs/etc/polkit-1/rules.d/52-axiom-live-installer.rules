@@ -1,0 +1,13 @@
+// Axiom live-desktop installer (ADR-035).
+//
+// The live desktop user has no password, so the install action cannot ask for one. Allow exactly
+// that one action for that one user in a local, active session. The helper it runs
+// (/usr/local/bin/axiom-install-run) also refuses to run unless /run/archiso exists, so this rule
+// is inert on an installed system, which does not ship it anyway. The install form is validated by
+// the backend, and the user types ERASE in the installer before anything is written.
+polkit.addRule(function (action, subject) {
+    if (action.id == "org.axiom.installer.system-install" &&
+        subject.user == "axiom" && subject.local && subject.active) {
+        return polkit.Result.YES;
+    }
+});

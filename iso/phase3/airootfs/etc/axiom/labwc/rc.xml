@@ -149,4 +149,11 @@
     </context>
   </mouse>
 
+
+  <!-- The installer draws its own title strip and is dragged from it (ADR-035). -->
+  <windowRules>
+    <windowRule identifier="org.axiom.Installer">
+      <serverDecoration>no</serverDecoration>
+    </windowRule>
+  </windowRules>
 </labwc_config>

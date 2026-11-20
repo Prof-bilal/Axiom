@@ -1,0 +1,13 @@
+#!/bin/sh
+# Privileged runner for the desktop installer (ADR-035).
+# Runs only as root through pkexec, after polkit approves org.axiom.installer.system-install.
+# It takes no arguments: the install form arrives as one JSON line on stdin and the backend
+# (axiom_install.py) validates every field and re-checks that the target disk is still a listed,
+# unmounted, non-removable disk before it writes anything. Progress events go to stdout.
+set -u
+
+[ "$(id -u)" -eq 0 ] || { echo "axiom-install-run: must run as root" >&2; exit 1; }
+[ $# -eq 0 ] || { echo "axiom-install-run: takes no arguments" >&2; exit 2; }
+# Only the live medium may install. An installed system never offers to wipe a disk.
+[ -d /run/archiso ] || { echo "axiom-install-run: only available on the live medium" >&2; exit 3; }
+exec /usr/bin/python3 /usr/local/lib/axiom-installer/axiom_install.py

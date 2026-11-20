@@ -29,6 +29,15 @@ Item {
         persistState: false
     }
 
+    // The live medium's Install Axiom icon (hidden everywhere else).
+    InstallTile {
+        z: 2
+        anchors.top: parent.top
+        anchors.topMargin: desk.topInset
+        anchors.right: parent.right
+        anchors.rightMargin: 24
+    }
+
     // ---- icons ---------------------------------------------------------------
     // Clicking the bare desktop clears the selection and opens the desktop menu.
     MouseArea {

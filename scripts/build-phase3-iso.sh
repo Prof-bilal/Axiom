@@ -61,6 +61,8 @@ cp -r "$ROOT/apps" "$WORK/profile/airootfs/usr/local/share/axiom/apps"
 install -m 755 "$ROOT/system/pkgd/axiom-pkgd" "$WORK/profile/airootfs/usr/local/bin/axiom-pkgd"
 install -m 755 "$ROOT/system/pkgd/axiom-pkg-update" "$WORK/profile/airootfs/usr/local/bin/axiom-pkg-update"
 install -m 755 "$ROOT/system/pkgd/axiom-pkg-rollback" "$WORK/profile/airootfs/usr/local/bin/axiom-pkg-rollback"
+# Live-desktop installer (ADR-035): the root helper pkexec runs; the QML app is staged with the other apps.
+install -m 755 "$ROOT/system/installer/axiom-install-run" "$WORK/profile/airootfs/usr/local/bin/axiom-install-run"
 rm -rf "$WORK/profile/airootfs/usr/local/share/axiom/shell/tests"
 # Installer (Phase 6): backend, TUI and the Developer Hub catalogue.
 install -d "$WORK/profile/airootfs/usr/local/lib/axiom-installer"

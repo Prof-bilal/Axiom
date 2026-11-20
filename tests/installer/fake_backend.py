@@ -4,7 +4,7 @@ import json
 import sys
 import time
 
-sys.stdin.read()
+sys.stdin.readline()
 
 
 def ev(**k):

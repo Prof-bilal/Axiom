@@ -29,7 +29,8 @@ silently applied during installation.
 | Look and feel | `tui/axiom_tui.py`, `tui/fbdraw.py`, `tui/penguin_art.py`, `tui/penguin_image.bin` | shared by installer and login screen: big console font, Axiom palette, centred cards, penguin that fills with progress. |
 | Backend | `installer/axiom_install.py` | stdlib; validates the form, builds archinstall `--config`/`--creds`, runs it with argv only, applies the Axiom overlay, writes the Hub profile, cleans up after failure. |
 | UI | `installer/axiom-installer` | curses TUI; Welcome → locale/keyboard/timezone → disk (+LUKS) → account → git identity → Developer Hub → review (type `ERASE`) → install. Esc goes back; nothing is written before the review confirmation. |
-| Mode switch | `axiom-installer.service`, UEFI entry `00-axiom-installer.conf` | kernel option `axiom.installer=1` replaces the live desktop autologin on tty1. |
+| Mode switch | `axiom-installer.service` | kernel option `axiom.installer=1` replaces the live desktop autologin on tty1. Hidden fallback: no boot-menu entry since ADR-035. |
+| Desktop installer | `apps/liveinstaller/`, `shell/src/desktop/InstallTile.qml`, `system/installer/axiom-install-run` | the default way to install ([ADR-035](../decisions/035-live-desktop-installer.md)): live desktop, Install Axiom icon, root step through pkexec. |
 | Login | `greeter/axiom-greeter`, greetd | no autologin on installed systems; password goes only to greetd/PAM. |
 | Lock | `shell/src/session/LockScreen.qml`, `/etc/pam.d/axiom-lock` | `ext-session-lock-v1` + PAM; `qs ipc call axiom lock`. |
 | Hub | `catalog/developer-hub.json`, `provision/axiom-provision` | profile selects ids; root-owned catalogue names packages/images. |
