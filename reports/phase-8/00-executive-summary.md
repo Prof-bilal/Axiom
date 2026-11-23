@@ -80,6 +80,10 @@ Per reports 03 and 05: GTK-app replacement for size, aggressive firmware pruning
 
 Phase 7 plus `origin/main` is merged and pushed (`0a24aa8`). Archive tags exist and nothing was deleted. See `02-git-management.md`. Still open: `worktree-ui-glass-restyle` (11 unique commits), the unpushed local `axiom` commit, worktree cleanup, the `.contextgit/context.md` deletion, and a CI result for the merge commit.
 
+## 10a. Decision recorded
+
+2026-11-23: the user chose **Hyprland** as the default compositor. labwc stays as a fallback. Code and ADR-031 still need to be aligned with this (not yet done).
+
 ## 11. Next steps (for your approval)
 
 Approve the "before Phase 8" list above, in particular the compositor decision, since it blocks the most other work. Nothing here starts without that approval.
