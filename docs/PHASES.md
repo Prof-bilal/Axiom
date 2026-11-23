@@ -283,10 +283,31 @@ firewall and baseline hardening (the full capability layer stays in Phase 11).
 
 **Exit:** an everyday-task checklist passes on the installed system.
 
+**Gap-analysis additions (2026-11-23; see
+[reports/phase-8/04-linux-feature-gap-analysis.md](../reports/phase-8/04-linux-feature-gap-analysis.md)).**
+Each item needs a QEMU check, or a written limit where it cannot be shown:
+- P0: idle auto-lock and lock before suspend (reuse the lock screen and idle
+  monitor; add a Lock keybind); default-deny inbound firewall (nftables, ADR
+  first); removable media with eject (udisks2, polkit limited to the active
+  session); default image, video and PDF viewers; verify screen sharing through
+  the Hyprland portal (add `xdg-desktop-portal-hyprland` if needed); snapper
+  retention limits.
+- P1: printing (CUPS, driverless IPP, Settings > Printers); clipboard history
+  with a size limit and no capture of sensitive entries; secret store/keyring
+  chosen by ADR; Language and Region page; emoji picker and input methods
+  (fcitx5, if Quickshell text fields support it); CJK and emoji fonts; Files
+  thumbnails; update notifier (check only, never auto-install); mirror refresh on
+  the installed system; systemd-oomd; a local `axiom-debug` log collector
+  (no upload); `/home` restore points (extends F7).
+- Accessibility: ship what works (large cursor, reduced motion, reduce
+  transparency, sticky keys) and test Orca against Quickshell (AT-SPI); state the
+  result plainly even if it fails.
+
 ## Phase 9 — developer edition
 
 Curated toolchains, git, containers, editors and terminal workflow, plus an
-optional Kali-style security-tools package set. The Developer Hub shows Shikigami
+optional Kali-style security-tools package set. Optional shell tools
+(fzf, zoxide, ripgrep, tldr) are Hub entries, not defaults. The Developer Hub shows Shikigami
 as an optional external entry: its icon is visible, it is not installed by default,
 and installing is the user's choice (the entry links to the vendor's download;
 Axiom does not host, sandbox or audit it).
@@ -298,6 +319,12 @@ Axiom does not host, sandbox or audit it).
 Test Intel, AMD and NVIDIA where practical; laptop power states, suspend/resume,
 multi-monitor, HiDPI, touchpad, Bluetooth, Wi-Fi, audio and USB devices. Record
 supported, unsupported and untested states instead of broad claims.
+
+Gap-analysis additions (2026-11-23): firmware updates (fwupd) in the update view;
+fingerprint and FIDO2 login through PAM; hibernate (swap file resume on btrfs and
+LUKS); NVIDIA driver detection with explicit consent; night light and per-app
+volume mixer (F6); research boot-time snapshot rollback (systemd-boot versus a
+snapshot-aware loader; needs an ADR before any loader change).
 
 ## Phase D — differentiators (after the usable line)
 
@@ -392,6 +419,10 @@ lessons experiment result retained, whether it passed or not.
 Signed update mechanism, release repository, channels and recovery media. Test
 disposable disks, interruption, signature rejection and recovery before
 publishing.
+
+Gap-analysis additions (2026-11-23): recovery media must repair a system that does
+not boot (snapshot restore, bootloader reinstall); Secure Boot and TPM unlock are
+researched in an ADR once signing exists (not promised for release).
 
 Security review, privacy, license provenance and measured performance apply to
 every phase. No phase creates a reason to rewrite mature Linux infrastructure or

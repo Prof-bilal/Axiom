@@ -39,3 +39,13 @@ workspace/
 # Local-only: social post drafts and Serena editor state
 social/
 .serena/
+
+# Local QEMU/QA run artifacts and editor state
+/-boot
+.shiki/
+iso/diag-*
+iso/manual-run/
+iso/phase3-hyprtest/
+iso/qa-*/
+iso/qa-*.log
+iso/qemu-*.log
