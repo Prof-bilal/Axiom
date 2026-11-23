@@ -18,6 +18,10 @@ export XDG_SESSION_TYPE=wayland
 export XDG_RUNTIME_DIR="${XDG_RUNTIME_DIR:-/run/user/$(id -u)}"
 # ~/.local/bin holds commands installed with npm (--prefix ~/.local) and pipx.
 export PATH="$HOME/.local/bin:/usr/local/bin:$PATH"
+# The Hub installs Flatpaks with --user; their .desktop files and icons live under the flatpak
+# exports dirs, which greetd sessions do not get from /etc/profile.d. Without them the launcher
+# shows no icon (or no entry) for Hub-installed apps.
+export XDG_DATA_DIRS="$HOME/.local/share/flatpak/exports/share:/var/lib/flatpak/exports/share:${XDG_DATA_DIRS:-/usr/local/share:/usr/share}"
 # Lets `qs ipc call axiom …` from any session process find the Axiom Shell.
 export QS_CONFIG_PATH=/usr/local/share/axiom/shell
 

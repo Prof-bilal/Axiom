@@ -46,10 +46,12 @@ Item {
             }
             Column {
                 anchors.centerIn: parent
+                spacing: 4
+                AppTile { anchors.horizontalCenter: parent.horizontalCenter; app: page.be.current; size: 64 }
                 Text {
                     anchors.horizontalCenter: parent.horizontalCenter
                     text: page.failed ? "!" : page.be.done ? "✓" : page.shownPct + "%"
-                    color: Theme.textPrimary; font.family: S.font; font.pixelSize: 26; font.weight: Font.DemiBold
+                    color: Theme.textPrimary; font.family: S.font; font.pixelSize: 16; font.weight: Font.DemiBold
                 }
             }
         }
