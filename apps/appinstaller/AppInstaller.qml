@@ -224,7 +224,7 @@ AppWindow {
                     anchors.verticalCenter: parent.verticalCenter
                     elide: Text.ElideRight
                     text: root.busy ? (root.stepText.length > 0 ? root.stepText : "Installing…") : root.status
-                    color: root.statusIsError ? Theme.orangeBright : Theme.cyanBright
+                    color: root.statusIsError ? Theme.dangerBright : Theme.accentBright
                     font.family: Theme.fontFamily
                     font.pixelSize: Theme.fontBody
                 }
@@ -252,7 +252,7 @@ AppWindow {
                 Rectangle {
                     height: parent.height
                     radius: 3
-                    color: Theme.cyan
+                    color: Theme.accent
                     width: Math.max(parent.height, parent.width * root.percent / 100)
                     Behavior on width { NumberAnimation { duration: 300; easing.type: Easing.OutCubic } }
                 }
@@ -265,7 +265,7 @@ AppWindow {
             width: parent.width
             wrapMode: Text.WordWrap
             text: root.status
-            color: root.statusIsError ? Theme.orangeBright : Theme.textSecondary
+            color: root.statusIsError ? Theme.dangerBright : Theme.textSecondary
             font.family: Theme.fontFamily
             font.pixelSize: Theme.fontBody
         }

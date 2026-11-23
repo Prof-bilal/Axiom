@@ -14,7 +14,7 @@ Rectangle {
     radius: Theme.radiusSurface
     color: warning ? Theme.stateUrgentWash : Theme.surfaceElevated
     border.width: 1
-    border.color: warning ? Theme.orangeMuted : Theme.borderSubtle
+    border.color: warning ? Theme.dangerMuted : Theme.borderSubtle
 
     Text {
         id: label
@@ -22,7 +22,7 @@ Rectangle {
         anchors.margins: Theme.spacingMd
         text: notice.text
         wrapMode: Text.Wrap
-        color: notice.warning ? Theme.orangeBright : Theme.textSecondary
+        color: notice.warning ? Theme.dangerBright : Theme.textSecondary
         font.family: Theme.fontFamily
         font.pixelSize: Theme.fontBody
     }

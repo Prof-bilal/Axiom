@@ -3,7 +3,7 @@ import Quickshell
 import Quickshell.Wayland
 import qs.src.shared
 
-// Snap feedback: a dashed cyan-to-amber zone with a label over the half of the
+// Snap feedback: a dashed orange-to-amber zone with a label over the half of the
 // screen a window is snapping to ("Snap to Left" / "Snap to Right"), shown for a
 // moment when the compositor's snap keys are used. Click-through, no focus.
 //
@@ -55,8 +55,8 @@ PanelWindow {
             var ctx = getContext("2d")
             ctx.reset()
             var g = ctx.createLinearGradient(0, 0, width, height)
-            g.addColorStop(0, "#37F0EA")
-            g.addColorStop(1, "#FFB348")
+            g.addColorStop(0, "#FF9418")
+            g.addColorStop(1, "#FFCB52")
             ctx.strokeStyle = g
             ctx.lineWidth = 3
             ctx.setLineDash([12, 8])

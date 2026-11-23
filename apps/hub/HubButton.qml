@@ -16,7 +16,7 @@ Rectangle {
     implicitHeight: small ? 26 : 34
     radius: 6
     opacity: enabled ? 1 : 0.45
-    color: primary ? (m.containsMouse ? Theme.orangeBright : Theme.orange) : (m.containsMouse ? Theme.surfaceHover : "transparent")
+    color: primary ? (m.containsMouse ? Theme.accentBright : Theme.accent) : (m.containsMouse ? Theme.surfaceHover : "transparent")
     border.width: primary ? 0 : 1
     border.color: Theme.border
 

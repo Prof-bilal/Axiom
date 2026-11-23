@@ -12,7 +12,7 @@ families remain in [desktop/DESIGN_SYSTEM.md](desktop/DESIGN_SYSTEM.md).
 
 Someone who boots Axiom should recognise Axiom OS immediately — not "Linux
 that looks cool". The desktop combines Linux/tiling efficiency with refined,
-restrained visual detail: dark graphite surfaces, one cyan accent, a warm
+restrained visual detail: dark graphite surfaces, one orange accent, a warm
 orange used sparingly, strong type, and minimal chrome.
 
 ## Principles
@@ -24,7 +24,7 @@ orange used sparingly, strong type, and minimal chrome.
    visible but secondary; windows get breathing room.
 3. **One state language.** Hover, selected, active, focus, urgent and disabled
    look the same on every surface (see [states](#ui-states)).
-4. **Colour has meaning.** Cyan means focus/selection/activity. Orange means
+4. **Colour has meaning.** Orange means focus/selection/activity. Red means
    urgency, destruction or attention. Neither is decoration.
 5. **Proportional, not positional.** Sizes are fractions of the work area or
    fixed small UI metrics; no coordinates assume a particular resolution.
@@ -40,7 +40,7 @@ The desktop is assembled from these real components. Nothing else draws it.
 | Top panel, workspaces, clock, status icons | Axiom Shell (Quickshell/QML) | `shell/src/panel/*` |
 | Axiom menu ("Axiom OS ▾") | Axiom Shell | `shell/src/menu/AxiomMenu.qml` |
 | Activities overview | Axiom Shell | `shell/src/activities/ActivitiesOverview.qml` |
-| Status menu, session menu | Axiom Shell | `shell/src/status/ControlCenter.qml`, `shell/src/session/SessionMenu.qml` |
+| Status menu, session menu | Axiom Shell | `shell/src/status/{NetworkMenu,BluetoothMenu,AudioMenu,BatteryMenu}.qml` (one popup per panel icon, under that icon), `shell/src/session/SessionMenu.qml` |
 | Dock | Axiom Shell | `shell/src/dock/*` |
 | Launcher | Axiom Shell | `shell/src/launcher/Launcher.qml` |
 | Wallpaper | Axiom Shell (background layer; no wallpaper daemon) | `shell/src/desktop/Wallpaper.qml`, `shell/assets/wallpaper.png` |
@@ -72,7 +72,7 @@ There is no Hyprland, Waybar, Rofi or other desktop-project config in Axiom.
 
 ## Colour tokens
 
-Budget: roughly **80% neutral, 15% cyan, 5% orange**.
+Budget: roughly **80% neutral, 15% orange, 5% red**.
 
 | Role | Token | Value |
 | --- | --- | --- |
@@ -84,11 +84,11 @@ Budget: roughly **80% neutral, 15% cyan, 5% orange**.
 | Primary text | `textPrimary` | `#EDF5F5` |
 | Secondary text | `textSecondary` | `#8EA2A5` |
 | Disabled text | `textDisabled` | `#4E5E62` |
-| Cyan primary / bright / muted | `cyan`, `cyanBright`, `cyanMuted` | `#20D6D2`, `#37F0EA`, `#126E70` |
-| Orange primary / bright / muted | `orange`, `orangeBright`, `orangeMuted` | `#FF9418`, `#FFB348`, `#804713` |
-| Panel | `panelBackground` / `panelBorder` | `rgba(5,12,15,.88)` / `rgba(68,230,220,.10)` |
+| Orange accent primary / bright / muted | `accent`, `accentBright`, `accentMuted` | `#FF9418`, `#FFB348`, `#804713` |
+| Danger (destructive, error, urgent) primary / bright / muted | `danger`, `dangerBright`, `dangerMuted` | `#FF5A4F`, `#FF8A80`, `#7A2A24` |
+| Panel | `panelBackground` / `panelBorder` | `rgba(5,12,15,.88)` / `rgba(255,148,24,.10)` |
 | Dock | `dockBackground` / `dockBorder` | `rgba(255,255,255,.9)` / `rgba(0,0,0,.1)` |
-| Menus | `overlayBackground` / `overlayBorder` | `rgba(12,18,21,.97)` / `rgba(80,235,220,.14)` |
+| Menus | `overlayBackground` / `overlayBorder` | `rgba(12,18,21,.97)` / `rgba(255,148,24,.14)` |
 | Terminal background | foot `alpha` + `background` | `#0A0D0F` at 94% |
 
 ## UI states
@@ -97,9 +97,9 @@ Budget: roughly **80% neutral, 15% cyan, 5% orange**.
 | --- | --- | --- |
 | Hover | slightly lighter surface (white 6%) | `stateHover` |
 | Pressed | white 10% | `statePressed` |
-| Selected (menu open, current workspace, selected result) | cyan wash + cyan hairline | `stateSelected`, `stateSelectedBorder` |
-| Active (enabled toggle, focused app, hovered icon) | cyan icon/text | `cyanBright` |
-| Focus (focused window) | cyan border | `cyanMuted` border in compositor |
+| Selected (menu open, current workspace, selected result) | orange wash + orange hairline | `stateSelected`, `stateSelectedBorder` |
+| Active (enabled toggle, focused app, hovered icon) | orange icon/text | `accentBright` |
+| Focus (focused window) | orange border | `accentMuted` border in compositor |
 | Urgent / destructive | orange text, border or dot | `stateUrgent`, `stateUrgentWash` |
 | Disabled / unavailable | muted grey | `stateDisabled` |
 
@@ -132,16 +132,16 @@ edge. Compositor gap 10 px.
 - **Left:** the Axiom penguin with "Axiom OS ▾" opens the Axiom menu.
   *Activities* opens the Activities overview, *Apps* the application grid,
   *Files* and *Terminal* launch those apps (hidden if not installed). Text
-  buttons get a cyan wash and cyan text while their surface is open.
+  buttons get a orange wash and orange text while their surface is open.
 - **Centre:** workspace tiles from the compositor (ext-workspace), centred on
-  the output. Active: solid Axiom cyan with a dark numeral; others: graphite
+  the output. Active: solid Axiom orange with a dark numeral; others: graphite
   tiles; urgent: orange. Click or scroll to switch.
 - **Right:** search (opens the launcher's search list), notifications (tiny
   orange dot when there are notifications), tray items, network
   (wired/wireless/offline), Bluetooth (only with a BlueZ adapter), volume
   (scroll to change), battery with percentage (only on battery hardware),
   date and time `ddd, MMM d  h:mm AP`, and the session menu. Icons are light
-  grey, cyan on hover or while their menu is open.
+  grey, orange on hover or while their menu is open.
 - Panel controls act on press, like desktop menu bars.
 
 ## Menus
@@ -178,7 +178,7 @@ open. Rows (`MenuItem`) share the state language.
 - Centred, floating 12 px above the bottom edge, anchored to the bottom edge
   so the compositor centres it at any resolution and windows never slide under
   it. Only the dock body takes input and reserves space.
-- Graphite glass body (radius 16) with a 1 px edge gradient — Axiom cyan
+- Graphite glass body (radius 16) with a 1 px edge gradient — Axiom orange
   leading, warm orange trailing — and a soft glow of the same gradient.
 - Order: Axiom A-mark (opens Apps) → pinned Terminal, Files, Firefox, Code
   (VS Code OSS), Trash (each omitted if not installed) → separator → other
@@ -186,8 +186,8 @@ open. Rows (`MenuItem`) share the state language.
 - Terminal, Files and Trash use the Axiom icon set; other apps use their own
   XDG icons; an Axiom fallback glyph replaces any missing icon. Hover scales
   to 1.08.
-- Indicators: none when not running; 4 px dim cyan dot when running; 12×3 px
-  bright cyan pill plus a faint cyan wash when focused. Left click focuses the
+- Indicators: none when not running; 4 px dim orange dot when running; 12×3 px
+  bright orange pill plus a faint orange wash when focused. Left click focuses the
   app (restoring it if minimized, cycling its windows when already focused) or
   launches it; middle click opens a new instance.
 
@@ -198,7 +198,7 @@ that use the same tokens, icon set and window chrome as the shell. Rules:
 
 - Windows are normal labwc toplevels (title bar from the compositor); the app
   draws only its client area on `Theme.background`.
-- Selection is the cyan wash, destructive actions are orange, and nothing is
+- Selection is the orange wash, destructive actions are red, and nothing is
   shown that the app cannot do: no placeholder pages, no disabled install
   buttons. Where a capability needs a later phase the page says so in one line.
 - Keyboard first: every list is navigable with the arrow keys, Files has the
@@ -217,17 +217,17 @@ that use the same tokens, icon set and window chrome as the shell. Rules:
   usable area (asked from the shell, because labwc resizes only in pixels).
 - Title bar (labwc, Axiom theme): terminal icon, *Axiom Terminal*, and working
   minimize, maximize and close; close is orange. 12 px corners; focused window
-  has a cyan-muted border and a soft cyan glow.
+  has a orange-muted border and a soft orange glow.
 - Background `#0A0D0F` at 94% opacity; JetBrains Mono 11.5 pt, 17 px line
   height; Axiom ANSI palette (red stays red; yellow is Axiom amber).
-- Greeting (`axiom-greeting`), left to right: a dashed cyan penguin with
+- Greeting (`axiom-greeting`), left to right: a dashed orange penguin with
   orange eyes, beak and feet; a divider; the Axiom OS logo (sixel image, text
   heading in terminals without sixel); *AI-native Linux for Developers*; and
   OS (with architecture), kernel, shell, terminal, theme and uptime with
   icons, all read from the running system. Shown once per login session by
   default; `greeting=always|session|off` in `~/.config/axiom/terminal.conf`,
   or `axiom-greeting --disable/--enable`.
-- Prompt: `axiom@host` in cyan, path in white, `❯` in orange (coral after a
+- Prompt: `axiom@host` in orange, path in white, `❯` in orange (coral after a
   failed command).
 
 ## Window rules
@@ -235,7 +235,7 @@ that use the same tokens, icon set and window chrome as the shell. Rules:
 | Rule | Implementation (labwc) |
 | --- | --- |
 | New windows centred; later ones offset so none hides another | `<placement><policy>cascade</policy>`, 32 px offsets |
-| Focused window: cyan border and soft cyan glow | theme `window.active.border.color`, cyan-tinted `window.active.shadow.*` |
+| Focused window: orange border and soft orange glow | theme `window.active.border.color`, orange-tinted `window.active.shadow.*` |
 | Inactive window: neutral border, dimmer title, normal opacity | theme `window.inactive.*`; no inactive dimming |
 | Title bar: icon, left-aligned title, minimize / maximize / close | `<titlebar><layout>icon:iconify,max,close`; Axiom themerc |
 | Maximize / minimize / fullscreen | title-bar buttons, double-click title, Super+M / Super+H / Super+F |
@@ -262,7 +262,7 @@ graphite and the image itself is low-key. The launcher alone adds a transient
 | Axiom wordmark | Documents, boot/installer branding | `branding/identity/axiom-wordmark.svg` |
 | System icons | Panel/menu glyphs | `shell/src/shared/AxiomIcon.qml` (original 24-unit paths) |
 
-Competing assets found during the audit: a hand-drawn cyan-outlined penguin SVG
+Competing assets found during the audit: a hand-drawn orange-outlined penguin SVG
 (`branding/theme/axiom/icons/axiom-penguin*.{svg,png}`, previously in the
 panel) and the new reviewed penguin (`branding/theme/walllpaper/toppanel.png`).
 The reviewed penguin is canonical; the old SVG is retained only as history and
@@ -312,6 +312,6 @@ recorded in [evidence](research/phase3/evidence.md).
 ## Harness limitations (not design decisions)
 
 labwc cannot draw gradient window borders or blur; the focused-window glow is
-a cyan-tinted drop shadow. Firefox draws its own title bar. The terminal logo
+a orange-tinted drop shadow. Firefox draws its own title bar. The terminal logo
 is a 48 px sixel image sized for a scale-1 output with the Axiom line height;
 on fractional or 2× scaling it is not resized yet.

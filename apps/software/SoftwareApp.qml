@@ -95,7 +95,7 @@ AppWindow {
                 anchors.leftMargin: Theme.spacingMd
                 anchors.verticalCenter: parent.verticalCenter
                 width: 320
-                placeholder: root.appsView ? "Search applications" : "Search installed packages"
+                placeholder: root.appsView ? "Search applications" : backend.view === "find" ? "Search repositories (for example htop)" : "Search installed packages"
                 accessibleName: "Search"
                 debounce: 150
                 onSearched: function (t) { backend.query = t }
@@ -178,7 +178,7 @@ AppWindow {
                             width: 18
                             height: 18
                             name: item.glyph
-                            color: item.active ? Theme.cyanBright : Theme.textSecondary
+                            color: item.active ? Theme.accentBright : Theme.textSecondary
                             strokeWidth: 1.5
                         }
                         Text {
@@ -210,6 +210,7 @@ AppWindow {
 
                 SideSection { label: "Discover" }
                 SideItem { label: "Applications"; key: "apps"; glyph: "application"; count: backend.visibleApps.length > 0 || backend.query.length === 0 ? String(ApplicationService.all.filter(function (e) { return !e.noDisplay }).length) : "" }
+                SideItem { label: "Find packages"; key: "find"; glyph: "archive"; count: String(backend.repoResults.length) }
                 SideItem { label: "Updates"; key: "updates"; glyph: "refresh"; count: String(backend.updates.length) }
                 SideItem { label: "Flatpak apps"; key: "flatpak"; glyph: "archive"; count: String(backend.flatpaks.length) }
                 SideItem { label: "Snapshots"; key: "snapshots"; glyph: "refresh"; count: String(backend.snapshots.length) }
@@ -218,6 +219,80 @@ AppWindow {
                 SideItem { label: "Chosen"; key: "explicit"; glyph: "download"; count: String(backend.explicitCount) }
                 SideItem { label: "Dependencies"; key: "deps"; glyph: "code"; count: String(backend.packages.length - backend.explicitCount) }
                 SideItem { label: "Unused dependencies"; key: "unused"; glyph: "broken-link"; count: String(backend.unusedCount) }
+            }
+        }
+
+        // ---- find packages in the repositories: install or remove through the helper (polkit prompt) ----
+        Rectangle {
+            id: findPanel
+            anchors.top: toolbar.bottom
+            anchors.left: sidebar.right
+            anchors.right: parent.right
+            anchors.bottom: parent.bottom
+            visible: backend.view === "find"
+            color: "transparent"
+
+            Text {
+                id: findMsg
+                anchors.top: parent.top
+                anchors.left: parent.left
+                anchors.margins: Theme.spacingLg
+                text: backend.repoMessage.length > 0 ? backend.repoMessage
+                      : "Search the repositories with the box above. Installing and removing ask for admin approval."
+                color: Theme.textSecondary
+                font.family: Theme.fontFamily
+                font.pixelSize: Theme.fontCaption
+            }
+
+            ListView {
+                anchors.top: findMsg.bottom
+                anchors.topMargin: Theme.spacingSm
+                anchors.left: parent.left
+                anchors.right: parent.right
+                anchors.bottom: parent.bottom
+                anchors.margins: Theme.spacingLg
+                clip: true
+                model: backend.repoResults
+                delegate: Item {
+                    required property var modelData
+                    width: ListView.view.width
+                    height: 56
+
+                    Column {
+                        anchors.left: parent.left
+                        anchors.right: actionButton.left
+                        anchors.rightMargin: Theme.spacingLg
+                        anchors.verticalCenter: parent.verticalCenter
+                        spacing: 2
+                        Text {
+                            width: parent.width
+                            elide: Text.ElideRight
+                            text: modelData.name + "  " + modelData.version + "  (" + modelData.repo + ")"
+                            color: Theme.textPrimary
+                            font.family: Theme.fontFamily
+                            font.pixelSize: Theme.fontBody
+                        }
+                        Text {
+                            width: parent.width
+                            elide: Text.ElideRight
+                            text: modelData.desc
+                            color: Theme.textSecondary
+                            font.family: Theme.fontFamily
+                            font.pixelSize: Theme.fontCaption
+                        }
+                    }
+                    AppButton {
+                        id: actionButton
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.verticalCenter
+                        text: modelData.installed ? "Remove" : "Install"
+                        primary: !modelData.installed
+                        destructive: modelData.installed
+                        enabled: !backend.repoBusy
+                        onClicked: modelData.installed ? backend.removePackage(modelData.name)
+                                                       : backend.installPackage(modelData.name)
+                    }
+                }
             }
         }
 
@@ -420,7 +495,7 @@ AppWindow {
                 verticalAlignment: Text.AlignVCenter
                 elide: Text.ElideRight
                 text: "No repository data is available offline, so only installed software is shown."
-                color: Theme.orangeBright
+                color: Theme.dangerBright
                 font.family: Theme.fontFamily
                 font.pixelSize: Theme.fontCaption
             }
@@ -429,7 +504,7 @@ AppWindow {
         // ---- list ----
         ListView {
             id: list
-            visible: backend.view !== "updates" && backend.view !== "flatpak" && backend.view !== "snapshots"
+            visible: backend.view !== "updates" && backend.view !== "flatpak" && backend.view !== "snapshots" && backend.view !== "find"
             anchors.top: updateBar.visible ? updateBar.bottom : notice.bottom
             anchors.bottom: parent.bottom
             anchors.left: sidebar.right
@@ -461,7 +536,7 @@ AppWindow {
                 horizontalAlignment: Text.AlignHCenter
                 wrapMode: Text.Wrap
                 visible: text.length > 0
-                color: backend.error.length > 0 ? Theme.orangeBright : Theme.textSecondary
+                color: backend.error.length > 0 ? Theme.dangerBright : Theme.textSecondary
                 font.family: Theme.fontFamily
                 font.pixelSize: Theme.fontLabel
                 text: backend.error.length > 0 ? backend.error

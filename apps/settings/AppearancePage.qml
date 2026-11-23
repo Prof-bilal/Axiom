@@ -134,7 +134,7 @@ PageFrame {
                     radius: Theme.radiusSurface
                     color: Theme.background
                     border.width: active ? 2 : 1
-                    border.color: active ? Theme.stateFocus : (hit.containsMouse ? Theme.cyanMuted : Theme.border)
+                    border.color: active ? Theme.stateFocus : (hit.containsMouse ? Theme.accentMuted : Theme.border)
 
                     Accessible.role: Accessible.RadioButton
                     Accessible.name: name
@@ -228,7 +228,7 @@ PageFrame {
                     verticalAlignment: TextInput.AlignVCenter
                     clip: true
                     color: Theme.textPrimary
-                    selectionColor: Theme.cyanMuted
+                    selectionColor: Theme.accentMuted
                     font.family: Theme.fontFamily
                     font.pixelSize: Theme.fontCaption
                     onAccepted: page.useImage(text)
@@ -251,7 +251,7 @@ PageFrame {
         id: pickMsg
         width: parent.width
         wrapMode: Text.Wrap
-        color: Theme.orangeBright
+        color: Theme.dangerBright
         font.family: Theme.fontFamily
         font.pixelSize: Theme.fontCaption
         text: ""
@@ -276,7 +276,7 @@ PageFrame {
         width: parent.width
         visible: SettingsService.loadError.length > 0
         wrapMode: Text.Wrap
-        color: Theme.orangeBright
+        color: Theme.dangerBright
         font.family: Theme.fontFamily
         font.pixelSize: Theme.fontCaption
         text: SettingsService.loadError

@@ -17,6 +17,11 @@ Item {
     property var item: null
     property var dockWindow: null
     property bool launcher: false
+    // Position of this slot in the dock's row; the dock's layout (magnify.js) says how much it has grown.
+    property int slot: 0
+    readonly property real magScale: dockWindow && dockWindow.lay.scales[slot] !== undefined ? dockWindow.lay.scales[slot] : 1
+    // How far the icon is raised: none at rest, the full dockLift at the peak.
+    readonly property real lift: Theme.dockLift * (magScale - 1) / (Theme.dockMagnifyPeak - 1)
     property string name: item ? item.name : ""
     property string iconSource: item ? item.icon : ""
     property bool focused: item ? item.focused : false
@@ -36,32 +41,40 @@ Item {
         ApplicationService.launch(item.entry)
     }
 
-    implicitWidth: Theme.dockItemSize
+    // The slot widens with the icon (the dock gets wider, like macOS); its height stays fixed.
+    implicitWidth: Theme.dockItemSize * magScale
     implicitHeight: Theme.dockItemSize
 
     Accessible.role: Accessible.Button
     Accessible.name: name + (focused ? ", focused" : running ? ", running" : "")
 
-    // Focus wash (the only cyan "glow" in the dock).
-    Rectangle {
-        anchors.fill: parent
-        anchors.margins: 1
-        radius: Theme.radiusSurface
-        color: root.focused ? Qt.rgba(32 / 255, 214 / 255, 210 / 255, 0.16)
-             : mouse.containsMouse ? Qt.rgba(1, 1, 1, 0.08) : "transparent"
-        border.width: root.focused ? 1 : 0
-        border.color: Qt.rgba(32 / 255, 214 / 255, 210 / 255, 0.35)
-        Behavior on color { ColorAnimation { duration: Theme.motionFeedback } }
-    }
-
-    AppIcon {
-        id: icon
+    // The icon and its focus wash share one box, so they grow together: upward from the bottom edge, rising
+    // by `lift` (the only cyan "glow" in the dock is the wash).
+    Item {
+        id: iconBox
+        width: Theme.dockIconSize
+        height: Theme.dockIconSize
         anchors.centerIn: parent
-        anchors.verticalCenterOffset: -1 + bounce.y
-        size: Theme.dockIconSize
-        source: root.iconSource
-        scale: mouse.containsMouse ? Theme.dockHoverScale : 1.0
-        Behavior on scale { NumberAnimation { duration: Theme.motionFeedback; easing.type: Easing.OutCubic } }
+        anchors.verticalCenterOffset: -1 + bounce.y - root.lift
+        scale: root.magScale
+        transformOrigin: Item.Bottom
+
+        Rectangle {
+            anchors.fill: parent
+            anchors.margins: -7
+            radius: Theme.radiusSurface
+            color: root.focused ? Qt.rgba(255 / 255, 148 / 255, 24 / 255, 0.16) : "transparent"
+            border.width: root.focused ? 1 : 0
+            border.color: Qt.rgba(255 / 255, 148 / 255, 24 / 255, 0.35)
+            Behavior on color { ColorAnimation { duration: Theme.motionFeedback } }
+        }
+
+        AppIcon {
+            id: icon
+            anchors.centerIn: parent
+            size: Theme.dockIconSize
+            source: root.iconSource
+        }
     }
 
     // Holds the bounce offset so stopping can settle back to rest.
@@ -87,20 +100,23 @@ Item {
         width: root.focused ? 12 : 4
         height: root.focused ? 3 : 4
         radius: height / 2
-        color: root.focused ? Theme.cyan : Qt.rgba(32 / 255, 214 / 255, 210 / 255, 0.7)
+        color: root.focused ? Theme.accent : Qt.rgba(255 / 255, 148 / 255, 24 / 255, 0.7)
         Behavior on width { NumberAnimation { duration: Theme.motionFeedback } }
     }
 
     onNameChanged: if (mouse.containsMouse) root.announce()
     function announce() {
         if (!root.dockWindow || root.name.length === 0) return
-        var p = root.mapToItem(null, root.width / 2, 0)
-        root.dockWindow.showTip(root.name, p.x)
+        root.dockWindow.showTip(root.name, root)
     }
 
     MouseArea {
         id: mouse
-        anchors.fill: parent
+        // Covers the grown icon too: it reaches above the slot while magnified.
+        x: 0
+        width: parent.width
+        y: -(Theme.dockIconSize * (root.magScale - 1) + root.lift)
+        height: parent.height - y
         hoverEnabled: true
         onContainsMouseChanged: {
             if (containsMouse) root.announce()

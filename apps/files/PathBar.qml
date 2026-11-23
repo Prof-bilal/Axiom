@@ -119,7 +119,7 @@ Rectangle {
         anchors.rightMargin: Theme.spacingMd
         verticalAlignment: TextInput.AlignVCenter
         color: Theme.textPrimary
-        selectionColor: Theme.cyanMuted
+        selectionColor: Theme.accentMuted
         selectedTextColor: Theme.textPrimary
         font.family: Theme.fontFamilyMono
         font.pixelSize: Theme.fontCaption + 1

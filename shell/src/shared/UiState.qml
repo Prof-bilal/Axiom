@@ -10,12 +10,16 @@ Singleton {
     id: ui
 
     signal lockRequested()
+    // Where each dock icon sits at rest, as an x offset from the screen centre, by desktop-entry id (the
+    // launcher is "launcher"). The dock fills it in; window transitions fly to and from these places.
+    property var dockSlots: ({})
     property bool launcherOpen: false
     property string launcherMode: "search"   // "search" (list) | "grid" (Apps)
     property bool sessionMenuOpen: false
     property bool notificationCenterOpen: false
     property bool controlCenterOpen: false
     property string controlCenterSource: "network"   // the indicator that opened it
+    property real controlCenterAnchorX: -1           // screen x of that indicator, so its popup sits under it
     property bool axiomMenuOpen: false
     property bool activitiesOpen: false
     property string launcherQuery: ""
@@ -52,11 +56,12 @@ Singleton {
         notificationCenterOpen = next
     }
 
-    function toggleControlCenter(source) {
+    function toggleControlCenter(source, anchorX) {
         var s = source || "network"
         var next = !(controlCenterOpen && controlCenterSource === s)
         closeAll("control")
         controlCenterSource = s
+        controlCenterAnchorX = anchorX === undefined ? -1 : anchorX
         controlCenterOpen = next
     }
 

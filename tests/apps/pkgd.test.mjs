@@ -56,7 +56,7 @@ test("update takes a snapshot before the full upgrade", () => {
 });
 
 test("rollback needs a numeric snapshot id", () => {
-  assert.equal(srun("rollback", "12").stdout.trim(), "snapper -c root rollback 12");
+  assert.equal(srun("rollback", "12").stdout.trim(), "snapper -c root --ambit classic rollback 12");
   for (const bad of ["", "1;2", "x", "-1"]) assert.equal(srun("rollback", bad).status, 2, JSON.stringify(bad));
 });
 

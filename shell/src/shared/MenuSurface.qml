@@ -11,6 +11,8 @@ PanelWindow {
 
     property bool open: false
     property bool alignRight: false
+    // Screen x of the icon that opened the menu. When set (>= 0) the card is centred under it, kept on screen.
+    property real anchorX: -1
     property int cardWidth: Theme.menuWidth
     property string layerNamespace: "axiom-menu"
     default property alias content: column.data
@@ -48,7 +50,9 @@ PanelWindow {
 
     SolidSurface {
         id: card
-        x: surface.alignRight ? parent.width - width - Theme.spacingSm : Theme.spacingSm
+        x: surface.anchorX >= 0
+           ? Math.max(Theme.spacingSm, Math.min(surface.anchorX - width / 2, parent.width - width - Theme.spacingSm))
+           : (surface.alignRight ? parent.width - width - Theme.spacingSm : Theme.spacingSm)
         y: Theme.panelBottom + Theme.spacingXs
         width: Math.min(surface.cardWidth, parent.width - Theme.spacingSm * 2)
         height: Math.min(column.implicitHeight + Theme.spacingSm * 2,

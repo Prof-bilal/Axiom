@@ -112,7 +112,7 @@ PanelWindow {
             name: osd.kind === "volume" ? (osd.muted || osd.value === 0 ? "volume-muted"
                                            : osd.value > 50 ? "volume-high" : "volume-low")
                 : "lock"
-            color: osd.kind === "caps" && osd.capsOn ? Theme.orangeBright : Theme.cyanBright
+            color: osd.kind === "caps" && osd.capsOn ? Theme.warning : Theme.accentBright
         }
 
         // Brightness: a drawn sun (disc and eight rays).
@@ -124,14 +124,14 @@ PanelWindow {
             Rectangle {
                 anchors.centerIn: parent
                 width: 14; height: 14; radius: 7
-                color: Theme.orangeBright
+                color: Theme.warning
             }
             Repeater {
                 model: 8
                 delegate: Rectangle {
                     required property int index
                     width: 3; height: 7; radius: 1.5
-                    color: Theme.orangeBright
+                    color: Theme.warning
                     x: 16.5; y: 1
                     transform: Rotation { origin.x: 1.5; origin.y: 17; angle: index * 45 }
                 }
@@ -150,7 +150,7 @@ PanelWindow {
                 width: parent.width * (osd.muted ? 0 : osd.value / 100)
                 height: parent.height
                 radius: 3
-                color: osd.kind === "brightness" ? Theme.orangeBright : Theme.cyan
+                color: osd.kind === "brightness" ? Theme.warning : Theme.accent
             }
         }
         Text {
@@ -165,7 +165,7 @@ PanelWindow {
             visible: osd.kind === "caps"
             anchors { horizontalCenter: parent.horizontalCenter; bottom: parent.bottom; bottomMargin: 18 }
             text: osd.capsOn ? "Caps Lock on" : "Caps Lock off"
-            color: osd.capsOn ? Theme.orangeBright : Theme.textSecondary
+            color: osd.capsOn ? Theme.warning : Theme.textSecondary
             font.family: Theme.fontFamily
             font.pixelSize: Theme.fontBody
         }

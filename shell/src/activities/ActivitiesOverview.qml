@@ -77,7 +77,7 @@ PanelWindow {
                             color: Theme.background
                             clip: true
                             border.width: ws.modelData.active ? 2 : 1
-                            border.color: ws.modelData.active ? Theme.cyan : Theme.borderSubtle
+                            border.color: ws.modelData.active ? Theme.accent : Theme.borderSubtle
 
                             Image {
                                 anchors.fill: parent
@@ -139,7 +139,7 @@ PanelWindow {
                     radius: Theme.radiusOverlay
                     color: Theme.cardFill
                     border.width: 1
-                    border.color: modelData.activated ? Theme.cyan
+                    border.color: modelData.activated ? Theme.accent
                                 : cardMouse.containsMouse ? Theme.stateSelectedBorder : Theme.border
 
                     // Preview area
@@ -205,12 +205,12 @@ PanelWindow {
                         anchors { right: parent.right; top: parent.top; margins: 14 }
                         width: 26; height: 26; radius: 13
                         visible: cardMouse.containsMouse || closeMouse.containsMouse
-                        color: closeMouse.containsMouse ? Theme.orangeMuted : Qt.rgba(0, 0, 0, 0.6)
+                        color: closeMouse.containsMouse ? Theme.dangerMuted : Qt.rgba(0, 0, 0, 0.6)
                         AxiomIcon {
                             anchors.centerIn: parent
                             width: 14; height: 14
                             name: "close"
-                            color: closeMouse.containsMouse ? Theme.orangeBright : Theme.textPrimary
+                            color: closeMouse.containsMouse ? Theme.dangerBright : Theme.textPrimary
                         }
                         MouseArea {
                             id: closeMouse

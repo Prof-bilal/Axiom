@@ -91,6 +91,26 @@ test("validateName", () => {
   for (const bad of ["", ".", "..", "a/b", "x\u0000y", "x".repeat(256)]) assert.notEqual(L.validateName(bad), "", JSON.stringify(bad));
 });
 
+test("stemLength selects the part before the extension", () => {
+  assert.equal(L.stemLength("report.pdf"), 6);
+  assert.equal(L.stemLength("archive.tar.gz"), 11);
+  assert.equal(L.stemLength(".bashrc"), 7);
+  assert.equal(L.stemLength("README"), 6);
+  assert.equal(L.stemLength("New file.txt"), 8);
+  assert.equal(L.stemLength(""), 0);
+});
+
+test("nameProblem: invalid, taken, and unchanged names", () => {
+  const here = ["a.txt", "b"];
+  assert.equal(L.nameProblem("c.txt", "a.txt", here), "");
+  assert.equal(L.nameProblem("a.txt", "a.txt", here), "", "keeping the name is fine");
+  assert.notEqual(L.nameProblem("b", "a.txt", here), "", "another item has that name");
+  assert.notEqual(L.nameProblem("", "a.txt", here), "");
+  assert.notEqual(L.nameProblem("x/y", "a.txt", here), "");
+  assert.notEqual(L.nameProblem("..", "a.txt", here), "");
+  assert.equal(L.nameProblem("B", "a.txt", here), "", "names are case sensitive on Linux");
+});
+
 test("unique names", () => {
   assert.equal(L.uniqueNewName("New folder", []), "New folder");
   assert.equal(L.uniqueNewName("New folder", ["New folder", "New folder 2"]), "New folder 3");

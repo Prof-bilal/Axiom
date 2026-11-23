@@ -64,8 +64,8 @@ Rectangle {
                 anchors.fill: parent
                 visible: !row.useAppIcon
                 name: row.icon
-                color: row.armed || row.destructive && mouse.containsMouse ? Theme.orange
-                     : row.selected || mouse.containsMouse ? Theme.cyanBright
+                color: row.armed || row.destructive && mouse.containsMouse ? Theme.danger
+                     : row.selected || mouse.containsMouse ? Theme.accentBright
                      : Theme.textSecondary
             }
 
@@ -80,7 +80,7 @@ Rectangle {
         Text {
             anchors.verticalCenter: parent.verticalCenter
             text: row.armed ? row.confirmText : row.text
-            color: row.armed ? Theme.orangeBright : Theme.textPrimary
+            color: row.armed ? Theme.dangerBright : Theme.textPrimary
             font.family: Theme.fontFamily
             font.pixelSize: Theme.fontBody
             font.weight: row.armed ? Font.DemiBold : Font.Normal

@@ -45,7 +45,7 @@ Flickable {
                     c.clearRect(0, 0, width, height)
                     c.fillStyle = Theme.surfaceHover
                     c.beginPath(); c.moveTo(0, height); c.lineTo(width * 0.55, height * 0.35); c.lineTo(width * 0.7, height * 0.6); c.lineTo(width * 0.85, height * 0.25); c.lineTo(width, height * 0.5); c.lineTo(width, height); c.closePath(); c.fill()
-                    c.lineWidth = 6; c.lineCap = "round"; c.strokeStyle = Theme.orange
+                    c.lineWidth = 6; c.lineCap = "round"; c.strokeStyle = Theme.accent
                     c.beginPath(); c.arc(width * 0.8, height * 0.62, 84, Math.PI * 1.05, Math.PI * 1.9); c.stroke()
                 }
             }
@@ -84,8 +84,8 @@ Flickable {
                     radius: 6
                     color: "transparent"
                     border.width: 1
-                    border.color: on ? Theme.orange : Theme.border
-                    Text { id: lbl; anchors.centerIn: parent; text: modelData; color: parent.on ? Theme.orange : Theme.textSecondary; font.family: S.font; font.pixelSize: 12 }
+                    border.color: on ? Theme.accent : Theme.border
+                    Text { id: lbl; anchors.centerIn: parent; text: modelData; color: parent.on ? Theme.accent : Theme.textSecondary; font.family: S.font; font.pixelSize: 12 }
                     MouseArea { anchors.fill: parent; cursorShape: Qt.PointingHandCursor; onClicked: page.chip = modelData }
                 }
             }

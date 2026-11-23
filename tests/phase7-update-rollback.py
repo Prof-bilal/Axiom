@@ -10,7 +10,7 @@ user and reaches a root shell through sudo (root is locked, as on a real install
 Checks, in order:
   1. the root filesystem is btrfs and the first-boot snapper setup finished
   2. the helper refuses what it must: no snapper, bad snapshot number, bad description, no polkit agent
-  3. install htop through the helper (the Software Center path after polkit)
+  3. install htop through the helper (the Software Center path after polkit), then remove it and install it again
   4. update through axiom-pkg-update: a 'before update' snapshot exists before pacman runs
   5. a broken system after the update (htop's binary removed) is detected
   6. axiom-pkg-rollback to the 'before update' snapshot, reboot, and the system is back:
@@ -29,7 +29,10 @@ import time
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from qemu_lib import Guest  # noqa: E402
 
-USER, PW = "dev", "correct-horse-9"  # the Phase 6 install stage's account
+# The Phase 6 install stage's account by default. AXIOM_TEST_USER / AXIOM_TEST_PASSWORD select another
+# account on a disk installed by hand (the password is only ever typed into the test VM's own login).
+USER = os.environ.get("AXIOM_TEST_USER", "dev")
+PW = os.environ.get("AXIOM_TEST_PASSWORD", "correct-horse-9")
 if len(sys.argv) != 3 or not os.path.isdir(sys.argv[1]):
     print(__doc__)
     sys.exit(2)
@@ -90,7 +93,8 @@ for _ in range(120):  # the first-boot oneshot may still be running
 g.check(ok, "first-boot snapper setup finished and the root config exists")
 
 # 2. helper refusals (negative checks)
-rc, out = g.sh("/usr/bin/env PATH=/nonexistent /bin/sh /usr/local/bin/axiom-pkgd update; echo RC=$?", 60)
+# A PATH with `id` but no snapper: the helper must find snapper missing (exit 3), not refuse on the root check.
+rc, out = g.sh("mkdir -p /tmp/nosnap && ln -sf /usr/bin/id /tmp/nosnap/id; env PATH=/tmp/nosnap /bin/sh /usr/local/bin/axiom-pkgd update; echo RC=$?; rm -rf /tmp/nosnap", 60)
 g.check("RC=3" in out, "update refused when snapper is missing (exit 3, no pacman run)")
 rc, out = g.sh("/usr/local/bin/axiom-pkgd rollback abc; echo RC=$?", 30)
 g.check("RC=2" in out, "rollback refused for a non-numeric snapshot id")
@@ -104,13 +108,20 @@ rc, out = g.sh("/usr/local/bin/axiom-pkgd sync htop", 1800)
 g.check(rc == 0, f"install htop through the helper (rc={rc})")
 rc, out = g.sh("pacman -Qq htop", 20)
 g.check(rc == 0, "htop is in the package database")
+# 3b. remove it through the helper (the Software Center remove path), then install it again for the checks below
+rc, out = g.sh("/usr/local/bin/axiom-pkgd remove htop", 600)
+g.check(rc == 0, f"remove htop through the helper (rc={rc})")
+rc, out = g.sh("pacman -Qq htop", 20)
+g.check(rc != 0, "htop is gone from the package database after remove")
+rc, out = g.sh("/usr/local/bin/axiom-pkgd sync htop", 1800)
+g.check(rc == 0, f"reinstall htop for the update and rollback checks (rc={rc})")
 
 # 4. update with a snapshot taken first
 g.sh("echo before-update > /etc/axiom-rollback-test", 20)
 rc, out = g.sh("/usr/local/bin/axiom-pkg-update", 3600)
 g.check(rc == 0, f"update through axiom-pkg-update (rc={rc})")
 rc, out = g.sh("snapper -c root list --columns number,description | grep 'before update' | tail -1", 30)
-m = re.search(r"^\s*(\d+)\s*\|", out or "", re.M)
+m = re.search(r"^\s*(\d+)\s*[|│]", out or "", re.M)  # snapper uses │ under a UTF-8 locale, | under C
 snap = m.group(1) if m else None
 g.check(snap is not None, f"a 'before update' snapshot exists (number {snap})")
 g.sh("echo after-update > /etc/axiom-after-update", 20)

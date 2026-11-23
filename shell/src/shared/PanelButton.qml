@@ -48,7 +48,7 @@ Item {
             name: btn.icon
             level: btn.level
             color: !btn.available ? Theme.stateDisabled
-                 : (btn.active || btn.selected || mouse.containsMouse) ? Theme.cyanBright
+                 : (btn.active || btn.selected || mouse.containsMouse) ? Theme.accentBright
                  : Theme.textPrimary
         }
 
@@ -70,7 +70,7 @@ Item {
         width: 6
         height: 6
         radius: 3
-        color: btn.badgeUrgent ? Theme.stateUrgent : Theme.cyan
+        color: btn.badgeUrgent ? Theme.stateUrgent : Theme.accent
         anchors.top: parent.top
         anchors.right: parent.right
         anchors.topMargin: 4

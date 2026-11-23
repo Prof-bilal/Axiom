@@ -74,12 +74,12 @@ AppWindow {
 
             Rectangle { anchors.right: parent.right; width: 1; height: parent.height; color: Theme.borderSubtle }
 
-            // Axiom badge colours per section (palette: cyan, orange, graphite).
+            // Axiom badge colours per section (palette: orange, amber, graphite).
             readonly property var badge: ({
-                about: Theme.textSecondary, appearance: Theme.cyan, dock: Theme.orange,
-                apps: Theme.cyanMuted, displays: Theme.textSecondary, network: Theme.cyan,
-                bluetooth: Theme.cyanMuted, sound: Theme.orange, power: Theme.orangeMuted,
-                notifications: Theme.orange, keyboard: Theme.textSecondary, datetime: Theme.cyanMuted,
+                about: Theme.textSecondary, appearance: Theme.accent, dock: Theme.warning,
+                apps: Theme.accentMuted, displays: Theme.textSecondary, network: Theme.accent,
+                bluetooth: Theme.accentMuted, sound: Theme.warning, power: Theme.accentMuted,
+                notifications: Theme.warning, keyboard: Theme.textSecondary, datetime: Theme.accentMuted,
                 users: Theme.textSecondary
             })
 
@@ -104,7 +104,7 @@ AppWindow {
                         anchors.rightMargin: Theme.spacingSm
                         verticalAlignment: TextInput.AlignVCenter
                         color: Theme.textPrimary
-                        selectionColor: Theme.cyanMuted
+                        selectionColor: Theme.accentMuted
                         font.family: Theme.fontFamily
                         font.pixelSize: Theme.fontCaption
                         clip: true

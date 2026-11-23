@@ -14,8 +14,8 @@ Rectangle {
 
     signal clicked()
 
-    readonly property color fillRest: primary ? Theme.cyan : destructive ? "transparent" : Theme.surfaceElevated
-    readonly property color fillHover: primary ? Theme.cyanBright : destructive ? Qt.rgba(1, 148 / 255, 24 / 255, 0.16) : Theme.surfaceHover
+    readonly property color fillRest: primary ? Theme.accent : destructive ? "transparent" : Theme.surfaceElevated
+    readonly property color fillHover: primary ? Theme.accentBright : destructive ? Qt.rgba(1, 148 / 255, 24 / 255, 0.16) : Theme.surfaceHover
 
     implicitWidth: label.implicitWidth + 30
     implicitHeight: 32
@@ -24,7 +24,7 @@ Rectangle {
     color: mouse.pressed ? Qt.darker(fillHover, 1.12) : mouse.containsMouse ? fillHover : fillRest
     Behavior on color { ColorAnimation { duration: 120 } }
     border.width: primary ? 0 : 1
-    border.color: destructive ? Theme.orange : Theme.borderSubtle
+    border.color: destructive ? Theme.danger : Theme.borderSubtle
 
     Accessible.role: Accessible.Button
     Accessible.name: text
@@ -33,7 +33,7 @@ Rectangle {
         id: label
         anchors.centerIn: parent
         text: btn.text
-        color: btn.primary ? "#06181A" : btn.destructive ? Theme.orangeBright : Theme.textPrimary
+        color: btn.primary ? "#1A0E00" : btn.destructive ? Theme.dangerBright : Theme.textPrimary
         font.family: Theme.fontFamily
         font.pixelSize: Theme.fontCaption
         font.weight: Font.Medium

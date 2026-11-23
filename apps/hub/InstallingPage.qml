@@ -36,7 +36,7 @@ Item {
                     ctx.lineCap = "round"
                     ctx.strokeStyle = Theme.border
                     ctx.beginPath(); ctx.arc(width / 2, height / 2, 66, 0, Math.PI * 2); ctx.stroke()
-                    ctx.strokeStyle = page.failed ? S.bad : Theme.orange
+                    ctx.strokeStyle = page.failed ? S.bad : Theme.accent
                     ctx.beginPath()
                     ctx.arc(width / 2, height / 2, 66, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * Math.max(page.shownPct, 2) / 100)
                     ctx.stroke()
@@ -60,7 +60,7 @@ Item {
             color: Theme.border
             Rectangle {
                 height: parent.height; radius: 3
-                color: page.failed ? S.bad : Theme.orange
+                color: page.failed ? S.bad : Theme.accent
                 width: parent.width * page.shownPct / 100
                 Behavior on width { NumberAnimation { duration: 300; easing.type: Easing.OutCubic } }
             }
@@ -97,7 +97,7 @@ Item {
                     readonly property bool finished: page.be.done ? !page.failed : index < page.be.step
                     readonly property bool active: !page.be.done && index === page.be.step
                     spacing: 10
-                    Text { text: finished ? "✔" : (active ? "◐" : "○"); color: finished ? S.ok : (active ? Theme.orange : Theme.border); font.pixelSize: 13 }
+                    Text { text: finished ? "✔" : (active ? "◐" : "○"); color: finished ? S.ok : (active ? Theme.accent : Theme.border); font.pixelSize: 13 }
                     Text { text: modelData; color: finished || active ? Theme.textPrimary : Theme.textSecondary; font.family: S.font; font.pixelSize: 12 }
                 }
             }

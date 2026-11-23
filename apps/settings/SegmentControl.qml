@@ -29,14 +29,14 @@ Rectangle {
                 height: 26
                 width: label.implicitWidth + 26
                 radius: 13
-                color: on ? Theme.cyan : (hit.containsMouse ? Theme.surfaceHover : "transparent")
+                color: on ? Theme.accent : (hit.containsMouse ? Theme.surfaceHover : "transparent")
                 Behavior on color { ColorAnimation { duration: 120 } }
 
                 Text {
                     id: label
                     anchors.centerIn: parent
                     text: modelData.name
-                    color: on ? "#06181A" : Theme.textPrimary
+                    color: on ? "#1A0E00" : Theme.textPrimary
                     font.family: Theme.fontFamily
                     font.pixelSize: Theme.fontCaption
                     font.weight: on ? Font.DemiBold : Font.Normal

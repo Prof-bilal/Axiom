@@ -37,12 +37,12 @@ PageFrame {
         radius: Theme.radiusSurface
         color: Theme.stateUrgentWash
         border.width: 1
-        border.color: Theme.orangeMuted
+        border.color: Theme.dangerMuted
         Text {
             anchors.left: parent.left
             anchors.leftMargin: Theme.spacingLg
             anchors.verticalCenter: parent.verticalCenter
-            color: Theme.orangeBright
+            color: Theme.dangerBright
             font.family: Theme.fontFamily
             font.pixelSize: Theme.fontBody
             text: DisplayService.pending ? "Keep these display settings? Reverting in " + DisplayService.pending.seconds + " s." : ""

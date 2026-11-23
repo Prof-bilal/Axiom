@@ -99,7 +99,7 @@ AppWindow {
                 width: 56; height: 56; radius: 14
                 color: root.phase === "error" ? Theme.stateUrgentWash : Theme.stateSelected
                 border.width: 1
-                border.color: root.phase === "error" ? Theme.orangeMuted : Theme.stateSelectedBorder
+                border.color: root.phase === "error" ? Theme.dangerMuted : Theme.stateSelectedBorder
 
                 // Done: a check mark. Error: a cross. Working: the app's first letter.
                 Canvas {
@@ -112,7 +112,7 @@ AppWindow {
                         var c = getContext("2d")
                         c.clearRect(0, 0, width, height)
                         c.lineWidth = 3; c.lineCap = "round"; c.lineJoin = "round"
-                        c.strokeStyle = ok ? (Theme.light ? "#0F8F8C" : "#37F0EA") : (Theme.light ? "#B45F00" : "#FFB348")
+                        c.strokeStyle = ok ? (Theme.light ? "#C26A00" : "#FFB348") : (Theme.light ? "#C62828" : "#FF8A80")
                         c.beginPath()
                         if (ok) { c.moveTo(5, 15); c.lineTo(11, 21); c.lineTo(23, 7) }
                         else { c.moveTo(7, 7); c.lineTo(21, 21); c.moveTo(21, 7); c.lineTo(7, 21) }
@@ -123,7 +123,7 @@ AppWindow {
                     anchors.centerIn: parent
                     visible: root.phase === "working"
                     text: root.appName.charAt(0)
-                    color: Theme.cyanBright
+                    color: Theme.accentBright
                     font.family: Theme.fontFamily
                     font.pixelSize: 26
                     font.weight: Font.DemiBold
@@ -148,7 +148,7 @@ AppWindow {
                     elide: Text.ElideRight
                     text: (root.kindLabel.length > 0 ? root.kindLabel + "  ·  " : "")
                           + (root.phase === "done" ? "Installed" : root.phase === "error" ? "Could not install" : "Installing")
-                    color: root.phase === "error" ? Theme.orangeBright : root.phase === "done" ? Theme.cyanBright : Theme.textSecondary
+                    color: root.phase === "error" ? Theme.dangerBright : root.phase === "done" ? Theme.accentBright : Theme.textSecondary
                     font.family: Theme.fontFamily
                     font.pixelSize: Theme.fontBody
                 }
@@ -194,8 +194,8 @@ AppWindow {
                             width: parent.width - 90
                             elide: Text.ElideRight
                             text: modelData.v
-                            color: modelData.k === "Signature" && root.signature === "verified" ? Theme.cyanBright
-                                 : modelData.k === "Signature" && (root.signature === "failed" || root.signature === "unsigned") ? Theme.orangeBright
+                            color: modelData.k === "Signature" && root.signature === "verified" ? Theme.accentBright
+                                 : modelData.k === "Signature" && (root.signature === "failed" || root.signature === "unsigned") ? Theme.dangerBright
                                  : Theme.textPrimary
                             font.family: Theme.fontFamily
                             font.pixelSize: Theme.fontCaption
@@ -227,7 +227,7 @@ AppWindow {
                         id: pillLabel
                         anchors.centerIn: parent
                         text: modelData
-                        color: parent.on ? Theme.cyanBright : Theme.textSecondary
+                        color: parent.on ? Theme.accentBright : Theme.textSecondary
                         font.family: Theme.fontFamily
                         font.pixelSize: Theme.fontCaption
                     }
@@ -243,7 +243,7 @@ AppWindow {
             radius: 10
             color: Theme.stateUrgentWash
             border.width: 1
-            border.color: Theme.orangeMuted
+            border.color: Theme.dangerMuted
             Column {
                 id: blockCol
                 anchors.left: parent.left
@@ -253,7 +253,7 @@ AppWindow {
                 spacing: 4
                 Text {
                     text: "Installation blocked by policy"
-                    color: Theme.orangeBright
+                    color: Theme.dangerBright
                     font.family: Theme.fontFamily
                     font.pixelSize: Theme.fontBody
                     font.weight: Font.DemiBold
@@ -285,7 +285,7 @@ AppWindow {
                     spacing: 8
                     Text {
                         text: modelData.on ? "✔" : "○"
-                        color: modelData.on ? Theme.cyanBright : Theme.textDisabled
+                        color: modelData.on ? Theme.accentBright : Theme.textDisabled
                         font.family: Theme.fontFamily
                         font.pixelSize: Theme.fontCaption
                     }
@@ -362,7 +362,7 @@ AppWindow {
                     id: fill
                     height: parent.height
                     radius: 3
-                    color: Theme.cyan
+                    color: Theme.accent
                     width: Math.max(parent.height, parent.width * root.percent / 100)
                     Behavior on width { NumberAnimation { duration: 300; easing.type: Easing.OutCubic } }
                 }

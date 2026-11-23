@@ -68,17 +68,29 @@ Item {
 
     function refreshInstalled() {
         if (Quickshell.env("AXIOM_HUB_DEMO_INSTALLED") === "1") return
+        // Each source is applied as soon as it answers. A missing command never calls back, so the sources
+        // must not wait on each other: one absent tool then only leaves its own entries out.
+        var lists = { flatpak: "", pacman: "", npm: "", pipx: "" }
+        var apply = function () {
+            installed = B.installedIds(catalog, lists.flatpak, lists.pacman, lists.npm, lists.pipx)
+        }
+        runner.run(["pacman", "-Qq"], function (pm) {
+            lists.pacman = pm.code === 0 ? pm.out : ""
+            apply()
+        })
         runner.run(["flatpak", "list", "--app", "--columns=application"], function (fp) {
-            runner.run(["pacman", "-Qq"], function (pm) {
-                local.resolveHome(function () {
-                    var prefix = local.home + "/.local"
-                    runner.run(["npm", "ls", "-g", "--prefix", prefix, "--depth=0", "--parseable"], function (np) {
-                        runner.run(["pipx", "list", "--short"], function (px) {
-                            installed = B.installedIds(catalog, fp.code === 0 ? fp.out : "", pm.code === 0 ? pm.out : "",
-                                                       np.out, px.code === 0 ? px.out : "")
-                        })
-                    })
-                })
+            lists.flatpak = fp.code === 0 ? fp.out : ""
+            apply()
+        })
+        local.resolveHome(function () {
+            var prefix = local.home + "/.local"
+            runner.run(["npm", "ls", "-g", "--prefix", prefix, "--depth=0", "--parseable"], function (np) {
+                lists.npm = np.out
+                apply()
+            })
+            runner.run(["pipx", "list", "--short"], function (px) {
+                lists.pipx = px.out
+                apply()
             })
         })
     }

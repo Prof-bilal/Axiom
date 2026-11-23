@@ -46,7 +46,7 @@ SolidSurface {
             Layout.preferredWidth: 40
             Layout.preferredHeight: 40
             radius: 10
-            color: card.critical ? Theme.orange : Theme.cyanMuted
+            color: card.critical ? Theme.danger : Theme.accentMuted
 
             Image {
                 anchors.centerIn: parent

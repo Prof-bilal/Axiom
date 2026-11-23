@@ -41,7 +41,7 @@ Rectangle {
                 Rectangle {
                     anchors.fill: parent
                     radius: height / 2
-                    color: chip.active ? Theme.cyan
+                    color: chip.active ? Theme.accent
                          : mouse.containsMouse ? Theme.stateHover : "transparent"
                     Behavior on color { ColorAnimation { duration: Theme.motionFeedback } }
                 }

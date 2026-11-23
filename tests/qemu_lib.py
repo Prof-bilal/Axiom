@@ -29,6 +29,25 @@ import subprocess
 import threading
 import time
 
+def gpu_args(w, h, display):
+    """Display device. AXIOM_QEMU_GL=1 gives a virtio GPU with OpenGL (virgl) on the host's render node, which
+    Hyprland needs; the default stays plain VGA, which has no GL. Opt-in so existing evidence is unchanged."""
+    if os.environ.get("AXIOM_QEMU_GL") == "1":
+        return ["-device", f"virtio-vga-gl,xres={w},yres={h}", "-display", "gtk,gl=on"]
+    return ["-vga", "none", "-device", f"VGA,edid=on,xres={w},yres={h}", "-display", display]
+
+
+def net_args(on):
+    """-nic args for the guest. AXIOM_QEMU_BRIDGE=<bridge> attaches to a host bridge (real DHCP, no user-mode
+    stall); otherwise user-mode networking. The bridge must be listed in /etc/qemu/bridge.conf."""
+    if not on:
+        return ["-nic", "none"]
+    bridge = os.environ.get("AXIOM_QEMU_BRIDGE", "")
+    if bridge:
+        return ["-netdev", f"bridge,br={bridge},id=n0", "-device", "virtio-net-pci,netdev=n0"]
+    return ["-nic", "user,model=virtio-net-pci"]
+
+
 OVMF_CODE = "/usr/share/edk2/x64/OVMF_CODE.4m.fd"
 OVMF_VARS = "/usr/share/edk2/x64/OVMF_VARS.4m.fd"
 QS = "qs ipc --any-display -p /usr/local/share/axiom/shell"
@@ -80,10 +99,10 @@ class Guest:
             "-m", str(self.mem), "-smp", str(self.smp),
             "-drive", f"if=pflash,format=raw,readonly=on,file={OVMF_CODE}",
             "-drive", f"if=pflash,format=raw,file={vars_copy}",
-            "-vga", "none", "-device", f"VGA,edid=on,xres={self.w},yres={self.h}",
-            "-device", "qemu-xhci", "-device", "usb-tablet", "-display", self.display,
+            *gpu_args(self.w, self.h, self.display),
+            "-device", "qemu-xhci", "-device", "usb-tablet",
         ] + (["-cdrom", self.iso, "-boot", "order=d"] if self.iso else []) + [
-            "-nic", "user,model=virtio-net-pci" if self.net else "none",
+            *net_args(self.net),
             "-serial", f"unix:{self.p('serial.sock')},server,nowait",
             "-monitor", f"unix:{self.p('mon.sock')},server,nowait",
             "-qmp", f"unix:{self.p('qmp.sock')},server,nowait",

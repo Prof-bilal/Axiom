@@ -34,7 +34,7 @@ ENV = {"PATH": "/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin", "LC_ALL": "C.UTF-
 BASE_PACKAGES = [
     "base-devel", "git", "nano", "vim", "openssh", "sudo", "zsh", "btrfs-progs", "snapper", "cryptsetup",
     "networkmanager", "wpa_supplicant", "polkit", "dbus", "pipewire", "pipewire-pulse", "pipewire-alsa",
-    "wireplumber", "alsa-utils", "mesa", "libglvnd", "wayland", "wayland-protocols", "labwc",
+    "wireplumber", "alsa-utils", "mesa", "libglvnd", "wayland", "wayland-protocols", "labwc", "hyprland",
     "xdg-desktop-portal", "xdg-desktop-portal-wlr", "xdg-desktop-portal-gtk", "gvfs", "quickshell",
     "qt6-declarative", "qt6-wayland", "qt6-svg", "qt6-5compat", "noto-fonts", "ttf-dejavu", "inter-font",
     "ttf-jetbrains-mono", "adwaita-icon-theme", "hicolor-icon-theme", "foot", "mousepad", "firefox",
@@ -57,6 +57,11 @@ snapper -c root create-config /
 btrfs subvolume delete /.snapshots
 mkdir /.snapshots
 mount -a
+# snapper rollback needs the default subvolume to be the root subvolume (@), or it cannot find the target.
+btrfs subvolume set-default "$(btrfs inspect-internal rootid /)" /
+# Root must mount the default subvolume, not a pinned name, or a rollback never takes effect on reboot.
+sed -i -E '/[[:space:]]\\/[[:space:]]/ s/,subvol=\\/@([[:space:]])/\\1/' /etc/fstab
+sed -i 's/ rootflags=subvol=@//' /boot/loader/entries/*.conf
 chmod 750 /.snapshots
 mkdir -p /etc/axiom
 touch /etc/axiom/snapper-done
@@ -86,7 +91,9 @@ OVERLAY = [
     "/etc/systemd/system/power-profiles-daemon.service.d",
     "/usr/local/bin/axiom-app", "/usr/local/bin/axiom-greeting", "/usr/local/bin/axiom-session",
     "/usr/local/bin/axiom-shell", "/usr/local/bin/axiom-terminal", "/usr/local/share/axiom",
-    "/usr/local/share/applications", "/usr/share/icons/axiom-cursors", "/usr/share/icons/hicolor/256x256/apps",
+    "/usr/local/bin/axiom-pkgd", "/usr/local/bin/axiom-pkg-update", "/usr/local/bin/axiom-pkg-rollback",
+    "/usr/local/share/applications", "/usr/share/icons/axiom-cursors", "/usr/share/icons/default", "/usr/share/icons/hicolor/256x256/apps",
+    "/usr/share/icons/hicolor/scalable", "/usr/local/share/themes",
 ]
 
 

@@ -23,6 +23,11 @@ AppWindow {
     property int currentIndex: -1
     property int anchorIndex: -1
     property string pendingSelect: ""
+    // Rename in place (Windows style): the path whose name is being edited, the name of a just-created item
+    // waiting for its first listing, and the names in the folder for the collision check.
+    property string editPath: ""
+    property string pendingEdit: ""
+    property var editNames: []
     readonly property int selectedCount: Object.keys(selected).length
     readonly property real sizeW: 90
     readonly property real modifiedW: 150
@@ -82,6 +87,21 @@ AppWindow {
         target: backend
         function onListed() {
             // Keep only selections that still exist; honour a pending select.
+            if (root.pendingEdit !== "") {
+                var ei = -1
+                for (var k = 0; k < backend.entries.length; k++)
+                    if (backend.entries[k].name === root.pendingEdit) { ei = k; break }
+                if (ei >= 0) {
+                    root.pendingEdit = ""
+                    root.selectOnly(ei)
+                    list.positionViewAtIndex(ei, ListView.Contain)
+                    grid.positionViewAtIndex(ei, GridView.Contain)
+                    root.startEdit(backend.entries[ei])
+                    return
+                }
+                // Still creating it: keep waiting. Otherwise creating failed and the status bar says why.
+                if (backend.operationsRunning === 0) root.pendingEdit = ""
+            }
             var present = {}
             backend.entries.forEach(function (e) { present[e.path] = true })
             var keep = Object.keys(root.selected).filter(function (p) { return present[p] })
@@ -139,32 +159,42 @@ AppWindow {
         return backend.trashView ? "Trash" : backend.path
     }
 
-    function promptNewFolder() {
+    // New items are created at once with a free default name, then their name is edited in place.
+    function newFolder() {
         if (backend.trashView) return
-        prompt.subtitle = root.locationLine()
-        prompt.show("New folder", Files.uniqueNewName("New folder", backend.entries.map(function (e) { return e.name })), "Create")
-        prompt.acceptedAction = function (t) { root.pendingSelect = t; backend.createFolder(t) }
+        var name = Files.uniqueNewName("New folder", backend.rawEntries.map(function (e) { return e.name }))
+        pendingEdit = name
+        backend.createFolder(name)
     }
 
-    function promptNewFile() {
+    function newFile() {
         if (backend.trashView) return
-        prompt.subtitle = root.locationLine()
-        prompt.show("New File", Files.uniqueNewName("untitled" + Files.TEMPLATES[0].ext, backend.entries.map(function (e) { return e.name })), "Create File")
-        prompt.templates = Files.TEMPLATES
-        prompt.templateIndex = 0
-        prompt.acceptedAction = function (t) {
-            root.pendingSelect = t
-            backend.createFile(t, Files.TEMPLATES[prompt.templateIndex].body)
-        }
+        var name = Files.uniqueNewName("New file.txt", backend.rawEntries.map(function (e) { return e.name }))
+        pendingEdit = name
+        backend.createFile(name, "")
     }
 
-    function promptRename() {
+    function renameSelected() {
         var sel = selectedEntries()
-        if (sel.length !== 1 || backend.trashView) return
-        var e = sel[0]
-        prompt.subtitle = root.locationLine()
-        prompt.show("Rename", e.name, "Rename")
-        prompt.acceptedAction = function (t) { root.pendingSelect = t; backend.rename(e, t) }
+        if (sel.length === 1 && !backend.trashView) startEdit(sel[0])
+    }
+
+    function startEdit(e) {
+        editNames = backend.rawEntries.map(function (x) { return x.name })
+        editPath = e.path
+    }
+
+    function commitEdit(e, name) {
+        editPath = ""
+        keyTarget.forceActiveFocus()
+        if (name === e.name) return
+        pendingSelect = name
+        backend.rename(e, name)
+    }
+
+    function cancelEdit() {
+        editPath = ""
+        keyTarget.forceActiveFocus()
     }
 
     function showProperties() {
@@ -228,7 +258,7 @@ AppWindow {
         switch (action) {
         case "open": openSelection(); break
         case "terminal": terminalHere(); break
-        case "rename": promptRename(); break
+        case "rename": renameSelected(); break
         case "copy": backend.copy(paths); break
         case "cut": backend.cut(paths); break
         case "paste": backend.paste(); break
@@ -236,13 +266,13 @@ AppWindow {
         case "restore": backend.restore(sel); break
         case "delete": deleteSelection(); break
         case "empty": emptyTrash(); break
-        case "newfolder": promptNewFolder(); break
-        case "newfile": promptNewFile(); break
+        case "newfolder": newFolder(); break
+        case "newfile": newFile(); break
         case "hidden": backend.showHidden = !backend.showHidden; break
         case "properties": showProperties(); break
         }
-        // A dialog that just opened owns the keyboard; do not take it back.
-        if (!prompt.open && !confirm.open && !props.open) keyTarget.forceActiveFocus()
+        // A dialog or a name being edited owns the keyboard; do not take it back.
+        if (!confirm.open && !props.open && editPath === "") keyTarget.forceActiveFocus()
     }
 
     function rowPressed(i, mods, button, x, y) {
@@ -284,7 +314,7 @@ AppWindow {
             else if (alt && event.key === Qt.Key_Left) backend.goBack()
             else if (alt && event.key === Qt.Key_Right) backend.goForward()
             else if (alt && event.key === Qt.Key_Up) backend.goUp()
-            else if (ctrl && shift && event.key === Qt.Key_N) promptNewFolder()
+            else if (ctrl && shift && event.key === Qt.Key_N) newFolder()
             else if (ctrl && event.key === Qt.Key_A) selectAll()
             else if (ctrl && event.key === Qt.Key_C) { if (selectedCount > 0) backend.copy(selectedEntries().map(function (e) { return e.path })) }
             else if (ctrl && event.key === Qt.Key_X) { if (selectedCount > 0 && !backend.trashView) backend.cut(selectedEntries().map(function (e) { return e.path })) }
@@ -300,7 +330,7 @@ AppWindow {
             else if (event.key === Qt.Key_End) move(100000, shift)
             else if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter) openSelection()
             else if (event.key === Qt.Key_Delete) deleteSelection()
-            else if (event.key === Qt.Key_F2) promptRename()
+            else if (event.key === Qt.Key_F2) renameSelected()
             else if (event.key === Qt.Key_F5) backend.refresh()
             else if (event.key === Qt.Key_F4) terminalHere()
             else if (ctrl && event.key === Qt.Key_R) { if (backend.trashView) backend.restore(selectedEntries()) }
@@ -340,7 +370,7 @@ AppWindow {
                 anchors.rightMargin: Theme.spacingMd
                 anchors.verticalCenter: parent.verticalCenter
                 spacing: 2
-                PanelButton { icon: "plus"; accessibleName: "New folder"; available: !backend.trashView; onClicked: root.promptNewFolder() }
+                PanelButton { icon: "plus"; accessibleName: "New folder"; available: !backend.trashView; onClicked: root.newFolder() }
                 PanelButton { icon: "eye"; accessibleName: "Show hidden files"; selected: backend.showHidden; available: !backend.trashView; onClicked: backend.showHidden = !backend.showHidden }
                 PanelButton { icon: root.viewMode === "list" ? "grid" : "list"; accessibleName: "Switch between list and grid"; onClicked: root.viewMode = root.viewMode === "list" ? "grid" : "list" }
                 PanelButton { icon: "terminal"; accessibleName: "Open terminal here"; onClicked: root.terminalHere() }
@@ -481,6 +511,11 @@ AppWindow {
                     sizeWidth: root.sizeW
                     modifiedWidth: root.modifiedW
                     kindWidth: root.kindW
+                    editing: root.viewMode === "list" && rowEntry !== undefined && rowEntry.path === root.editPath
+                    existingNames: root.editNames
+                    onRenamed: function (name) { root.commitEdit(rowEntry, name) }
+                    onEditCancelled: root.cancelEdit()
+                    onEditRejected: function (reason) { backend.setMessage(reason, true) }
                     onPressedWith: function (mods, button, x, y) { root.rowPressed(index, mods, button, x, y) }
                     onOpened: root.openEntry(rowEntry)
                 }
@@ -520,6 +555,8 @@ AppWindow {
                     width: grid.cellWidth
                     height: grid.cellHeight
                     readonly property bool sel: tileEntry !== undefined && root.selected[tileEntry.path] === true
+                    // The hidden view must not build an editor too: it would take focus from the visible one.
+                    readonly property bool editing: root.viewMode === "grid" && tileEntry !== undefined && tileEntry.path === root.editPath
 
                     Rectangle {
                         anchors.fill: parent
@@ -537,7 +574,24 @@ AppWindow {
                         size: 84
                         entry: tileEntry
                     }
+                    Loader {
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        anchors.top: tileIcon.bottom
+                        anchors.topMargin: 8
+                        width: item ? item.width : 0
+                        active: editing
+                        sourceComponent: InlineName {
+                            maxWidth: grid.cellWidth - 12
+                            centered: true
+                            original: tileEntry.name
+                            existing: root.editNames
+                            onCommitted: function (name) { root.commitEdit(tileEntry, name) }
+                            onCancelled: root.cancelEdit()
+                            onRejected: function (reason) { backend.setMessage(reason, true) }
+                        }
+                    }
                     Text {
+                        visible: !editing
                         anchors.horizontalCenter: parent.horizontalCenter
                         anchors.top: tileIcon.bottom
                         anchors.topMargin: 10
@@ -552,6 +606,7 @@ AppWindow {
                     MouseArea {
                         id: tileMouse
                         anchors.fill: parent
+                        enabled: !editing
                         hoverEnabled: true
                         acceptedButtons: Qt.LeftButton | Qt.RightButton
                         onPressed: function (m) { root.rowPressed(index, m.modifiers, m.button, m.x, m.y) }
@@ -566,7 +621,7 @@ AppWindow {
                 horizontalAlignment: Text.AlignHCenter
                 wrapMode: Text.Wrap
                 visible: text.length > 0
-                color: backend.error.length > 0 ? Theme.orangeBright : Theme.textSecondary
+                color: backend.error.length > 0 ? Theme.dangerBright : Theme.textSecondary
                 font.family: Theme.fontFamily
                 font.pixelSize: Theme.fontLabel
                 text: {
@@ -617,7 +672,7 @@ AppWindow {
                 horizontalAlignment: Text.AlignRight
                 elide: Text.ElideRight
                 text: backend.busy ? "Working…" : backend.message
-                color: backend.messageIsError ? Theme.orangeBright : Theme.textSecondary
+                color: backend.messageIsError ? Theme.dangerBright : Theme.textSecondary
                 font.family: Theme.fontFamily
                 font.pixelSize: Theme.fontCaption
                 Accessible.role: Accessible.StaticText
@@ -635,14 +690,7 @@ AppWindow {
         ContextMenu {
             id: menu
             onTriggered: function (action) { root.runAction(action) }
-            onOpenChanged: if (!open) keyTarget.forceActiveFocus()
-        }
-
-        PromptDialog {
-            id: prompt
-            property var acceptedAction: null
-            onAccepted: function (t) { if (acceptedAction) acceptedAction(t) }
-            onOpenChanged: if (!open) keyTarget.forceActiveFocus()
+            onOpenChanged: if (!open && root.editPath === "") keyTarget.forceActiveFocus()
         }
 
         ConfirmDialog {

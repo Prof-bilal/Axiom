@@ -24,6 +24,10 @@ Item {
     property bool hasDatabases: false
     property bool checkedDatabases: false
 
+    // Typing in the search box while on "Find packages" searches the repositories.
+    onQueryChanged: if (view === "find") searchRepo(query)
+    onViewChanged: if (view === "find") searchRepo(query)
+
     readonly property var visiblePackages: Sw.sortPackages(Sw.filterPackages(packages, query, view === "apps" ? "all" : view, unusedSet), sortKey)
 
     readonly property var visibleApps: {
@@ -125,6 +129,34 @@ Item {
             snapshotMessage = r.code === 0 ? "Rolled back to snapshot " + n + ". Restart to finish." : (r.err || "Rollback was not approved or failed.").trim().split("\n").pop()
         })
     }
+
+    // Find packages in the repositories (pacman -Ss) and install or remove them through the same helper
+    // the Hub uses (axiom-pkgd, polkit prompt). Nothing runs until the user presses a button.
+    property var repoResults: []
+    property string repoMessage: ""
+    property bool repoBusy: false
+    function searchRepo(text) {
+        var q = (text || "").trim()
+        if (q.length < 2) { repoResults = []; repoMessage = q.length === 0 ? "" : "Type at least two letters."; return }
+        runner.runC(["pacman", "-Ss", q], function (r) {
+            repoResults = r.code === 0 ? Sw.parseSyncSearch(r.out, 200) : []
+            repoMessage = r.code === 0 || r.code === 1 ? (repoResults.length === 0 ? "No packages match “" + q + "”." : "")
+                                                       : (r.err || "The repositories could not be searched.").trim().split("\n").pop()
+        })
+    }
+    function helperDo(verb, name, busy, done) {
+        if (!Sw.validPackageName(name)) { repoMessage = "That package name is not valid."; return }
+        repoBusy = true
+        repoMessage = busy
+        runner.run(["pkexec", "/usr/local/bin/axiom-pkgd", verb, name], function (r) {
+            repoBusy = false
+            repoMessage = r.code === 0 ? done : (r.err || "Not approved or failed.").trim().split("\n").pop()
+            load()
+            searchRepo(query)
+        })
+    }
+    function installPackage(name) { helperDo("sync", name, "Waiting for admin approval to install " + name + "…", "Installed " + name + ".") }
+    function removePackage(name) { helperDo("remove", name, "Waiting for admin approval to remove " + name + "…", "Removed " + name + ".") }
 
     function packageFiles(name, cb) {
         runner.runC(["pacman", "-Ql", "--", name], function (r) { cb(r.code === 0 ? Sw.parseFiles(r.out, 200) : { count: 0, files: [], error: r.err.split("\n")[0] }) })

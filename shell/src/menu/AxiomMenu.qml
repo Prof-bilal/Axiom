@@ -106,7 +106,7 @@ MenuSurface {
             anchors.rightMargin: Theme.spacingSm
             anchors.verticalCenter: parent.verticalCenter
             color: Theme.textPrimary
-            selectionColor: Theme.cyanMuted
+            selectionColor: Theme.accentMuted
             font.family: Theme.fontFamily
             font.pixelSize: Theme.fontBody
             clip: true

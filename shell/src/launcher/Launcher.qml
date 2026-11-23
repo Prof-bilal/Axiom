@@ -179,9 +179,12 @@ PanelWindow {
                                 width: pages.width / launcher.gridColumns
                                 height: pages.height / launcher.rowsPerPage
 
+                                // Highlight hugs the icon and its name, not the whole cell.
                                 Rectangle {
-                                    anchors.fill: parent
-                                    anchors.margins: 4
+                                    anchors.horizontalCenter: parent.horizontalCenter
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    width: Math.min(parent.width - 12, 132)
+                                    height: Math.min(parent.height - 6, 148)
                                     radius: Theme.radiusSurface
                                     color: tile.absolute === launcher.selected ? Theme.stateSelected
                                          : tileMouse.containsMouse ? Theme.stateHover : "transparent"
@@ -191,9 +194,9 @@ PanelWindow {
 
                                 AppIcon {
                                     anchors.horizontalCenter: parent.horizontalCenter
-                                    anchors.top: parent.top
-                                    anchors.topMargin: 14
-                                    size: 64
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    anchors.verticalCenterOffset: -14
+                                    size: 96
                                     source: ApplicationService.iconFor(tile.modelData)
                                 }
 
@@ -201,7 +204,9 @@ PanelWindow {
                                     anchors.left: parent.left
                                     anchors.right: parent.right
                                     anchors.bottom: parent.bottom
-                                    anchors.margins: 8
+                                    anchors.leftMargin: 8
+                                    anchors.rightMargin: 8
+                                    anchors.bottomMargin: Math.max(4, (parent.height - 148) / 2 + 8)
                                     horizontalAlignment: Text.AlignHCenter
                                     elide: Text.ElideRight
                                     text: tile.modelData.name

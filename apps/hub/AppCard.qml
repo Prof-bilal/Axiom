@@ -61,8 +61,8 @@ Rectangle {
         radius: 5
         color: "transparent"
         border.width: 1
-        border.color: installed ? Theme.border : Theme.orange
-        Text { id: btnText; anchors.centerIn: parent; text: installed ? "Installed" : "Install"; color: installed ? Theme.textSecondary : Theme.orange; font.family: S.font; font.pixelSize: 11 }
+        border.color: installed ? Theme.border : Theme.accent
+        Text { id: btnText; anchors.centerIn: parent; text: installed ? "Installed" : "Install"; color: installed ? Theme.textSecondary : Theme.accent; font.family: S.font; font.pixelSize: 11 }
         MouseArea {
             anchors.fill: parent
             cursorShape: Qt.PointingHandCursor

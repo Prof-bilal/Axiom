@@ -66,14 +66,14 @@ Rectangle {
                     width: 3; height: 18; radius: 1.5
                     anchors.left: parent.left
                     anchors.verticalCenter: parent.verticalCenter
-                    color: Theme.orange
+                    color: Theme.accent
                 }
                 Row {
                     anchors.left: parent.left
                     anchors.leftMargin: 16
                     anchors.verticalCenter: parent.verticalCenter
                     spacing: 10
-                    Text { text: modelData.glyph; color: parent.parent.active ? Theme.orange : Theme.textSecondary; font.pixelSize: 14 }
+                    Text { text: modelData.glyph; color: parent.parent.active ? Theme.accent : Theme.textSecondary; font.pixelSize: 14 }
                     Text {
                         text: modelData.label
                         color: parent.parent.active ? Theme.textPrimary : Theme.textSecondary
@@ -84,7 +84,7 @@ Rectangle {
                     Rectangle {
                         visible: modelData.page === "updates" && bar.hub.be.updates.length > 0
                         width: badge.implicitWidth + 12; height: 18; radius: 9
-                        color: Theme.orange
+                        color: Theme.accent
                         anchors.verticalCenter: parent.verticalCenter
                         Text { id: badge; anchors.centerIn: parent; text: bar.hub.be.updates.length; color: "#FFFFFF"; font.family: S.font; font.pixelSize: 10; font.weight: Font.Medium }
                     }

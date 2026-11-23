@@ -187,6 +187,22 @@ function uniqueNewName(base, existing) {
     return base + " " + Date.now()
 }
 
+// How much of a name to select when it is edited in place: "report" in "report.pdf". A leading dot
+// (".bashrc") or no dot selects the whole name.
+function stemLength(name) {
+    var dot = name.lastIndexOf(".")
+    return dot > 0 ? dot : name.length
+}
+
+// "" when `name` is fine for the item now called `original`, otherwise the reason. `existing` are the names
+// already in the folder. Keeping the original name is allowed.
+function nameProblem(name, original, existing) {
+    var bad = validateName(name)
+    if (bad) return bad
+    if (name !== original && existing.indexOf(name) >= 0) return "That name is already used here."
+    return ""
+}
+
 // Name for a pasted copy: "doc.txt" -> "doc (copy).txt" -> "doc (copy 2).txt".
 function uniqueCopyName(name, existing) {
     var set = {}
@@ -301,12 +317,3 @@ function kindLabel(entry) {
     var k = KIND[category(entry)]
     return entry.isLink && !entry.broken ? k + " (link)" : k
 }
-
-// New-file templates offered in the name sheet: label, extension and starting text.
-var TEMPLATES = [
-    { id: "md", label: "Markdown (.md)", ext: ".md", body: "# \n" },
-    { id: "rs", label: "Rust (.rs)", ext: ".rs", body: "fn main() {\n    println!(\"Hello, world!\");\n}\n" },
-    { id: "toml", label: "TOML (.toml)", ext: ".toml", body: "[package]\nname = \"\"\nversion = \"0.1.0\"\n" },
-    { id: "empty", label: "Empty File", ext: "", body: "" }
-]
-

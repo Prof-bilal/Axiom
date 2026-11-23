@@ -28,8 +28,8 @@ ShellRoot {
     readonly property color border: light ? "#C9D3D8" : "#233238"
     readonly property color textPrimary: light ? "#14181B" : "#EDF5F5"
     readonly property color textSecondary: light ? "#5F6F74" : "#8EA2A5"
-    readonly property color cyan: "#20D6D2"
-    readonly property color orangeBright: "#FFB348"
+    readonly property color accent: "#FF9418"
+    readonly property color dangerBright: "#FF8A80"
 
     readonly property string wrongPassword: "That password didn't work. Try again."
     readonly property string lockedOut: "Too many wrong tries. Please wait a few minutes and try again."
@@ -234,7 +234,7 @@ ShellRoot {
                     width: 104; height: 104; radius: 52
                     color: root.surfaceElevated
                     border.width: 2
-                    border.color: root.cyan
+                    border.color: root.accent
                     Image {
                         id: penguin
                         anchors.fill: parent
@@ -269,7 +269,7 @@ ShellRoot {
                     anchors.topMargin: 18
                     width: 262; height: 42; radius: 21
                     color: root.light ? "#F4F6F7" : "#0A1215"
-                    border.color: root.authFailed ? root.orangeBright : root.cyan
+                    border.color: root.authFailed ? root.dangerBright : root.accent
                     border.width: 1
                     opacity: root.account() ? 1 : 0.5
 
@@ -308,7 +308,7 @@ ShellRoot {
                     Rectangle {
                         anchors { right: parent.right; rightMargin: 4; verticalCenter: parent.verticalCenter }
                         width: 34; height: 34; radius: 17
-                        color: root.cyan
+                        color: root.accent
                         Text { anchors.centerIn: parent; text: "\u2192"; color: "#06161A"; font.pixelSize: 18; font.bold: true }
                         MouseArea { anchors.fill: parent; cursorShape: Qt.PointingHandCursor; onClicked: root.submit() }
                     }
@@ -323,7 +323,7 @@ ShellRoot {
                     horizontalAlignment: Text.AlignHCenter
                     wrapMode: Text.WordWrap
                     text: root.message
-                    color: root.messageIsError ? root.orangeBright : root.textSecondary
+                    color: root.messageIsError ? root.dangerBright : root.textSecondary
                     font.pixelSize: 14
                 }
             }

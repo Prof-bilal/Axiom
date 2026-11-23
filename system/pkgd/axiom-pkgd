@@ -53,7 +53,8 @@ case "$op" in
         id=${2:-}
         case "$id" in ""|*[!0-9]*) echo "axiom-pkgd: invalid snapshot number" >&2; exit 2 ;; esac
         logger -t axiom-pkgd "rollback to snapshot $id requested uid=${PKEXEC_UID:-unknown}"
-        exec snapper -c root rollback "$id"
+        # Our layout is classic (root is the @ subvolume); name the ambit so snapper does not have to detect it.
+        exec snapper -c root --ambit classic rollback "$id"
         ;;
       snapshots)
         exec snapper -c root list --columns number,date,description

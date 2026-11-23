@@ -54,7 +54,7 @@ Scope {
                     anchors.horizontalCenter: parent.horizontalCenter
                     width: 44; height: 44
                     name: "lock"
-                    color: Theme.orangeBright
+                    color: Theme.dangerBright
                 }
 
                 Text {
@@ -130,7 +130,7 @@ Scope {
                     wrapMode: Text.Wrap
                     textFormat: Text.PlainText
                     text: dialog.flow ? dialog.flow.supplementaryMessage : ""
-                    color: dialog.flow && dialog.flow.supplementaryIsError ? Theme.orangeBright : Theme.textSecondary
+                    color: dialog.flow && dialog.flow.supplementaryIsError ? Theme.dangerBright : Theme.textSecondary
                     font.family: Theme.fontFamily
                     font.pixelSize: Theme.fontCaption
                 }

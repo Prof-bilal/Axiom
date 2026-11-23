@@ -89,7 +89,7 @@ PanelWindow {
             Repeater {
                 model: [
                     { act: "off", label: "Shut Down", tint: "#FF5252" },
-                    { act: "reboot", label: "Restart", tint: "#37F0EA" },
+                    { act: "reboot", label: "Restart", tint: "#FFB348" },
                     { act: "suspend", label: "Sleep", tint: "#FFB348" },
                     { act: "logout", label: "Log Out", tint: "#B8C4C8" }
                 ]
@@ -106,7 +106,7 @@ PanelWindow {
                         color: Qt.rgba(Qt.color(btn.modelData.tint).r, Qt.color(btn.modelData.tint).g,
                                        Qt.color(btn.modelData.tint).b, area.containsMouse || btn.isArmed ? 0.34 : 0.20)
                         border.width: btn.isArmed ? 2 : 1
-                        border.color: btn.isArmed ? Theme.orangeBright : btn.modelData.tint
+                        border.color: btn.isArmed ? Theme.dangerBright : btn.modelData.tint
                         AxiomIcon {
                             visible: btn.modelData.act !== "suspend"
                             anchors.centerIn: parent
@@ -127,7 +127,7 @@ PanelWindow {
                         anchors.top: disc.bottom
                         anchors.topMargin: 10
                         text: btn.isArmed ? "Click again" : btn.modelData.label
-                        color: btn.isArmed ? Theme.orangeBright : Theme.textPrimary
+                        color: btn.isArmed ? Theme.dangerBright : Theme.textPrimary
                         font.family: Theme.fontFamily
                         font.pixelSize: Theme.fontBody
                         font.weight: btn.isArmed ? Font.DemiBold : Font.Normal

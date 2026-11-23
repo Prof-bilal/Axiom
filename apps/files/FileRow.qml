@@ -18,8 +18,15 @@ Rectangle {
     property real modifiedWidth: 150
     property real kindWidth: 150
 
+    // Rename in place: the name cell becomes an InlineName while `editing`.
+    property bool editing: false
+    property var existingNames: []
+
     signal pressedWith(int modifiers, int button, real x, real y)
     signal opened()
+    signal renamed(string name)
+    signal editCancelled()
+    signal editRejected(string reason)
 
     height: 34
     radius: Theme.radiusControl
@@ -51,18 +58,39 @@ Rectangle {
             smooth: true
         }
 
-        Text {
+        Item {
+            id: nameCell
             anchors.verticalCenter: parent.verticalCenter
+            height: parent.height
             width: parent.width - 20 - Theme.spacingMd
                    - (row.trash ? trashOrigin.width + Theme.spacingMd
                       : row.sizeWidth + (row.showModified ? row.modifiedWidth : 0)
                         + (row.showKind ? row.kindWidth : 0) + Theme.spacingMd * (1 + (row.showModified ? 1 : 0) + (row.showKind ? 1 : 0)))
-            text: entry ? Files.displayName(entry.name) : ""
-            maximumLineCount: 1
-            color: row.dim ? Theme.textSecondary : Theme.textPrimary
-            font.family: Theme.fontFamily
-            font.pixelSize: Theme.fontBody
-            elide: Text.ElideMiddle
+
+            Text {
+                anchors.verticalCenter: parent.verticalCenter
+                width: parent.width
+                visible: !row.editing
+                text: entry ? Files.displayName(entry.name) : ""
+                maximumLineCount: 1
+                color: row.dim ? Theme.textSecondary : Theme.textPrimary
+                font.family: Theme.fontFamily
+                font.pixelSize: Theme.fontBody
+                elide: Text.ElideMiddle
+            }
+            Loader {
+                anchors.verticalCenter: parent.verticalCenter
+                width: item ? item.width : 0
+                active: row.editing
+                sourceComponent: InlineName {
+                    maxWidth: nameCell.width
+                    original: row.entry.name
+                    existing: row.existingNames
+                    onCommitted: function (name) { row.renamed(name) }
+                    onCancelled: row.editCancelled()
+                    onRejected: function (reason) { row.editRejected(reason) }
+                }
+            }
         }
 
         Text {
@@ -114,6 +142,7 @@ Rectangle {
     MouseArea {
         id: mouse
         anchors.fill: parent
+        enabled: !row.editing   // clicks go to the text box while renaming
         hoverEnabled: true
         acceptedButtons: Qt.LeftButton | Qt.RightButton
         onPressed: function (m) {

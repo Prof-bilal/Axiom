@@ -66,7 +66,11 @@ ShellRoot {
     TransitionFx {}
     NotificationCenter {}
     SessionMenu {}
-    ControlCenter {}
+    // One small popup per status icon (Wi-Fi, Bluetooth, sound, power), each under its own icon.
+    NetworkMenu {}
+    BluetoothMenu {}
+    AudioMenu {}
+    BatteryMenu {}
     IdleBlank {}
     LockScreen { id: lockScreen }
     PolkitDialog {}

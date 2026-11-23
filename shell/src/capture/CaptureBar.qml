@@ -143,7 +143,7 @@ Scope {
                     anchors.verticalCenter: parent.verticalCenter
                     width: stopLabel.implicitWidth + 20; height: 24; radius: 12
                     color: stopArea.containsMouse ? Qt.rgba(1, 148 / 255, 24 / 255, 0.35) : Theme.stateUrgentWash
-                    Text { id: stopLabel; anchors.centerIn: parent; text: "Stop"; color: Theme.orangeBright
+                    Text { id: stopLabel; anchors.centerIn: parent; text: "Stop"; color: Theme.dangerBright
                            font.family: Theme.fontFamily; font.pixelSize: Theme.fontCaption; font.weight: Font.DemiBold }
                     MouseArea { id: stopArea; anchors.fill: parent; hoverEnabled: true
                                 cursorShape: Qt.PointingHandCursor; onClicked: cap.stopRecording() }
@@ -211,7 +211,7 @@ Scope {
             x: cap.sel.x; y: cap.sel.y; width: cap.sel.width; height: cap.sel.height
             color: "transparent"
             border.width: 2
-            border.color: Theme.cyanBright
+            border.color: Theme.accentBright
         }
         Rectangle {
             visible: cap.needsRect && cap.hasSel
@@ -245,14 +245,14 @@ Scope {
                     anchors.centerIn: parent
                     width: 22; height: 18
                     Rectangle { anchors.fill: parent; radius: mb.kind === "window" ? 3 : 2; color: "transparent"
-                                border.width: 1.5; border.color: mb.active ? Theme.cyanBright : Theme.textPrimary
+                                border.width: 1.5; border.color: mb.active ? Theme.accentBright : Theme.textPrimary
                                 visible: !mb.toggle }
                     Rectangle { visible: mb.kind === "window"; x: 1; y: 1; width: parent.width - 2; height: 5
-                                color: mb.active ? Theme.cyanBright : Theme.textPrimary; opacity: 0.6 }
+                                color: mb.active ? Theme.accentBright : Theme.textPrimary; opacity: 0.6 }
                     Rectangle { visible: mb.kind === "vregion" || mb.kind === "vscreen"; width: 8; height: 8; radius: 4
                                 anchors.centerIn: parent; color: "#FF5252" }
                     Text { visible: mb.toggle; anchors.centerIn: parent; text: mb.label.charAt(0)
-                           color: mb.on ? Theme.cyanBright : Theme.textPrimary; font.pixelSize: 15; font.family: Theme.fontFamily }
+                           color: mb.on ? Theme.accentBright : Theme.textPrimary; font.pixelSize: 15; font.family: Theme.fontFamily }
                 }
             }
             Text {
@@ -323,7 +323,7 @@ Scope {
                 Rectangle {
                     anchors.verticalCenter: parent.verticalCenter
                     width: 56; height: 56; radius: 18
-                    color: goArea.containsMouse ? Theme.cyanBright : Theme.cyan
+                    color: goArea.containsMouse ? Theme.accentBright : Theme.accent
                     Rectangle {
                         anchors.centerIn: parent
                         width: 24; height: 24; radius: cap.isVideo ? 12 : 6
@@ -340,7 +340,7 @@ Scope {
                 visible: cap.message.length > 0
                 anchors { horizontalCenter: parent.horizontalCenter; bottom: parent.top; bottomMargin: 8 }
                 text: cap.message
-                color: Theme.orangeBright
+                color: Theme.dangerBright
                 font.family: Theme.fontFamily
                 font.pixelSize: Theme.fontBody
             }

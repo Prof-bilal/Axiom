@@ -94,7 +94,7 @@ PanelWindow {
                     height: 11
                     name: "chevron-down"
                     strokeWidth: 2.2
-                    color: UiState.axiomMenuOpen ? Theme.cyanBright : Theme.textSecondary
+                    color: UiState.axiomMenuOpen ? Theme.accentBright : Theme.textSecondary
                 }
             }
 

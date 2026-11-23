@@ -23,7 +23,7 @@ import sys
 import time
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from qemu_lib import Guest, QS  # noqa: E402
+from qemu_lib import Guest, QS, net_args  # noqa: E402
 
 PW = "correct-horse-9"
 LUKS_PW = "luks-passphrase-77"
@@ -262,7 +262,7 @@ def stage_install(iso, out, luks=False):
     # AXIOM_PKG_CACHE=/var/cache/pacman/pkg shares the host's package cache read-only, so the
     # install reuses packages already downloaded instead of fetching them over the slow link.
     cache = os.environ.get("AXIOM_PKG_CACHE", "")
-    g.extra = ["-nic", "user,model=virtio-net-pci", *disk_args(disk), "-kernel", kern, "-initrd", initrd,
+    g.extra = [*net_args(True), *disk_args(disk), "-kernel", kern, "-initrd", initrd,
                "-append", f"archisobasedir=axiom archisodevice=/dev/sr0 axiom.installer=1 {LIVE_CMDLINE}"]
     if cache:
         g.extra += ["-virtfs", f"local,path={cache},mount_tag=axcache,security_model=none,readonly=on"]
@@ -272,6 +272,18 @@ def stage_install(iso, out, luks=False):
             return g
         time.sleep(15)
         g.check(g.login_root(), "root serial shell available")
+        # Live pacman must not give up on a slow download (pacman's "Operation too slow" abort).
+        g.check(g.sh("grep -q '^DisableDownloadTimeout' /etc/pacman.conf", 10)[0] == 0,
+                "live pacman has DisableDownloadTimeout (no low-speed abort during pacstrap)")
+        # Test-only: AXIOM_LOCAL_REPO=http://10.0.2.2:8080 serves packages from a repo on the host, so the
+        # install needs no internet. 10.0.2.2 is QEMU user-mode networking's gateway to the host.
+        local_repo = os.environ.get("AXIOM_LOCAL_REPO", "")
+        if local_repo:
+            g.put_file("/etc/pacman.d/mirrorlist", f"Server = {local_repo}/$repo/os/$arch\n", "644")
+            # Test-only until the ISO ships this setting: the local link can still stall, and pacman's
+            # low-speed abort would then end the install.
+            g.sh("grep -q '^DisableDownloadTimeout' /etc/pacman.conf || sed -i '/^\\[options\\]/a DisableDownloadTimeout' /etc/pacman.conf", 15)
+            print(f"NOTE: live mirrorlist replaced with {local_repo} (test-only)", flush=True)
         override = os.environ.get("AXIOM_INSTALLER_OVERRIDE")  # test-only: a fixed installer before the ISO is rebuilt
         if override:
             g.put_file("/usr/local/lib/axiom-installer/axiom_install.py", open(override).read(), "755")
@@ -380,7 +392,7 @@ class Installed:
         self.g = Guest(None, out, mem=2560, smp=2)
         self.g.vars_src = vars_src
         self.g.duser = USER
-        self.g.extra = (["-nic", "user,model=virtio-net-pci"] if net else []) + disk_args(disk)
+        self.g.extra = (net_args(True) if net else []) + disk_args(disk)
         self.t = Tui(self.g)
 
     def serial_login(self, luks=False):

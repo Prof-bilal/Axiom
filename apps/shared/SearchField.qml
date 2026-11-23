@@ -48,7 +48,7 @@ Rectangle {
         anchors.verticalCenter: parent.verticalCenter
         enabled: box.enabled
         color: Theme.textPrimary
-        selectionColor: Theme.cyanMuted
+        selectionColor: Theme.accentMuted
         selectedTextColor: Theme.textPrimary
         font.family: Theme.fontFamily
         font.pixelSize: Theme.fontBody

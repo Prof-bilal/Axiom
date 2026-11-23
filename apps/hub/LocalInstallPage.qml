@@ -57,7 +57,7 @@ Item {
                     ctx.clearRect(0, 0, width, height)
                     ctx.setLineDash([6, 5])
                     ctx.lineWidth = 1.2
-                    ctx.strokeStyle = drop.containsDrag ? Theme.orange : Theme.border
+                    ctx.strokeStyle = drop.containsDrag ? Theme.accent : Theme.border
                     ctx.strokeRect(0.5, 0.5, width - 1, height - 1)
                 }
             }
@@ -134,7 +134,7 @@ Item {
                 radius: 6
                 color: Theme.cardFill
                 border.width: 1
-                border.color: pathInput.activeFocus ? Theme.orange : Theme.border
+                border.color: pathInput.activeFocus ? Theme.accent : Theme.border
                 TextInput {
                     id: pathInput
                     anchors.fill: parent

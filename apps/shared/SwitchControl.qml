@@ -15,9 +15,9 @@ Rectangle {
     height: 22
     radius: 11
     opacity: enabled ? 1 : 0.45
-    color: checked ? Theme.cyanMuted : Theme.surfaceHover
+    color: checked ? Theme.accentMuted : Theme.surfaceHover
     border.width: 1
-    border.color: checked ? Theme.cyan : Theme.border
+    border.color: checked ? Theme.accent : Theme.border
 
     Accessible.role: Accessible.CheckBox
     Accessible.name: accessibleName

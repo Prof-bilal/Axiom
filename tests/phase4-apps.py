@@ -228,12 +228,23 @@ if want("files"):
     g.check(app_log_errors("files-lab") == "", "files: no QML errors at startup")
     g.shot("files-01-lab")
 
-    g.key("ctrl-shift-n")
+    # Windows-style: the folder is created at once with a free default name, and its name is edited in place
+    # (the editor appears after the first listing, so wait before typing).
+    g.key("ctrl-shift-n", settle=2)
+    g.check(eventually(f"[ -d '{HOME}/lab/New folder' ]"), "files: Ctrl+Shift+N creates a folder at once, named 'New folder'")
+    g.shot("files-01b-inline-edit")
     g.type("made\n", settle=2)
-    g.check(eventually(f"[ -d {HOME}/lab/made ]"), "files: Ctrl+Shift+N creates a folder")
-    g.key("f2")
+    g.check(eventually(f"[ -d {HOME}/lab/made ] && [ ! -e '{HOME}/lab/New folder' ]"), "files: typing a name in place renames the new folder")
+    g.key("f2", settle=1)
     g.type("renamed\n", settle=2)
-    g.check(eventually(f"[ -d {HOME}/lab/renamed ] && [ ! -e {HOME}/lab/made ]"), "files: F2 renames it")
+    g.check(eventually(f"[ -d {HOME}/lab/renamed ] && [ ! -e {HOME}/lab/made ]"), "files: F2 renames it in place")
+    # Esc keeps the default name, then the item can be renamed again.
+    g.key("ctrl-shift-n", settle=2)
+    g.key("esc", settle=1)
+    g.check(eventually(f"[ -d '{HOME}/lab/New folder' ]"), "files: Esc while naming keeps the default name")
+    g.key("f2", settle=1)
+    g.type("second\n", settle=2)
+    g.check(eventually(f"[ -d {HOME}/lab/second ] && [ ! -e '{HOME}/lab/New folder' ]"), "files: the kept folder renames in place too")
 
     # Copy everything, hostile names included, into another folder.
     nav(f"{HOME}/lab")
@@ -280,12 +291,13 @@ if want("files"):
     # Name clash on rename; open with the default app; restore clash.
     nav(f"{HOME}/small")
     g.key("home")
-    g.key("f2")
+    g.key("f2", settle=1)
     g.type("x2", settle=0.5)
     g.key("ret", settle=3)
     g.check(eventually(f"[ \"$(cat {HOME}/small/x1.txt)\" = one ] && [ \"$(cat {HOME}/small/x2.txt)\" = two ]", 10),
             "files: renaming onto an existing name is refused and nothing is lost")
     g.shot("files-05-rename-clash")
+    g.key("esc", settle=1)  # the editor stays open on a refused name; Esc gives the old name back
     g.key("home")
     g.key("ret", settle=2)
     g.check(eventually(f"pgrep -af mousepad | grep -q '{HOME}/small/x1.txt'", 45), "files: Enter opens a file in the default application (Mousepad)")

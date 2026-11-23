@@ -177,3 +177,19 @@ function parseSnapshots(text) {
     })
     return out
 }
+
+// `pacman -Ss` output: "repo/name version [installed]" then an indented description line.
+var SYNC_HEAD = /^(\S+)\/(\S+) (\S+)( \[installed[^\]]*\])?$/
+var PKG_NAME_OK = /^[a-z0-9@._+-]+$/
+function parseSyncSearch(text, limit) {
+    var out = []
+    var lines = (text || "").split("\n")
+    for (var i = 0; i < lines.length && out.length < (limit || 200); i++) {
+        var m = SYNC_HEAD.exec(lines[i])
+        if (!m) continue
+        var desc = (i + 1 < lines.length && /^\s/.test(lines[i + 1])) ? lines[i + 1].trim() : ""
+        out.push({ repo: m[1], name: m[2], version: m[3], installed: !!m[4], desc: desc })
+    }
+    return out
+}
+function validPackageName(name) { return PKG_NAME_OK.test(name || "") }

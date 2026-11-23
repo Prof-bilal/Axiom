@@ -64,9 +64,9 @@ osd.border.color: #233238
 osd.border.width: 1
 osd.label.text.color: #edf5f5
 osd.window-switcher.style-classic.width: 50%
-osd.window-switcher.style-classic.item.active.border.color: #20d6d2
+osd.window-switcher.style-classic.item.active.border.color: #ff9418
 osd.window-switcher.style-classic.item.active.bg.color: #123e40
-osd.window-switcher.preview.border.color: #20d6d2
+osd.window-switcher.preview.border.color: #ff9418
 
-snapping.overlay.region.border.color: #20d6d2
-snapping.overlay.edge.border.color: #20d6d2
+snapping.overlay.region.border.color: #ff9418
+snapping.overlay.edge.border.color: #ff9418

@@ -21,7 +21,7 @@ Item {
         verticalAlignment: Text.AlignVCenter
         horizontalAlignment: cell.align
         text: cell.label + (cell.sortKey === cell.key && cell.key.length > 0 ? (cell.ascending ? "  ▲" : "  ▼") : "")
-        color: cell.sortKey === cell.key && cell.key.length > 0 ? Theme.cyanBright : Theme.textSecondary
+        color: cell.sortKey === cell.key && cell.key.length > 0 ? Theme.accentBright : Theme.textSecondary
         font.family: Theme.fontFamily
         font.pixelSize: Theme.fontCaption
         font.weight: Font.Medium

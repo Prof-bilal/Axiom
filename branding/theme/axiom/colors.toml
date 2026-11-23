@@ -3,8 +3,8 @@
 # (compositor harness borders), iso/phase3/airootfs/etc/xdg/foot/foot.ini (terminal).
 # Rules and rationale: docs/DESKTOP_DESIGN.md.
 #
-# Budget: ~80% neutral graphite, ~15% cyan, ~5% orange.
-# Cyan = focus / selected / active. Orange = urgent / destructive / attention.
+# Budget: ~80% neutral graphite, ~15% orange, ~5% red.
+# Orange = focus / selected / active. Red = urgent / destructive / error.
 
 mode = "dark"
 
@@ -19,21 +19,21 @@ text_primary = "#EDF5F5"
 text_secondary = "#8EA2A5"
 text_disabled = "#4E5E62"
 
-[cyan]
-primary = "#20D6D2"
-bright = "#37F0EA"
-muted = "#126E70"
-
 [orange]
 primary = "#FF9418"
 bright = "#FFB348"
 muted = "#804713"
 
+[danger]
+primary = "#FF5A4F"
+bright = "#FF8A80"
+muted = "#7A2A24"
+
 [translucent]
 panel = "rgba(255, 255, 255, 0.24)"
-panel_border = "rgba(68, 230, 220, 0.10)"
+panel_border = "rgba(255, 148, 24, 0.10)"
 dock = "rgba(255, 255, 255, 0.24)"
-dock_border = "rgba(80, 235, 220, 0.15)"
+dock_border = "rgba(255, 148, 24, 0.15)"
 overlay = "rgba(255, 255, 255, 0.24)"
 terminal = "rgba(10, 13, 15, 0.94)"
 

@@ -114,7 +114,7 @@ PageFrame {
         width: parent.width
         visible: page.message.length > 0
         wrapMode: Text.Wrap
-        color: Theme.orangeBright
+        color: Theme.dangerBright
         font.family: Theme.fontFamily
         font.pixelSize: Theme.fontCaption
         text: page.message

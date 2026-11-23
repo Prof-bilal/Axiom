@@ -117,7 +117,7 @@ Scope {
                     anchors { horizontalCenter: parent.horizontalCenter; bottom: parent.bottom; bottomMargin: 56 }
                     width: 240; height: 40; radius: 20
                     color: Theme.light ? "#F4F6F7" : "#0A1215"
-                    border.color: Theme.cyan
+                    border.color: Theme.accent
                     border.width: 1
 
                     TextInput {
@@ -137,7 +137,7 @@ Scope {
                     Rectangle {
                         anchors { right: parent.right; rightMargin: 4; verticalCenter: parent.verticalCenter }
                         width: 32; height: 32; radius: 16
-                        color: arrowArea.containsMouse ? Theme.cyanBright : Theme.cyan
+                        color: arrowArea.containsMouse ? Theme.accentBright : Theme.accent
                         AxiomIcon { anchors.centerIn: parent; width: 16; height: 16; name: "arrow-right"; color: "#06161A" }
                         MouseArea { id: arrowArea; anchors.fill: parent; hoverEnabled: true
                                     cursorShape: Qt.PointingHandCursor; onClicked: root.attempt(input) }
@@ -147,7 +147,7 @@ Scope {
                 Text {
                     anchors { horizontalCenter: parent.horizontalCenter; bottom: parent.bottom; bottomMargin: 22 }
                     text: root.message
-                    color: Theme.orangeBright
+                    color: Theme.dangerBright
                     font.family: Theme.fontFamily
                     font.pixelSize: Theme.fontBody
                 }

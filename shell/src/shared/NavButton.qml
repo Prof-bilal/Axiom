@@ -40,13 +40,13 @@ Item {
             height: 15
             name: nav.icon
             strokeWidth: 1.7
-            color: nav.selected ? Theme.cyanBright : Theme.textPrimary
+            color: nav.selected ? Theme.accentBright : Theme.textPrimary
         }
 
         Text {
             anchors.verticalCenter: parent.verticalCenter
             text: nav.text
-            color: nav.selected ? Theme.cyanBright : Theme.textPrimary
+            color: nav.selected ? Theme.accentBright : Theme.textPrimary
             font.family: Theme.fontFamily
             font.pixelSize: Theme.fontBody
             font.weight: Font.Medium

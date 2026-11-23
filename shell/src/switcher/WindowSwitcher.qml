@@ -133,7 +133,7 @@ PanelWindow {
                         radius: 18
                         color: tile.selected ? Theme.stateSelected : "transparent"
                         border.width: tile.selected ? 2 : 0
-                        border.color: Theme.cyan
+                        border.color: Theme.accent
                     }
 
                     AppIcon {

@@ -68,7 +68,7 @@ Flickable {
                     width: t.implicitWidth
                     height: 28
                     Text { id: t; text: modelData; color: parent.on ? Theme.textPrimary : Theme.textSecondary; font.family: S.font; font.pixelSize: 13; font.weight: parent.on ? Font.Medium : Font.Normal }
-                    Rectangle { visible: parent.on; anchors.bottom: parent.bottom; width: parent.width; height: 2; color: Theme.orange }
+                    Rectangle { visible: parent.on; anchors.bottom: parent.bottom; width: parent.width; height: 2; color: Theme.accent }
                     MouseArea { anchors.fill: parent; cursorShape: Qt.PointingHandCursor; onClicked: page.tab = modelData }
                 }
             }

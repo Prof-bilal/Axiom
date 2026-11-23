@@ -87,7 +87,7 @@ Item {
                             radius: 5
                             // Full-width accent on hover, like the macOS selection.
                             color: hit.containsMouse && modelData.enabled !== false
-                                   ? (modelData.destructive ? Theme.orange : Theme.cyan) : "transparent"
+                                   ? (modelData.destructive ? Theme.danger : Theme.accent) : "transparent"
                             Behavior on color { ColorAnimation { duration: 90 } }
 
                             readonly property bool lit: hit.containsMouse && modelData.enabled !== false
@@ -100,9 +100,9 @@ Item {
                                 anchors.verticalCenter: parent.verticalCenter
                                 text: modelData.text || ""
                                 elide: Text.ElideRight
-                                color: row.lit ? "#06181A"
+                                color: row.lit ? "#1A0E00"
                                      : modelData.enabled === false ? Theme.menuTextDisabled
-                                     : modelData.destructive ? Theme.orangeBright
+                                     : modelData.destructive ? Theme.dangerBright
                                      : Theme.menuText
                                 font.family: Theme.fontFamily
                                 font.pixelSize: Theme.fontBody
@@ -115,7 +115,7 @@ Item {
                                 anchors.rightMargin: 10
                                 anchors.verticalCenter: parent.verticalCenter
                                 text: modelData.submenu ? "\u203A" : (modelData.shortcut || "")
-                                color: row.lit ? "#06181A" : Theme.menuTextDisabled
+                                color: row.lit ? "#1A0E00" : Theme.menuTextDisabled
                                 font.family: Theme.fontFamily
                                 font.pixelSize: modelData.submenu ? Theme.fontBody + 2 : Theme.fontCaption
                             }
@@ -175,7 +175,7 @@ Item {
                     height: modelData.separator ? 9 : 24
                     radius: modelData.separator ? 0 : 5
                     color: !modelData.separator && subHit.containsMouse && modelData.enabled !== false
-                           ? (modelData.destructive ? Theme.orange : Theme.cyan) : "transparent"
+                           ? (modelData.destructive ? Theme.danger : Theme.accent) : "transparent"
 
                     Rectangle {
                         visible: modelData.separator === true
@@ -193,7 +193,7 @@ Item {
                         anchors.leftMargin: 12
                         anchors.verticalCenter: parent.verticalCenter
                         text: modelData.text || ""
-                        color: subHit.containsMouse && modelData.enabled !== false ? "#06181A"
+                        color: subHit.containsMouse && modelData.enabled !== false ? "#1A0E00"
                              : modelData.enabled === false ? Theme.menuTextDisabled : Theme.menuText
                         font.family: Theme.fontFamily
                         font.pixelSize: Theme.fontBody

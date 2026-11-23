@@ -16,15 +16,15 @@ Item {
 
     readonly property bool isFolder: entry ? entry.isDir === true : false
     readonly property string kind: entry ? Files.category(entry) : "file"
-    // Amber or cyan folders, like the reference.
+    // Amber or orange folders.
     readonly property color folderColor: {
         var n = entry ? entry.name : ""
         var h = 0
         for (var i = 0; i < n.length; i++) h = (h * 31 + n.charCodeAt(i)) % 7
-        return h % 2 === 0 ? "#F5B73B" : "#4FD6D6"
+        return h % 2 === 0 ? "#F5B73B" : "#FF8A3D"
     }
     readonly property color markColor: kind === "code" ? "#FFB348"
-        : kind === "image" ? "#4FD6D6" : kind === "document" ? "#EF5350" : "#8EA2A5"
+        : kind === "image" ? "#FF8A3D" : kind === "document" ? "#EF5350" : "#8EA2A5"
 
     onFolderColorChanged: canvas.requestPaint()
     onKindChanged: canvas.requestPaint()

@@ -8,7 +8,7 @@ Item {
 
     property real value: 0
     property bool enabled: true
-    property color accent: Theme.cyan
+    property color accent: Theme.accent
     property string accessibleName: ""
     signal moved(int percent)
 

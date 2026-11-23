@@ -21,7 +21,7 @@ hl.config({
         gaps_out = 10,
         border_size = 1,
         col = {
-            active_border = "rgba(37f0eab3)",
+            active_border = "rgba(ffb348b3)",
             inactive_border = "rgba(2a3a40ff)",
         },
         resize_on_border = true,
@@ -57,15 +57,20 @@ hl.curve("easeInOutCubic", { type = "bezier", points = { { 0.65, 0.05 }, { 0.36,
 hl.curve("linear", { type = "bezier", points = { { 0, 0 }, { 1, 1 } } })
 hl.curve("almostLinear", { type = "bezier", points = { { 0.5, 0.5 }, { 0.75, 1.0 } } })
 hl.curve("quick", { type = "bezier", points = { { 0.15, 0 }, { 0.1, 1 } } })
+-- macOS-like feel: a window pops open with a small overshoot, closes with a quick shrink, workspaces glide
+-- sideways on one smooth ease, and a "minimized" window slides down out of sight.
+hl.curve("macOpen", { type = "bezier", points = { { 0.2, 0.9 }, { 0.25, 1.08 } } })
+hl.curve("macGlide", { type = "bezier", points = { { 0.32, 0.72 }, { 0, 1 } } })
 hl.animation({ leaf = "global", enabled = true, speed = 10, bezier = "default" })
 hl.animation({ leaf = "border", enabled = true, speed = 5.39, bezier = "easeOutQuint" })
-hl.animation({ leaf = "windows", enabled = true, speed = 3.79, bezier = "easeOutQuint" })
-hl.animation({ leaf = "windowsIn", enabled = true, speed = 4.1, bezier = "easeOutQuint", style = "popin 87%" })
-hl.animation({ leaf = "windowsOut", enabled = true, speed = 1.49, bezier = "linear", style = "popin 87%" })
+hl.animation({ leaf = "windows", enabled = true, speed = 4, bezier = "macOpen" })
+hl.animation({ leaf = "windowsIn", enabled = true, speed = 4.6, bezier = "macOpen", style = "popin 82%" })
+hl.animation({ leaf = "windowsOut", enabled = true, speed = 2.6, bezier = "easeOutQuint", style = "popin 85%" })
 hl.animation({ leaf = "fade", enabled = true, speed = 3.03, bezier = "quick" })
-hl.animation({ leaf = "fadeIn", enabled = true, speed = 1.73, bezier = "almostLinear" })
-hl.animation({ leaf = "fadeOut", enabled = true, speed = 1.46, bezier = "almostLinear" })
-hl.animation({ leaf = "workspaces", enabled = true, speed = 3, bezier = "easeOutQuint", style = "slide" })
+hl.animation({ leaf = "fadeIn", enabled = true, speed = 2.2, bezier = "almostLinear" })
+hl.animation({ leaf = "fadeOut", enabled = true, speed = 1.9, bezier = "almostLinear" })
+hl.animation({ leaf = "workspaces", enabled = true, speed = 4.2, bezier = "macGlide", style = "slide" })
+hl.animation({ leaf = "specialWorkspace", enabled = true, speed = 4.2, bezier = "macGlide", style = "slidefadevert 30%" })
 
 -- Axiom is a floating desktop: every window floats, as under labwc.
 hl.window_rule({ name = "axiom-float", match = { class = ".*" }, float = true })

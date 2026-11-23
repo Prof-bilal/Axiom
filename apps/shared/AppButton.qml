@@ -3,7 +3,7 @@ import qs.src.shared
 
 // Button for Axiom apps and dialogs. Solid, flat, no transparency. At rest a
 // lighter graphite with light text; on hover it goes dark, as the menus do.
-// `primary` is the solid cyan action (dark text), `destructive` the solid orange
+// `primary` is the solid orange action (dark text), `destructive` the solid red
 // one (dark text). Orange stays reserved for destructive actions.
 Rectangle {
     id: btn
@@ -15,8 +15,8 @@ Rectangle {
 
     signal clicked()
 
-    readonly property color fillRest: destructive ? Theme.orange : primary ? Theme.cyan : "#1E2D33"
-    readonly property color fillHover: destructive ? "#7A4208" : primary ? "#0E4A4D" : Theme.menuHover
+    readonly property color fillRest: destructive ? Theme.danger : primary ? Theme.accent : "#33353A"
+    readonly property color fillHover: destructive ? Theme.dangerMuted : primary ? Theme.accentMuted : Theme.menuHover
 
     implicitWidth: label.implicitWidth + 28
     implicitHeight: 34
@@ -35,8 +35,8 @@ Rectangle {
         id: label
         anchors.centerIn: parent
         text: btn.text
-        color: btn.destructive ? (mouse.containsMouse ? Theme.orangeBright : Theme.background)
-             : btn.primary ? (mouse.containsMouse ? Theme.cyanBright : Theme.background)
+        color: btn.destructive ? (mouse.containsMouse ? Theme.dangerBright : Theme.background)
+             : btn.primary ? (mouse.containsMouse ? Theme.accentBright : Theme.background)
              : Theme.menuText
         font.family: Theme.fontFamily
         font.pixelSize: Theme.fontBody

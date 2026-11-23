@@ -75,7 +75,7 @@ AppWindow {
                     width: 260; height: 30; radius: 15
                     color: Theme.cardFill
                     border.width: 1
-                    border.color: search.activeFocus ? Theme.orange : Theme.border
+                    border.color: search.activeFocus ? Theme.accent : Theme.border
                     Text { anchors.left: parent.left; anchors.leftMargin: 12; anchors.verticalCenter: parent.verticalCenter; text: "⌕"; color: Theme.textSecondary; font.pixelSize: 14 }
                     TextInput {
                         id: search
@@ -114,7 +114,7 @@ AppWindow {
                     anchors.leftMargin: 16
                     anchors.verticalCenter: parent.verticalCenter
                     spacing: 8
-                    Rectangle { width: 8; height: 8; radius: 4; anchors.verticalCenter: parent.verticalCenter; color: backend.busy ? Theme.orange : S.ok }
+                    Rectangle { width: 8; height: 8; radius: 4; anchors.verticalCenter: parent.verticalCenter; color: backend.busy ? Theme.accent : S.ok }
                     Text { text: backend.status; color: Theme.textSecondary; font.family: S.font; font.pixelSize: 11 }
                 }
                 Text { anchors.right: parent.right; anchors.rightMargin: 16; anchors.verticalCenter: parent.verticalCenter; text: "Axiom Hub v1.0.0"; color: Theme.textSecondary; font.family: S.font; font.pixelSize: 11 }
