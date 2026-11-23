@@ -5,7 +5,7 @@ privacy, secure system agents, recovery and a desktop experience designed from
 first principles.
 
 **Status: Phases 0 to 6 are complete (Phase 6, the installable system, on
-2026-11-08). Phase 7, package management and updates, is next.** Axiom is
+2026-11-08). Phase 7, package management and updates, is in testing.** Axiom is
 pre-alpha: it is verified in QEMU only, there is no public release, and the AI
 layer is designed but not built. Nothing here is a hardware or release promise.
 

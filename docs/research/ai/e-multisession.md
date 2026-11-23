@@ -191,7 +191,7 @@ Also worth one email: ask Shikigami's author whether an Axiom-provided downloade
 Did not run Shikigami or any agent; its RAM use, telemetry and actual process isolation are unknown (page says nothing). Codex and opencode sandbox/ACP specifics and licenses are from memory or snippets. Conductor/Nimbalyst internals unchecked. Kernel Landlock ABI and userns settings on Axiom's ISO not checked. Per-agent hook mechanisms for needs-input (Codex, Vibe) unverified. Cost incident figures are unverified vendor claims. No QML terminal widget claim is from knowledge of Qt/Quickshell, to be confirmed.
 
 ## Sources
-- Shikigami: https://shikigami.dev/ ; local dir listing /home/abullah/Applications/Shikigami-0.53.0 (names and sizes only)
+- Shikigami: https://shikigami.dev/ ; local dir listing ~/Applications/Shikigami-0.53.0 (names and sizes only)
 - Claude Code agent teams: https://code.claude.com/docs/en/agent-teams
 - Claude Code sandboxing: https://code.claude.com/docs/en/sandboxing
 - sandbox-runtime (Apache-2.0): https://github.com/anthropics/sandbox-runtime
@@ -206,4 +206,4 @@ Did not run Shikigami or any agent; its RAM use, telemetry and actual process is
 - Sandboxing: https://github.com/containers/bubblewrap ; https://advancedweb.hu/shorts/hardening-with-firejail-landlock-and-bubblewrap/ ; https://github.com/zouuup/landrun
 - Injection: https://arxiv.org/pdf/2603.12277 ; https://nvd.nist.gov/vuln/detail/CVE-2026-75130
 - Cost: https://dev.to/maximsaplin/the-ai-bill-grows-in-the-agent-loop-87n ; https://futureagi.com/blog/loop-engineering/ai-agent-loop-cost-control/ ; https://waxell.ai/blog/ai-agent-token-budget-enforcement (figures unverified)
-- Repo/local: Axiom docs/ai/AGENT_SYSTEM.md, docs/SUBAGENTS.md, docs/AGENT_WORKFLOW.md, docs/decisions/017 and 022; scratchpad ai-d1-ai-tooling.md, ai-d2-security.md, ai-d3-other-repos.md; ContextGit /home/abullah/Projects/ContextGit (contextgit/mcp/server.py, mcp/tools.py, pyproject.toml, desktop/src/shell/terminal/TerminalPane.tsx)
+- Repo/local: Axiom docs/ai/AGENT_SYSTEM.md, docs/SUBAGENTS.md, docs/AGENT_WORKFLOW.md, docs/decisions/017 and 022; scratchpad ai-d1-ai-tooling.md, ai-d2-security.md, ai-d3-other-repos.md; ContextGit ~/Projects/ContextGit (contextgit/mcp/server.py, mcp/tools.py, pyproject.toml, desktop/src/shell/terminal/TerminalPane.tsx)

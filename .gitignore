@@ -49,3 +49,11 @@ iso/phase3-hyprtest/
 iso/qa-*/
 iso/qa-*.log
 iso/qemu-*.log
+
+# Local AI-tool configuration and agent state: never committed.
+.opencode/
+.commandcode/
+.agents/
+.contextgit/
+.serena/
+.claude/
