@@ -94,9 +94,24 @@ test("a failed update deletes the snapshot it just took", () => {
   assert.ok(r.stdout.includes("snapper -c root delete 42"));
 });
 
+const fakeSync = path.join(sdir, "boot-sync");
+fs.writeFileSync(fakeSync, '#!/bin/sh\necho "boot-sync $*"\n', { mode: 0o755 });
+const rrun = (...args) => spawnSync("sh", [helper, ...args], { encoding: "utf8", env: { PATH: `${sdir}:/usr/bin:/bin`, AXIOM_PKGD_VIA: "wrapper", AXIOM_BOOT_SYNC: fakeSync } });
+
+test("rollback syncs the boot files after snapper succeeds", () => {
+  assert.equal(rrun("rollback", "12").stdout.trim(), "snapper -c root --ambit classic rollback 12\nboot-sync 12");
+});
+
+test("a failed boot sync after rollback is reported, not hidden", () => {
+  const bad = path.join(sdir, "boot-sync-bad");
+  fs.writeFileSync(bad, "#!/bin/sh\nexit 1\n", { mode: 0o755 });
+  const r = spawnSync("sh", [helper, "rollback", "12"], { encoding: "utf8", env: { PATH: `${sdir}:/usr/bin:/bin`, AXIOM_PKGD_VIA: "wrapper", AXIOM_BOOT_SYNC: bad } });
+  assert.equal(r.status, 4);
+  assert.match(r.stderr, /do not reboot/);
+});
+
 test("rollback needs a numeric snapshot id", () => {
-  assert.equal(srun("rollback", "12").stdout.trim(), "snapper -c root --ambit classic rollback 12");
-  for (const bad of ["", "1;2", "x", "-1"]) assert.equal(srun("rollback", bad).status, 2, JSON.stringify(bad));
+  for (const bad of ["", "1;2", "x", "-1"]) assert.equal(rrun("rollback", bad).status, 2, JSON.stringify(bad));
 });
 
 test("snapshot descriptions are checked", () => {
@@ -139,4 +154,48 @@ test("install hands the detached signature to pacman and logs the digest", () =>
   const r = spawnSync("sh", [helper, "install", pkg], { encoding: "utf8", env: { PATH: `${idir}:/usr/bin:/bin`, AXIOM_PKGD_TMP: idir } });
   assert.match(r.stdout, /logger -t axiom-pkgd install x\.pkg\.tar\.zst sha256=[0-9a-f]{64} signed=yes/);
   assert.match(r.stdout, /package\.sig/);
+});
+
+// axiom-boot-sync (ADR-036): a restored snapshot's kernels replace the ones on /boot.
+const syncHelper = path.join(here, "../../system/pkgd/axiom-boot-sync");
+function bootFixture(kernels) {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), "bootsync-"));
+  const snaps = path.join(root, "snaps"), boot = path.join(root, "boot"), bin = path.join(root, "bin");
+  fs.mkdirSync(boot); fs.mkdirSync(bin);
+  fs.writeFileSync(path.join(bin, "id"), "#!/bin/sh\necho 0\n", { mode: 0o755 });
+  // Fake mkinitcpio writes "<ver>" into the image so the test can see which modules it was built for.
+  fs.writeFileSync(path.join(bin, "mkinitcpio"), '#!/bin/sh\nwhile [ $# -gt 0 ]; do case "$1" in -k) k=$2; shift;; -g) g=$2; shift;; esac; shift; done\n[ "${FAIL_INITRAMFS:-}" = 1 ] && exit 1\necho "initramfs-for-$k" > "$g"\n', { mode: 0o755 });
+  for (const [ver, base] of kernels) {
+    const m = path.join(snaps, "7", "snapshot", "usr/lib/modules", ver);
+    fs.mkdirSync(m, { recursive: true });
+    fs.writeFileSync(path.join(m, "vmlinuz"), `kernel-${ver}`);
+    fs.writeFileSync(path.join(m, "pkgbase"), base + "\n");
+  }
+  fs.writeFileSync(path.join(boot, "vmlinuz-linux"), "kernel-NEWER");
+  const run = (n, extra = {}) => spawnSync("sh", [syncHelper, n], { encoding: "utf8", env: { PATH: `${bin}:/usr/bin:/bin`, AXIOM_BOOT_SNAPSHOTS: snaps, AXIOM_BOOT_DIR: boot, ...extra } });
+  return { boot, run };
+}
+
+test("boot sync puts the snapshot's kernels and matching initramfs on /boot", () => {
+  const { boot, run } = bootFixture([["6.10.1-arch1-1", "linux"], ["6.6.9-1-lts", "linux-lts"]]);
+  const r = run("7");
+  assert.equal(r.status, 0, r.stderr);
+  assert.equal(fs.readFileSync(path.join(boot, "vmlinuz-linux"), "utf8"), "kernel-6.10.1-arch1-1");
+  assert.equal(fs.readFileSync(path.join(boot, "initramfs-linux.img"), "utf8").trim(), "initramfs-for-6.10.1-arch1-1");
+  assert.equal(fs.readFileSync(path.join(boot, "vmlinuz-linux-lts"), "utf8"), "kernel-6.6.9-1-lts");
+  assert.deepEqual(fs.readdirSync(boot).filter((f) => f.endsWith(".axiom-new")), []);
+});
+
+test("boot sync leaves the old boot files alone if the initramfs build fails", () => {
+  const { boot, run } = bootFixture([["6.10.1-arch1-1", "linux"]]);
+  const r = run("7", { FAIL_INITRAMFS: "1" });
+  assert.equal(r.status, 1);
+  assert.equal(fs.readFileSync(path.join(boot, "vmlinuz-linux"), "utf8"), "kernel-NEWER");
+  assert.deepEqual(fs.readdirSync(boot).filter((f) => f.endsWith(".axiom-new")), []);
+});
+
+test("boot sync rejects bad snapshot numbers and snapshots without kernels", () => {
+  const { run } = bootFixture([["6.10.1-arch1-1", "linux"]]);
+  for (const bad of ["", "1;2", "x"]) assert.equal(run(bad).status, 2, JSON.stringify(bad));
+  assert.equal(run("99").status, 3);
 });

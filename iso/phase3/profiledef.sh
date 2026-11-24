@@ -30,6 +30,7 @@ file_permissions=(
   ["/usr/local/bin/axiom-pkgd"]="0:0:755"
   ["/usr/local/bin/axiom-pkg-update"]="0:0:755"
   ["/usr/local/bin/axiom-pkg-rollback"]="0:0:755"
+  ["/usr/local/bin/axiom-boot-sync"]="0:0:755"
   ["/usr/local/bin/axiom-install-run"]="0:0:755"
   ["/usr/local/lib/axiom-installer"]="0:0:755"
   ["/usr/local/lib/axiom-installer/axiom-installer"]="0:0:755"

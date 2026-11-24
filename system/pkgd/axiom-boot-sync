@@ -1,0 +1,34 @@
+#!/bin/sh
+# Make the boot partition match a snapshot: copy its kernels to /boot and rebuild each initramfs
+# against that snapshot's modules (ADR-036, audit H5).
+#
+# /boot is the FAT ESP and is not part of a btrfs snapshot, but the kernel image and modules of
+# every installed kernel live under /usr/lib/modules/<ver>/ in the root, so they are. After a
+# rollback the restored root has the old modules while /boot still holds the newer kernel; the
+# kernel then cannot load modules. Called as root by `axiom-pkgd rollback` after snapper succeeds.
+#   axiom-boot-sync <snapshot number>
+set -u
+[ "$(id -u)" -eq 0 ] || { echo "axiom-boot-sync: must run as root" >&2; exit 1; }
+n=${1:-}
+case "$n" in ""|*[!0-9]*) echo "axiom-boot-sync: invalid snapshot number" >&2; exit 2 ;; esac
+# AXIOM_BOOT_* only change the paths for tests: pkexec clears the caller's environment.
+snaproot=${AXIOM_BOOT_SNAPSHOTS:-/.snapshots}/$n/snapshot
+boot=${AXIOM_BOOT_DIR:-/boot}
+mods=$snaproot/usr/lib/modules
+[ -d "$mods" ] || { echo "axiom-boot-sync: snapshot $n has no kernel modules" >&2; exit 3; }
+synced=0
+for d in "$mods"/*/; do
+  ver=$(basename "$d")
+  [ -f "$d/vmlinuz" ] && [ -f "$d/pkgbase" ] || continue
+  base=$(cat "$d/pkgbase")
+  case "$base" in ""|*[!a-z0-9_-]*) echo "axiom-boot-sync: unexpected kernel name" >&2; exit 3 ;; esac
+  # Build next to the target, then rename, so a failure never leaves a truncated kernel or initramfs.
+  install -m 0644 "$d/vmlinuz" "$boot/vmlinuz-$base.axiom-new" || exit 1
+  mkinitcpio -r "$snaproot" -k "$ver" -g "$boot/initramfs-$base.img.axiom-new" >/dev/null || { rm -f "$boot/vmlinuz-$base.axiom-new" "$boot/initramfs-$base.img.axiom-new"; echo "axiom-boot-sync: initramfs for $ver failed" >&2; exit 1; }
+  mv -f "$boot/vmlinuz-$base.axiom-new" "$boot/vmlinuz-$base"
+  mv -f "$boot/initramfs-$base.img.axiom-new" "$boot/initramfs-$base.img"
+  synced=$((synced + 1))
+done
+[ "$synced" -gt 0 ] || { echo "axiom-boot-sync: no kernel found in snapshot $n" >&2; exit 3; }
+logger -t axiom-boot-sync "boot files synced from snapshot $n ($synced kernel(s))" 2>/dev/null || true
+exit 0
