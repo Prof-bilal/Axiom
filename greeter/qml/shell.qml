@@ -226,7 +226,7 @@ ShellRoot {
                 border.width: 1
                 border.color: root.border
 
-                // Avatar: the penguin in a round frame, with a gentle bob.
+                // Avatar: the penguin in a round frame, fixed in place (no bobbing).
                 Rectangle {
                     id: avatar
                     anchors.horizontalCenter: parent.horizontalCenter
@@ -242,11 +242,6 @@ ShellRoot {
                         source: Qt.resolvedUrl("assets/axiom-penguin.png")
                         fillMode: Image.PreserveAspectFit
                         smooth: true
-                    }
-                    SequentialAnimation on y {
-                        loops: Animation.Infinite
-                        NumberAnimation { to: 26; duration: 1000; easing.type: Easing.InOutSine }
-                        NumberAnimation { to: 34; duration: 1000; easing.type: Easing.InOutSine }
                     }
                 }
 
