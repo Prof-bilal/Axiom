@@ -30,6 +30,15 @@ COMMON_PW = {"password", "password1", "12345678", "123456789", "1234567890", "qw
 ESP_MIB = 1024
 ENV = {"PATH": "/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin", "LC_ALL": "C.UTF-8"}
 
+
+def write_atomic(path, text):
+    """Write via a temp file and rename, so a failure never leaves a half-written boot or system file."""
+    tmp = path + ".axiom-tmp"
+    with open(tmp, "w") as fh:
+        fh.write(text)
+    os.chmod(tmp, os.stat(path).st_mode & 0o777 if os.path.exists(path) else 0o644)
+    os.replace(tmp, path)
+
 # Desktop set mirrors the Phase 3/5 package list (iso/phase3/packages.x86_64).
 BASE_PACKAGES = [
     "base-devel", "git", "nano", "vim", "openssh", "sudo", "zsh", "btrfs-progs", "snapper", "cryptsetup",
@@ -41,6 +50,11 @@ BASE_PACKAGES = [
     "libnotify", "xdg-utils", "glib2", "bluez", "bluez-utils", "power-profiles-daemon", "upower",
     "wlr-randr", "brightnessctl", "xkeyboard-config", "greetd", "python", "linux-firmware",
     "qemu-guest-agent", "mkinitcpio", "intel-ucode", "amd-ucode", "kbd", "plymouth",
+    # Runtime deps of shipped apps (audit H1): Capture, AppImage/Flatpak install, Hub podman items,
+    # polkit agent fallback, removable-media filesystems, and screen sharing on Hyprland.
+    "grim", "wf-recorder", "wl-clipboard", "minisign", "bubblewrap", "flatpak", "distrobox", "podman",
+    "polkit-gnome", "xdg-desktop-portal-hyprland", "rsync", "less", "man-db", "dosfstools", "exfatprogs",
+    "usbutils",
 ]
 SERVICES = ["NetworkManager", "bluetooth", "power-profiles-daemon", "systemd-timesyncd", "qemu-guest-agent"]
 
@@ -57,6 +71,9 @@ snapper -c root create-config /
 btrfs subvolume delete /.snapshots
 mkdir /.snapshots
 mount -a
+cp -a /etc/fstab /etc/fstab.axiom-bak
+mkdir -p /etc/axiom/boot-entries-bak
+cp -a /boot/loader/entries/. /etc/axiom/boot-entries-bak/
 # snapper rollback needs the default subvolume to be the root subvolume (@), or it cannot find the target.
 btrfs subvolume set-default "$(btrfs inspect-internal rootid /)" /
 # Root must mount the default subvolume, not a pinned name, or a rollback never takes effect on reboot.
@@ -369,7 +386,7 @@ def boot_splash(target=TARGET):
     keep = [l for l in (open(loader).read().splitlines() if os.path.exists(loader) else [])
             if l.split()[:1] not in (["timeout"], ["editor"])]
     os.makedirs(os.path.dirname(loader), exist_ok=True)
-    open(loader, "w").write("\n".join(keep + ["timeout 0", "editor no"]) + "\n")
+    write_atomic(loader, "\n".join(keep + ["timeout 0", "editor no"]) + "\n")
     entries = os.path.join(target, "boot/loader/entries")
     if os.path.isdir(entries):
         for name in os.listdir(entries):
@@ -377,13 +394,13 @@ def boot_splash(target=TARGET):
             lines = open(path).read().splitlines()
             out = [(l.rstrip() + " quiet splash") if l.startswith("options") and "splash" not in l else l
                    for l in lines]
-            open(path, "w").write("\n".join(out) + "\n")
+            write_atomic(path, "\n".join(out) + "\n")
     mkinit = os.path.join(target, "etc/mkinitcpio.conf")
     if os.path.exists(mkinit):
         text = open(mkinit).read()
         if "plymouth" not in text:  # shortcut: naive HOOKS edit; upgrade to a parsed edit if the default layout changes
             text = re.sub(r"^HOOKS=\((.*?)\bkms\b", r"HOOKS=(\1kms plymouth", text, count=1, flags=re.M)
-            open(mkinit, "w").write(text)
+            write_atomic(mkinit, text)
     try:
         subprocess.run(["arch-chroot", target, "plymouth-set-default-theme", "-R", "axiom"],
                        check=True, env=ENV, capture_output=True)
@@ -405,7 +422,7 @@ def propagate_console(target=TARGET, cmdline="/proc/cmdline"):
         lines = open(path).read().splitlines()
         lines = [(l.rstrip() + " " + " ".join(o for o in opts if o not in l)).rstrip() if l.startswith("options") else l
                  for l in lines]
-        open(path, "w").write("\n".join(lines) + "\n")
+        write_atomic(path, "\n".join(lines) + "\n")
 
 
 def post_install(f, target=TARGET, started=None):
@@ -447,7 +464,7 @@ def post_install(f, target=TARGET, started=None):
     # already wrote FONT=default8x16, so replace the line rather than only adding one.
     vc = os.path.join(target, "etc/vconsole.conf")
     lines = [l for l in (open(vc).read().splitlines() if os.path.exists(vc) else []) if not l.startswith("FONT=")]
-    open(vc, "w").write("\n".join(lines + ["FONT=latarcyrheb-sun32"]) + "\n")
+    write_atomic(vc, "\n".join(lines + ["FONT=latarcyrheb-sun32"]) + "\n")
     # The login screen runs as an unprivileged user and cannot change the console font itself, and the
     # framebuffer console resets the font when it takes over at boot: set it as root, right after greetd has
     # started (the greeter redraws when the console resizes).

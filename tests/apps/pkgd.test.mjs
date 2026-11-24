@@ -12,11 +12,20 @@ const helper = path.join(here, "../../system/pkgd/axiom-pkgd");
 const dir = fs.mkdtempSync(path.join(os.tmpdir(), "pkgd-"));
 fs.writeFileSync(path.join(dir, "id"), "#!/bin/sh\necho 0\n", { mode: 0o755 });
 fs.writeFileSync(path.join(dir, "pacman"), '#!/bin/sh\necho "pacman $*"\n', { mode: 0o755 });
-const run = (...args) => spawnSync("sh", [helper, ...args], { encoding: "utf8", env: { PATH: `${dir}:/usr/bin:/bin` } });
+const live = fs.mkdtempSync(path.join(os.tmpdir(), "pkgd-live-"));
+const run = (...args) => spawnSync("sh", [helper, ...args], { encoding: "utf8", env: { PATH: `${dir}:/usr/bin:/bin`, AXIOM_PKGD_LIVE_DIR: live } });
 
-test("sync and remove reach pacman with fixed flags", () => {
+test("on the live image sync and remove reach pacman with fixed flags", () => {
   assert.equal(run("sync", "neovim").stdout.trim(), "pacman -Sy --noconfirm --needed -- neovim");
   assert.equal(run("remove", "neovim").stdout.trim(), "pacman -Rns --noconfirm -- neovim");
+});
+
+test("core packages cannot be removed", () => {
+  for (const core of ["linux", "pacman", "polkit", "systemd", "axiom-pkgd"]) {
+    const r = run("remove", core);
+    assert.equal(r.status, 2, core);
+    assert.ok(!r.stdout.includes("pacman"), core);
+  }
 });
 
 test("bad package names are refused before pacman runs", () => {
@@ -44,15 +53,45 @@ test("a non-root caller is refused", () => {
 const sdir = fs.mkdtempSync(path.join(os.tmpdir(), "pkgd-snap-"));
 fs.writeFileSync(path.join(sdir, "id"), "#!/bin/sh\necho 0\n", { mode: 0o755 });
 fs.writeFileSync(path.join(sdir, "pacman"), '#!/bin/sh\necho "pacman $*"\n', { mode: 0o755 });
-fs.writeFileSync(path.join(sdir, "snapper"), '#!/bin/sh\necho "snapper $*"\n', { mode: 0o755 });
+// Echo to stderr too: `update` captures stdout to read the snapshot number.
+fs.writeFileSync(path.join(sdir, "snapper"), '#!/bin/sh\necho "snapper $*"\necho "snapper $*" >&2\n', { mode: 0o755 });
 const srun = (...args) => spawnSync("sh", [helper, ...args], { encoding: "utf8", env: { PATH: `${sdir}:/usr/bin:/bin` } });
 
 test("update takes a snapshot before the full upgrade", () => {
   const r = srun("update");
   assert.equal(r.status, 0);
+  assert.equal(r.stderr.trim().split("\n")[0], "snapper -c root create --type single --description before update --print-number");
+  assert.equal(r.stdout.trim(), "pacman -Syu --noconfirm");
+});
+
+test("installed sync snapshots first and never does a partial upgrade", () => {
+  const r = spawnSync("sh", [helper, "sync", "neovim"], { encoding: "utf8", env: { PATH: `${sdir}:/usr/bin:/bin`, AXIOM_PKGD_LIVE_DIR: "/nonexistent" } });
+  assert.equal(r.status, 0);
   const lines = r.stdout.trim().split("\n");
-  assert.equal(lines[0], "snapper -c root create --type single --description before update");
-  assert.equal(lines[1], "pacman -Syu --noconfirm");
+  assert.equal(lines[0], "snapper -c root create --type single --description before sync");
+  assert.equal(lines[1], "pacman -Syu --noconfirm --needed -- neovim");
+});
+
+test("installed remove snapshots first and refuses without snapper", () => {
+  const env = { PATH: `${sdir}:/usr/bin:/bin`, AXIOM_PKGD_LIVE_DIR: "/nonexistent" };
+  const r = spawnSync("sh", [helper, "remove", "neovim"], { encoding: "utf8", env });
+  assert.equal(r.stdout.trim().split("\n")[0], "snapper -c root create --type single --description before remove");
+  const nodir = fs.mkdtempSync(path.join(os.tmpdir(), "pkgd-nosnap2-"));
+  fs.writeFileSync(path.join(nodir, "id"), "#!/bin/sh\necho 0\n", { mode: 0o755 });
+  fs.writeFileSync(path.join(nodir, "pacman"), '#!/bin/sh\necho "pacman $*"\n', { mode: 0o755 });
+  const n = spawnSync("/bin/sh", [helper, "remove", "neovim"], { encoding: "utf8", env: { PATH: nodir, AXIOM_PKGD_LIVE_DIR: "/nonexistent" } });
+  assert.equal(n.status, 3);
+  assert.ok(!n.stdout.includes("pacman"));
+});
+
+test("a failed update deletes the snapshot it just took", () => {
+  const fdir = fs.mkdtempSync(path.join(os.tmpdir(), "pkgd-fail-"));
+  fs.writeFileSync(path.join(fdir, "id"), "#!/bin/sh\necho 0\n", { mode: 0o755 });
+  fs.writeFileSync(path.join(fdir, "pacman"), "#!/bin/sh\nexit 1\n", { mode: 0o755 });
+  fs.writeFileSync(path.join(fdir, "snapper"), '#!/bin/sh\ncase "$*" in *print-number*) echo 42;; *) echo "snapper $*";; esac\n', { mode: 0o755 });
+  const r = spawnSync("sh", [helper, "update"], { encoding: "utf8", env: { PATH: `${fdir}:/usr/bin:/bin` } });
+  assert.equal(r.status, 1);
+  assert.ok(r.stdout.includes("snapper -c root delete 42"));
 });
 
 test("rollback needs a numeric snapshot id", () => {

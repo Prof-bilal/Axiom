@@ -5,6 +5,7 @@
 # cannot be swapped after the check), sync <repo package>, remove <package>,
 # approve <sha256> (admin approval for an unsigned user install, logged),
 # snapshot <description>, update (snapshot then pacman -Syu), rollback <number>, snapshots (ADR-033).
+# sync/remove snapshot first on an installed system; sync never does a partial upgrade (audit H4).
 set -u
 
 [ "$(id -u)" -eq 0 ] || { echo "axiom-pkgd: must run as root" >&2; exit 1; }
@@ -45,9 +46,14 @@ case "$op" in
         ;;
       update)
         # Snapshot first; only then a full upgrade. If the snapshot fails, nothing is upgraded.
-        snapper -c root create --type single --description "before update" || exit 1
+        n=$(snapper -c root create --type single --description "before update" --print-number) || exit 1
         pacman -Syu --noconfirm
-        exit $?
+        rc=$?
+        # A failed update changed nothing worth returning to: drop its snapshot (audit R6).
+        if [ $rc -ne 0 ]; then
+          case "$n" in ""|*[!0-9]*) ;; *) snapper -c root delete "$n" ;; esac
+        fi
+        exit $rc
         ;;
       rollback)
         id=${2:-}
@@ -66,9 +72,26 @@ case "$op" in
     case "$pkg" in
       ""|-*|*[!a-z0-9@._+-]*) echo "axiom-pkgd: invalid package name" >&2; exit 2 ;;
     esac
-    # -Sy refreshes the package lists first (a live image may ship none); no full upgrade (-u).
-    if [ "$op" = sync ]; then exec pacman -Sy --noconfirm --needed -- "$pkg"; fi
-    exec pacman -Rns --noconfirm -- "$pkg"
+    if [ "$op" = remove ]; then
+      # Never remove what the system cannot boot or authorize without (audit S4).
+      case "$pkg" in
+        linux|linux-lts|linux-firmware|base|pacman|systemd|polkit|glibc|btrfs-progs|snapper|axiom|axiom-*)
+          echo "axiom-pkgd: refusing to remove a core package" >&2; exit 2 ;;
+      esac
+    fi
+    live=${AXIOM_PKGD_LIVE_DIR:-/run/archiso}
+    if [ ! -d "$live" ]; then
+      # Installed system: snapshot first so the change can be undone; refuse without snapper.
+      command -v snapper >/dev/null 2>&1 || { echo "axiom-pkgd: snapshots are not available on this system" >&2; exit 3; }
+      snapper -c root create --type single --description "before $op" || exit 1
+    fi
+    if [ "$op" = remove ]; then exec pacman -Rns --noconfirm -- "$pkg"; fi
+    if [ -d "$live" ]; then
+      # Live image only: it ships no package lists and nothing persists, so a bare -Sy is harmless.
+      exec pacman -Sy --noconfirm --needed -- "$pkg"
+    fi
+    # Installed: a database refresh without a full upgrade is an unsupported partial upgrade, so upgrade too.
+    exec pacman -Syu --noconfirm --needed -- "$pkg"
     ;;
   *) echo "axiom-pkgd: unknown operation" >&2; exit 2 ;;
 esac
