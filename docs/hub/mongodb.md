@@ -2,7 +2,7 @@
 
 - Id: `mongodb` · Category: Development · Weight: heavy · Licence (catalog): SSPL
 - Catalog sources: manual `https://wiki.archlinux.org/title/MongoDB`
-- Install verified: yes · Screenshots: 0 of 3 · Logo: yes
+- Install source confirmed: yes · Screenshots: 0 of 3 · Logo: yes
 
 ## Overview
 MongoDB is a document-oriented NoSQL database; the Community Server is for self-hosted deployments on Linux and other platforms. It is for developers who need flexible schemas and document storage.

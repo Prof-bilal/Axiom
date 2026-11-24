@@ -2,7 +2,7 @@
 
 - Id: `plex` · Category: Multimedia · Weight: light · Licence (catalog): Proprietary
 - Catalog sources: manual `https://www.plex.tv/media-server-downloads/`
-- Install verified: no · Screenshots: 0 of 3 · Logo: no
+- Install source confirmed: no · Screenshots: 0 of 3 · Logo: no
 
 ## Overview
 Stream your media library to any device.

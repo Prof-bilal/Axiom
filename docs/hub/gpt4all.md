@@ -2,7 +2,7 @@
 
 - Id: `gpt4all` · Category: Development · Weight: heavy · Licence (catalog): MIT
 - Catalog sources: flatpak `io.gpt4all.gpt4all`, manual `https://gpt4all.io`
-- Install verified: yes · Screenshots: 2 of 3 · Logo: yes
+- Install source confirmed: yes · Screenshots: 2 of 3 · Logo: yes
 
 ## Overview
 GPT4All is a desktop app from Nomic for running local open-weight language models on consumer hardware, with a chat interface and local document support. It is for users who want an offline chat app with no cloud account.

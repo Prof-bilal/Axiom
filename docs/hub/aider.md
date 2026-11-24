@@ -2,7 +2,7 @@
 
 - Id: `aider` · Category: Development · Weight: light · Licence (catalog): Apache-2.0
 - Catalog sources: pip `aider-chat`
-- Install verified: yes · Screenshots: 0 of 3 · Logo: yes
+- Install source confirmed: yes · Screenshots: 0 of 3 · Logo: yes
 
 ## Overview
 Aider is a terminal AI pair-programming tool that works with a local git repository, editing files and creating commits with any supported LLM. It is for developers who want to bring their own API keys and keep changes under git.

@@ -2,7 +2,7 @@
 
 - Id: `helix` · Category: Development · Weight: light · Licence (catalog): MPL-2.0
 - Catalog sources: pacman `helix`
-- Install verified: yes · Screenshots: 0 of 3 · Logo: yes
+- Install source confirmed: yes · Screenshots: 0 of 3 · Logo: yes
 
 ## Overview
 Helix is a modal terminal text editor written in Rust with built-in language server support and tree-sitter syntax handling. It is for developers who want a batteries-included modal editor with no configuration plugin system.

@@ -2,7 +2,7 @@
 
 - Id: `onlyoffice` · Category: Productivity · Weight: medium · Licence (catalog): AGPL-3.0
 - Catalog sources: flatpak `org.onlyoffice.desktopeditors`
-- Install verified: yes · Screenshots: 5 of 3 · Logo: yes
+- Install source confirmed: yes · Screenshots: 5 of 3 · Logo: yes
 
 ## Overview
 ONLYOFFICE Desktop Editors is an offline office suite for documents, spreadsheets and presentations, built on the ONLYOFFICE editor engine. It is for users who want a local, open-source alternative to Microsoft Office formats.

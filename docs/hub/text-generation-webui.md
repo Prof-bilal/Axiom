@@ -2,7 +2,7 @@
 
 - Id: `text-generation-webui` · Category: Development · Weight: heavy · Licence (catalog): AGPL-3.0
 - Catalog sources: manual `https://github.com/oobabooga/text-generation-webui`
-- Install verified: no · Screenshots: 0 of 3 · Logo: no
+- Install source confirmed: no · Screenshots: 0 of 3 · Logo: no
 
 ## Overview
 Web UI for running local language models.

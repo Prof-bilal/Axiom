@@ -2,7 +2,7 @@
 
 - Id: `immich` · Category: Productivity · Weight: heavy · Licence (catalog): AGPL-3.0
 - Catalog sources: manual `https://immich.app`
-- Install verified: no · Screenshots: 0 of 3 · Logo: yes
+- Install source confirmed: no · Screenshots: 0 of 3 · Logo: yes
 
 ## Overview
 Self-hosted photo and video backup.

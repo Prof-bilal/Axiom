@@ -2,7 +2,7 @@
 
 - Id: `sublime` · Category: Development · Weight: light · Licence (catalog): Proprietary
 - Catalog sources: manual `https://www.sublimetext.com/download`
-- Install verified: yes · Screenshots: 0 of 3 · Logo: yes
+- Install source confirmed: yes · Screenshots: 0 of 3 · Logo: yes
 
 ## Overview
 Sublime Text is a fast, closed-source commercial text and code editor with a Python plugin API and multi-cursor editing. It is for developers who want a lightweight, responsive editor and accept a paid licence.

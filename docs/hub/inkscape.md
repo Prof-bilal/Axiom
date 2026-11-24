@@ -2,7 +2,7 @@
 
 - Id: `inkscape` · Category: Graphics · Weight: medium · Licence (catalog): GPL-3.0
 - Catalog sources: flatpak `org.inkscape.Inkscape`
-- Install verified: yes · Screenshots: 4 of 3 · Logo: yes
+- Install source confirmed: yes · Screenshots: 4 of 3 · Logo: yes
 
 ## Overview
 Inkscape is a free, open-source vector graphics editor for SVG illustration, logos and print design. It is for designers and illustrators who want an SVG-native editor.

@@ -2,7 +2,7 @@
 
 - Id: `androidstudio` · Category: Development · Weight: heavy · Licence (catalog): Apache-2.0
 - Catalog sources: flatpak `com.google.AndroidStudio`
-- Install verified: yes · Screenshots: 5 of 3 · Logo: yes
+- Install source confirmed: yes · Screenshots: 5 of 3 · Logo: yes
 
 ## Overview
 Android Studio is Google's official IDE for building Android apps, built on the IntelliJ platform. It is aimed at Android developers and includes the Android SDK tooling, emulator and build system.

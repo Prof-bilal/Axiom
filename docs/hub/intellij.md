@@ -2,7 +2,7 @@
 
 - Id: `intellij` · Category: Development · Weight: heavy · Licence (catalog): Apache-2.0
 - Catalog sources: flatpak `com.jetbrains.IntelliJ-IDEA-Community`
-- Install verified: yes · Screenshots: 5 of 3 · Logo: yes
+- Install source confirmed: yes · Screenshots: 5 of 3 · Logo: yes
 
 ## Overview
 IntelliJ IDEA is JetBrains' Java and JVM-focused IDE, offered as a free Community edition and a paid Ultimate edition with broader framework support. It is for professional developers who want deep code analysis, refactoring and framework integration.

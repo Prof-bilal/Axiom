@@ -2,7 +2,7 @@
 
 - Id: `anki` · Category: Education · Weight: light · Licence (catalog): AGPL-3.0
 - Catalog sources: flatpak `net.ankiweb.Anki`
-- Install verified: yes · Screenshots: 1 of 3 · Logo: yes
+- Install source confirmed: yes · Screenshots: 1 of 3 · Logo: yes
 
 ## Overview
 Anki is a spaced-repetition flashcard program for memorising information, with scheduling, add-ons and sync. It is for students and learners who use flashcards long term.

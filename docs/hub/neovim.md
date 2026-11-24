@@ -2,7 +2,7 @@
 
 - Id: `neovim` · Category: Development · Weight: light · Licence (catalog): Apache-2.0
 - Catalog sources: pacman `neovim`
-- Install verified: yes · Screenshots: 4 of 3 · Logo: yes
+- Install source confirmed: yes · Screenshots: 4 of 3 · Logo: yes
 
 ## Overview
 Neovim is a refactored fork of Vim focused on extensibility, with a built-in Lua API and an async architecture. It is for terminal-centric developers who want a customisable modal editor.

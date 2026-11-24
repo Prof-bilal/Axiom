@@ -2,7 +2,7 @@
 
 - Id: `unityhub` · Category: Development · Weight: medium · Licence (catalog): Proprietary
 - Catalog sources: manual `https://unity.com/download`
-- Install verified: no · Screenshots: 0 of 3 · Logo: yes
+- Install source confirmed: no · Screenshots: 0 of 3 · Logo: yes
 
 ## Overview
 Manage Unity editor versions and projects.

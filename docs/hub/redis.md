@@ -2,7 +2,7 @@
 
 - Id: `redis` · Category: Development · Weight: light · Licence (catalog): BSD-3-Clause
 - Catalog sources: pacman `valkey`
-- Install verified: yes · Screenshots: 0 of 3 · Logo: yes
+- Install source confirmed: yes · Screenshots: 0 of 3 · Logo: yes
 
 ## Overview
 Redis is an in-memory data store used as a cache, message broker and database. It is for developers and operators who need low-latency key-value and data-structure storage.

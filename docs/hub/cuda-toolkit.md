@@ -2,7 +2,7 @@
 
 - Id: `cuda-toolkit` · Category: Development · Weight: heavy · Licence (catalog): NVIDIA proprietary
 - Catalog sources: pacman `cuda`
-- Install verified: no · Screenshots: 0 of 3 · Logo: yes
+- Install source confirmed: no · Screenshots: 0 of 3 · Logo: yes
 
 ## Overview
 GPU compute toolkit for NVIDIA cards.

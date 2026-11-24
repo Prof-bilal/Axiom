@@ -2,7 +2,7 @@
 
 - Id: `obs` · Category: Multimedia · Weight: heavy · Licence (catalog): GPL-2.0
 - Catalog sources: flatpak `com.obsproject.Studio`
-- Install verified: yes · Screenshots: 1 of 3 · Logo: yes
+- Install source confirmed: yes · Screenshots: 1 of 3 · Logo: yes
 
 ## Overview
 OBS Studio is free, open-source software for live streaming and screen recording with scene composition and multiple sources. It is for streamers, creators and presenters.

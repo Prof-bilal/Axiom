@@ -2,7 +2,7 @@
 
 - Id: `davinci-resolve` · Category: Graphics · Weight: heavy · Licence (catalog): Free and Studio (proprietary)
 - Catalog sources: manual `https://www.blackmagicdesign.com/products/davinciresolve`
-- Install verified: no · Screenshots: 0 of 3 · Logo: yes
+- Install source confirmed: no · Screenshots: 0 of 3 · Logo: yes
 
 ## Overview
 Professional video editing, colour and audio.

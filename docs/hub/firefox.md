@@ -2,7 +2,7 @@
 
 - Id: `firefox` · Category: Internet · Weight: medium · Licence (catalog): MPL-2.0
 - Catalog sources: flatpak `org.mozilla.firefox`, pacman `firefox`
-- Install verified: yes · Screenshots: 3 of 3 · Logo: yes
+- Install source confirmed: yes · Screenshots: 3 of 3 · Logo: yes
 
 ## Overview
 Firefox is Mozilla's open-source web browser with privacy features and extensions support. It is for general users and developers who want an independent browser engine.

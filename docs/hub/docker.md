@@ -2,7 +2,7 @@
 
 - Id: `docker` · Category: Development · Weight: medium · Licence (catalog): Apache-2.0
 - Catalog sources: pacman `docker`
-- Install verified: yes · Screenshots: 0 of 3 · Logo: yes
+- Install source confirmed: yes · Screenshots: 0 of 3 · Logo: yes
 
 ## Overview
 Docker Engine is the open-source container runtime and CLI for building, running and distributing containers on Linux. It is for developers and operators who need a standard container workflow on Linux servers and workstations.

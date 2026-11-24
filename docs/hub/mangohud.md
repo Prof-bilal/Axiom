@@ -2,7 +2,7 @@
 
 - Id: `mangohud` · Category: Games · Weight: light · Licence (catalog): MIT
 - Catalog sources: pacman `mangohud`
-- Install verified: yes · Screenshots: 0 of 3 · Logo: yes
+- Install source confirmed: yes · Screenshots: 0 of 3 · Logo: yes
 
 ## Overview
 MangoHud is a Vulkan and OpenGL overlay for Linux that displays FPS, frame timings, CPU and GPU statistics during games. It is for Linux gamers and benchmarkers who want performance data on screen.

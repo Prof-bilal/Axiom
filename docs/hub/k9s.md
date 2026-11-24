@@ -2,7 +2,7 @@
 
 - Id: `k9s` · Category: Development · Weight: light · Licence (catalog): Apache-2.0
 - Catalog sources: pacman `k9s`
-- Install verified: yes · Screenshots: 0 of 3 · Logo: yes
+- Install source confirmed: yes · Screenshots: 0 of 3 · Logo: yes
 
 ## Overview
 K9s is a terminal UI for navigating and managing Kubernetes clusters, with live resource views and keyboard-driven actions. It is for operators who prefer working in the terminal over the Kubernetes dashboard.

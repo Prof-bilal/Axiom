@@ -2,7 +2,7 @@
 
 - Id: `claudecode` · Category: Development · Weight: light · Licence (catalog): Proprietary
 - Catalog sources: npm `@anthropic-ai/claude-code`
-- Install verified: yes · Screenshots: 0 of 3 · Logo: yes
+- Install source confirmed: yes · Screenshots: 0 of 3 · Logo: yes
 
 ## Overview
 Claude Code is Anthropic's agentic coding tool that runs in the terminal, with IDE and desktop front ends, for reading, editing and running code in a project. It is for developers who use Claude models for software work.

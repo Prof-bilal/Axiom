@@ -2,7 +2,7 @@
 
 - Id: `colima` · Category: Development · Weight: medium · Licence (catalog): MIT
 - Catalog sources: manual `https://github.com/abiosoft/colima`
-- Install verified: yes · Screenshots: 0 of 3 · Logo: yes
+- Install source confirmed: yes · Screenshots: 0 of 3 · Logo: yes
 
 ## Overview
 Colima runs container runtimes (Docker by default, also containerd and Incus) on macOS and Linux with minimal setup. It is for developers who want a command-line container environment without a desktop application.

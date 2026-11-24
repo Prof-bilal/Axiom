@@ -2,7 +2,7 @@
 
 - Id: `pgadmin` · Category: Development · Weight: medium · Licence (catalog): PostgreSQL
 - Catalog sources: manual `https://www.pgadmin.org/download/`
-- Install verified: yes · Screenshots: 0 of 3 · Logo: yes
+- Install source confirmed: yes · Screenshots: 0 of 3 · Logo: yes
 
 ## Overview
 pgAdmin 4 is a web and desktop administration and development tool for PostgreSQL. It is for database administrators and developers who manage PostgreSQL servers through a graphical interface.

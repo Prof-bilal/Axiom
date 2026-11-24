@@ -2,7 +2,7 @@
 
 - Id: `lapce` · Category: Development · Weight: light · Licence (catalog): Apache-2.0
 - Catalog sources: flatpak `dev.lapce.lapce`
-- Install verified: yes · Screenshots: 1 of 3 · Logo: yes
+- Install source confirmed: yes · Screenshots: 1 of 3 · Logo: yes
 
 ## Overview
 Lapce is a fast, lightweight code editor written in pure Rust with a Floem-based UI. It is for developers who want a snappy, low-overhead editor with an open-source Rust codebase.

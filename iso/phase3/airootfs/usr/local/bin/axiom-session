@@ -4,10 +4,10 @@
 # login (agetty/autologin -> logind session) -> axiom-session -> compositor
 # harness -> Axiom Shell (Quickshell), started by the compositor's autostart.
 #
-# Compositor: labwc (ADR-016, /etc/axiom/labwc) by default. Hyprland (ADR-029,
-# /etc/axiom/hypr/hyprland.lua) is opt-in: write "hyprland" to /etc/axiom/compositor.
-# If an opted-in Hyprland stops within 15 s (no usable GL) the session starts
-# labwc instead, so the machine still gets a desktop.
+# Compositor: Hyprland (ADR-029/031, /etc/axiom/hypr/hyprland.lua) by default. labwc
+# (ADR-016, /etc/axiom/labwc) is the fallback and the opt-out: write "labwc" to
+# /etc/axiom/compositor. If Hyprland stops within 15 s (no usable GL) the session
+# starts labwc instead, so the machine still gets a desktop.
 #
 # Runs as the unprivileged login user. The compositor is a disposable bring-up
 # harness behind the session adapter, not the Axiom product contract.
@@ -95,10 +95,9 @@ echo "AXIOM_SESSION_START" > /dev/ttyS0 2>/dev/null || true
 # labwc runs to the end of the session or Hyprland is exec'd instead.
 export AXIOM_SESSION_PID=$$
 
-# labwc is the default compositor (ADR-016). /etc/axiom/compositor containing
-# "hyprland" opts in to Hyprland (/etc/axiom/hypr/hyprland.lua); if Hyprland stops
-# within 15 s (no usable GL) the session starts labwc instead. The shell reads
-# AXIOM_COMPOSITOR, never a compositor-specific variable.
+# Hyprland is the default compositor (ADR-031); /etc/axiom/compositor containing "labwc"
+# opts out. If Hyprland stops within 15 s (no usable GL) the session starts labwc
+# instead. The shell reads AXIOM_COMPOSITOR, never a compositor-specific variable.
 start_labwc() {
   export AXIOM_COMPOSITOR=labwc
   unset HYPRLAND_INSTANCE_SIGNATURE
@@ -118,7 +117,10 @@ start_labwc() {
   exec dbus-run-session -- labwc -C /etc/axiom/labwc
 }
 
-if [ "$(cat /etc/axiom/compositor 2>/dev/null)" = hyprland ] \
+# Hyprland is the default (ADR-031). A missing or empty /etc/axiom/compositor means Hyprland;
+# write "labwc" there to opt out.
+compositor=$(cat /etc/axiom/compositor 2>/dev/null)
+if [ "${compositor:-hyprland}" = hyprland ] \
    && command -v start-hyprland >/dev/null 2>&1; then
   started=$(date +%s)
   (

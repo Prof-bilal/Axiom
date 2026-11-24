@@ -2,7 +2,7 @@
 
 - Id: `openwebui` · Category: Development · Weight: medium · Licence (catalog): MIT
 - Catalog sources: pip `open-webui`
-- Install verified: yes · Screenshots: 0 of 3 · Logo: yes
+- Install source confirmed: yes · Screenshots: 0 of 3 · Logo: yes
 
 ## Overview
 Open WebUI is a self-hosted web interface for interacting with local and remote LLMs, commonly deployed with Docker alongside Ollama. It is for teams and individuals who want a browser-based chat front end they run themselves.

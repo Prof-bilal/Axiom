@@ -2,7 +2,7 @@
 
 - Id: `virtualbox` · Category: System · Weight: heavy · Licence (catalog): GPL-2.0
 - Catalog sources: pacman `virtualbox`
-- Install verified: yes · Screenshots: 0 of 3 · Logo: yes
+- Install source confirmed: yes · Screenshots: 0 of 3 · Logo: yes
 
 ## Overview
 Oracle VirtualBox is a free, cross-platform type-2 hypervisor for running virtual machines on Windows, macOS, Linux and Solaris hosts. It is for developers, testers and users who need virtual machines on a desktop.

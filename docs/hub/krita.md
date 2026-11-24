@@ -2,7 +2,7 @@
 
 - Id: `krita` · Category: Graphics · Weight: medium · Licence (catalog): GPL-3.0
 - Catalog sources: flatpak `org.kde.krita`
-- Install verified: yes · Screenshots: 5 of 3 · Logo: yes
+- Install source confirmed: yes · Screenshots: 5 of 3 · Logo: yes
 
 ## Overview
 Krita is a free, open-source digital painting and illustration application with brushes, animation and comics tools. It is for artists and illustrators who want a professional paint program without a licence fee.

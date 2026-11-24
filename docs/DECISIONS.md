@@ -381,3 +381,7 @@ The boot menu shows only the Axiom live desktop. An Install Axiom icon on that d
 `apps/liveinstaller` (Welcome, Network, Locale, Partitioning, Identity, Installation, Finish). The UI runs as the
 live user; the one root step is `axiom-install-run` through `pkexec` and polkit, live medium only. This replaces
 the `axiom-installd` daemon of ADR-026. Full record: [decisions/035-live-desktop-installer.md](decisions/035-live-desktop-installer.md).
+
+## ADR-016 amendment (2026-11-24): Hyprland is the default compositor again
+Per the pre-Phase-8 audit (R1) and the user's decision, `axiom-session` defaults to Hyprland; labwc is the fallback and the
+opt-out (`/etc/axiom/compositor` = `labwc`). ADR-031 is Accepted as the default; the idle RAM/CPU comparison is still to be recorded.

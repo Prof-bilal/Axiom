@@ -2,7 +2,7 @@
 
 - Id: `azuredatastudio` · Category: Development · Weight: medium · Licence (catalog): Microsoft EULA
 - Catalog sources: manual `https://learn.microsoft.com/en-us/azure-data-studio/whats-happening-azure-data-studio`
-- Install verified: yes · Screenshots: 0 of 3 · Logo: yes
+- Install source confirmed: yes · Screenshots: 0 of 3 · Logo: yes
 
 ## Overview
 Azure Data Studio was Microsoft's cross-platform database tool for SQL Server and Azure SQL. It is retired and no longer supported, so this entry is for users evaluating legacy installs or migration.

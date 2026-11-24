@@ -2,7 +2,7 @@
 
 - Id: `sqlserver` · Category: Development · Weight: heavy · Licence (catalog): Free developer edition
 - Catalog sources: manual `https://learn.microsoft.com/en-us/sql/linux/quickstart-install-connect-docker`
-- Install verified: yes · Screenshots: 0 of 3 · Logo: yes
+- Install source confirmed: yes · Screenshots: 0 of 3 · Logo: yes
 
 ## Overview
 Microsoft SQL Server is a relational database server with a Linux build, offered in Standard, Enterprise and free Developer editions. It is for teams running Microsoft-stack or enterprise workloads on Linux.

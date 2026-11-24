@@ -2,7 +2,7 @@
 
 - Id: `sqlite` · Category: Development · Weight: light · Licence (catalog): Public domain
 - Catalog sources: pacman `sqlite`
-- Install verified: yes · Screenshots: 0 of 3 · Logo: yes
+- Install source confirmed: yes · Screenshots: 0 of 3 · Logo: yes
 
 ## Overview
 SQLite is an embedded, serverless SQL database engine shipped as a library and command-line tool. It is for application developers and users who need a file-based database with no server.

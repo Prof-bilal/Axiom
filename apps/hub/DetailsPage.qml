@@ -155,7 +155,7 @@ Flickable {
                     ["Publisher", page.app.publisher], ["Licence", page.app.license], ["Category", page.app.category],
                     ["Source", page.app.sources.map(function (s) { return s.type + ": " + s.ref }).join("   ")],
                     ["Weight", page.app.weight], ["Size", R.formatSize(page.app.size_mb) || "not verified"],
-                    ["Source status", page.app.verified ? "Verified" : "Not verified: install source not confirmed"]
+                    ["Source status", page.app.verified ? "Source confirmed" : "Not verified: install source not confirmed"]
                 ] : []
                 delegate: Row {
                     required property var modelData

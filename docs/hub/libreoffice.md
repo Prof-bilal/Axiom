@@ -2,7 +2,7 @@
 
 - Id: `libreoffice` · Category: Productivity · Weight: medium · Licence (catalog): MPL-2.0
 - Catalog sources: flatpak `org.libreoffice.LibreOffice`
-- Install verified: yes · Screenshots: 5 of 3 · Logo: yes
+- Install source confirmed: yes · Screenshots: 5 of 3 · Logo: yes
 
 ## Overview
 LibreOffice is a free, open-source office suite with word processing, spreadsheet, presentation and drawing apps. It is for users who want a full office suite without a subscription.

@@ -2,7 +2,7 @@
 
 - Id: `dockerdesktop` · Category: Development · Weight: heavy · Licence (catalog): Proprietary
 - Catalog sources: manual `https://docs.docker.com/desktop/setup/install/linux/`
-- Install verified: yes · Screenshots: 0 of 3 · Logo: yes
+- Install source confirmed: yes · Screenshots: 0 of 3 · Logo: yes
 
 ## Overview
 Docker Desktop is Docker's desktop application for Linux, macOS and Windows that bundles the Docker Engine, CLI, Compose and a graphical dashboard. It is for developers who want a managed local container environment with a GUI.

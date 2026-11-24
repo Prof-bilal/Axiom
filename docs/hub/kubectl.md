@@ -2,7 +2,7 @@
 
 - Id: `kubectl` · Category: Development · Weight: light · Licence (catalog): Apache-2.0
 - Catalog sources: pacman `kubectl`
-- Install verified: yes · Screenshots: 0 of 3 · Logo: yes
+- Install source confirmed: yes · Screenshots: 0 of 3 · Logo: yes
 
 ## Overview
 kubectl is the command-line tool for running commands against Kubernetes clusters. It is for developers and operators who manage Kubernetes workloads from a terminal.

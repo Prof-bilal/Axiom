@@ -2,7 +2,7 @@
 
 - Id: `zoom` · Category: Internet · Weight: medium · Licence (catalog): Proprietary
 - Catalog sources: manual `https://zoom.us/download`
-- Install verified: no · Screenshots: 0 of 3 · Logo: yes
+- Install source confirmed: no · Screenshots: 0 of 3 · Logo: yes
 
 ## Overview
 Video meetings client.

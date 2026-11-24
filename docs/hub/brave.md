@@ -2,7 +2,7 @@
 
 - Id: `brave` · Category: Internet · Weight: heavy · Licence (catalog): MPL-2.0
 - Catalog sources: flatpak `com.brave.Browser`
-- Install verified: yes · Screenshots: 2 of 3 · Logo: yes
+- Install source confirmed: yes · Screenshots: 2 of 3 · Logo: yes
 
 ## Overview
 Brave is a privacy-focused, Chromium-based web browser with built-in ad and tracker blocking and a rewards system. It is for users who want a Chromium browser with privacy defaults.

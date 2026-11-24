@@ -2,7 +2,7 @@
 
 - Id: `waydroid` · Category: System · Weight: medium · Licence (catalog): GPL-3.0
 - Catalog sources: pacman `waydroid`
-- Install verified: no · Screenshots: 0 of 3 · Logo: yes
+- Install source confirmed: no · Screenshots: 0 of 3 · Logo: yes
 
 ## Overview
 Run Android apps in a container on Linux.

@@ -2,7 +2,7 @@
 
 - Id: `git` · Category: Development · Weight: light · Licence (catalog): GPL-2.0
 - Catalog sources: pacman `git`
-- Install verified: yes · Screenshots: 0 of 3 · Logo: yes
+- Install source confirmed: yes · Screenshots: 0 of 3 · Logo: yes
 
 ## Overview
 Git is the distributed version control system used to track changes in source code and other files. It is for developers and teams who need local and remote version history.

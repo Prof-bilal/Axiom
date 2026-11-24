@@ -2,7 +2,7 @@
 
 - Id: `dolphin` · Category: Games · Weight: heavy · Licence (catalog): GPL-2.0
 - Catalog sources: flatpak `org.DolphinEmu.dolphin-emu`
-- Install verified: yes · Screenshots: 4 of 3 · Logo: yes
+- Install source confirmed: yes · Screenshots: 4 of 3 · Logo: yes
 
 ## Overview
 Dolphin is an open-source emulator for GameCube and Wii games that runs them with enhancements such as higher resolution. It is for retro gamers who want to play GameCube and Wii titles on a PC.

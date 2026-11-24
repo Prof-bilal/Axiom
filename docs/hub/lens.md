@@ -2,7 +2,7 @@
 
 - Id: `lens` · Category: Development · Weight: heavy · Licence (catalog): MIT
 - Catalog sources: manual `https://k8slens.dev`
-- Install verified: yes · Screenshots: 0 of 3 · Logo: yes
+- Install source confirmed: yes · Screenshots: 0 of 3 · Logo: yes
 
 ## Overview
 Lens is a desktop Kubernetes IDE for viewing and managing clusters, with a GUI for workloads, logs and terminals. It is for developers and operators who prefer a desktop tool over the command line for cluster work.

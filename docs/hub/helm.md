@@ -2,7 +2,7 @@
 
 - Id: `helm` · Category: Development · Weight: light · Licence (catalog): Apache-2.0
 - Catalog sources: pacman `helm`
-- Install verified: yes · Screenshots: 0 of 3 · Logo: yes
+- Install source confirmed: yes · Screenshots: 0 of 3 · Logo: yes
 
 ## Overview
 Helm is the package manager for Kubernetes that installs and manages applications as versioned charts. It is for platform and application teams who deploy Kubernetes workloads from reusable packages.

@@ -2,7 +2,7 @@
 
 - Id: `blender` · Category: Graphics · Weight: heavy · Licence (catalog): GPL-3.0
 - Catalog sources: flatpak `org.blender.Blender`
-- Install verified: yes · Screenshots: 4 of 3 · Logo: yes
+- Install source confirmed: yes · Screenshots: 4 of 3 · Logo: yes
 
 ## Overview
 Blender is a free, open-source 3D creation suite for modelling, animation, rendering, sculpting and video editing. It is for artists, animators and technical designers.

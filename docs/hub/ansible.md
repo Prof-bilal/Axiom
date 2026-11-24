@@ -2,7 +2,7 @@
 
 - Id: `ansible` · Category: Development · Weight: light · Licence (catalog): GPL-3.0
 - Catalog sources: pacman `ansible`
-- Install verified: yes · Screenshots: 0 of 3 · Logo: yes
+- Install source confirmed: yes · Screenshots: 0 of 3 · Logo: yes
 
 ## Overview
 Ansible is an agentless IT automation tool that configures systems and runs playbooks over SSH. It is for system administrators and DevOps teams who automate configuration and deployment.

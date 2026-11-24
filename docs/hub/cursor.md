@@ -2,7 +2,7 @@
 
 - Id: `cursor` · Category: Development · Weight: medium · Licence (catalog): Proprietary
 - Catalog sources: manual `https://cursor.com`
-- Install verified: yes · Screenshots: 0 of 3 · Logo: yes
+- Install source confirmed: yes · Screenshots: 0 of 3 · Logo: yes
 
 ## Overview
 Cursor is a proprietary AI-assisted code editor built on a VS Code base, with an integrated AI chat and agent. It is for developers who want AI editing inside a VS Code-style interface.

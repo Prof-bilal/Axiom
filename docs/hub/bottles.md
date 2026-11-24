@@ -2,7 +2,7 @@
 
 - Id: `bottles` · Category: Games · Weight: medium · Licence (catalog): GPL-3.0
 - Catalog sources: flatpak `com.usebottles.bottles`
-- Install verified: yes · Screenshots: 5 of 3 · Logo: yes
+- Install source confirmed: yes · Screenshots: 5 of 3 · Logo: yes
 
 ## Overview
 Bottles is a GTK application for managing Wine prefixes so Windows programs and games can be installed and run on Linux. It is for users who want a graphical way to manage Wine environments.

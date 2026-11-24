@@ -2,7 +2,7 @@
 
 - Id: `geminicli` · Category: Development · Weight: light · Licence (catalog): Apache-2.0
 - Catalog sources: npm `@google/gemini-cli`
-- Install verified: yes · Screenshots: 0 of 3 · Logo: yes
+- Install source confirmed: yes · Screenshots: 0 of 3 · Logo: yes
 
 ## Overview
 Gemini CLI is Google's open-source terminal AI agent for coding and general tasks, powered by Gemini models. It is for developers who want a Gemini-based agent in the terminal, with a free tier via Google sign-in.

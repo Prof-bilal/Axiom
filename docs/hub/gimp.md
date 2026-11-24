@@ -2,7 +2,7 @@
 
 - Id: `gimp` · Category: Graphics · Weight: medium · Licence (catalog): GPL-3.0
 - Catalog sources: flatpak `org.gimp.GIMP`
-- Install verified: yes · Screenshots: 4 of 3 · Logo: yes
+- Install source confirmed: yes · Screenshots: 4 of 3 · Logo: yes
 
 ## Overview
 GIMP (GNU Image Manipulation Program) is a free, open-source raster image editor for photo retouching, painting and graphic design. It is for designers, photographers and hobbyists who want a full-featured editor without a subscription.

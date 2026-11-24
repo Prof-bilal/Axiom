@@ -2,7 +2,7 @@
 
 - Id: `codex` · Category: Development · Weight: light · Licence (catalog): Apache-2.0
 - Catalog sources: npm `@openai/codex`
-- Install verified: yes · Screenshots: 1 of 3 · Logo: yes
+- Install source confirmed: yes · Screenshots: 1 of 3 · Logo: yes
 
 ## Overview
 OpenAI Codex CLI is a terminal coding agent from OpenAI that reads, edits and runs code in a local repository. It is for developers who use OpenAI models and want an agent in the terminal.

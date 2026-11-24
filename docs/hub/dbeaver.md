@@ -2,7 +2,7 @@
 
 - Id: `dbeaver` · Category: Development · Weight: heavy · Licence (catalog): Apache-2.0
 - Catalog sources: flatpak `io.dbeaver.DBeaverCommunity`
-- Install verified: yes · Screenshots: 4 of 3 · Logo: yes
+- Install source confirmed: yes · Screenshots: 4 of 3 · Logo: yes
 
 ## Overview
 DBeaver Community is a free, cross-platform database administration and SQL client supporting many database engines. It is for developers and analysts who need one tool across several databases.

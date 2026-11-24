@@ -2,7 +2,7 @@
 
 - Id: `podman` · Category: Development · Weight: light · Licence (catalog): Apache-2.0
 - Catalog sources: pacman `podman`
-- Install verified: yes · Screenshots: 0 of 3 · Logo: yes
+- Install source confirmed: yes · Screenshots: 0 of 3 · Logo: yes
 
 ## Overview
 Podman is a daemonless container engine that runs OCI containers, with a Docker-compatible CLI, rootless operation and pods. It is for developers and administrators who want container workflows without a long-running root daemon.

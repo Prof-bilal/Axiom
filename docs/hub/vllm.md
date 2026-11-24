@@ -2,7 +2,7 @@
 
 - Id: `vllm` · Category: Development · Weight: heavy · Licence (catalog): Apache-2.0
 - Catalog sources: pip `vllm`
-- Install verified: no · Screenshots: 0 of 3 · Logo: yes
+- Install source confirmed: no · Screenshots: 0 of 3 · Logo: yes
 
 ## Overview
 High-throughput LLM inference server.

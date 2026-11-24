@@ -2,7 +2,7 @@
 
 - Id: `itch` · Category: Games · Weight: light · Licence (catalog): MIT
 - Catalog sources: manual `https://itch.io/app`
-- Install verified: yes · Screenshots: 0 of 3 · Logo: yes
+- Install source confirmed: yes · Screenshots: 0 of 3 · Logo: yes
 
 ## Overview
 The itch app is a desktop client for itch.io that installs and updates games and tools from the itch.io store. It is for players and creators who use itch.io.

@@ -2,7 +2,7 @@
 
 - Id: `sqlitebrowser` · Category: Development · Weight: light · Licence (catalog): GPL-3.0
 - Catalog sources: flatpak `org.sqlitebrowser.sqlitebrowser`
-- Install verified: yes · Screenshots: 4 of 3 · Logo: yes
+- Install source confirmed: yes · Screenshots: 4 of 3 · Logo: yes
 
 ## Overview
 DB Browser for SQLite is a visual tool for creating, designing and editing SQLite database files. It is for developers and analysts who want a GUI for SQLite.

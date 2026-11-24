@@ -2,7 +2,7 @@
 
 - Id: `prism` · Category: Games · Weight: medium · Licence (catalog): GPL-3.0
 - Catalog sources: flatpak `org.prismlauncher.PrismLauncher`
-- Install verified: yes · Screenshots: 5 of 3 · Logo: yes
+- Install source confirmed: yes · Screenshots: 5 of 3 · Logo: yes
 
 ## Overview
 Prism Launcher is an open-source launcher for Minecraft that manages multiple instances, mod loaders and accounts. It is for Minecraft players who want an alternative launcher with multi-instance support.

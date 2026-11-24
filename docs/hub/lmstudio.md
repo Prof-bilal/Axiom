@@ -2,7 +2,7 @@
 
 - Id: `lmstudio` · Category: Development · Weight: heavy · Licence (catalog): Free, closed source
 - Catalog sources: manual `https://lmstudio.ai`
-- Install verified: yes · Screenshots: 1 of 3 · Logo: yes
+- Install source confirmed: yes · Screenshots: 1 of 3 · Logo: yes
 
 ## Overview
 LM Studio is a desktop app for downloading and running open-weight large language models locally, with a chat interface and a local server. It is for users who want to run models on their own machine.

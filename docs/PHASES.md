@@ -1,6 +1,6 @@
 # Axiom implementation phases
 
-Current phase: **Phase 8 — daily-driver completeness (next). Phase 7 — package management and updates (complete, 2026-11-23)**. Phases 0 to 7 are complete. Phase 6 (complete, 2026-11-08; see [ADR-020](decisions/020-installable-system.md)). Next: **Release track (below): Phase 7 through Phase 10, the glass desktop migration (UI-M0 to UI-M6) and Phase 13 distribution**.
+Current phase: **Phase 8 — daily-driver completeness (next). Phase 7 — package management and updates (complete, 2026-11-23)**. Phases 0 to 7 are complete, with Phase 7 installed-system QEMU evidence still owed (kernel-bump rollback, Capture, AppImage install; see `reports/phase-8/00-executive-summary.md`). Phase 6 (complete, 2026-11-08; see [ADR-020](decisions/020-installable-system.md)). Next: **Release track (below): Phase 7 through Phase 10, the glass desktop migration (UI-M0 to UI-M6) and Phase 13 distribution**.
 
 **Release goal (2026-11-15):** a stable, downloadable Axiom Linux that a new user can install, update and use every day, with a visual identity that holds up next to other desktop distributions. Everything in Track 1 below must pass before any Track 2 or Track 3 item starts. AI features, the advanced security layer and new ideas do not block a release.
 Direction for phases 7 onward: [ADR-022](decisions/022-differentiation-direction.md) (usable core first, then the differentiators in phase D, with extension seams in every phase) and [ADR-023](decisions/023-ai-system-direction.md) (the AI system, accepted with defaults).

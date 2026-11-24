@@ -2,7 +2,7 @@
 
 - Id: `cemu` · Category: Games · Weight: heavy · Licence (catalog): MPL-2.0
 - Catalog sources: manual `https://cemu.info`
-- Install verified: no · Screenshots: 0 of 3 · Logo: no
+- Install source confirmed: no · Screenshots: 0 of 3 · Logo: no
 
 ## Overview
 Wii U emulator.

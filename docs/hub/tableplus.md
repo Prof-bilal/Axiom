@@ -2,7 +2,7 @@
 
 - Id: `tableplus` · Category: Development · Weight: medium · Licence (catalog): Proprietary
 - Catalog sources: manual `https://tableplus.com/linux/install`
-- Install verified: yes · Screenshots: 0 of 3 · Logo: yes
+- Install source confirmed: yes · Screenshots: 0 of 3 · Logo: yes
 
 ## Overview
 TablePlus is a native GUI client for multiple databases including PostgreSQL, MySQL, SQLite and SQL Server, with a free tier and paid licences. It is for developers and administrators who want a fast desktop database client.

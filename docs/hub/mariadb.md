@@ -2,7 +2,7 @@
 
 - Id: `mariadb` · Category: Development · Weight: medium · Licence (catalog): GPL-2.0
 - Catalog sources: pacman `mariadb`
-- Install verified: yes · Screenshots: 0 of 3 · Logo: yes
+- Install source confirmed: yes · Screenshots: 0 of 3 · Logo: yes
 
 ## Overview
 MariaDB Server is a community fork of MySQL that provides a relational database for web and application workloads. It is for developers and administrators who want a MySQL-compatible open-source server.

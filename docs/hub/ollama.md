@@ -2,7 +2,7 @@
 
 - Id: `ollama` · Category: Development · Weight: heavy · Licence (catalog): MIT
 - Catalog sources: manual `https://ollama.com/download`
-- Install verified: yes · Screenshots: 0 of 3 · Logo: yes
+- Install source confirmed: yes · Screenshots: 0 of 3 · Logo: yes
 
 ## Overview
 Ollama runs open-weight large language models locally through a command-line tool and a local API. It is for developers and users who want to run models on their own hardware.

@@ -2,7 +2,7 @@
 
 - Id: `vagrant` · Category: Development · Weight: heavy · Licence (catalog): BSL
 - Catalog sources: pacman `vagrant`
-- Install verified: yes · Screenshots: 0 of 3 · Logo: yes
+- Install source confirmed: yes · Screenshots: 0 of 3 · Logo: yes
 
 ## Overview
 Vagrant is a tool for building and managing reproducible development virtual machines from configuration files. It is for developers who want consistent local environments across machines.

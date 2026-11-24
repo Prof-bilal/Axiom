@@ -2,7 +2,7 @@
 
 - Id: `postgresql` · Category: Development · Weight: medium · Licence (catalog): PostgreSQL
 - Catalog sources: pacman `postgresql`
-- Install verified: yes · Screenshots: 0 of 3 · Logo: yes
+- Install source confirmed: yes · Screenshots: 0 of 3 · Logo: yes
 
 ## Overview
 PostgreSQL is an open-source object-relational database server known for standards compliance and extensibility. It is for developers and operators who need a production-grade relational database.

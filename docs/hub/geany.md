@@ -2,7 +2,7 @@
 
 - Id: `geany` · Category: Development · Weight: light · Licence (catalog): GPL-2.0
 - Catalog sources: pacman `geany`
-- Install verified: yes · Screenshots: 3 of 3 · Logo: yes
+- Install source confirmed: yes · Screenshots: 3 of 3 · Logo: yes
 
 ## Overview
 Geany is a lightweight, fast IDE-style text editor using GTK, with syntax highlighting, code folding, symbol lists and build integration. It is for developers and students who want a small, quick editor rather than a full IDE.

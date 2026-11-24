@@ -2,7 +2,7 @@
 
 - Id: `keepassxc` · Category: Utilities · Weight: light · Licence (catalog): GPL-3.0
 - Catalog sources: flatpak `org.keepassxc.KeePassXC`
-- Install verified: yes · Screenshots: 4 of 3 · Logo: yes
+- Install source confirmed: yes · Screenshots: 4 of 3 · Logo: yes
 
 ## Overview
 KeePassXC is a cross-platform, offline password manager that stores encrypted database files, with browser integration and a Qt interface. It is for users who want a local password manager compatible with the KeePass format.

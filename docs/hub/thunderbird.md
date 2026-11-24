@@ -2,7 +2,7 @@
 
 - Id: `thunderbird` · Category: Internet · Weight: medium · Licence (catalog): MPL-2.0
 - Catalog sources: flatpak `org.mozilla.thunderbird`
-- Install verified: yes · Screenshots: 2 of 3 · Logo: yes
+- Install source confirmed: yes · Screenshots: 2 of 3 · Logo: yes
 
 ## Overview
 Thunderbird is Mozilla's open-source email, calendar and contacts client. It is for users who want a desktop mail client with privacy and extension support.

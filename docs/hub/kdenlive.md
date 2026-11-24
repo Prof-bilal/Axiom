@@ -2,7 +2,7 @@
 
 - Id: `kdenlive` · Category: Multimedia · Weight: heavy · Licence (catalog): GPL-3.0
 - Catalog sources: flatpak `org.kde.kdenlive`
-- Install verified: yes · Screenshots: 5 of 3 · Logo: yes
+- Install source confirmed: yes · Screenshots: 5 of 3 · Logo: yes
 
 ## Overview
 Kdenlive is a free, open-source non-linear video editor from the KDE community with multitrack editing and effects. It is for video creators who want a full editor on Linux.

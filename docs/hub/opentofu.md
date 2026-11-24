@@ -2,7 +2,7 @@
 
 - Id: `opentofu` · Category: Development · Weight: light · Licence (catalog): MPL-2.0
 - Catalog sources: pacman `opentofu`
-- Install verified: yes · Screenshots: 0 of 3 · Logo: yes
+- Install source confirmed: yes · Screenshots: 0 of 3 · Logo: yes
 
 ## Overview
 OpenTofu is an open-source, MPL-2.0 licensed fork of Terraform that is compatible with Terraform configurations. It is for teams that want Terraform-style infrastructure-as-code under an open licence.

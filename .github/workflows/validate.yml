@@ -19,6 +19,23 @@ jobs:
       - name: ISO profile checks
         run: python3 scripts/check-iso-profile.py
 
+  unit-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Install test tools
+        run: python3 -m pip install pytest
+      - name: App, helper and shell tests (node)
+        run: node --test tests/apps/*.test.mjs tests/shell/*.test.mjs
+      - name: Installer, session and asset tests (pytest)
+        run: python3 -m pytest -q tests/installer tests/test_session_default.py tests/test_ui_assets.py
+
 # The privileged archiso build job is intentionally NOT defined here. Building an
 # ISO needs root, KVM and package downloads; per docs/engineering/TESTING.md it must
 # run on an isolated ephemeral builder and untrusted pull-request code must never run

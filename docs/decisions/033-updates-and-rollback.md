@@ -1,6 +1,6 @@
 # ADR 033: System updates and snapshot rollback
 
-Status: Proposed. Phase 7 (package management and updates). Implementation in progress.
+Status: Proposed. Implemented and unit-tested; QEMU verification of update, rollback and boot sync (ADR-036) is pending. Phase 7 (package management and updates).
 
 ## Context
 The Software Center can install and remove packages through the root helper

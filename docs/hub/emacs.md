@@ -2,7 +2,7 @@
 
 - Id: `emacs` · Category: Development · Weight: light · Licence (catalog): GPL-3.0
 - Catalog sources: flatpak `org.gnu.emacs`
-- Install verified: yes · Screenshots: 1 of 3 · Logo: yes
+- Install source confirmed: yes · Screenshots: 1 of 3 · Logo: yes
 
 ## Overview
 GNU Emacs is an extensible, customisable text editor with a Lisp runtime, used for programming, writing and many other tasks. It is for users who want a long-lived, highly programmable editor.

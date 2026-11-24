@@ -2,7 +2,7 @@
 
 - Id: `teams-for-linux` · Category: Internet · Weight: medium · Licence (catalog): GPL-3.0
 - Catalog sources: manual `https://github.com/IsmaelMartinez/teams-for-linux`
-- Install verified: no · Screenshots: 0 of 3 · Logo: yes
+- Install source confirmed: no · Screenshots: 0 of 3 · Logo: yes
 
 ## Overview
 Unofficial Electron wrapper for Microsoft Teams on Linux.

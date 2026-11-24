@@ -2,7 +2,7 @@
 
 - Id: `comfyui` · Category: Graphics · Weight: heavy · Licence (catalog): GPL-3.0
 - Catalog sources: manual `https://github.com/comfyanonymous/ComfyUI`
-- Install verified: no · Screenshots: 0 of 3 · Logo: yes
+- Install source confirmed: no · Screenshots: 0 of 3 · Logo: yes
 
 ## Overview
 Node-based interface for Stable Diffusion image generation.

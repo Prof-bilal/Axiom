@@ -1,6 +1,6 @@
 # ADR 034: Flatpak apps in the Software Center
 
-Status: Proposed. Phase 7 (package management). Implementation in progress.
+Status: Proposed. Phase 7 (package management). Implemented and unit-tested; QEMU verification pending.
 
 ## Context
 The App Installer already installs a Flatpak bundle with `flatpak install --user`. The Software

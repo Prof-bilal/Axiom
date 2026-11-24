@@ -2,7 +2,7 @@
 
 - Id: `portainer` · Category: Development · Weight: medium · Licence (catalog): zlib
 - Catalog sources: manual `https://www.portainer.io`
-- Install verified: yes · Screenshots: 0 of 3 · Logo: yes
+- Install source confirmed: yes · Screenshots: 0 of 3 · Logo: yes
 
 ## Overview
 Portainer is a web-based management UI for Docker, Swarm and Kubernetes environments. Portainer CE is the free edition for managing containers and stacks, and it is for operators who want a GUI over container hosts.

@@ -1,7 +1,8 @@
 # ADR 031: Hyprland becomes the default session compositor
 
-Status: Proposed. Amends ADR-016 (labwc harness). Not yet the default: the ISO still
-starts labwc until the opt-in test passes in QEMU (see Verification).
+Status: Accepted as the default (2026-11-24, user decision). Amends ADR-016 (labwc harness). `axiom-session` starts
+Hyprland unless `/etc/axiom/compositor` says `labwc`, and falls back to labwc if Hyprland stops within 15 s. Open:
+the idle RAM/CPU comparison against labwc (Consequences) has not been recorded.
 
 ## Context
 - labwc draws server-side title bars and rounds only their top corners. It cannot clip

@@ -2,7 +2,7 @@
 
 - Id: `kate` · Category: Development · Weight: light · Licence (catalog): GPL-2.0
 - Catalog sources: flatpak `org.kde.kate`
-- Install verified: yes · Screenshots: 4 of 3 · Logo: yes
+- Install source confirmed: yes · Screenshots: 4 of 3 · Logo: yes
 
 ## Overview
 Kate (KDE Advanced Text Editor) is a multi-document text editor from the KDE project with syntax highlighting, project sidebar and built-in terminal. It is for developers and power users on KDE Plasma and other desktops.

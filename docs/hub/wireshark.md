@@ -2,7 +2,7 @@
 
 - Id: `wireshark` · Category: System · Weight: medium · Licence (catalog): GPL-2.0
 - Catalog sources: flatpak `org.wireshark.Wireshark`, pacman `wireshark-qt`
-- Install verified: yes · Screenshots: 3 of 3 · Logo: yes
+- Install source confirmed: yes · Screenshots: 3 of 3 · Logo: yes
 
 ## Overview
 Wireshark is a network protocol analyser for capturing and inspecting packets with a graphical interface and CLI tools. It is for network engineers, security analysts and developers debugging traffic.

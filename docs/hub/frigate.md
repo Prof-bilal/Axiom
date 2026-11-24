@@ -2,7 +2,7 @@
 
 - Id: `frigate` · Category: System · Weight: heavy · Licence (catalog): MIT
 - Catalog sources: manual `https://frigate.video`
-- Install verified: no · Screenshots: 0 of 3 · Logo: yes
+- Install source confirmed: no · Screenshots: 0 of 3 · Logo: yes
 
 ## Overview
 Network video recorder with object detection.

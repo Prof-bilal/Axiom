@@ -2,7 +2,7 @@
 
 - Id: `terraform` · Category: Development · Weight: light · Licence (catalog): BSL
 - Catalog sources: pacman `terraform`
-- Install verified: yes · Screenshots: 0 of 3 · Logo: yes
+- Install source confirmed: yes · Screenshots: 0 of 3 · Logo: yes
 
 ## Overview
 Terraform is HashiCorp's infrastructure-as-code tool for provisioning cloud and on-premises resources from declarative configuration. It is for platform and DevOps engineers, and Terraform Enterprise is the self-hosted commercial product.

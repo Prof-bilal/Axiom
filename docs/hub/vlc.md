@@ -2,7 +2,7 @@
 
 - Id: `vlc` · Category: Multimedia · Weight: light · Licence (catalog): GPL-2.0
 - Catalog sources: flatpak `org.videolan.VLC`, pacman `vlc`
-- Install verified: yes · Screenshots: 3 of 3 · Logo: yes
+- Install source confirmed: yes · Screenshots: 3 of 3 · Logo: yes
 
 ## Overview
 VLC media player is a free, open-source multimedia player that plays most audio and video formats and network streams. It is for general users who want a player that handles almost any media file.

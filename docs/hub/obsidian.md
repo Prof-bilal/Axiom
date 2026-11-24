@@ -2,7 +2,7 @@
 
 - Id: `obsidian` · Category: Productivity · Weight: light · Licence (catalog): Proprietary
 - Catalog sources: flatpak `md.obsidian.Obsidian`
-- Install verified: yes · Screenshots: 4 of 3 · Logo: yes
+- Install source confirmed: yes · Screenshots: 4 of 3 · Logo: yes
 
 ## Overview
 Obsidian is a Markdown-based note-taking app that stores notes as local files and supports linking and plugins. It is for writers, researchers and students who want local notes with a knowledge graph.

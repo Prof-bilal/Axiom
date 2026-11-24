@@ -2,7 +2,7 @@
 
 - Id: `rockstar-launcher` · Category: Games · Weight: medium · Licence (catalog): Proprietary
 - Catalog sources: manual `https://lutris.net`
-- Install verified: no · Screenshots: 0 of 3 · Logo: no
+- Install source confirmed: no · Screenshots: 0 of 3 · Logo: no
 
 ## Overview
 Rockstar launcher, run through Lutris and Wine.

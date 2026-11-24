@@ -2,7 +2,7 @@
 
 - Id: `nix` · Category: System · Weight: light · Licence (catalog): LGPL-2.1
 - Catalog sources: pacman `nix`
-- Install verified: no · Screenshots: 0 of 3 · Logo: yes
+- Install source confirmed: no · Screenshots: 0 of 3 · Logo: yes
 
 ## Overview
 Package manager for reproducible installs (multi-user daemon).

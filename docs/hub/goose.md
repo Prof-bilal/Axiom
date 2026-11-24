@@ -2,7 +2,7 @@
 
 - Id: `goose` · Category: Development · Weight: light · Licence (catalog): Apache-2.0
 - Catalog sources: manual `https://github.com/block/goose`
-- Install verified: yes · Screenshots: 0 of 3 · Logo: yes
+- Install source confirmed: yes · Screenshots: 0 of 3 · Logo: yes
 
 ## Overview
 goose is an open-source, on-machine AI agent from Block that can run commands, edit files and connect to MCP servers, offered as a desktop app and CLI. It is for developers and power users who want a local, extensible agent.

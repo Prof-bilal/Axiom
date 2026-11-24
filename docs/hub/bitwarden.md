@@ -2,7 +2,7 @@
 
 - Id: `bitwarden` · Category: Utilities · Weight: medium · Licence (catalog): GPL-3.0
 - Catalog sources: flatpak `com.bitwarden.desktop`
-- Install verified: yes · Screenshots: 1 of 3 · Logo: yes
+- Install source confirmed: yes · Screenshots: 1 of 3 · Logo: yes
 
 ## Overview
 Bitwarden is a password manager with a desktop client for Linux, Windows and macOS, alongside web and browser extensions. It is for individuals and teams who want cloud-synced password storage.

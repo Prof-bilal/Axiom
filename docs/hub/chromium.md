@@ -2,7 +2,7 @@
 
 - Id: `chromium` · Category: Internet · Weight: heavy · Licence (catalog): BSD
 - Catalog sources: flatpak `org.chromium.Chromium`
-- Install verified: yes · Screenshots: 1 of 3 · Logo: yes
+- Install source confirmed: yes · Screenshots: 1 of 3 · Logo: yes
 
 ## Overview
 Chromium is the open-source browser project that underpins Google Chrome and many other browsers. It is for users and distributors who want a Chromium-based browser built from source or through Linux distributions.

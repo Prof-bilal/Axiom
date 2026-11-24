@@ -2,7 +2,7 @@
 
 - Id: `gcompris` · Category: Education · Weight: light · Licence (catalog): GPL-3.0
 - Catalog sources: flatpak `org.kde.gcompris`
-- Install verified: yes · Screenshots: 5 of 3 · Logo: yes
+- Install source confirmed: yes · Screenshots: 5 of 3 · Logo: yes
 
 ## Overview
 GCompris is a free educational software suite of more than 100 activities for children roughly aged 2 to 10. It is for parents, teachers and young children learning on Linux.

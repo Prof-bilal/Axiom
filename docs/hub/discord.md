@@ -2,7 +2,7 @@
 
 - Id: `discord` · Category: Internet · Weight: medium · Licence (catalog): Proprietary
 - Catalog sources: flatpak `com.discordapp.Discord`
-- Install verified: yes · Screenshots: 2 of 3 · Logo: yes
+- Install source confirmed: yes · Screenshots: 2 of 3 · Logo: yes
 
 ## Overview
 Discord is a proprietary voice, video and text chat application popular with gaming and community groups, with an official Linux client. It is for users who want Discord on Linux.

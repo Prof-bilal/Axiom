@@ -2,7 +2,7 @@
 
 - Id: `vscode` · Category: Development · Weight: heavy · Licence (catalog): Proprietary
 - Catalog sources: flatpak `com.visualstudio.code`
-- Install verified: yes · Screenshots: 1 of 3 · Logo: yes
+- Install source confirmed: yes · Screenshots: 1 of 3 · Logo: yes
 
 ## Overview
 Visual Studio Code is Microsoft's free code editor, built on the Code - OSS repository with Microsoft-specific customizations. It targets developers who want a general-purpose editor with a large extension ecosystem, integrated debugging, Git support and a built-in terminal.

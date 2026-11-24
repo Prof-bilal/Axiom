@@ -2,7 +2,7 @@
 
 - Id: `opencode` · Category: Development · Weight: light · Licence (catalog): MIT
 - Catalog sources: npm `opencode-ai`
-- Install verified: yes · Screenshots: 2 of 3 · Logo: yes
+- Install source confirmed: yes · Screenshots: 2 of 3 · Logo: yes
 
 ## Overview
 OpenCode is an open-source AI coding agent for the terminal, with a build mode for read/write changes and a read-only plan mode. It is for developers who want an agent that works with multiple model providers, including local models.

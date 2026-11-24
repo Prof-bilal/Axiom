@@ -2,7 +2,7 @@
 
 - Id: `gamemode` · Category: Games · Weight: light · Licence (catalog): BSD
 - Catalog sources: pacman `gamemode`
-- Install verified: yes · Screenshots: 0 of 3 · Logo: yes
+- Install source confirmed: yes · Screenshots: 0 of 3 · Logo: yes
 
 ## Overview
 Feral GameMode is a daemon and library that lets games request temporary CPU and GPU performance optimisations on Linux. It is for Linux gamers who want a performance boost while playing.

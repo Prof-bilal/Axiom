@@ -2,7 +2,7 @@
 
 - Id: `jan` · Category: Development · Weight: heavy · Licence (catalog): AGPL-3.0 (disputed)
 - Catalog sources: manual `https://jan.ai`
-- Install verified: yes · Screenshots: 0 of 3 · Logo: yes
+- Install source confirmed: yes · Screenshots: 0 of 3 · Logo: yes
 
 ## Overview
 Jan is an open-source desktop app for running AI models locally, with a chat interface and support for connecting to remote model APIs. It is for users who want a private, offline-capable alternative to cloud chat apps.

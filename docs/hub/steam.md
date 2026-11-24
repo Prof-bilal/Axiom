@@ -2,7 +2,7 @@
 
 - Id: `steam` · Category: Games · Weight: heavy · Licence (catalog): Proprietary
 - Catalog sources: flatpak `com.valvesoftware.Steam`
-- Install verified: yes · Screenshots: 5 of 3 · Logo: yes
+- Install source confirmed: yes · Screenshots: 5 of 3 · Logo: yes
 
 ## Overview
 Steam is Valve's digital game distribution platform and client, with a large library and a Linux client that runs many Windows games through Proton. It is for gamers who want to buy, install and play games on Linux.

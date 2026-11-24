@@ -2,7 +2,7 @@
 
 - Id: `vscodium` · Category: Development · Weight: heavy · Licence (catalog): MIT
 - Catalog sources: flatpak `com.vscodium.codium`
-- Install verified: yes · Screenshots: 5 of 3 · Logo: yes
+- Install source confirmed: yes · Screenshots: 5 of 3 · Logo: yes
 
 ## Overview
 VSCodium is a community-driven, freely licensed binary distribution of Microsoft's VS Code editor with telemetry and Microsoft branding and licensing removed. It is for developers who want VS Code's features and extensions without the Microsoft product licence or telemetry.

@@ -82,3 +82,8 @@ performance and a solid look, so labwc is the default session again.
   plain workspace thumbnails and the capture bar has no window mode (region and screen only).
 - Unverified until the labwc ISO is booted in QEMU: `canActivate` for workspaces, `MoveTo x=center`,
   Caps Lock key passthrough, release binding of `Alt_L`, and restore of a minimized window from the dock.
+
+## Amendment 2026-11-24: Hyprland is the default again (ADR-031)
+
+The user chose Hyprland as the default session compositor. `axiom-session` starts Hyprland unless `/etc/axiom/compositor`
+says `labwc`, and falls back to labwc if Hyprland stops within 15 s. labwc remains the fallback and the opt-out. See ADR-031.

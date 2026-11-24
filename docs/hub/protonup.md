@@ -2,7 +2,7 @@
 
 - Id: `protonup` · Category: Games · Weight: light · Licence (catalog): GPL-3.0
 - Catalog sources: flatpak `net.davidotek.pupgui2`
-- Install verified: yes · Screenshots: 3 of 3 · Logo: yes
+- Install source confirmed: yes · Screenshots: 3 of 3 · Logo: yes
 
 ## Overview
 ProtonUp-Qt is a graphical tool for installing and managing community Proton and Wine builds (GE-Proton, Wine-GE, and others) for Steam and Lutris. It is for Linux gamers who want newer compatibility layers.

@@ -2,7 +2,7 @@
 
 - Id: `yabridge` · Category: Games · Weight: light · Licence (catalog): GPL-3.0
 - Catalog sources: pacman `yabridge`
-- Install verified: no · Screenshots: 0 of 3 · Logo: no
+- Install source confirmed: no · Screenshots: 0 of 3 · Logo: no
 
 ## Overview
 Run Windows VST plugins in Linux DAWs through Wine.

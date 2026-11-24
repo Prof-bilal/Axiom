@@ -2,7 +2,7 @@
 
 - Id: `zed` · Category: Development · Weight: light · Licence (catalog): GPL-3.0
 - Catalog sources: flatpak `dev.zed.Zed`
-- Install verified: yes · Screenshots: 5 of 3 · Logo: yes
+- Install source confirmed: yes · Screenshots: 5 of 3 · Logo: yes
 
 ## Overview
 Zed is a high-performance, multiplayer code editor written in Rust, with built-in AI agent and collaboration features. It is for developers who want a fast native editor with integrated AI assistance.

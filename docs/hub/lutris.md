@@ -2,7 +2,7 @@
 
 - Id: `lutris` · Category: Games · Weight: medium · Licence (catalog): GPL-3.0
 - Catalog sources: flatpak `net.lutris.Lutris`
-- Install verified: yes · Screenshots: 1 of 3 · Logo: yes
+- Install source confirmed: yes · Screenshots: 1 of 3 · Logo: yes
 
 ## Overview
 Lutris is an open-source game manager that installs and launches games from many sources, including Wine, emulators and native Linux builds. It is for Linux gamers who want one library for all their games.

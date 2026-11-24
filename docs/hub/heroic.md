@@ -2,7 +2,7 @@
 
 - Id: `heroic` · Category: Games · Weight: medium · Licence (catalog): GPL-3.0
 - Catalog sources: flatpak `com.heroicgameslauncher.hgl`
-- Install verified: yes · Screenshots: 5 of 3 · Logo: yes
+- Install source confirmed: yes · Screenshots: 5 of 3 · Logo: yes
 
 ## Overview
 Heroic Games Launcher is an open-source game launcher for Epic Games Store, GOG and Amazon Games on Linux and other platforms. It is for Linux gamers who use those stores and want a native launcher.

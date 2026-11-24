@@ -2,7 +2,7 @@
 
 - Id: `retroarch` · Category: Games · Weight: light · Licence (catalog): GPL-3.0
 - Catalog sources: flatpak `org.libretro.RetroArch`
-- Install verified: yes · Screenshots: 4 of 3 · Logo: yes
+- Install source confirmed: yes · Screenshots: 4 of 3 · Logo: yes
 
 ## Overview
 RetroArch is a frontend for libretro emulator cores that runs many classic-console emulators under one interface. It is for retro gaming enthusiasts on Linux and other platforms.
