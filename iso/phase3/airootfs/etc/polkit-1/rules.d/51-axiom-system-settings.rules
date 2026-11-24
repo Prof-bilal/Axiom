@@ -2,14 +2,14 @@
 //
 // The Settings app and the shell run as the unprivileged desktop user and call
 // system services; each action is authorised here by polkit, never by the UI.
-// Allowed for that user only, and only while the session is local and active:
+// Allowed for members of the axiom-users group only, and only while the session is local and active:
 //   - network configuration (join/forget Wi-Fi), Wi-Fi and network enable/disable
 //   - time zone and NTP (systemd-timedated)
 //   - power profile switch (power-profiles-daemon)
 // Everything else keeps its stock policy: no user, power-off, package or
 // hostname change is granted here.
 polkit.addRule(function (action, subject) {
-    if (subject.user != "axiom" || !subject.local || !subject.active) {
+    if (!subject.isInGroup("axiom-users") || !subject.local || !subject.active) {
         return;
     }
     var allowed = {

@@ -55,7 +55,7 @@ fs.writeFileSync(path.join(sdir, "id"), "#!/bin/sh\necho 0\n", { mode: 0o755 });
 fs.writeFileSync(path.join(sdir, "pacman"), '#!/bin/sh\necho "pacman $*"\n', { mode: 0o755 });
 // Echo to stderr too: `update` captures stdout to read the snapshot number.
 fs.writeFileSync(path.join(sdir, "snapper"), '#!/bin/sh\necho "snapper $*"\necho "snapper $*" >&2\n', { mode: 0o755 });
-const srun = (...args) => spawnSync("sh", [helper, ...args], { encoding: "utf8", env: { PATH: `${sdir}:/usr/bin:/bin` } });
+const srun = (...args) => spawnSync("sh", [helper, ...args], { encoding: "utf8", env: { PATH: `${sdir}:/usr/bin:/bin`, AXIOM_PKGD_VIA: "wrapper" } });
 
 test("update takes a snapshot before the full upgrade", () => {
   const r = srun("update");
@@ -89,7 +89,7 @@ test("a failed update deletes the snapshot it just took", () => {
   fs.writeFileSync(path.join(fdir, "id"), "#!/bin/sh\necho 0\n", { mode: 0o755 });
   fs.writeFileSync(path.join(fdir, "pacman"), "#!/bin/sh\nexit 1\n", { mode: 0o755 });
   fs.writeFileSync(path.join(fdir, "snapper"), '#!/bin/sh\ncase "$*" in *print-number*) echo 42;; *) echo "snapper $*";; esac\n', { mode: 0o755 });
-  const r = spawnSync("sh", [helper, "update"], { encoding: "utf8", env: { PATH: `${fdir}:/usr/bin:/bin` } });
+  const r = spawnSync("sh", [helper, "update"], { encoding: "utf8", env: { PATH: `${fdir}:/usr/bin:/bin`, AXIOM_PKGD_VIA: "wrapper" } });
   assert.equal(r.status, 1);
   assert.ok(r.stdout.includes("snapper -c root delete 42"));
 });
@@ -108,7 +108,35 @@ test("without snapper the snapshot-backed verbs refuse and never run pacman", ()
   const nodir = fs.mkdtempSync(path.join(os.tmpdir(), "pkgd-nosnap-"));
   fs.writeFileSync(path.join(nodir, "id"), "#!/bin/sh\necho 0\n", { mode: 0o755 });
   fs.writeFileSync(path.join(nodir, "pacman"), '#!/bin/sh\necho "pacman $*"\n', { mode: 0o755 });
-  const r = spawnSync("/bin/sh", [helper, "update"], { encoding: "utf8", env: { PATH: nodir } });
+  const r = spawnSync("/bin/sh", [helper, "update"], { encoding: "utf8", env: { PATH: nodir, AXIOM_PKGD_VIA: "wrapper" } });
   assert.equal(r.status, 3);
   assert.ok(!r.stdout.includes("pacman"));
+});
+
+test("update and rollback refuse a direct call (only their own polkit action reaches them)", () => {
+  const direct = (...a) => spawnSync("sh", [helper, ...a], { encoding: "utf8", env: { PATH: `${sdir}:/usr/bin:/bin` } });
+  for (const args of [["update"], ["rollback", "3"]]) {
+    const r = direct(...args);
+    assert.equal(r.status, 2, args.join(" "));
+    assert.ok(!r.stdout.includes("pacman") && !r.stdout.includes("snapper"), args.join(" "));
+  }
+});
+
+test("the wrappers set the marker for update and rollback", () => {
+  for (const w of ["axiom-pkg-update", "axiom-pkg-rollback"]) {
+    assert.match(fs.readFileSync(path.join(here, "../../system/pkgd", w), "utf8"), /AXIOM_PKGD_VIA=wrapper/);
+  }
+});
+
+test("install hands the detached signature to pacman and logs the digest", () => {
+  const idir = fs.mkdtempSync(path.join(os.tmpdir(), "pkgd-inst-"));
+  fs.writeFileSync(path.join(idir, "id"), "#!/bin/sh\necho 0\n", { mode: 0o755 });
+  fs.writeFileSync(path.join(idir, "logger"), '#!/bin/sh\necho "logger $*"\n', { mode: 0o755 });
+  fs.writeFileSync(path.join(idir, "pacman"), '#!/bin/sh\nfor a; do case "$a" in */package) ls "$a" "$a.sig" 2>&1;; esac; done\n', { mode: 0o755 });
+  const pkg = path.join(idir, "x.pkg.tar.zst");
+  fs.writeFileSync(pkg, "data");
+  fs.writeFileSync(pkg + ".sig", "sig");
+  const r = spawnSync("sh", [helper, "install", pkg], { encoding: "utf8", env: { PATH: `${idir}:/usr/bin:/bin`, AXIOM_PKGD_TMP: idir } });
+  assert.match(r.stdout, /logger -t axiom-pkgd install x\.pkg\.tar\.zst sha256=[0-9a-f]{64} signed=yes/);
+  assert.match(r.stdout, /package\.sig/);
 });

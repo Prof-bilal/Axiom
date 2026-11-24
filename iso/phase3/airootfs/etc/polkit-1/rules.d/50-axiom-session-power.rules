@@ -7,7 +7,8 @@
 // reserves that for administrators, so Shut Down and Restart would be denied
 // with "interactive authentication required".
 //
-// Allow exactly that: the desktop user, in a local, active session. No other
+// Allow exactly that: a member of the axiom-users group (the installer adds the
+// account it creates; the live user is in it too), in a local, active session. No other
 // user, remote or inactive session, and no other action is affected. Suspend,
 // hibernate and inhibitor-ignoring variants keep their stock policy.
 polkit.addRule(function (action, subject) {
@@ -15,7 +16,7 @@ polkit.addRule(function (action, subject) {
         "org.freedesktop.login1.power-off-multiple-sessions": true,
         "org.freedesktop.login1.reboot-multiple-sessions": true
     };
-    if (multi[action.id] && subject.user == "axiom" && subject.local && subject.active) {
+    if (multi[action.id] && subject.isInGroup("axiom-users") && subject.local && subject.active) {
         return polkit.Result.YES;
     }
 });

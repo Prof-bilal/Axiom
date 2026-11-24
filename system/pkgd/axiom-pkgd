@@ -16,8 +16,12 @@ case "$op" in
     case "$src" in /*) ;; *) echo "axiom-pkgd: path must be absolute" >&2; exit 2 ;; esac
     case "$src" in *.pkg.tar.zst|*.pkg.tar.xz) ;; *) echo "axiom-pkgd: not a package file" >&2; exit 2 ;; esac
     [ -f "$src" ] && [ ! -L "$src" ] || { echo "axiom-pkgd: no such file" >&2; exit 2; }
-    tmp=$(mktemp -d /run/axiom-pkgd.XXXXXX) || exit 1
+    tmp=$(mktemp -d "${AXIOM_PKGD_TMP:-/run}/axiom-pkgd.XXXXXX") || exit 1
     cp -- "$src" "$tmp/package" || { rm -rf "$tmp"; exit 1; }
+    # pacman -U checks <file>.sig next to the file; with LocalFileSigLevel = Required an unsigned or untrusted
+    # package is refused (audit H3). The approved file name and digest go to the journal.
+    [ -f "$src.sig" ] && [ ! -L "$src.sig" ] && cp -- "$src.sig" "$tmp/package.sig"
+    logger -t axiom-pkgd "install $(basename -- "$src") sha256=$(sha256sum "$tmp/package" | cut -d' ' -f1) signed=$([ -f "$tmp/package.sig" ] && echo yes || echo no) uid=${PKEXEC_UID:-unknown}"
     pacman -U --noconfirm -- "$tmp/package"
     rc=$?
     rm -rf "$tmp"
@@ -36,6 +40,11 @@ case "$op" in
     # Snapshot-backed operations (ADR-033). snapper manages btrfs snapshots of the root.
     # A system without snapper cannot update or roll back: the helper refuses rather than
     # update without a way back.
+    # update and rollback have their own polkit actions (axiom-pkg-update, axiom-pkg-rollback). The wrappers set
+    # AXIOM_PKGD_VIA; pkexec clears the caller's environment, so approving "install" cannot reach them (audit S2).
+    case "$op" in update|rollback)
+      [ "${AXIOM_PKGD_VIA:-}" = wrapper ] || { echo "axiom-pkgd: $op must go through its own approval" >&2; exit 2; } ;;
+    esac
     command -v snapper >/dev/null 2>&1 || { echo "axiom-pkgd: snapshots are not available on this system" >&2; exit 3; }
     case "$op" in
       snapshot)

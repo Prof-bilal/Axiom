@@ -408,6 +408,25 @@ def boot_splash(target=TARGET):
         emit("log", message=f"Plymouth splash not set up; text boot used: {e}")
 
 
+def require_local_signatures(target=TARGET):
+    """Installed systems refuse unsigned or untrusted local package files (audit H3, ADR-032).
+
+    The live image keeps `LocalFileSigLevel = Optional`; the installed system needs a valid detached
+    signature from a key in the pacman keyring for `pacman -U`.
+    """
+    conf = os.path.join(target, "etc/pacman.conf")
+    if not os.path.exists(conf):
+        return
+    text = open(conf).read()
+    if re.search(r"(?m)^LocalFileSigLevel\s*=", text):
+        text = re.sub(r"(?m)^LocalFileSigLevel\s*=.*$", "LocalFileSigLevel = Required", text)
+    else:
+        text = re.sub(r"(?m)^(SigLevel\s*=.*)$", r"\1\nLocalFileSigLevel = Required", text, count=1)
+    if not re.search(r"(?m)^LocalFileSigLevel\s*=\s*Required", text):
+        raise RuntimeError("could not set LocalFileSigLevel in pacman.conf")
+    write_atomic(conf, text)
+
+
 def propagate_console(target=TARGET, cmdline="/proc/cmdline"):
     """Copy the live medium's console= options to the installed boot entries (serial testing/recovery)."""
     try:
@@ -435,6 +454,9 @@ def post_install(f, target=TARGET, started=None):
     chroot = ["arch-chroot", target]
     run(chroot + ["usermod", "-c", f["fullname"], "-s", "/usr/bin/zsh", f["username"]])
     run(chroot + ["passwd", "-l", "root"])
+    # The Axiom polkit rules (50, 51) authorize this group, not a fixed user name (audit H2).
+    run(chroot + ["groupadd", "-f", "axiom-users"])
+    run(chroot + ["usermod", "-aG", "axiom-users", f["username"]])
     # Axiom interactive shell config; without a .zshrc zsh starts its first-run wizard.
     shutil.copy2("/etc/axiom/zshrc", os.path.join(home, ".zshrc"))
     run(chroot + ["chown", f"{f['username']}:{f['username']}", f"/home/{f['username']}/.zshrc"])
@@ -476,9 +498,10 @@ def post_install(f, target=TARGET, started=None):
     shutil.copy2("/usr/local/lib/axiom-provision/axiom-provision.service", os.path.join(target, "etc/systemd/system/axiom-provision.service"))
     run(chroot + ["systemctl", "enable", "axiom-provision.service"])
     # sudo for wheel (password required)
-    with open(os.path.join(target, "etc/sudoers.d/10-wheel"), "w") as fh:
+    # Created 0440 from the start so the file is never briefly readable at the default umask (audit S6).
+    with os.fdopen(os.open(os.path.join(target, "etc/sudoers.d/10-wheel"), os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o440), "w") as fh:
         fh.write("%wheel ALL=(ALL:ALL) ALL\n")
-    os.chmod(os.path.join(target, "etc/sudoers.d/10-wheel"), 0o440)
+    require_local_signatures(target)
     propagate_console(target)
     boot_splash(target)
     progress(97, "Finishing up", "", started)

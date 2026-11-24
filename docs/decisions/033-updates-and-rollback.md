@@ -31,3 +31,9 @@ update. Phase 7 exit requires both.
   only, snapshot descriptions are checked, and without snapper the verbs refuse and pacman never runs.
 - QEMU on an installed btrfs system: update, then a deliberately bad update, then rollback to
   the snapshot; serial and screenshots kept as evidence.
+
+## Amendment (2026-11-24, pre-Phase-8 audit S2)
+
+`axiom-pkgd update` and `rollback` now refuse unless called through `axiom-pkg-update` / `axiom-pkg-rollback`, which set
+`AXIOM_PKGD_VIA=wrapper` (pkexec clears the caller's environment). Approving "install a package" can therefore no longer
+approve an update or a rollback. `sync` and `remove` snapshot first on installed systems, and `remove` refuses core packages.

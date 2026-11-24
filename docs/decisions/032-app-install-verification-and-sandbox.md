@@ -43,3 +43,16 @@ was installed. The desktop UI should show these states from real results.
 - Headless App Installer with a signed and an unsigned sample file; screenshots of each state.
 - QEMU: an unsigned AppImage asks for admin; a signed one installs without a prompt; the
   audit line is written; a probe inside the sandbox cannot read `~/.ssh`.
+
+## Amendment (2026-11-24, pre-Phase-8 audit H3)
+
+Two different trust mechanisms were conflated and are now separate:
+
+- **Packages (`pacman -U`)** are verified by pacman's GPG keyring, not minisign. Installed systems set
+  `LocalFileSigLevel = Required` (`require_local_signatures` in `installer/axiom_install.py`); the live image keeps
+  `Optional`. `axiom-pkgd install` copies `<file>.sig` next to the staged package so pacman can check it, and logs
+  the file name, sha256 and whether a signature was present. An unsigned package, or one signed by a key that is not in
+  the keyring, is refused. To trust a publisher the admin imports and locally signs the key with `pacman-key`.
+- **AppImages** keep the minisign check against `/usr/share/axiom/keys/axiom.pub`. That public key is **not yet shipped**:
+  the maintainer must generate the pair (`minisign -G`), keep the secret key outside the repository, and commit only the
+  `.pub` under `iso/phase3/airootfs/usr/share/axiom/keys/`. Until then every AppImage is "unsigned" and needs admin approval.

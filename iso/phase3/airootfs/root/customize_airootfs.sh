@@ -9,7 +9,10 @@ if ! id axiom >/dev/null 2>&1; then
 fi
 # `tty` is required so the session can write its readiness marker to the serial
 # console (used only for QEMU evidence, never a product dependency).
-usermod -aG wheel,video,input,audio,rfkill,tty axiom
+groupadd -f axiom-users
+# wheel is live-only: polkit admin identities are wheel, so Hub installs on the live image need it (audit S1).
+# The installer gives the installed user a password and wheel; the live user has no password by design.
+usermod -aG wheel,video,input,audio,rfkill,tty,axiom-users axiom
 # Rootless podman (click-to-install .deb in distrobox, ADR-028) needs subordinate ID ranges.
 grep -q '^axiom:' /etc/subuid 2>/dev/null || echo 'axiom:100000:65536' >> /etc/subuid
 grep -q '^axiom:' /etc/subgid 2>/dev/null || echo 'axiom:100000:65536' >> /etc/subgid
