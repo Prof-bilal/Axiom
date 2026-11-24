@@ -288,9 +288,14 @@ class ProgressTracker:
         self.stage = "Preparing the disk"
         self.detail = ""
 
+    # Stages only move forward: pacman's second round downloads again, which must not reopen a finished stage.
+    RANK = {"Preparing the disk": 0, "Downloading Axiom": 1, "Installing the system": 2, "Setting up startup": 3}
+
     def _set(self, pct, stage, detail=""):
         self.pct = max(self.pct, min(pct, 99.0))
-        self.stage, self.detail = stage, detail
+        if self.RANK[stage] >= self.RANK[self.stage]:
+            self.stage = stage
+        self.detail = detail
 
     def feed(self, text):
         """Consume a chunk of output; returns True if the visible state changed."""

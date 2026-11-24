@@ -195,6 +195,15 @@ class Progress(unittest.TestCase):
         self.assertEqual(tr.stage, "Installing the system")
         self.assertEqual(tr.detail, "Package 111 of 159: cryptsetup")
 
+    def test_second_download_round_does_not_reopen_the_install_stage(self):
+        tr = ai.ProgressTracker()
+        tr.feed(":: Retrieving packages...\n" + self.DL1)
+        tr.feed(self.INST1)
+        self.assertEqual(tr.stage, "Installing the system")
+        tr.feed(":: Retrieving packages...\n" + self.DL1)
+        self.assertEqual(tr.stage, "Installing the system")
+        self.assertIn("downloaded", tr.detail)
+
     def test_disk_phase_is_capped_before_downloads(self):
         tr = ai.ProgressTracker()
         for _ in range(30):
