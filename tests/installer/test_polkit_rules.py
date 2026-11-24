@@ -66,3 +66,14 @@ class LocalSignatures(unittest.TestCase):
         out = self._conf("[options]\nSigLevel = Required DatabaseOptional\nLocalFileSigLevel = Optional\n")
         self.assertNotIn("Optional\n", out.split("SigLevel = Required DatabaseOptional")[1])
         self.assertEqual(out.count("LocalFileSigLevel"), 1)
+
+
+class IconCache(unittest.TestCase):
+    """The overlay's Axiom icons are only found if the hicolor cache is rebuilt (installed and live)."""
+    def test_installer_rebuilds_the_hicolor_cache_after_the_overlay(self):
+        src = open(os.path.join(REPO, "installer/axiom_install.py")).read()
+        self.assertLess(src.index("apply_overlay(target)"), src.index("gtk-update-icon-cache"))
+
+    def test_live_image_rebuilds_the_hicolor_cache(self):
+        self.assertIn("gtk-update-icon-cache -q -f -t /usr/share/icons/hicolor",
+                      read("iso/phase3/airootfs/root/customize_airootfs.sh"))

@@ -447,6 +447,12 @@ def propagate_console(target=TARGET, cmdline="/proc/cmdline"):
 def post_install(f, target=TARGET, started=None):
     progress(88, "Adding the Axiom desktop", "", started)
     apply_overlay(target)
+    # The overlay adds Axiom app icons to the hicolor theme. The package's icon-theme.cache does not list
+    # them, so Quickshell would show generic icons for those apps; rebuild the cache (audit follow-up).
+    soft = subprocess.run(["arch-chroot", target, "gtk-update-icon-cache", "-q", "-f", "-t", "/usr/share/icons/hicolor"],
+                          env=ENV, capture_output=True, text=True)
+    if soft.returncode != 0:
+        print(f"warning: could not rebuild the icon cache: {soft.stderr.strip()}", file=sys.stderr)
     shutil.copy2("/etc/axiom/os-release", os.path.join(target, "etc/os-release")) if os.path.exists(
         "/etc/axiom/os-release") else None
     progress(93, "Creating your account", "", started)

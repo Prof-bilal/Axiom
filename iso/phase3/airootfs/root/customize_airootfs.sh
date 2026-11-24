@@ -19,6 +19,8 @@ grep -q '^axiom:' /etc/subgid 2>/dev/null || echo 'axiom:100000:65536' >> /etc/s
 
 # Compile the Axiom GSettings overrides (window button layout for GTK title bars).
 glib-compile-schemas /usr/share/glib-2.0/schemas
+# Axiom app icons are copied into hicolor after the package hooks ran; rebuild its cache so they resolve.
+gtk-update-icon-cache -q -f -t /usr/share/icons/hicolor
 
 # Session entry points are executable.
 chmod 0755 /usr/local/bin/axiom-session /usr/local/bin/axiom-shell /usr/local/bin/axiom-greeting /usr/local/bin/axiom-terminal
