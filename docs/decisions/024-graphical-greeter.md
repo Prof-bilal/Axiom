@@ -155,3 +155,9 @@ Known follow-up: `tests/phase6-install.py`'s installed stage still reads the
 curses VT ("Welcome back", F10 hints) and will need a graphical-safe check
 (screenshot plus QEMU key events) once the ISO is rebuilt. That file is outside
 this change's ownership and was not edited.
+
+## Amendment (2026-11-24): the graphical greeter is the default
+
+`axiom-greeter` now tries the glass QML greeter first and draws the curses screen only when it cannot start (or when
+`AXIOM_GREETER_GRAPHICAL=0`, `--curses` or `AXIOM_GREETER_TUI=1` is set). The curses screen stays as the rollback so a broken
+Wayland stack never locks the user out. Not yet verified through real greetd on an installed system (needs an ISO build and a QEMU run).

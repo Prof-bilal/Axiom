@@ -156,22 +156,29 @@ class Accounts(unittest.TestCase):
 
 
 class Fallback(unittest.TestCase):
-    def test_curses_is_the_default_login_and_skips_the_graphical_greeter(self):
+    def test_curses_is_skipped_when_graphical_is_opted_out(self):
+        calls = []
+        with mock.patch.dict(os.environ, {"AXIOM_GREETER_GRAPHICAL": "0"}):
+            rc = g.run(graphical=lambda users: calls.append("graphical") or 0,
+                       setup=lambda: calls.append("setup"), wrap=lambda fn: calls.append(fn))
+        self.assertEqual((rc, calls), (0, ["setup", g.main]))
+
+    def test_graphical_greeter_is_the_default(self):
         calls = []
         with mock.patch.dict(os.environ, {}, clear=False):
             os.environ.pop("AXIOM_GREETER_GRAPHICAL", None)
             rc = g.run(graphical=lambda users: calls.append("graphical") or 0,
                        setup=lambda: calls.append("setup"), wrap=lambda fn: calls.append(fn))
-        self.assertEqual((rc, calls), (0, ["setup", g.main]))
+        self.assertEqual((rc, calls), (0, ["graphical"]))
 
-    def test_graphical_greeter_runs_only_when_opted_in(self):
+    def test_graphical_greeter_runs_when_opted_in_explicitly(self):
         calls = []
         with mock.patch.dict(os.environ, {"AXIOM_GREETER_GRAPHICAL": "1"}):
             rc = g.run(graphical=lambda users: 0, setup=lambda: calls.append("setup"),
                        wrap=lambda fn: calls.append(fn))
         self.assertEqual((rc, calls), (0, []))
 
-    def test_curses_draws_when_the_opted_in_graphical_greeter_cannot_start(self):
+    def test_curses_draws_when_the_graphical_greeter_cannot_start(self):
         calls = []
         with mock.patch.dict(os.environ, {"AXIOM_GREETER_GRAPHICAL": "1"}):
             rc = g.run(graphical=lambda users: 1, setup=lambda: calls.append("setup"),

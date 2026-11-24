@@ -185,11 +185,14 @@ def run_graphical(users=None, env=None, popen=subprocess.Popen):
 
 
 def run(preview=False, graphical=None, setup=None, wrap=None):
-    """Curses login by default. AXIOM_GREETER_GRAPHICAL=1 tries the QML greeter first (ADR-024)."""
+    """The glass QML greeter first (ADR-024); the curses screen if it cannot start.
+
+    AXIOM_GREETER_GRAPHICAL=0 skips the graphical greeter (the curses screen is also the rollback if Wayland is broken).
+    """
     graphical = graphical or run_graphical
     setup = setup or (lambda: tui.setup_console(bg=LOGIN_BG))
     wrap = wrap or tui.run
-    if os.environ.get("AXIOM_GREETER_GRAPHICAL") == "1":
+    if os.environ.get("AXIOM_GREETER_GRAPHICAL") != "0":
         try:
             started = graphical(human_users())
         except OSError:
