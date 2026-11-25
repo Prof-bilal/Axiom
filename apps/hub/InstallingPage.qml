@@ -109,7 +109,7 @@ Item {
             anchors.right: parent.right
             spacing: 10
             topPadding: 6
-            HubButton { visible: page.be.busy; enabled: page.be.cancellable; primary: false; text: "Cancel"; onClicked: page.be.cancel() }
+            HubButton { visible: page.be.busy; enabled: page.be.canCancel; primary: false; text: page.be.cancelNote.length > 0 ? "Can't cancel now" : "Cancel"; onClicked: page.be.cancel() }
             HubButton { visible: page.be.done; text: page.failed ? "Close" : "Done"; onClicked: hub.closeProgress() }
         }
     }

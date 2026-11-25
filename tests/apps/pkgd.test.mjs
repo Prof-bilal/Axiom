@@ -4,16 +4,19 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
-import { spawnSync } from "node:child_process";
+import { spawn, spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const helper = path.join(here, "../../system/pkgd/axiom-pkgd");
 const dir = fs.mkdtempSync(path.join(os.tmpdir(), "pkgd-"));
+// Never touch the real /run lock or the real systemd in tests: a temp lock file and a systemd dir that does not exist.
+const LOCKFILE = path.join(dir, "lock");
+const BASE = { AXIOM_PKGD_LOCK: LOCKFILE, AXIOM_PKGD_SYSTEMD_DIR: "/nonexistent" };
 fs.writeFileSync(path.join(dir, "id"), "#!/bin/sh\necho 0\n", { mode: 0o755 });
 fs.writeFileSync(path.join(dir, "pacman"), '#!/bin/sh\necho "pacman $*"\n', { mode: 0o755 });
 const live = fs.mkdtempSync(path.join(os.tmpdir(), "pkgd-live-"));
-const run = (...args) => spawnSync("sh", [helper, ...args], { encoding: "utf8", env: { PATH: `${dir}:/usr/bin:/bin`, AXIOM_PKGD_LIVE_DIR: live } });
+const run = (...args) => spawnSync("sh", [helper, ...args], { encoding: "utf8", env: { ...BASE, PATH: `${dir}:/usr/bin:/bin`, AXIOM_PKGD_LIVE_DIR: live } });
 
 test("on the live image sync and remove reach pacman with fixed flags", () => {
   assert.equal(run("sync", "neovim").stdout.trim(), "pacman -Sy --noconfirm --needed -- neovim");
@@ -55,7 +58,7 @@ fs.writeFileSync(path.join(sdir, "id"), "#!/bin/sh\necho 0\n", { mode: 0o755 });
 fs.writeFileSync(path.join(sdir, "pacman"), '#!/bin/sh\necho "pacman $*"\n', { mode: 0o755 });
 // Echo to stderr too: `update` captures stdout to read the snapshot number.
 fs.writeFileSync(path.join(sdir, "snapper"), '#!/bin/sh\necho "snapper $*"\necho "snapper $*" >&2\n', { mode: 0o755 });
-const srun = (...args) => spawnSync("sh", [helper, ...args], { encoding: "utf8", env: { PATH: `${sdir}:/usr/bin:/bin`, AXIOM_PKGD_VIA: "wrapper" } });
+const srun = (...args) => spawnSync("sh", [helper, ...args], { encoding: "utf8", env: { ...BASE, PATH: `${sdir}:/usr/bin:/bin`, AXIOM_PKGD_VIA: "wrapper" } });
 
 test("update takes a snapshot before the full upgrade", () => {
   const r = srun("update");
@@ -65,7 +68,7 @@ test("update takes a snapshot before the full upgrade", () => {
 });
 
 test("installed sync snapshots first and never does a partial upgrade", () => {
-  const r = spawnSync("sh", [helper, "sync", "neovim"], { encoding: "utf8", env: { PATH: `${sdir}:/usr/bin:/bin`, AXIOM_PKGD_LIVE_DIR: "/nonexistent" } });
+  const r = spawnSync("sh", [helper, "sync", "neovim"], { encoding: "utf8", env: { ...BASE, PATH: `${sdir}:/usr/bin:/bin`, AXIOM_PKGD_LIVE_DIR: "/nonexistent" } });
   assert.equal(r.status, 0);
   const lines = r.stdout.trim().split("\n");
   assert.equal(lines[0], "snapper -c root create --type single --description before sync");
@@ -73,13 +76,14 @@ test("installed sync snapshots first and never does a partial upgrade", () => {
 });
 
 test("installed remove snapshots first and refuses without snapper", () => {
-  const env = { PATH: `${sdir}:/usr/bin:/bin`, AXIOM_PKGD_LIVE_DIR: "/nonexistent" };
+  const env = { ...BASE, PATH: `${sdir}:/usr/bin:/bin`, AXIOM_PKGD_LIVE_DIR: "/nonexistent" };
   const r = spawnSync("sh", [helper, "remove", "neovim"], { encoding: "utf8", env });
   assert.equal(r.stdout.trim().split("\n")[0], "snapper -c root create --type single --description before remove");
   const nodir = fs.mkdtempSync(path.join(os.tmpdir(), "pkgd-nosnap2-"));
   fs.writeFileSync(path.join(nodir, "id"), "#!/bin/sh\necho 0\n", { mode: 0o755 });
   fs.writeFileSync(path.join(nodir, "pacman"), '#!/bin/sh\necho "pacman $*"\n', { mode: 0o755 });
-  const n = spawnSync("/bin/sh", [helper, "remove", "neovim"], { encoding: "utf8", env: { PATH: nodir, AXIOM_PKGD_LIVE_DIR: "/nonexistent" } });
+  fs.writeFileSync(path.join(nodir, "flock"), "#!/bin/sh\nexit 0\n", { mode: 0o755 }); // PATH is only this dir
+  const n = spawnSync("/bin/sh", [helper, "remove", "neovim"], { encoding: "utf8", env: { ...BASE, PATH: nodir, AXIOM_PKGD_LIVE_DIR: "/nonexistent" } });
   assert.equal(n.status, 3);
   assert.ok(!n.stdout.includes("pacman"));
 });
@@ -89,14 +93,14 @@ test("a failed update deletes the snapshot it just took", () => {
   fs.writeFileSync(path.join(fdir, "id"), "#!/bin/sh\necho 0\n", { mode: 0o755 });
   fs.writeFileSync(path.join(fdir, "pacman"), "#!/bin/sh\nexit 1\n", { mode: 0o755 });
   fs.writeFileSync(path.join(fdir, "snapper"), '#!/bin/sh\ncase "$*" in *print-number*) echo 42;; *) echo "snapper $*";; esac\n', { mode: 0o755 });
-  const r = spawnSync("sh", [helper, "update"], { encoding: "utf8", env: { PATH: `${fdir}:/usr/bin:/bin`, AXIOM_PKGD_VIA: "wrapper" } });
+  const r = spawnSync("sh", [helper, "update"], { encoding: "utf8", env: { ...BASE, PATH: `${fdir}:/usr/bin:/bin`, AXIOM_PKGD_VIA: "wrapper" } });
   assert.equal(r.status, 1);
   assert.ok(r.stdout.includes("snapper -c root delete 42"));
 });
 
 const fakeSync = path.join(sdir, "boot-sync");
 fs.writeFileSync(fakeSync, '#!/bin/sh\necho "boot-sync $*"\n', { mode: 0o755 });
-const rrun = (...args) => spawnSync("sh", [helper, ...args], { encoding: "utf8", env: { PATH: `${sdir}:/usr/bin:/bin`, AXIOM_PKGD_VIA: "wrapper", AXIOM_BOOT_SYNC: fakeSync } });
+const rrun = (...args) => spawnSync("sh", [helper, ...args], { encoding: "utf8", env: { ...BASE, PATH: `${sdir}:/usr/bin:/bin`, AXIOM_PKGD_VIA: "wrapper", AXIOM_BOOT_SYNC: fakeSync } });
 
 test("rollback syncs the boot files after snapper succeeds", () => {
   assert.equal(rrun("rollback", "12").stdout.trim(), "snapper -c root --ambit classic rollback 12\nboot-sync 12");
@@ -105,7 +109,7 @@ test("rollback syncs the boot files after snapper succeeds", () => {
 test("a failed boot sync after rollback is reported, not hidden", () => {
   const bad = path.join(sdir, "boot-sync-bad");
   fs.writeFileSync(bad, "#!/bin/sh\nexit 1\n", { mode: 0o755 });
-  const r = spawnSync("sh", [helper, "rollback", "12"], { encoding: "utf8", env: { PATH: `${sdir}:/usr/bin:/bin`, AXIOM_PKGD_VIA: "wrapper", AXIOM_BOOT_SYNC: bad } });
+  const r = spawnSync("sh", [helper, "rollback", "12"], { encoding: "utf8", env: { ...BASE, PATH: `${sdir}:/usr/bin:/bin`, AXIOM_PKGD_VIA: "wrapper", AXIOM_BOOT_SYNC: bad } });
   assert.equal(r.status, 4);
   assert.match(r.stderr, /do not reboot/);
 });
@@ -123,13 +127,14 @@ test("without snapper the snapshot-backed verbs refuse and never run pacman", ()
   const nodir = fs.mkdtempSync(path.join(os.tmpdir(), "pkgd-nosnap-"));
   fs.writeFileSync(path.join(nodir, "id"), "#!/bin/sh\necho 0\n", { mode: 0o755 });
   fs.writeFileSync(path.join(nodir, "pacman"), '#!/bin/sh\necho "pacman $*"\n', { mode: 0o755 });
-  const r = spawnSync("/bin/sh", [helper, "update"], { encoding: "utf8", env: { PATH: nodir, AXIOM_PKGD_VIA: "wrapper" } });
+  fs.writeFileSync(path.join(nodir, "flock"), "#!/bin/sh\nexit 0\n", { mode: 0o755 }); // PATH is only this dir
+  const r = spawnSync("/bin/sh", [helper, "update"], { encoding: "utf8", env: { ...BASE, PATH: nodir, AXIOM_PKGD_VIA: "wrapper" } });
   assert.equal(r.status, 3);
   assert.ok(!r.stdout.includes("pacman"));
 });
 
 test("update and rollback refuse a direct call (only their own polkit action reaches them)", () => {
-  const direct = (...a) => spawnSync("sh", [helper, ...a], { encoding: "utf8", env: { PATH: `${sdir}:/usr/bin:/bin` } });
+  const direct = (...a) => spawnSync("sh", [helper, ...a], { encoding: "utf8", env: { ...BASE, PATH: `${sdir}:/usr/bin:/bin` } });
   for (const args of [["update"], ["rollback", "3"]]) {
     const r = direct(...args);
     assert.equal(r.status, 2, args.join(" "));
@@ -151,7 +156,7 @@ test("install hands the detached signature to pacman and logs the digest", () =>
   const pkg = path.join(idir, "x.pkg.tar.zst");
   fs.writeFileSync(pkg, "data");
   fs.writeFileSync(pkg + ".sig", "sig");
-  const r = spawnSync("sh", [helper, "install", pkg], { encoding: "utf8", env: { PATH: `${idir}:/usr/bin:/bin`, AXIOM_PKGD_TMP: idir } });
+  const r = spawnSync("sh", [helper, "install", pkg], { encoding: "utf8", env: { ...BASE, PATH: `${idir}:/usr/bin:/bin`, AXIOM_PKGD_TMP: idir, AXIOM_PKGD_LIVE_DIR: idir } });
   assert.match(r.stdout, /logger -t axiom-pkgd install x\.pkg\.tar\.zst sha256=[0-9a-f]{64} signed=yes/);
   assert.match(r.stdout, /package\.sig/);
 });
@@ -172,7 +177,7 @@ function bootFixture(kernels) {
     fs.writeFileSync(path.join(m, "pkgbase"), base + "\n");
   }
   fs.writeFileSync(path.join(boot, "vmlinuz-linux"), "kernel-NEWER");
-  const run = (n, extra = {}) => spawnSync("sh", [syncHelper, n], { encoding: "utf8", env: { PATH: `${bin}:/usr/bin:/bin`, AXIOM_BOOT_SNAPSHOTS: snaps, AXIOM_BOOT_DIR: boot, ...extra } });
+  const run = (n, extra = {}) => spawnSync("sh", [syncHelper, n], { encoding: "utf8", env: { ...BASE, PATH: `${bin}:/usr/bin:/bin`, AXIOM_BOOT_SNAPSHOTS: snaps, AXIOM_BOOT_DIR: boot, ...extra } });
   return { boot, run };
 }
 
@@ -198,4 +203,79 @@ test("boot sync rejects bad snapshot numbers and snapshots without kernels", () 
   const { run } = bootFixture([["6.10.1-arch1-1", "linux"]]);
   for (const bad of ["", "1;2", "x"]) assert.equal(run(bad).status, 2, JSON.stringify(bad));
   assert.equal(run("99").status, 3);
+});
+
+// ---- ADR-037: lock, transient unit, cancel, snapshot before install ------------------------------------------
+test("a second transaction is refused while another process holds the lock", async () => {
+  // A separate process holds the lock, as a running pkexec helper would. (An inherited fd would share the lock.)
+  const holder = spawn("flock", ["-n", LOCKFILE, "sleep", "5"], { stdio: "ignore" });
+  try {
+    await new Promise((r) => setTimeout(r, 400));
+    const r = spawnSync("sh", [helper, "sync", "neovim"], { encoding: "utf8", env: { ...BASE, PATH: `${dir}:/usr/bin:/bin`, AXIOM_PKGD_LIVE_DIR: "/nonexistent" } });
+    assert.equal(r.status, 5, r.stderr);
+    assert.match(r.stderr, /already running/);
+    assert.ok(!r.stdout.includes("pacman") && !r.stdout.includes("snapper"));
+  } finally {
+    holder.kill();
+  }
+});
+
+test("with systemd the transaction runs as the transient unit axiom-pkg-job", () => {
+  const udir = fs.mkdtempSync(path.join(os.tmpdir(), "pkgd-unit-"));
+  fs.writeFileSync(path.join(udir, "id"), "#!/bin/sh\necho 0\n", { mode: 0o755 });
+  fs.writeFileSync(path.join(udir, "systemd-run"), '#!/bin/sh\necho "systemd-run $*"\n', { mode: 0o755 });
+  const r = spawnSync("sh", [helper, "sync", "neovim"], { encoding: "utf8", env: { PATH: `${udir}:/usr/bin:/bin`, AXIOM_PKGD_LOCK: path.join(udir, "lock"), AXIOM_PKGD_SYSTEMD_DIR: udir, AXIOM_PKGD_LIVE_DIR: udir } });
+  assert.equal(r.status, 0, r.stderr);
+  assert.equal(r.stdout.trim(), "systemd-run --unit=axiom-pkg-job --collect --wait --pipe --quiet -- pacman -Sy --noconfirm --needed -- neovim");
+});
+
+function cancelEnv(journal, active = true) {
+  const cdir = fs.mkdtempSync(path.join(os.tmpdir(), "pkgd-cancel-"));
+  fs.writeFileSync(path.join(cdir, "id"), "#!/bin/sh\necho 0\n", { mode: 0o755 });
+  fs.writeFileSync(path.join(cdir, "systemctl"), `#!/bin/sh\ncase "$1" in is-active) exit ${active ? 0 : 3};; stop) echo "systemctl $*";; esac\n`, { mode: 0o755 });
+  fs.writeFileSync(path.join(cdir, "journalctl"), `#!/bin/sh\ncat <<'EOJ'\n${journal}\nEOJ\n`, { mode: 0o755 });
+  return { PATH: `${cdir}:/usr/bin:/bin` };
+}
+
+test("cancel stops the job while pacman is still downloading", () => {
+  const r = spawnSync("sh", [helper, "cancel"], { encoding: "utf8", env: cancelEnv("Total ( 1/4)  10 MiB  2 MiB/s 00:03 [###] 40%") });
+  assert.equal(r.status, 0, r.stderr);
+  assert.equal(r.stdout.trim(), "systemctl stop axiom-pkg-job.service");
+});
+
+test("cancel is refused once pacman is changing the system", () => {
+  for (const line of ["(1/3) installing neovim", "(12/40) upgrading glibc", "( 2/5) removing foo"]) {
+    const r = spawnSync("sh", [helper, "cancel"], { encoding: "utf8", env: cancelEnv(line) });
+    assert.equal(r.status, 6, line);
+    assert.match(r.stderr, /too late/);
+    assert.ok(!r.stdout.includes("systemctl stop"), line);
+  }
+});
+
+test("cancel with no job running says so", () => {
+  const r = spawnSync("sh", [helper, "cancel"], { encoding: "utf8", env: cancelEnv("", false) });
+  assert.equal(r.status, 7);
+  assert.match(r.stderr, /no install is running/);
+});
+
+test("install (pacman -U) snapshots first on an installed system and refuses without snapper", () => {
+  const idir = fs.mkdtempSync(path.join(os.tmpdir(), "pkgd-instsnap-"));
+  fs.writeFileSync(path.join(idir, "id"), "#!/bin/sh\necho 0\n", { mode: 0o755 });
+  fs.writeFileSync(path.join(idir, "logger"), "#!/bin/sh\n", { mode: 0o755 });
+  fs.writeFileSync(path.join(idir, "pacman"), '#!/bin/sh\necho "pacman $*"\n', { mode: 0o755 });
+  fs.writeFileSync(path.join(idir, "flock"), "#!/bin/sh\nexit 0\n", { mode: 0o755 });
+  const pkg = path.join(idir, "x.pkg.tar.zst");
+  fs.writeFileSync(pkg, "d");
+  const env = { PATH: idir, AXIOM_PKGD_TMP: idir, AXIOM_PKGD_LIVE_DIR: "/nonexistent", AXIOM_PKGD_LOCK: path.join(idir, "lock"), AXIOM_PKGD_SYSTEMD_DIR: "/nonexistent" };
+  // PATH is only idir: provide the few tools the script needs.
+  for (const tool of ["cp", "rm", "mktemp", "sha256sum", "cut", "basename"]) fs.symlinkSync(spawnSync("sh", ["-c", `command -v ${tool}`], { encoding: "utf8" }).stdout.trim(), path.join(idir, tool));
+  const refused = spawnSync("/bin/sh", [helper, "install", pkg], { encoding: "utf8", env });
+  assert.equal(refused.status, 3, refused.stderr);
+  assert.ok(!refused.stdout.includes("pacman -U"));
+  fs.writeFileSync(path.join(idir, "snapper"), '#!/bin/sh\necho "snapper $*"\n', { mode: 0o755 });
+  const ok = spawnSync("/bin/sh", [helper, "install", pkg], { encoding: "utf8", env });
+  assert.equal(ok.status, 0, ok.stderr);
+  const lines = ok.stdout.trim().split("\n");
+  assert.equal(lines[0], "snapper -c root create --type single --description before install");
+  assert.match(lines[1], /^pacman -U --noconfirm -- /);
 });

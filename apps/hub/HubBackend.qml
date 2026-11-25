@@ -37,6 +37,12 @@ Item {
     property string error: ""
     property string log: ""
     property bool cancellable: true
+    property var curSource: null
+    // pacman: cancel only before it starts changing the system (axiom-pkgd refuses later). Other backends can always stop.
+    readonly property bool canCancel: busy && cancellable && !(curSource && curSource.type === "pacman" && step >= 2)
+    property var queue: []           // { app, act } waiting for the current job; asking for the same thing twice is ignored
+    property bool externalJob: false // an install started earlier (another Hub window) is still running
+    property string cancelNote: ""
     property string status: "Ready to install applications"
 
     signal finished(bool ok)
@@ -103,6 +109,7 @@ Item {
         })
         local.resolveHome(function () {})
         refreshInstalled()
+        pollJob()
         // Warm the search index in the background (conditional download, at most once a day).
         runner.run([searchBin, "refresh"], function () {})
     }
@@ -155,8 +162,14 @@ Item {
     }
 
     function run(app, act) {
-        if (busy) return
+        if (busy || externalJob) {
+            // A busy request is queued, not dropped; asking for the same thing again changes nothing.
+            var r = B.enqueue(queue, busy && current ? { id: current.id, act: action } : null, app, act)
+            if (r.accepted) { queue = r.queue; status = "Queued: " + app.name }
+            return
+        }
         var src = B.chooseSource(app, available)
+        curSource = src
         var argv = null
         if (src) argv = act === "remove" ? B.removeArgv(src, local.home) : act === "update" ? B.updateArgv(src, local.home) : B.installArgv(src, local.home)
         begin(app, act, true)
@@ -180,14 +193,27 @@ Item {
     }
 
     function begin(app, act, canCancel) {
-        current = app; action = act; percent = -1; step = 0; error = ""; log = ""
+        current = app; action = act; percent = -1; step = 0; error = ""; log = ""; canceled = false; cancelNote = ""
         done = false; busy = true; cancellable = canCancel
         status = (act === "remove" ? "Removing " : "Installing ") + app.name + "..."
     }
 
     function fail(message) { error = message; busy = false; done = true; status = message; finished(false) }
 
-    function cancel() { if (busy && cancellable) { proc.running = false; canceled = true } }
+    // pacman runs as a root unit, so the helper stops it (and refuses once the system is being changed); other
+    // backends are user processes we can stop directly. `canceled` is only set when a stop was really requested.
+    function cancel() {
+        if (!canCancel || canceled) return
+        if (curSource && curSource.type === "pacman") {
+            runner.run(["pkexec", B.HELPER, "cancel"], function (r) {
+                if (r.code === 0) canceled = true
+                else cancelNote = B.exitMessage(r.code) || "Could not cancel."
+            })
+        } else {
+            canceled = true
+            proc.running = false
+        }
+    }
     property bool canceled: false
 
     function onLine(line) {
@@ -203,8 +229,7 @@ Item {
         busy = false; done = true
         if (canceled) { canceled = false; error = "Canceled."; status = "Canceled" }
         else if (code !== 0) {
-            var lines = log.trim().split("\n")
-            error = lines[lines.length - 1] || "The command failed."
+            error = B.exitMessage(code) || B.errorLine(log)
             status = error
         } else {
             percent = 100; step = 3
@@ -212,7 +237,28 @@ Item {
         }
         refreshInstalled()
         finished(code === 0 && error === "")
+        if (queue.length > 0) next.restart()
     }
+
+    // The next queued request starts a moment later, so the screen can show this one's result first.
+    Timer { id: next; interval: 800; onTriggered: be.startNext() }
+    function startNext() {
+        if (busy || externalJob || queue.length === 0) return
+        var q = queue[0]
+        queue = queue.slice(1)
+        run(q.app, q.act)
+    }
+
+    // An install started by another Hub window keeps running as the unit axiom-pkg-job; follow it, don't start a second.
+    function pollJob() {
+        runner.run(["systemctl", "show", "axiom-pkg-job.service", "--property=ActiveState", "--value"], function (r) {
+            var active = r.code === 0 && /^(active|activating)/.test(r.out.trim())
+            externalJob = active && !busy
+            if (externalJob) { status = "An install is running"; jobPoll.restart() }
+            else if (queue.length > 0) startNext()
+        })
+    }
+    Timer { id: jobPoll; interval: 3000; onTriggered: be.pollJob() }
 
     Process {
         id: proc

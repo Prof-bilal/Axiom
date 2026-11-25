@@ -7,7 +7,7 @@ import { fileURLToPath } from "node:url";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const load = (f) => fs.readFileSync(path.join(here, "../../apps/hub", f), "utf8").replace(/^\.pragma library\s*$/m, "");
-const B = new Function(load("catalog.js") + load("backends.js") + "; return { CATALOG, flathubRemoteArgv, stepFromLine: (x) => stepFromLine(x), chooseSource, installArgv, removeArgv, updateArgv, parseProgress, stepFor, installedIds, STEPS };")();
+const B = new Function(load("catalog.js") + load("backends.js") + "; return { CATALOG, flathubRemoteArgv, stepFromLine: (x) => stepFromLine(x), chooseSource, installArgv, removeArgv, updateArgv, parseProgress, stepFor, installedIds, STEPS, errorLine, exitMessage, enqueue };")();
 
 test("Flatpak installs are user-scope argv with the ref last", () => {
   assert.deepEqual(B.installArgv({ type: "flatpak", ref: "org.videolan.VLC" }, "/home/u"),
@@ -97,4 +97,37 @@ test("npm and pipx installs are detected from their own listings", () => {
   assert.deepEqual(B.installedIds(cat, "", "", npm, pipx), ["codex", "opencode", "aider"]);
   assert.deepEqual(B.installedIds(cat, "", "", "", ""), []);
   assert.deepEqual(B.installedIds(cat, "", "neovim", "", ""), ["neovim"]);
+});
+
+test("the error shown is the line that says what went wrong, not the last progress line", () => {
+  const log = "resolving dependencies...\n:: Retrieving packages...\nerror: failed retrieving file 'x' from mirror: 404\n( 1/3) installing foo [####] 100%\n";
+  assert.equal(B.errorLine(log), "error: failed retrieving file 'x' from mirror: 404");
+});
+
+test("with no error wording it falls back to the last non-progress line, then to a generic message", () => {
+  assert.equal(B.errorLine("Preparing\nAll done soon\n(1/2) installing a\n"), "All done soon");
+  assert.equal(B.errorLine("(1/2) installing a\n50%\n"), "The command failed.");
+  assert.equal(B.errorLine(""), "The command failed.");
+  assert.equal(B.errorLine(undefined), "The command failed.");
+});
+
+test("helper exit codes have plain-language messages; unknown codes defer to the log", () => {
+  assert.match(B.exitMessage(5), /already running/);
+  assert.match(B.exitMessage(6), /Too late to cancel/);
+  assert.match(B.exitMessage(126), /dismissed/);
+  assert.equal(B.exitMessage(1), "");
+  assert.equal(B.exitMessage(0), "");
+});
+
+test("a request while busy is queued; the same request twice is ignored", () => {
+  const a = { id: "a", name: "A" }, b = { id: "b", name: "B" };
+  let r = B.enqueue([], { id: "a", act: "install" }, b, "install");
+  assert.equal(r.accepted, true);
+  assert.deepEqual(r.queue.map((q) => q.app.id), ["b"]);
+  r = B.enqueue(r.queue, { id: "a", act: "install" }, b, "install");
+  assert.equal(r.accepted, false, "already waiting");
+  assert.equal(r.queue.length, 1);
+  assert.equal(B.enqueue([], { id: "a", act: "install" }, a, "install").accepted, false, "already running");
+  assert.equal(B.enqueue([], { id: "a", act: "install" }, a, "remove").accepted, true, "a different action is a different request");
+  assert.equal(B.enqueue([], null, a, "install").accepted, true, "external job: nothing of ours is running");
 });

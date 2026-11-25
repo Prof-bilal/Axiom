@@ -33,6 +33,12 @@ The Hub is a static list of 97 curated apps. Search only filters that list, and 
 
 - UI: the current Hub screens are kept (Discover, Installed, App details, Installing, Local install, Sidebar, glass styling). The store-style UI rebuild is dropped. Only the engine changes: catalogue, search, sources, install path and state.
 
+## Install jobs (Stage 3, implemented)
+- `axiom-pkgd install|sync|remove|update` hold `/run/axiom-pkgd.lock` (a second request exits 5) and run the transaction as the transient unit `axiom-pkg-job` (`systemd-run --wait --pipe`). A second unit of the same name is refused by systemd, so there are two guards. The unit keeps running if the Hub window closes.
+- `axiom-pkgd cancel` stops that unit only while pacman is downloading. Once `(n/m) installing|upgrading|removing` appears in the unit's journal it exits 6 ("too late"): killing pacman mid-commit can leave a broken package and a stale `db.lck`. Cancel needs the same admin approval as an install, because it goes through the same polkit action. It was not tested against real systemd and a real pacman transaction.
+- `install` (pacman -U) now snapshots first on installed systems, like `sync` and `remove`.
+- The Hub queues a request that arrives while a job runs (the same request twice is ignored), shows the real error line instead of the last progress line, and follows a job started by another Hub window (`axiom-pkg-job` active) instead of starting a second one.
+
 ## Not decided here
 AUR (own ADR, with PKGBUILD review), AI model store, AppImage, vendor packages, PackageKit licence (Q5), and the Flathub, Arch and Flatpak format checks (Q6 to Q8).
 

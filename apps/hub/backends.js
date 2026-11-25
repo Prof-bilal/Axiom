@@ -122,3 +122,36 @@ function installedIds(catalog, flatpakOut, pacmanOut, npmOut, pipxOut) {
         })
     }).map(function (a) { return a.id })
 }
+
+// The line to show as the error: the last line that says what went wrong, not a progress line.
+// Falls back to the last non-progress line, then to a generic message.
+function errorLine(log) {
+    var lines = (log || "").split("\n").map(function (l) { return l.trim() }).filter(function (l) { return l.length > 0 })
+    var progress = /^\(\s*\d+\/\d+\)|\d+\s*%|^::|^Total\b|^(downloading|installing|checking|loading|resolving|looking|upgrading|removing|retrieving)\b/i
+    var wrong = /error|failed|cannot|can't|denied|not found|conflict|could not|couldn't|refus|unable|no such/i
+    var calm = lines.filter(function (l) { return !progress.test(l) })
+    for (var i = calm.length - 1; i >= 0; i--) if (wrong.test(calm[i])) return calm[i]
+    return calm.length > 0 ? calm[calm.length - 1] : "The command failed."
+}
+
+// Plain-language text for exit codes the helper and pkexec use (axiom-pkgd). "" means: use the log.
+function exitMessage(code) {
+    switch (code) {
+    case 3: return "System snapshots are not available, so the change was not made."
+    case 5: return "Another install or update is already running. Wait for it to finish."
+    case 6: return "Too late to cancel: the system is already being changed."
+    case 7: return "Nothing is installing right now."
+    case 126: return "The authorization was dismissed."
+    case 127: return "A required tool is missing on this system."
+    }
+    return ""
+}
+
+// Queue rule for a request that arrives while a job runs. `running` is { id, act } or null. The same request as the
+// running one, or one already waiting, changes nothing (a double click must not install twice).
+// Returns { queue, accepted }.
+function enqueue(queue, running, app, act) {
+    if (running && running.id === app.id && running.act === act) return { queue: queue, accepted: false }
+    var dup = queue.some(function (q) { return q.app.id === app.id && q.act === act })
+    return dup ? { queue: queue, accepted: false } : { queue: queue.concat([{ app: app, act: act }]), accepted: true }
+}

@@ -5,11 +5,39 @@
 # cannot be swapped after the check), sync <repo package>, remove <package>,
 # approve <sha256> (admin approval for an unsigned user install, logged),
 # snapshot <description>, update (snapshot then pacman -Syu), rollback <number>, snapshots (ADR-033).
-# sync/remove snapshot first on an installed system; sync never does a partial upgrade (audit H4).
+# install/sync/remove snapshot first on an installed system; sync never does a partial upgrade (audit H4).
+# Transactions hold a lock and run as the transient unit axiom-pkg-job; cancel stops it before the commit phase (ADR-037).
 set -u
 
 [ "$(id -u)" -eq 0 ] || { echo "axiom-pkgd: must run as root" >&2; exit 1; }
 op=${1:-}
+
+# One package transaction at a time (ADR-037). A second request is refused, not queued behind a root prompt.
+# The unit name below is a second guard: systemd refuses a second unit with the same name.
+LOCK=${AXIOM_PKGD_LOCK:-/run/axiom-pkgd.lock}
+UNIT=axiom-pkg-job
+take_lock() {
+  exec 9>"$LOCK" && flock -n 9 || { echo "axiom-pkgd: another install or update is already running" >&2; exit 5; }
+}
+
+# Run a package transaction as a transient system unit: it keeps running if the Hub window closes (owner
+# decision Q4) and `axiom-pkgd cancel` can stop it. Without systemd (tests, odd chroots) it runs directly.
+job() {
+  if [ -d "${AXIOM_PKGD_SYSTEMD_DIR:-/run/systemd/system}" ] && command -v systemd-run >/dev/null 2>&1; then
+    systemd-run --unit="$UNIT" --collect --wait --pipe --quiet -- "$@"
+  else
+    "$@"
+  fi
+}
+
+# Installed systems snapshot before any change so it can be undone; the live image has nothing to roll back to.
+snapshot_before() {
+  [ -d "${AXIOM_PKGD_LIVE_DIR:-/run/archiso}" ] && return 0
+  command -v snapper >/dev/null 2>&1 || { echo "axiom-pkgd: snapshots are not available on this system" >&2; exit 3; }
+  snapper -c root create --type single --description "before $1" || exit 1
+}
+
+case "$op" in install|update|rollback|sync|remove) take_lock ;; esac
 case "$op" in
   install)
     src=${2:-}
@@ -22,7 +50,8 @@ case "$op" in
     # package is refused (audit H3). The approved file name and digest go to the journal.
     [ -f "$src.sig" ] && [ ! -L "$src.sig" ] && cp -- "$src.sig" "$tmp/package.sig"
     logger -t axiom-pkgd "install $(basename -- "$src") sha256=$(sha256sum "$tmp/package" | cut -d' ' -f1) signed=$([ -f "$tmp/package.sig" ] && echo yes || echo no) uid=${PKEXEC_UID:-unknown}"
-    pacman -U --noconfirm -- "$tmp/package"
+    snapshot_before install || { rm -rf "$tmp"; exit 1; }
+    job pacman -U --noconfirm -- "$tmp/package"
     rc=$?
     rm -rf "$tmp"
     exit $rc
@@ -56,7 +85,7 @@ case "$op" in
       update)
         # Snapshot first; only then a full upgrade. If the snapshot fails, nothing is upgraded.
         n=$(snapper -c root create --type single --description "before update" --print-number) || exit 1
-        pacman -Syu --noconfirm
+        job pacman -Syu --noconfirm
         rc=$?
         # A failed update changed nothing worth returning to: drop its snapshot (audit R6).
         if [ $rc -ne 0 ]; then
@@ -91,19 +120,26 @@ case "$op" in
           echo "axiom-pkgd: refusing to remove a core package" >&2; exit 2 ;;
       esac
     fi
-    live=${AXIOM_PKGD_LIVE_DIR:-/run/archiso}
-    if [ ! -d "$live" ]; then
-      # Installed system: snapshot first so the change can be undone; refuse without snapper.
-      command -v snapper >/dev/null 2>&1 || { echo "axiom-pkgd: snapshots are not available on this system" >&2; exit 3; }
-      snapper -c root create --type single --description "before $op" || exit 1
-    fi
-    if [ "$op" = remove ]; then exec pacman -Rns --noconfirm -- "$pkg"; fi
-    if [ -d "$live" ]; then
+    snapshot_before "$op"
+    if [ "$op" = remove ]; then job pacman -Rns --noconfirm -- "$pkg"; exit $?; fi
+    if [ -d "${AXIOM_PKGD_LIVE_DIR:-/run/archiso}" ]; then
       # Live image only: it ships no package lists and nothing persists, so a bare -Sy is harmless.
-      exec pacman -Sy --noconfirm --needed -- "$pkg"
+      job pacman -Sy --noconfirm --needed -- "$pkg"
+    else
+      # Installed: a database refresh without a full upgrade is an unsupported partial upgrade, so upgrade too.
+      job pacman -Syu --noconfirm --needed -- "$pkg"
     fi
-    # Installed: a database refresh without a full upgrade is an unsupported partial upgrade, so upgrade too.
-    exec pacman -Syu --noconfirm --needed -- "$pkg"
+    exit $?
+    ;;
+  cancel)
+    # Stop the running job, but only while pacman is still downloading. Killing it while it changes the system can
+    # leave a half-installed package and a stale db.lck. Goes through the same polkit prompt as an install.
+    systemctl is-active --quiet "$UNIT.service" || { echo "axiom-pkgd: no install is running" >&2; exit 7; }
+    if journalctl -u "$UNIT.service" -o cat --no-pager 2>/dev/null | grep -Eq '^\( *[0-9]+/[0-9]+\) (installing|upgrading|removing|reinstalling)'; then
+      echo "axiom-pkgd: too late to cancel, the system is being changed" >&2; exit 6
+    fi
+    logger -t axiom-pkgd "cancel requested uid=${PKEXEC_UID:-unknown}"
+    exec systemctl stop "$UNIT.service"
     ;;
   *) echo "axiom-pkgd: unknown operation" >&2; exit 2 ;;
 esac
