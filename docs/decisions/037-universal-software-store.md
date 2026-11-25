@@ -47,5 +47,9 @@ The Hub is a static list of 97 curated apps. Search only filters that list, and 
 ## Not decided here
 AUR (own ADR, with PKGBUILD review), AI model store, AppImage, vendor packages, PackageKit licence (Q5), and the Flathub, Arch and Flatpak format checks (Q6 to Q8).
 
+## Verification done (2026-11-25) and still to do
+Done on a development machine (Arch-based, no root): 36 engine tests and 154 Hub/pkgd tests; `tests/hub/e2e_hub_backend.py` runs the real Hub backend headless against the real engine, the real Flathub index (about 11 MB, 4,863 components) and the real pacman database: Firefox appears from the Arch repo and Flathub with a logo URL, an empty search is empty, hostile search text runs no command, the Installed list comes from the system, and the update check finishes. Index build on the real data (about 18,300 apps) took about 2.6 s.
+Not done, because they need root and a booted Axiom image: a real install, remove and cancel through `axiom-pkgd` and systemd (the job unit, the lock and the cancel rule are tested with stubs only), a real Flatpak install and its permission text (Flatpak is not on the machine used), and a check that the ISO's Python has SQLite FTS5 (the engine fails with a clear message if not). Needed before Accepted: rebuild the ISO, boot it with a network, and run the manual checks in `docs/evidence` style: search, install a small repo package, cancel one during download, install a Flatpak, see the Installed and Updates pages, close the Hub during an install and reopen it.
+
 ## Verification
 Per stage: unit tests in CI (`tests/apps`, `tests/installer`), QEMU acceptance on a networked guest with retained evidence, and performance measurements before any claim.

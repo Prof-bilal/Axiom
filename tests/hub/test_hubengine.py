@@ -51,6 +51,11 @@ FLATHUB = b"""<?xml version="1.0"?>
 </components>"""
 
 
+def offline(req, timeout=0):
+    """Opener for tests that must never reach the network: the old cached copy is kept."""
+    raise urllib.error.URLError("offline")
+
+
 def apps():
     return list(h.parse_flathub(io.BytesIO(FLATHUB)))
 
@@ -289,10 +294,56 @@ class Refresh(unittest.TestCase):
         try:
             with gzip.open(os.path.join(d, "appstream.xml.gz"), "wb") as fh:
                 fh.write(FLATHUB)
-            r = h.refresh(runner=lambda args: PACMAN_SS)
+            r = h.refresh(runner=lambda args: PACMAN_SS, opener=offline)
             self.assertEqual(r["flathub"], "fresh")
             self.assertGreater(r["apps"], 3)
             self.assertTrue(h.search(os.path.join(d, "index.sqlite"), "sketchy"))
+            # a second refresh right after is skipped: a fresh index is not rebuilt
+            again = h.refresh(runner=lambda args: self.fail("must not rebuild a fresh index"))
+            self.assertTrue(again["skipped"])
+            self.assertEqual(h.refresh(force=True, runner=lambda args: PACMAN_SS, opener=offline)["flathub"], "stale")
+        finally:
+            del os.environ["AXIOM_HUB_CACHE"]
+
+
+class Catalogs(unittest.TestCase):
+    def test_catalogue_directories_can_be_overridden_for_tests(self):
+        d = tempfile.mkdtemp()
+        with gzip.open(os.path.join(d, "x.xml.gz"), "wb") as fh:
+            fh.write(b'<components><component type="console-application"><id>rg.desktop</id><pkgname>ripgrep</pkgname></component></components>')
+        os.environ["AXIOM_HUB_CATALOGS"] = d
+        try:
+            self.assertEqual(h.load_distro_map(), {"ripgrep": {"id": "rg.desktop", "kind": "cli"}})
+        finally:
+            del os.environ["AXIOM_HUB_CATALOGS"]
+
+    def test_a_broken_catalogue_file_is_skipped(self):
+        d = tempfile.mkdtemp()
+        open(os.path.join(d, "bad.xml"), "w").write("<not xml")
+        self.assertEqual(h.load_distro_map([d]), {})
+
+
+class RefreshLock(unittest.TestCase):
+    def test_concurrent_refreshes_do_not_corrupt_each_other(self):
+        import threading
+        d = tempfile.mkdtemp()
+        os.environ["AXIOM_HUB_CACHE"] = d
+        try:
+            with gzip.open(os.path.join(d, "appstream.xml.gz"), "wb") as fh:
+                fh.write(FLATHUB)
+            results, errors = [], []
+
+            def work():
+                try:
+                    results.append(h.refresh(force=True, runner=lambda args: PACMAN_SS, opener=offline))
+                except Exception as e:  # noqa: BLE001 - the test reports any failure
+                    errors.append(e)
+            threads = [threading.Thread(target=work) for _ in range(4)]
+            [t.start() for t in threads]
+            [t.join() for t in threads]
+            self.assertEqual(errors, [])
+            self.assertEqual(len(results), 4)
+            self.assertTrue(h.index_ok(os.path.join(d, "index.sqlite")))
         finally:
             del os.environ["AXIOM_HUB_CACHE"]
 

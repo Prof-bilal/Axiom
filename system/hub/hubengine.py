@@ -7,6 +7,7 @@ one SQLite FTS5 index under $XDG_CACHE_HOME/axiom-hub. Search never installs and
 Apps are merged only by AppStream id (Flathub id, or the id the distro catalogue gives a pacman
 package, or the curated override table). A name match alone never merges two sources.
 """
+import fcntl
 import gzip
 import json
 import os
@@ -130,7 +131,9 @@ def parse_distro_catalog(fileobj):
     return out
 
 
-def load_distro_map(dirs=DISTRO_CATALOGS):
+def load_distro_map(dirs=None):
+    # AXIOM_HUB_CATALOGS (colon-separated directories) points the engine at another catalogue for tests and development.
+    dirs = dirs or [d for d in os.environ.get("AXIOM_HUB_CATALOGS", "").split(":") if d] or DISTRO_CATALOGS
     out = {}
     for d in dirs:
         if not os.path.isdir(d):
@@ -210,7 +213,12 @@ def build_index(db_path, flathub, pacman, distro_map, overrides=OVERRIDES):
         os.remove(tmp)
     db = sqlite3.connect(tmp)
     db.execute("create table apps(key text primary key, name text, summary text, kind text, icon text, cats text, sources text)")
-    db.execute("create virtual table fts using fts5(key unindexed, name, summary, refs, tokenize='unicode61 remove_diacritics 2')")
+    try:
+        db.execute("create virtual table fts using fts5(key unindexed, name, summary, refs, tokenize='unicode61 remove_diacritics 2')")
+    except sqlite3.OperationalError as e:
+        db.close()
+        os.remove(tmp)
+        raise RuntimeError("this Python's SQLite has no FTS5, so the Hub cannot search: %s" % e)
     for key, a in apps.items():
         refs = " ".join(s["ref"] for s in a["sources"])
         db.execute("insert into apps values(?,?,?,?,?,?,?)", (key, a["name"], a["summary"], a["kind"], a["icon"], json.dumps(a["cats"]), json.dumps(a["sources"])))
@@ -337,17 +345,38 @@ def run_names(argv):
 
 
 # ---- commands ----------------------------------------------------------------------------------
+def index_age(db_path):
+    """Seconds since the index was built, or None when it is missing or from another schema."""
+    if not index_ok(db_path):
+        return None
+    try:
+        db = sqlite3.connect(db_path)
+        built = int(db.execute("select v from meta where k = 'built'").fetchone()[0])
+        db.close()
+        return max(0, time.time() - built)
+    except (sqlite3.Error, ValueError, TypeError):
+        return None
+
+
 def refresh(force=False, runner=run_pacman, opener=urllib.request.urlopen):
     base = cache_dir()
     xml = os.path.join(base, "appstream.xml.gz")
-    if force and os.path.exists(xml):
-        os.utime(xml, (0, 0))
-    state = fetch_flathub(xml, opener=opener)
-    with gzip.open(xml, "rb") as fh:
-        flathub = list(parse_flathub(fh))
-    pacman = parse_pacman_search(runner(["-Ss", ""]))
-    n = build_index(os.path.join(base, "index.sqlite"), flathub, pacman, load_distro_map())
-    return {"flathub": state, "apps": n}
+    db_path = os.path.join(base, "index.sqlite")
+    # One refresh at a time: the Hub warms the index at start while the user may already be searching, and two
+    # builders would fight over the same temporary file. The second waits, then sees a fresh index and stops.
+    with open(os.path.join(base, "refresh.lock"), "w") as lock:
+        fcntl.flock(lock, fcntl.LOCK_EX)
+        age = index_age(db_path)
+        if not force and age is not None and age < 120:
+            return {"flathub": "fresh", "apps": None, "skipped": True}
+        if force and os.path.exists(xml):
+            os.utime(xml, (0, 0))
+        state = fetch_flathub(xml, opener=opener)
+        with gzip.open(xml, "rb") as fh:
+            flathub = list(parse_flathub(fh))
+        pacman = parse_pacman_search(runner(["-Ss", ""]))
+        n = build_index(db_path, flathub, pacman, load_distro_map())
+        return {"flathub": state, "apps": n}
 
 
 def main(argv):
