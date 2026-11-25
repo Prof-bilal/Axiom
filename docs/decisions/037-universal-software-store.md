@@ -8,7 +8,8 @@ Research: `research/axiom-hub-universal-store.md` and `research/hub-universal/01
 The Hub is a static list of 97 curated apps. Search only filters that list, and installs have known problems: cancel can leave root transactions running, progress parsing rarely matches pacman, and a single-package install is a full system upgrade. The product goal is search once across sources, review, one-click install, launch, with no manual downloads or terminal use.
 
 ## Decision
-1. Build a new frontend that searches the Arch sync database (local, read-only) and the Flathub AppStream index (cached). Keep pacman, Flatpak and polkit as the real backends. Do not fork a GPL store (`research/hub-universal/06-open-source-comparison.md`).
+1. Keep the current Hub UI. Replace the engine behind it: the static catalogue is swapped for live search that queries the Arch sync database (local, read-only) and the Flathub AppStream index (cached).
+   Earlier wording: build a new frontend that searches the Arch sync database (local, read-only) and the Flathub AppStream index (cached). Keep pacman, Flatpak and polkit as the real backends. Do not fork a GPL store (`research/hub-universal/06-open-source-comparison.md`).
 2. Privileged work stays in `axiom-pkgd` behind polkit. Verbs are fixed argv, input is validated, and installed systems snapshot before any change (ADR-033).
 3. Flatpak stays user scope. AppImage and vendor packages come later (ADR-032, ADR-028). AUR and GitHub-only apps are out of the MVP.
 4. Sources are matched by AppStream id, then distro id and desktop id, then a curated override file. Never by name alone, and never merged across different publishers.
@@ -29,6 +30,8 @@ The Hub is a static list of 97 curated apps. Search only filters that list, and 
 - Q2: merge `apps/software` (pacman-only browser) into the Hub. One store.
 - Q3: single-app install runs a full upgrade (`-Syu`) after a snapshot, with a clear notice on the review page. Single-package installs are not refused.
 - Q4: installs must survive closing the Hub window. Each job runs as a systemd transient unit, which keeps running after the window closes. The Hub re-attaches by unit name and reads its state and journal. No new daemon is added unless re-attach fails in testing (AGENTS.md requires a justification for any daemon).
+
+- UI: the current Hub screens are kept (Discover, Installed, App details, Installing, Local install, Sidebar, glass styling). The store-style UI rebuild is dropped. Only the engine changes: catalogue, search, sources, install path and state.
 
 ## Not decided here
 AUR (own ADR, with PKGBUILD review), AI model store, AppImage, vendor packages, PackageKit licence (Q5), and the Flathub, Arch and Flatpak format checks (Q6 to Q8).

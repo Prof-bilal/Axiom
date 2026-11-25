@@ -169,7 +169,7 @@ Open legal point (Q5): a client under Apache-2.0 talking over D-Bus to a GPL-2.0
 
 In scope:
 - Search across Arch repos and Flathub, grouped by app, with source chips.
-- Store layout: sidebar (Discover, Apps, Developer, Command line, System, Customise), hero banner, horizontal rows, one "Get" button per card, source picker on the app page.
+- Current Hub layout and components are kept. The source picker is added on the existing details page.
 - Kinds: desktop apps, developer tools, CLI tools, AI apps without models, fonts, icon themes.
 - Install, remove and update through the existing polkit path with snapshots. Flatpak in user scope.
 - Review page with trust class, permissions, size, source and the full-upgrade notice.
@@ -204,7 +204,7 @@ Stage 1: source adapters (pacman local DB, Flathub AppStream cache), one normali
 Stage 2: search and catalogue; remove the 97-entry list; search results stream per source.
 Stage 3: install engine: `install-repo` verb with snapshot, transient-unit jobs, cancel rule, queue, idempotency, desktop refresh. Requires Q3 answered.
 Stage 4: review page, trust classes, source picker, duplicate warning.
-Stage 4b: store UI rebuild (sidebar, hero, rows, cards) using the existing glass tokens. Verify with screenshots.
+Stage 4b (dropped, owner decision 2026-11-25): no store UI rebuild. The current Hub screens and glass styling stay; only the engine changes. Verify each changed screen with a screenshot.
 Stage 5: installed-app record from system listings, updates, uninstall.
 Stage 6: tests (adapters, normalization, argv builders, adversarial names, CI), QEMU acceptance on a networked guest, and performance measurements, with evidence.
 
