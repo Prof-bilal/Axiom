@@ -115,3 +115,19 @@ test("source labels", () => {
   assert.equal(E.sourceLabel({ type: "pacman" }), "Arch repository");
   assert.equal(E.sourceLabel({ type: "flatpak" }), "Flathub");
 });
+
+// Real `flatpak remote-info --user --show-metadata flathub org.mozilla.firefox` output from Flatpak 1.18.4
+// (tests/apps/fixtures/flatpak-metadata-firefox.txt), so the parser is checked against the real format.
+test("real Flatpak metadata for Firefox parses and gives sensible notes", () => {
+  const real = fs.readFileSync(path.join(here, "fixtures/flatpak-metadata-firefox.txt"), "utf8");
+  const c = E.parseFlatpakContext(real);
+  assert.deepEqual(c.shared, ["network", "ipc"]);
+  assert.ok(c.sockets.includes("wayland") && c.sockets.includes("x11"));
+  assert.deepEqual(c.devices, ["all"]);
+  assert.ok(c.filesystems.includes("xdg-download"));
+  const notes = E.permissionNotes(c);
+  assert.ok(notes.some((n) => n.level === "warn" && /all devices/.test(n.text)), "devices=all is a warning");
+  assert.ok(!notes.some((n) => /all your files|home folder/.test(n.text)), "no host or home access");
+  assert.ok(notes.some((n) => /X11/.test(n.text)));
+  assert.ok(!notes.some((n) => /talk to other apps/.test(n.text)), "[Session Bus Policy] names are not the unrestricted session-bus socket");
+});

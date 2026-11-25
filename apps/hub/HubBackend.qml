@@ -40,7 +40,8 @@ Item {
     property bool cancellable: true
     property var curSource: null
     // pacman: cancel only before it starts changing the system (axiom-pkgd refuses later). Other backends can always stop.
-    readonly property bool canCancel: busy && cancellable && !(curSource && curSource.type === "pacman" && step >= 2)
+    readonly property bool canCancel: busy && cancellable && !(curSource && curSource.type === "pacman" && pacState.committing)
+    property var pacState: B.freshPacmanState()
     property var queue: []           // { app, act } waiting for the current job; asking for the same thing twice is ignored
     property bool externalJob: false // an install started earlier (another Hub window) is still running
     property string cancelNote: ""
@@ -223,7 +224,7 @@ Item {
     }
 
     function begin(app, act, canCancel) {
-        current = app; action = act; percent = -1; step = 0; error = ""; log = ""; canceled = false; cancelNote = ""
+        current = app; action = act; percent = -1; step = 0; error = ""; log = ""; canceled = false; cancelNote = ""; pacState = B.freshPacmanState()
         done = false; busy = true; cancellable = canCancel
         status = (act === "remove" ? "Removing " : "Installing ") + app.name + "..."
     }
@@ -248,7 +249,12 @@ Item {
 
     function onLine(line) {
         log = (log + line + "\n").slice(-4000)
-        var p = B.parseProgress(line)
+        if (curSource && curSource.type === "pacman") {
+            pacState = B.pacmanProgress(pacState, line)
+            if (pacState.percent > percent) { percent = pacState.percent; step = Math.max(step, B.stepFor(percent)) }
+        }
+        // pacman's own lines drive pacState above; its hook lines "(1/3) ..." must not be read as a percentage.
+        var p = curSource && curSource.type === "pacman" ? -1 : B.parseProgress(line)
         if (p >= 0) { percent = p; step = Math.max(step, B.stepFor(p)) }
         var k = B.stepFromLine(line)
         if (k > step) step = k

@@ -12,7 +12,7 @@ const helper = path.join(here, "../../system/pkgd/axiom-pkgd");
 const dir = fs.mkdtempSync(path.join(os.tmpdir(), "pkgd-"));
 // Never touch the real /run lock or the real systemd in tests: a temp lock file and a systemd dir that does not exist.
 const LOCKFILE = path.join(dir, "lock");
-const BASE = { AXIOM_PKGD_LOCK: LOCKFILE, AXIOM_PKGD_SYSTEMD_DIR: "/nonexistent" };
+const BASE = { AXIOM_PKGD_LOCK: LOCKFILE, AXIOM_PKGD_SYSTEMD_DIR: "/nonexistent", AXIOM_PKGD_RUNDIR: dir };
 fs.writeFileSync(path.join(dir, "id"), "#!/bin/sh\necho 0\n", { mode: 0o755 });
 fs.writeFileSync(path.join(dir, "pacman"), '#!/bin/sh\necho "pacman $*"\n', { mode: 0o755 });
 const live = fs.mkdtempSync(path.join(os.tmpdir(), "pkgd-live-"));
@@ -224,32 +224,51 @@ test("with systemd the transaction runs as the transient unit axiom-pkg-job", ()
   const udir = fs.mkdtempSync(path.join(os.tmpdir(), "pkgd-unit-"));
   fs.writeFileSync(path.join(udir, "id"), "#!/bin/sh\necho 0\n", { mode: 0o755 });
   fs.writeFileSync(path.join(udir, "systemd-run"), '#!/bin/sh\necho "systemd-run $*"\n', { mode: 0o755 });
-  const r = spawnSync("sh", [helper, "sync", "neovim"], { encoding: "utf8", env: { PATH: `${udir}:/usr/bin:/bin`, AXIOM_PKGD_LOCK: path.join(udir, "lock"), AXIOM_PKGD_SYSTEMD_DIR: udir, AXIOM_PKGD_LIVE_DIR: udir } });
+  const r = spawnSync("sh", [helper, "sync", "neovim"], { encoding: "utf8", env: { PATH: `${udir}:/usr/bin:/bin`, AXIOM_PKGD_LOCK: path.join(udir, "lock"), AXIOM_PKGD_SYSTEMD_DIR: udir, AXIOM_PKGD_LIVE_DIR: udir, AXIOM_PKGD_RUNDIR: udir } });
   assert.equal(r.status, 0, r.stderr);
-  assert.equal(r.stdout.trim(), "systemd-run --unit=axiom-pkg-job --collect --wait --pipe --quiet -- pacman -Sy --noconfirm --needed -- neovim");
+  // The command runs inside a small wrapper that copies its output to a log (cancel reads it), then the real command.
+  assert.match(r.stdout.trim(), /^systemd-run --unit=axiom-pkg-job --collect --wait --pipe --quiet -- sh -c .*tee -p.* sh \S+axiom-pkg-job\.log \S+axiom-pkg-job\.log\.rc pacman -Sy --noconfirm --needed -- neovim$/s);
 });
 
-function cancelEnv(journal, active = true) {
+function cancelEnv(logText, active = true) {
   const cdir = fs.mkdtempSync(path.join(os.tmpdir(), "pkgd-cancel-"));
   fs.writeFileSync(path.join(cdir, "id"), "#!/bin/sh\necho 0\n", { mode: 0o755 });
   fs.writeFileSync(path.join(cdir, "systemctl"), `#!/bin/sh\ncase "$1" in is-active) exit ${active ? 0 : 3};; stop) echo "systemctl $*";; esac\n`, { mode: 0o755 });
-  fs.writeFileSync(path.join(cdir, "journalctl"), `#!/bin/sh\ncat <<'EOJ'\n${journal}\nEOJ\n`, { mode: 0o755 });
-  return { PATH: `${cdir}:/usr/bin:/bin` };
+  if (logText !== null) fs.writeFileSync(path.join(cdir, "axiom-pkg-job.log"), logText + "\n"); // what `job` wrote while pacman ran
+  return { PATH: `${cdir}:/usr/bin:/bin`, AXIOM_PKGD_RUNDIR: cdir };
 }
 
-test("cancel stops the job while pacman is still downloading", () => {
-  const r = spawnSync("sh", [helper, "cancel"], { encoding: "utf8", env: cancelEnv("Total ( 1/4)  10 MiB  2 MiB/s 00:03 [###] 40%") });
-  assert.equal(r.status, 0, r.stderr);
-  assert.equal(r.stdout.trim(), "systemctl stop axiom-pkg-job.service");
+// The log text is a real pacman transaction (stdout not a terminal), cut where each phase would be.
+const REAL = fs.readFileSync(path.join(here, "fixtures/pacman-piped-install.txt"), "utf8").trimEnd().split("\n");
+const commitAt = REAL.findIndex((l) => l.startsWith(":: Processing package changes"));
+
+test("cancel stops the job while pacman is still downloading (real output)", () => {
+  assert.ok(commitAt > 5, "fixture has a download phase before the commit");
+  for (const upto of [3, commitAt - 1]) { // resolving, and the end of keyring/integrity checks
+    const r = spawnSync("sh", [helper, "cancel"], { encoding: "utf8", env: cancelEnv(REAL.slice(0, upto).join("\n")) });
+    assert.equal(r.status, 0, r.stderr);
+    assert.equal(r.stdout.trim(), "systemctl stop axiom-pkg-job.service");
+  }
 });
 
-test("cancel is refused once pacman is changing the system", () => {
-  for (const line of ["(1/3) installing neovim", "(12/40) upgrading glibc", "( 2/5) removing foo"]) {
-    const r = spawnSync("sh", [helper, "cancel"], { encoding: "utf8", env: cancelEnv(line) });
-    assert.equal(r.status, 6, line);
+test("cancel is refused once pacman is changing the system (real output)", () => {
+  // from the commit marker on, and again once packages are being installed
+  for (const upto of [commitAt + 1, commitAt + 4, REAL.length]) {
+    const r = spawnSync("sh", [helper, "cancel"], { encoding: "utf8", env: cancelEnv(REAL.slice(0, upto).join("\n")) });
+    assert.equal(r.status, 6, `upto ${upto}`);
     assert.match(r.stderr, /too late/);
-    assert.ok(!r.stdout.includes("systemctl stop"), line);
+    assert.ok(!r.stdout.includes("systemctl stop"), `upto ${upto}`);
   }
+  for (const line of ["upgrading glibc...", "removing foo...", "reinstalling bar..."]) {
+    assert.equal(spawnSync("sh", [helper, "cancel"], { encoding: "utf8", env: cancelEnv(line) }).status, 6, line);
+  }
+});
+
+test("cancel is refused when the log cannot be read (phase unknown), never assumed safe", () => {
+  const r = spawnSync("sh", [helper, "cancel"], { encoding: "utf8", env: cancelEnv(null) });
+  assert.equal(r.status, 6);
+  assert.match(r.stderr, /cannot tell/);
+  assert.ok(!r.stdout.includes("systemctl stop"));
 });
 
 test("cancel with no job running says so", () => {
@@ -266,9 +285,9 @@ test("install (pacman -U) snapshots first on an installed system and refuses wit
   fs.writeFileSync(path.join(idir, "flock"), "#!/bin/sh\nexit 0\n", { mode: 0o755 });
   const pkg = path.join(idir, "x.pkg.tar.zst");
   fs.writeFileSync(pkg, "d");
-  const env = { PATH: idir, AXIOM_PKGD_TMP: idir, AXIOM_PKGD_LIVE_DIR: "/nonexistent", AXIOM_PKGD_LOCK: path.join(idir, "lock"), AXIOM_PKGD_SYSTEMD_DIR: "/nonexistent" };
+  const env = { PATH: idir, AXIOM_PKGD_TMP: idir, AXIOM_PKGD_LIVE_DIR: "/nonexistent", AXIOM_PKGD_LOCK: path.join(idir, "lock"), AXIOM_PKGD_SYSTEMD_DIR: "/nonexistent", AXIOM_PKGD_RUNDIR: idir };
   // PATH is only idir: provide the few tools the script needs.
-  for (const tool of ["cp", "rm", "mktemp", "sha256sum", "cut", "basename"]) fs.symlinkSync(spawnSync("sh", ["-c", `command -v ${tool}`], { encoding: "utf8" }).stdout.trim(), path.join(idir, tool));
+  for (const tool of ["cp", "rm", "mktemp", "sha256sum", "cut", "basename", "tee", "cat", "sh"]) fs.symlinkSync(spawnSync("sh", ["-c", `command -v ${tool}`], { encoding: "utf8" }).stdout.trim(), path.join(idir, tool));
   const refused = spawnSync("/bin/sh", [helper, "install", pkg], { encoding: "utf8", env });
   assert.equal(refused.status, 3, refused.stderr);
   assert.ok(!refused.stdout.includes("pacman -U"));
@@ -278,4 +297,36 @@ test("install (pacman -U) snapshots first on an installed system and refuses wit
   const lines = ok.stdout.trim().split("\n");
   assert.equal(lines[0], "snapper -c root create --type single --description before install");
   assert.match(lines[1], /^pacman -U --noconfirm -- /);
+});
+
+test("a new job does not start, or truncate the running job's log, while axiom-pkg-job is active", () => {
+  const udir = fs.mkdtempSync(path.join(os.tmpdir(), "pkgd-busy-"));
+  fs.writeFileSync(path.join(udir, "id"), "#!/bin/sh\necho 0\n", { mode: 0o755 });
+  fs.writeFileSync(path.join(udir, "systemd-run"), '#!/bin/sh\necho "systemd-run $*"\n', { mode: 0o755 });
+  fs.writeFileSync(path.join(udir, "systemctl"), "#!/bin/sh\nexit 0\n", { mode: 0o755 }); // is-active: yes
+  fs.writeFileSync(path.join(udir, "axiom-pkg-job.log"), "installing foo...\n");
+  const r = spawnSync("sh", [helper, "sync", "neovim"], { encoding: "utf8", env: { PATH: `${udir}:/usr/bin:/bin`, AXIOM_PKGD_LOCK: path.join(udir, "lock"), AXIOM_PKGD_SYSTEMD_DIR: udir, AXIOM_PKGD_LIVE_DIR: udir, AXIOM_PKGD_RUNDIR: udir } });
+  assert.equal(r.status, 5, r.stderr);
+  assert.ok(!r.stdout.includes("systemd-run"), "no second unit was started");
+  assert.equal(fs.readFileSync(path.join(udir, "axiom-pkg-job.log"), "utf8"), "installing foo...\n", "the running job's log is untouched");
+});
+
+test("after a cancel the helper removes a stale pacman lock, but only when no pacman is running", () => {
+  const mk = (pgrepRc) => {
+    const cdir = fs.mkdtempSync(path.join(os.tmpdir(), "pkgd-lck-"));
+    fs.writeFileSync(path.join(cdir, "id"), "#!/bin/sh\necho 0\n", { mode: 0o755 });
+    fs.writeFileSync(path.join(cdir, "logger"), "#!/bin/sh\n", { mode: 0o755 });
+    fs.writeFileSync(path.join(cdir, "systemctl"), '#!/bin/sh\ncase "$1" in is-active) exit 0;; stop) exit 0;; esac\n', { mode: 0o755 });
+    fs.writeFileSync(path.join(cdir, "pgrep"), `#!/bin/sh\nexit ${pgrepRc}\n`, { mode: 0o755 });
+    fs.writeFileSync(path.join(cdir, "axiom-pkg-job.log"), ":: Retrieving packages...\n");
+    const lck = path.join(cdir, "db.lck");
+    fs.writeFileSync(lck, "");
+    return { lck, env: { PATH: `${cdir}:/usr/bin:/bin`, AXIOM_PKGD_RUNDIR: cdir, AXIOM_PKGD_DBLOCK: lck } };
+  };
+  const none = mk(1); // pgrep finds nothing
+  assert.equal(spawnSync("sh", [helper, "cancel"], { encoding: "utf8", env: none.env }).status, 0);
+  assert.equal(fs.existsSync(none.lck), false, "stale lock removed");
+  const some = mk(0); // a pacman is running
+  assert.equal(spawnSync("sh", [helper, "cancel"], { encoding: "utf8", env: some.env }).status, 0);
+  assert.equal(fs.existsSync(some.lck), true, "a lock in use is left alone");
 });

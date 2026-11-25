@@ -86,6 +86,26 @@ function parseProgress(text) {
     return -1
 }
 
+// Progress from real pacman output when it is not a terminal (the job unit's output): "Packages (N) ..." gives the
+// total, ":: Processing package changes..." starts the commit, then one "installing NAME..." per package. Downloads print
+// no percentage, so the ring stays a spinner until the commit starts; then 50% to 99% by package.
+// Returns a new state { total, count, committing, percent }. Checked against a real transaction in tests/apps/fixtures.
+function pacmanProgress(state, line) {
+    var s = { total: state.total, count: state.count, committing: state.committing, percent: state.percent }
+    var t = (line || "").trim()
+    var m = /^Packages \((\d+)\)/.exec(t)
+    if (m) s.total = parseInt(m[1], 10)
+    else if (/^:: Processing package changes/.test(t)) { s.committing = true; s.percent = Math.max(s.percent, 50) }
+    else if (/^(installing|upgrading|reinstalling|removing) \S+\.\.\.$/.test(t)) {
+        s.committing = true
+        s.count++
+        if (s.total > 0) s.percent = Math.max(s.percent, Math.min(99, 50 + Math.round(50 * s.count / s.total)))
+    }
+    return s
+}
+
+function freshPacmanState() { return { total: 0, count: 0, committing: false, percent: -1 } }
+
 // Step named by the command's own wording (0-3), or -1 when the line says nothing about it.
 function stepFromLine(text) {
     var t = (text || "").toLowerCase()

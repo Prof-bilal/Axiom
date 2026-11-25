@@ -7,7 +7,7 @@ import { fileURLToPath } from "node:url";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const load = (f) => fs.readFileSync(path.join(here, "../../apps/hub", f), "utf8").replace(/^\.pragma library\s*$/m, "");
-const B = new Function(load("catalog.js") + load("backends.js") + "; return { CATALOG, flathubRemoteArgv, stepFromLine: (x) => stepFromLine(x), chooseSource, installArgv, removeArgv, updateArgv, parseProgress, stepFor, installedIds, STEPS, errorLine, exitMessage, enqueue, installedSourceTypes, updateIds, installedSource };")();
+const B = new Function(load("catalog.js") + load("backends.js") + "; return { CATALOG, flathubRemoteArgv, stepFromLine: (x) => stepFromLine(x), chooseSource, installArgv, removeArgv, updateArgv, parseProgress, stepFor, installedIds, STEPS, errorLine, exitMessage, enqueue, installedSourceTypes, updateIds, installedSource, pacmanProgress, freshPacmanState };")();
 
 test("Flatpak installs are user-scope argv with the ref last", () => {
   assert.deepEqual(B.installArgv({ type: "flatpak", ref: "org.videolan.VLC" }, "/home/u"),
@@ -168,4 +168,35 @@ test("remove and update act on the installed source, not the first one listed", 
   assert.equal(B.installedSource(app, []), null);
   // and the chosen source is what the helper command is built from
   assert.deepEqual(B.removeArgv(B.installedSource(app, ["flatpak"]), "/home/u").slice(0, 3), ["flatpak", "uninstall", "--user"]);
+});
+
+// Real output of a real pacman transaction with stdout not a terminal (as in a unit's journal); see
+// tests/apps/fixtures/pacman-piped-install.txt. Progress and the cancel rule are checked against it, not against guesses.
+const REAL = fs.readFileSync(path.join(here, "fixtures/pacman-piped-install.txt"), "utf8").split("\n");
+
+test("progress from a real pacman transaction: spinner while downloading, then 50 to 99 by package", () => {
+  let s = B.freshPacmanState();
+  const seen = [];
+  for (const line of REAL) { s = B.pacmanProgress(s, line); seen.push(s.percent); }
+  assert.equal(s.total, 11, "total from the Packages (11) line");
+  assert.equal(s.count, 11, "one installing line per package");
+  assert.ok(s.committing);
+  assert.equal(seen[0], -1, "no percentage before the commit starts");
+  assert.equal(s.percent, 99);
+  assert.deepEqual(seen, [...seen].sort((a, b) => a - b), "never goes backwards");
+});
+
+test("hook lines and download lines do not move the pacman progress", () => {
+  let s = B.freshPacmanState();
+  for (const line of [" glibc-2.44-1-x86_64 downloading...", "(1/3) Generating the configured locale...", "checking keyring...", ""]) s = B.pacmanProgress(s, line);
+  assert.equal(s.percent, -1);
+  assert.equal(s.committing, false);
+});
+
+test("the commit phase is detected from the real marker, before the first package is installed", () => {
+  let s = B.freshPacmanState();
+  for (const line of REAL) { s = B.pacmanProgress(s, line); if (/^:: Processing package changes/.test(line)) break; }
+  assert.equal(s.committing, true);
+  assert.equal(s.count, 0);
+  assert.equal(s.percent, 50);
 });

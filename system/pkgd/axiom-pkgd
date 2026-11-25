@@ -20,13 +20,28 @@ take_lock() {
   exec 9>"$LOCK" && flock -n 9 || { echo "axiom-pkgd: another install or update is already running" >&2; exit 5; }
 }
 
+# The transaction's output is copied to a log as well as streamed. `systemd-run --pipe` sends the output to the caller
+# and not to the journal, so cancel could not otherwise see which phase pacman is in once the Hub window (the caller)
+# is gone. tee -p ignores SIGPIPE: a closed window must not kill pacman through a broken pipe.
+RUNDIR=${AXIOM_PKGD_RUNDIR:-/run}
+LOG=$RUNDIR/axiom-pkg-job.log
+WRAP='log=$1; rc=$2; shift 2; { "$@"; echo $? > "$rc"; } 2>&1 | tee -p "$log"; exit "$(cat "$rc")"'
+
 # Run a package transaction as a transient system unit: it keeps running if the Hub window closes (owner
 # decision Q4) and `axiom-pkgd cancel` can stop it. Without systemd (tests, odd chroots) it runs directly.
 job() {
   if [ -d "${AXIOM_PKGD_SYSTEMD_DIR:-/run/systemd/system}" ] && command -v systemd-run >/dev/null 2>&1; then
-    systemd-run --unit="$UNIT" --collect --wait --pipe --quiet -- "$@"
+    # If a job is already running (its Hub window may be gone, which releases the lock) the new one must not truncate
+    # the running job's log, which cancel reads.
+    if systemctl is-active --quiet "$UNIT.service"; then
+      echo "axiom-pkgd: an install or update is already running" >&2
+      return 5
+    fi
+    : > "$LOG" || return 1
+    systemd-run --unit="$UNIT" --collect --wait --pipe --quiet -- sh -c "$WRAP" sh "$LOG" "$LOG.rc" "$@"
   else
-    "$@"
+    : > "$LOG" || return 1
+    sh -c "$WRAP" sh "$LOG" "$LOG.rc" "$@"
   fi
 }
 
@@ -135,11 +150,20 @@ case "$op" in
     # Stop the running job, but only while pacman is still downloading. Killing it while it changes the system can
     # leave a half-installed package and a stale db.lck. Goes through the same polkit prompt as an install.
     systemctl is-active --quiet "$UNIT.service" || { echo "axiom-pkgd: no install is running" >&2; exit 7; }
-    if journalctl -u "$UNIT.service" -o cat --no-pager 2>/dev/null | grep -Eq '^\( *[0-9]+/[0-9]+\) (installing|upgrading|removing|reinstalling)'; then
+    # Real pacman output when it is not a terminal (the log written by job): ":: Processing package changes..." starts
+    # the commit, then "installing NAME..." per package. Checked against a real transaction (tests/apps/fixtures).
+    # If the log cannot be read the phase is unknown, so cancel is refused rather than risked.
+    [ -r "$LOG" ] || { echo "axiom-pkgd: cannot tell what the install is doing, not cancelling" >&2; exit 6; }
+    if grep -Eq '^(:: Processing package changes|(installing|upgrading|removing|reinstalling) [^ ]+\.\.\.$)' "$LOG"; then
       echo "axiom-pkgd: too late to cancel, the system is being changed" >&2; exit 6
     fi
     logger -t axiom-pkgd "cancel requested uid=${PKEXEC_UID:-unknown}"
-    exec systemctl stop "$UNIT.service"
+    systemctl stop "$UNIT.service" || exit 1
+    # A stopped pacman can leave its database lock behind, which would make the next install fail. Safe to remove only
+    # when no pacman is running: we hold the transaction lock and the unit is stopped, so only a pacman the user started
+    # by hand could still be using it.
+    if ! pgrep -x pacman >/dev/null 2>&1; then rm -f "${AXIOM_PKGD_DBLOCK:-/var/lib/pacman/db.lck}"; fi
+    exit 0
     ;;
   *) echo "axiom-pkgd: unknown operation" >&2; exit 2 ;;
 esac
