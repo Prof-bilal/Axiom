@@ -1,0 +1,5 @@
+#!/bin/sh
+# Axiom Hub search engine launcher (ADR-037): `axiom-hub refresh` and `axiom-hub search <query>`.
+# Unprivileged. Python is part of the base set; the engine uses only the standard library.
+# AXIOM_HUB_ENGINE only points at another copy of the engine for development; it runs as the calling user.
+exec python3 "${AXIOM_HUB_ENGINE:-/usr/local/lib/axiom-hub/hubengine.py}" "$@"

@@ -61,8 +61,8 @@ test("steps follow the percentage", () => {
 });
 
 test("installed ids come from flatpak and pacman lists", () => {
-  const ids = B.installedIds(B.CATALOG, "org.videolan.VLC\ncom.discordapp.Discord\n", "git\nneovim\n");
-  assert.deepEqual(ids.sort(), ["discord", "git", "neovim", "vlc"]);
+  const ids = B.installedIds(B.CATALOG, "org.videolan.VLC\ncom.example.NotInTheList\n", "git\nneovim\n");
+  assert.deepEqual(ids.sort(), ["git", "neovim", "vlc"]);
 });
 
 test("the Flathub remote is added for the user, idempotently", () => {

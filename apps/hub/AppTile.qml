@@ -22,7 +22,7 @@ Rectangle {
     Image {
         id: img
         anchors.fill: parent
-        source: tile.app ? Qt.resolvedUrl("icons/" + tile.app.id + ".png") : ""
+        source: !tile.app ? "" : (tile.app.icon && tile.app.icon.length > 0 ? tile.app.icon : Qt.resolvedUrl("icons/" + tile.app.id + ".png"))
         sourceSize.width: tile.size * 2
         sourceSize.height: tile.size * 2
         fillMode: Image.PreserveAspectFit

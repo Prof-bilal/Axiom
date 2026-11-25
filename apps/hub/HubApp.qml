@@ -33,7 +33,7 @@ AppWindow {
     Component.onCompleted: {
         var p = Quickshell.env("AXIOM_HUB_PAGE")
         if (!p || pages.indexOf(p) < 0) return
-        if (p === "details") showApp(R.find(backend.catalog, "vscode")); else open(p)
+        if (p === "details") showApp(R.find(backend.catalog, "firefox")); else open(p)
         if (Quickshell.env("AXIOM_HUB_PROGRESS") === "1") progressOpen = true
     }
 
@@ -85,7 +85,7 @@ AppWindow {
                         verticalAlignment: TextInput.AlignVCenter
                         color: Theme.textPrimary; font.family: S.font; font.pixelSize: 12
                         selectByMouse: true
-                        onTextChanged: { root.query = text; if (text.length > 0 && root.page !== "discover") root.open("discover") }
+                        onTextChanged: { root.query = text; backend.setQuery(text); if (text.length > 0 && root.page !== "discover") root.open("discover") }
                         Text { visible: parent.text.length === 0; anchors.verticalCenter: parent.verticalCenter; text: "Search applications"; color: Theme.textSecondary; font.family: S.font; font.pixelSize: 12 }
                     }
                 }

@@ -5,6 +5,7 @@ import qs.apps.shared
 import qs.apps.appinstaller
 import "catalog.js" as Cat
 import "backends.js" as B
+import "engine.js" as Eng
 
 // Axiom Hub state: the catalog, this machine's RAM and disk, what is installed,
 // and one install/remove/update transaction at a time with live progress.
@@ -12,7 +13,14 @@ import "backends.js" as B
 Item {
     id: be
 
+    // Recommended apps (shown when there is no search term). Search results come from the engine.
     readonly property var catalog: Cat.CATALOG
+    property var results: []
+    property bool searching: false
+    property string searchError: ""
+    property string query: ""
+    readonly property string searchBin: Quickshell.env("AXIOM_HUB_BIN") || Eng.SEARCH_BIN
+    property int searchSeq: 0
     property var sys: ({ ramGb: 8, freeDiskGb: 50 })
     property bool sysKnown: false
     property var available: ["pacman"]
@@ -35,6 +43,37 @@ Item {
 
     CommandRunner { id: runner }
     InstallFile { id: local }
+
+    // Search: debounced, one request at a time wins (older answers are dropped). The engine builds its index on
+    // first use, so the first search can take several seconds; the watchdog covers a missing or hung service.
+    function setQuery(text) {
+        query = Eng.cleanQuery(text)
+        searchSeq++
+        if (query.length === 0) { results = []; searching = false; searchError = ""; debounce.stop(); watchdog.stop(); return }
+        searching = true
+        searchError = ""
+        debounce.restart()
+    }
+
+    function runSearch() {
+        var argv = Eng.searchArgv(query, searchBin)
+        if (!argv) return
+        var mine = searchSeq
+        watchdog.restart()
+        runner.run(argv, function (r) {
+            if (mine !== searchSeq) return
+            watchdog.stop()
+            searching = false
+            if (r.code !== 0) { results = []; searchError = "Search is not available right now."; return }
+            var parsed = Eng.parseResults(r.out)
+            results = parsed.apps
+            searchError = parsed.error
+            applyInstalled()
+        })
+    }
+
+    Timer { id: debounce; interval: 300; onTriggered: be.runSearch() }
+    Timer { id: watchdog; interval: 60000; onTriggered: { be.searchSeq++; be.searching = false; be.results = []; be.searchError = "Search took too long. Try again." } }
 
     function isInstalled(id) { return installed.indexOf(id) >= 0 }
     function hasUpdate(id) { return updates.indexOf(id) >= 0 }
@@ -64,6 +103,8 @@ Item {
         })
         local.resolveHome(function () {})
         refreshInstalled()
+        // Warm the search index in the background (conditional download, at most once a day).
+        runner.run([searchBin, "refresh"], function () {})
     }
 
     function refreshInstalled() {
@@ -72,7 +113,8 @@ Item {
         // must not wait on each other: one absent tool then only leaves its own entries out.
         var lists = { flatpak: "", pacman: "", npm: "", pipx: "" }
         var apply = function () {
-            installed = B.installedIds(catalog, lists.flatpak, lists.pacman, lists.npm, lists.pipx)
+            lastLists = lists
+            installed = B.installedIds(catalog.concat(results), lists.flatpak, lists.pacman, lists.npm, lists.pipx)
         }
         runner.run(["pacman", "-Qq"], function (pm) {
             lists.pacman = pm.code === 0 ? pm.out : ""
@@ -93,6 +135,12 @@ Item {
                 apply()
             })
         })
+    }
+
+    property var lastLists: ({ flatpak: "", pacman: "", npm: "", pipx: "" })
+    // New search results need their installed state too, without asking the system again.
+    function applyInstalled() {
+        installed = B.installedIds(catalog.concat(results), lastLists.flatpak, lastLists.pacman, lastLists.npm, lastLists.pipx)
     }
 
     function checkUpdates() {

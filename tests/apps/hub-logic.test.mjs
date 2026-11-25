@@ -1,4 +1,4 @@
-// Unit tests for apps/hub/catalog.js and rules.js. Run: node --test tests/apps/
+// Unit tests for apps/hub/catalog.js (the recommended list) and rules.js. Run: node --test tests/apps/
 import test from "node:test";
 import assert from "node:assert/strict";
 import fs from "node:fs";
@@ -22,15 +22,20 @@ test("every catalog entry has the required fields and a real source", () => {
   }
 });
 
-test("every category has at least one app and counts add up", () => {
+test("category counts add up and the recommended list stays small", () => {
   const counts = R.categoryCounts(R.CATALOG);
-  for (const c of R.CATEGORIES) assert.ok(counts[c] > 0, c);
   assert.equal(Object.values(counts).reduce((a, b) => a + b, 0), R.CATALOG.length);
+  assert.ok(R.CATALOG.length >= 8 && R.CATALOG.length <= 24, "recommended list is a short curated list, not a catalogue");
+  assert.equal(R.CATALOG.filter((a) => a.featured).length, 1, "exactly one featured app");
+});
+
+test("recommended apps only use sources the engine supports (pacman, Flatpak)", () => {
+  for (const a of R.CATALOG) for (const s of a.sources) assert.ok(["pacman", "flatpak"].includes(s.type), `${a.id}: ${s.type}`);
 });
 
 test("search matches name and summary, case-insensitively", () => {
   assert.equal(R.search(R.CATALOG, "firefox")[0].id, "firefox");
-  assert.ok(R.search(R.CATALOG, "TERMINAL").length >= 2);
+  assert.ok(R.search(R.CATALOG, "EDITOR").length >= 1);
   assert.equal(R.search(R.CATALOG, "  ").length, R.CATALOG.length);
   assert.equal(R.search(R.CATALOG, "zzzz-none").length, 0);
 });
@@ -51,14 +56,15 @@ test("low free disk is reported", () => {
 });
 
 test("lighter option appears only for heavy apps whose alternative fits", () => {
-  const vs = R.find(R.CATALOG, "vscode");
-  assert.equal(R.lighterOption(R.CATALOG, vs, { ramGb: 8, freeDiskGb: 50 }).id, "zed");
+  const heavy = { id: "h", weight: "heavy", light_alt: "l", min_ram_gb: 8 };
+  const light = { id: "l", weight: "light", min_ram_gb: 1, sources: [] };
+  assert.equal(R.lighterOption([heavy, light], heavy, { ramGb: 16, freeDiskGb: 50 }).id, "l");
   assert.equal(R.lighterOption(R.CATALOG, R.find(R.CATALOG, "neovim"), { ramGb: 8, freeDiskGb: 50 }), null);
 });
 
 test("suggestions skip apps that are too heavy for the machine", () => {
-  const small = R.suggestions(R.CATALOG, { ramGb: 2, freeDiskGb: 50 }, 10).map((a) => a.id);
-  assert.ok(!small.includes("vscode"));
+  const small = R.suggestions(R.CATALOG, { ramGb: 2, freeDiskGb: 50 }, 10);
+  for (const a of small) assert.ok(!a.min_ram_gb || a.min_ram_gb <= 2, `${a.id} needs ${a.min_ram_gb} GB`);
   assert.ok(R.suggestions(R.CATALOG, { ramGb: 16, freeDiskGb: 50 }, 10).length > 0);
 });
 
@@ -68,25 +74,24 @@ test("size and source labels", () => {
   assert.equal(R.formatSize(2048), "2.0 GB");
   assert.equal(R.sourceLabel(R.find(R.CATALOG, "firefox")), "Flatpak");
   assert.equal(R.metaLine(R.find(R.CATALOG, "firefox")), "Flatpak");
-  assert.equal(R.metaLine(R.find(R.CATALOG, "wireshark")), "Flatpak · 54 MB");
+  assert.equal(R.metaLine(R.find(R.CATALOG, "blender")), "Flatpak · 455 MB");
 });
 
 test("bundled icons are real PNG files, and most apps have one (letter tile otherwise)", () => {
   const dir = path.join(here, "../../apps/hub/icons");
   const files = fs.readdirSync(dir).filter((f) => f.endsWith(".png"));
   for (const f of files) assert.deepEqual([...fs.readFileSync(path.join(dir, f)).subarray(0, 4)], [0x89, 0x50, 0x4e, 0x47], f);
-  assert.ok(files.length >= 40, `only ${files.length} icons`);
+  assert.ok(files.length >= R.CATALOG.length, `only ${files.length} icons`);
 });
 
 test("every entry states whether its install source is verified, and cards say so", () => {
   for (const a of R.CATALOG) assert.equal(typeof a.verified, "boolean", `${a.id}: verified`);
-  const unverified = R.CATALOG.find((a) => a.verified === false);
-  assert.ok(unverified, "catalog has unverified entries to mark");
+  const unverified = { id: "u", name: "U", sources: [{ type: "flatpak", ref: "a.b.U" }], size_mb: null, verified: false };
   assert.match(R.metaLine(unverified), /· not verified$/);
 });
 
 test("apps without a bundled icon fall back to a letter tile (known gap, listed here)", () => {
   const iconDir = path.join(here, "../../apps/hub/icons");
   const missing = R.CATALOG.filter((a) => !fs.existsSync(path.join(iconDir, a.id + ".png"))).map((a) => a.id).sort();
-  assert.deepEqual(missing, ["cemu", "plex", "rockstar-launcher", "text-generation-webui", "yabridge"]);
+  assert.deepEqual(missing, []);
 });

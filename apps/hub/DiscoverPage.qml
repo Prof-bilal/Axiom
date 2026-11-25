@@ -11,8 +11,9 @@ Flickable {
     property var hub: null
     property string chip: "All"
     readonly property var chips: ["All", "Development", "Productivity", "Graphics", "Internet", "System"]
-    readonly property var featured: R.find(hub.be.catalog, "vscode")
-    readonly property var shown: R.search(hub.be.catalog, hub.query).filter(function (a) { return page.chip === "All" || a.category === page.chip })
+    readonly property var featured: R.find(hub.be.catalog, "firefox")
+    readonly property bool searchMode: hub.be.query.length > 0
+    readonly property var shown: (searchMode ? hub.be.results : hub.be.catalog).filter(function (a) { return page.chip === "All" || a.category === page.chip })
 
     contentWidth: width
     contentHeight: col.height + 40
@@ -135,6 +136,13 @@ Flickable {
                 delegate: AppCard { required property var modelData; app: modelData; hub: page.hub; width: (col.width - 42) / 4 }
             }
         }
-        Text { visible: page.shown.length === 0; text: "No apps match."; color: Theme.textSecondary; font.family: S.font; font.pixelSize: 13 }
+        Text {
+            visible: page.searchMode || page.shown.length === 0
+            text: hub.be.searching ? "Searching the Arch repositories and Flathub..."
+                : hub.be.searchError.length > 0 ? hub.be.searchError
+                : page.shown.length === 0 ? "No apps match."
+                : page.shown.length + " results from the Arch repositories and Flathub. Axiom does not rank them by quality."
+            color: hub.be.searchError.length > 0 ? S.bad : Theme.textSecondary; font.family: S.font; font.pixelSize: 13
+        }
     }
 }

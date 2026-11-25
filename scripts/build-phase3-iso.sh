@@ -62,6 +62,8 @@ install -m 755 "$ROOT/system/pkgd/axiom-pkgd" "$WORK/profile/airootfs/usr/local/
 install -m 755 "$ROOT/system/pkgd/axiom-pkg-update" "$WORK/profile/airootfs/usr/local/bin/axiom-pkg-update"
 install -m 755 "$ROOT/system/pkgd/axiom-pkg-rollback" "$WORK/profile/airootfs/usr/local/bin/axiom-pkg-rollback"
 install -m 755 "$ROOT/system/pkgd/axiom-boot-sync" "$WORK/profile/airootfs/usr/local/bin/axiom-boot-sync"
+install -m 755 "$ROOT/system/hub/axiom-hub" "$WORK/profile/airootfs/usr/local/bin/axiom-hub"
+install -D -m 644 "$ROOT/system/hub/hubengine.py" "$WORK/profile/airootfs/usr/local/lib/axiom-hub/hubengine.py"
 # Live-desktop installer (ADR-035): the root helper pkexec runs; the QML app is staged with the other apps.
 install -m 755 "$ROOT/system/installer/axiom-install-run" "$WORK/profile/airootfs/usr/local/bin/axiom-install-run"
 rm -rf "$WORK/profile/airootfs/usr/local/share/axiom/shell/tests"

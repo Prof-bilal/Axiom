@@ -108,7 +108,7 @@ OVERLAY = [
     "/etc/systemd/system/power-profiles-daemon.service.d",
     "/usr/local/bin/axiom-app", "/usr/local/bin/axiom-greeting", "/usr/local/bin/axiom-session",
     "/usr/local/bin/axiom-shell", "/usr/local/bin/axiom-terminal", "/usr/local/share/axiom",
-    "/usr/local/bin/axiom-pkgd", "/usr/local/bin/axiom-pkg-update", "/usr/local/bin/axiom-pkg-rollback", "/usr/local/bin/axiom-boot-sync",
+    "/usr/local/bin/axiom-pkgd", "/usr/local/bin/axiom-pkg-update", "/usr/local/bin/axiom-pkg-rollback", "/usr/local/bin/axiom-boot-sync", "/usr/local/bin/axiom-hub", "/usr/local/lib/axiom-hub",
     "/usr/local/share/applications", "/usr/share/icons/axiom-cursors", "/usr/share/icons/default", "/usr/share/icons/hicolor/256x256/apps",
     "/usr/share/icons/hicolor/scalable", "/usr/local/share/themes",
 ]

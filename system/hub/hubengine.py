@@ -22,6 +22,7 @@ import xml.etree.ElementTree as ET
 FLATHUB_URL = "https://dl.flathub.org/repo/appstream/x86_64/appstream.xml.gz"
 FLATHUB_ICON = "https://dl.flathub.org/repo/appstream/x86_64/icons/128x128/"
 TTL_SECONDS = 24 * 3600
+SCHEMA = "2"  # bump when the index tables change; an older index is rebuilt, never read
 LANG = "{http://www.w3.org/XML/1998/namespace}lang"
 OFFICIAL_REPOS = {"core", "extra", "multilib"}
 DISTRO_CATALOGS = ("/usr/share/swcatalog/xml", "/var/lib/swcatalog/xml")
@@ -80,7 +81,9 @@ def parse_pacman_info(text):
 
 
 def run_pacman(args):
-    return subprocess.run(["pacman"] + args, capture_output=True, text=True, timeout=120).stdout
+    # LC_ALL=C: the parser reads pacman's English output, whatever the user's language is.
+    return subprocess.run(["pacman"] + args, capture_output=True, text=True, timeout=120,
+                          env={**os.environ, "LC_ALL": "C"}).stdout
 
 
 # ---- Flathub AppStream -------------------------------------------------------------------------
@@ -97,7 +100,8 @@ def parse_flathub(fileobj):
     for _, el in ET.iterparse(fileobj):
         if el.tag != "component":
             continue
-        kind = {"desktop-application": "app", "console-application": "cli"}.get(el.get("type"))
+        # Flathub still lists some apps (Firefox, for one) with the legacy type "desktop"; a Flatpak bundle makes it an app.
+        kind = {"desktop-application": "app", "desktop": "app", "console-application": "cli"}.get(el.get("type"))
         bundle = next((b for b in el.findall("bundle") if b.get("type") == "flatpak"), None)
         if kind and bundle is not None and (el.findtext("id") or "").strip():
             custom = {v.get("key"): (v.text or "") for v in el.findall("custom/value")}
@@ -180,16 +184,19 @@ def _raise(e):
 def build_index(db_path, flathub, pacman, distro_map, overrides=OVERRIDES):
     """Write the merged index to db_path (atomically). flathub and pacman are lists of dicts."""
     apps = {}  # key -> {name, summary, kind, icon, sources:[...]}
+    # Ids are reverse-DNS under a domain, so they are compared without case (Arch: org.videolan.vlc, Flathub: org.videolan.VLC).
+    by_lower = {f["id"].lower(): f["id"] for f in flathub}
     for f in flathub:
-        a = apps.setdefault(f["id"], {"name": f["name"], "summary": f["summary"], "kind": f["kind"], "icon": f["icon"], "sources": []})
+        a = apps.setdefault(f["id"], {"name": f["name"], "summary": f["summary"], "kind": f["kind"], "icon": f["icon"], "cats": f["categories"], "sources": []})
         a["sources"].append({"type": "flatpak", "ref": f["id"], "version": f["version"], "publisher": f["publisher"],
                              "trust": "verified" if f["verified"] else "unverified", "licence": f["licence"]})
     for p in pacman:
         if NOT_AN_APP.search(p["name"]):
             continue
         cid = overrides.get(p["name"]) or distro_map.get(p["name"])
+        cid = by_lower.get((cid or "").lower(), cid)
         key = cid if cid in apps else (cid or "pacman:" + p["name"])
-        a = apps.setdefault(key, {"name": p["name"], "summary": p["summary"], "kind": "package", "icon": "", "sources": []})
+        a = apps.setdefault(key, {"name": p["name"], "summary": p["summary"], "kind": "package", "icon": "", "cats": [], "sources": []})
         if not a["summary"]:
             a["summary"] = p["summary"]
         official = p["repo"] in OFFICIAL_REPOS
@@ -199,14 +206,15 @@ def build_index(db_path, flathub, pacman, distro_map, overrides=OVERRIDES):
     if os.path.exists(tmp):
         os.remove(tmp)
     db = sqlite3.connect(tmp)
-    db.execute("create table apps(key text primary key, name text, summary text, kind text, icon text, sources text)")
+    db.execute("create table apps(key text primary key, name text, summary text, kind text, icon text, cats text, sources text)")
     db.execute("create virtual table fts using fts5(key unindexed, name, summary, refs, tokenize='unicode61 remove_diacritics 2')")
     for key, a in apps.items():
         refs = " ".join(s["ref"] for s in a["sources"])
-        db.execute("insert into apps values(?,?,?,?,?,?)", (key, a["name"], a["summary"], a["kind"], a["icon"], json.dumps(a["sources"])))
+        db.execute("insert into apps values(?,?,?,?,?,?,?)", (key, a["name"], a["summary"], a["kind"], a["icon"], json.dumps(a["cats"]), json.dumps(a["sources"])))
         db.execute("insert into fts values(?,?,?,?)", (key, a["name"], a["summary"], refs))
     db.execute("create table meta(k text primary key, v text)")
     db.execute("insert into meta values('built', ?)", (str(int(time.time())),))
+    db.execute("insert into meta values('schema', ?)", (SCHEMA,))
     db.commit()
     db.close()
     os.replace(tmp, db_path)
@@ -221,22 +229,35 @@ def fts_query(text):
     return " ".join(['"%s"' % w for w in words[:-1]] + ['"%s"*' % words[-1]])
 
 
+def index_ok(db_path):
+    """True when the index exists and was built by this schema version."""
+    if not os.path.exists(db_path):
+        return False
+    try:
+        db = sqlite3.connect(db_path)
+        row = db.execute("select v from meta where k = 'schema'").fetchone()
+        db.close()
+        return bool(row) and row[0] == SCHEMA
+    except sqlite3.Error:
+        return False
+
+
 def search(db_path, text, limit=30):
     q = fts_query(text)
-    if not q or not os.path.exists(db_path):
+    if not q or not index_ok(db_path):
         return []
     db = sqlite3.connect(db_path)
-    rows = db.execute("select a.key, a.name, a.summary, a.kind, a.icon, a.sources from fts join apps a on a.key = fts.key "
+    rows = db.execute("select a.key, a.name, a.summary, a.kind, a.icon, a.cats, a.sources from fts join apps a on a.key = fts.key "
                       "where fts match ? order by bm25(fts, 0, 10, 2, 5) limit ?", (q, limit * 3)).fetchall()
     db.close()
     needle = (text or "").strip().lower()
     out = []
-    for key, name, summary, kind, icon, sources in rows:
+    for key, name, summary, kind, icon, cats, sources in rows:
         srcs = json.loads(sources)
         srcs.sort(key=lambda s: TRUST_ORDER.get(s["trust"], 9))  # official repo first (owner decision)
         exact = name.lower() == needle or key.lower() == needle or any(s["ref"].lower() == needle for s in srcs)
         out.append({"id": key, "name": name, "summary": summary, "kind": kind,
-                    "icon": FLATHUB_ICON + icon if icon else "", "sources": srcs, "exact": exact})
+                    "icon": FLATHUB_ICON + icon if icon else "", "categories": json.loads(cats), "sources": srcs, "exact": exact})
     out.sort(key=lambda a: (not a["exact"], a["kind"] == "package", TRUST_ORDER.get(a["sources"][0]["trust"], 9)))
     return out[:limit]
 
@@ -261,7 +282,7 @@ def main(argv):
         return 0
     if len(argv) >= 3 and argv[1] == "search":
         db = os.path.join(cache_dir(), "index.sqlite")
-        if not os.path.exists(db):
+        if not index_ok(db):
             refresh()
         print(json.dumps({"results": search(db, " ".join(argv[2:]))}))
         return 0

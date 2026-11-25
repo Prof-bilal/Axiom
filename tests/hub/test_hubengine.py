@@ -34,6 +34,7 @@ FLATHUB = b"""<?xml version="1.0"?>
     <icon type="cached" width="128" height="128">org.mozilla.firefox.png</icon>
     <bundle type="flatpak">app/org.mozilla.firefox/x86_64/stable</bundle>
     <releases><release timestamp="100" version="1.0"/><release timestamp="300" version="3.0"/></releases>
+    <categories><category>Network</category><category>WebBrowser</category></categories>
     <custom><value key="flathub::verification::verified">true</value></custom></component>
   <component type="desktop-application"><id>org.xfce.mousepad</id><name>Mousepad</name><summary>Text editor</summary>
     <bundle type="flatpak">app/org.xfce.mousepad/x86_64/stable</bundle><releases><release timestamp="5" version="0.7.0"/></releases></component>
@@ -41,6 +42,8 @@ FLATHUB = b"""<?xml version="1.0"?>
     <bundle type="flatpak">app/com.example.Sketchy/x86_64/stable</bundle></component>
   <component type="console-application"><id>com.example.cli</id><name>Cli Thing</name><summary>A cli</summary>
     <bundle type="flatpak">app/com.example.cli/x86_64/stable</bundle></component>
+  <component type="desktop"><id>org.videolan.VLC</id><name>VLC</name><summary>Media player</summary>
+    <bundle type="flatpak">app/org.videolan.VLC/x86_64/stable</bundle></component>
   <component type="runtime"><id>org.freedesktop.Platform</id><name>Platform</name></component>
   <component type="addon"><id>com.example.addon</id><name>Addon</name>
     <bundle type="flatpak">app/com.example.addon/x86_64/stable</bundle></component>
@@ -76,7 +79,7 @@ class Parsers(unittest.TestCase):
 
     def test_flathub_keeps_apps_and_cli_only_untranslated_text_latest_version(self):
         a = {x["id"]: x for x in apps()}
-        self.assertEqual(set(a), {"org.mozilla.firefox", "org.xfce.mousepad", "com.example.Sketchy", "com.example.cli"})
+        self.assertEqual(set(a), {"org.mozilla.firefox", "org.xfce.mousepad", "com.example.Sketchy", "com.example.cli", "org.videolan.VLC"})
         fx = a["org.mozilla.firefox"]
         self.assertEqual((fx["name"], fx["version"], fx["verified"], fx["publisher"]), ("Firefox", "3.0", True, "Mozilla"))
         self.assertEqual(a["com.example.cli"]["kind"], "cli")
@@ -111,6 +114,14 @@ class Index(unittest.TestCase):
         r = [x for x in h.search(self.db, "firefox") if x["id"] == "org.mozilla.firefox"][0]
         self.assertEqual([s["trust"] for s in r["sources"]], ["official", "verified"])
 
+    def test_legacy_desktop_type_is_an_app_and_ids_match_without_case(self):
+        a = {x["id"]: x for x in apps()}
+        self.assertEqual(a["org.videolan.VLC"]["kind"], "app")
+        self.pac += h.parse_pacman_search("extra/vlc 3.0-1\n    Media player\n")
+        self.build({"vlc": "org.videolan.vlc"})  # Arch lower-cases the id
+        r = [x for x in h.search(self.db, "vlc") if x["id"] == "org.videolan.VLC"][0]
+        self.assertEqual({s["type"] for s in r["sources"]}, {"pacman", "flatpak"})
+
     def test_name_alone_never_merges(self):
         self.build()
         fx = [x for x in h.search(self.db, "firefox")]
@@ -130,6 +141,13 @@ class Index(unittest.TestCase):
         kinds = [r["kind"] for r in h.search(self.db, "e")]
         self.assertEqual(kinds, sorted(kinds, key=lambda k: k == "package"))  # apps before bare packages
 
+    def test_categories_come_from_flathub_and_pacman_only_apps_have_none(self):
+        self.build()
+        fx = [x for x in h.search(self.db, "firefox") if x["id"] == "org.mozilla.firefox"][0]
+        self.assertEqual(fx["categories"], ["Network", "WebBrowser"])
+        rg = h.search(self.db, "ripgrep")[0]
+        self.assertEqual(rg["categories"], [])
+
     def test_prefix_search_and_icon_url(self):
         self.build()
         r = h.search(self.db, "firef")
@@ -143,6 +161,21 @@ class Index(unittest.TestCase):
             h.search(self.db, evil)  # must not raise
         self.assertEqual(h.fts_query("a b"), '"a" "b"*')
         self.assertIsNone(h.fts_query("!!!"))
+
+    def test_an_index_from_an_older_schema_is_not_read(self):
+        import sqlite3
+        db = sqlite3.connect(self.db)
+        db.execute("create table apps(key text, name text, summary text, kind text, icon text, sources text)")
+        db.execute("create virtual table fts using fts5(key unindexed, name, summary, refs)")
+        db.execute("create table meta(k text primary key, v text)")
+        db.commit()
+        db.close()
+        self.assertFalse(h.index_ok(self.db))
+        self.assertEqual(h.search(self.db, "x"), [])  # no traceback, the CLI rebuilds instead
+
+    def test_a_current_index_is_ok(self):
+        self.build()
+        self.assertTrue(h.index_ok(self.db))
 
     def test_search_without_an_index_is_empty_not_an_error(self):
         self.assertEqual(h.search(os.path.join(self.d, "none.sqlite"), "x"), [])
