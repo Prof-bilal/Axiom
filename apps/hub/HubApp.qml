@@ -40,7 +40,7 @@ AppWindow {
     function isInstalled(id) { return backend.isInstalled(id) }
     function open(p) { page = p; navPage = p; if (p === "installed") backend.refreshInstalled(); if (p === "updates") backend.checkUpdates() }
     function showApp(app) { selected = app; page = "details" }
-    function startInstall(app, action) { backend.run(app, action); progressOpen = true }
+    function startInstall(app, action, source) { backend.run(app, action, source); progressOpen = true }
     function startLocal(info) { backend.runLocal(info); progressOpen = true }
     function closeProgress() { progressOpen = false }
 

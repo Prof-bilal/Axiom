@@ -6,6 +6,8 @@ import qs.src.shared
 // One app card, as in the reference: icon, name, two lines of summary, and a small outlined Install.
 Rectangle {
     id: card
+    // Apps with a warning (not verified, community) or a choice of sources are looked at before they are installed.
+    readonly property bool needsReview: !!app && (!app.verified || (app.sources && app.sources.length > 1))
 
     property var app: null
     property var hub: null
@@ -62,11 +64,11 @@ Rectangle {
         color: "transparent"
         border.width: 1
         border.color: installed ? Theme.border : Theme.accent
-        Text { id: btnText; anchors.centerIn: parent; text: installed ? "Installed" : "Install"; color: installed ? Theme.textSecondary : Theme.accent; font.family: S.font; font.pixelSize: 11 }
+        Text { id: btnText; anchors.centerIn: parent; text: installed ? "Installed" : card.needsReview ? "Review" : "Install"; color: installed ? Theme.textSecondary : Theme.accent; font.family: S.font; font.pixelSize: 11 }
         MouseArea {
             anchors.fill: parent
             cursorShape: Qt.PointingHandCursor
-            onClicked: installed ? hub.showApp(card.app) : hub.startInstall(card.app, "install")
+            onClicked: installed || card.needsReview ? hub.showApp(card.app) : hub.startInstall(card.app, "install")
         }
     }
 }

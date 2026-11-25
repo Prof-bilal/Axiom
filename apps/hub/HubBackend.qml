@@ -109,6 +109,9 @@ Item {
         })
         local.resolveHome(function () {})
         refreshInstalled()
+        runner.run(["flatpak", "remotes", "--user", "--columns=name"], function (r) {
+            flathubReady = r.code === 0 && r.out.split("\n").some(function (l) { return l.trim() === "flathub" })
+        })
         pollJob()
         // Warm the search index in the background (conditional download, at most once a day).
         runner.run([searchBin, "refresh"], function () {})
@@ -150,6 +153,21 @@ Item {
         installed = B.installedIds(catalog.concat(results), lastLists.flatpak, lastLists.pacman, lastLists.npm, lastLists.pipx)
     }
 
+    // Source types of this app that are installed right now (for the "already installed from..." note).
+    function installedTypes(app) {
+        return app ? B.installedSourceTypes(app, lastLists.flatpak, lastLists.pacman, lastLists.npm, lastLists.pipx) : []
+    }
+
+    // Flatpak permissions before installing. Only when Flathub is already added for this user: browsing must not
+    // change the system. Calls back with the parsed context, or null when it cannot be read yet.
+    property bool flathubReady: false
+    function loadPermissions(ref, cb) {
+        if (!flathubReady || !/^[A-Za-z0-9_.-]+$/.test(ref)) { cb(null); return }
+        runner.run(["flatpak", "remote-info", "--user", "--show-metadata", "flathub", ref], function (r) {
+            cb(r.code === 0 ? Eng.parseFlatpakContext(r.out) : null)
+        })
+    }
+
     function checkUpdates() {
         status = "Checking for updates..."
         runner.run(["flatpak", "remote-ls", "--updates", "--columns=application"], function (r) {
@@ -161,14 +179,14 @@ Item {
         })
     }
 
-    function run(app, act) {
+    function run(app, act, prefer) {
         if (busy || externalJob) {
             // A busy request is queued, not dropped; asking for the same thing again changes nothing.
             var r = B.enqueue(queue, busy && current ? { id: current.id, act: action } : null, app, act)
             if (r.accepted) { queue = r.queue; status = "Queued: " + app.name }
             return
         }
-        var src = B.chooseSource(app, available)
+        var src = B.chooseSource(app, available, prefer)
         curSource = src
         var argv = null
         if (src) argv = act === "remove" ? B.removeArgv(src, local.home) : act === "update" ? B.updateArgv(src, local.home) : B.installArgv(src, local.home)

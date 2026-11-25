@@ -14,8 +14,11 @@ function flathubRemoteArgv() {
     return ["flatpak", "remote-add", "--user", "--if-not-exists", "flathub", "https://dl.flathub.org/repo/flathub.flatpakrepo"]
 }
 
-function chooseSource(app, available) {
-    // First source whose backend is available on this machine.
+function chooseSource(app, available, prefer) {
+    // The source the user picked, if its backend is available here; otherwise the first one that is.
+    if (prefer)
+        for (var j = 0; j < app.sources.length; j++)
+            if (app.sources[j].type === prefer.type && app.sources[j].ref === prefer.ref && available.indexOf(prefer.type) >= 0) return app.sources[j]
     for (var i = 0; i < app.sources.length; i++)
         if (available.indexOf(app.sources[i].type) >= 0) return app.sources[i]
     return null
@@ -154,4 +157,18 @@ function enqueue(queue, running, app, act) {
     if (running && running.id === app.id && running.act === act) return { queue: queue, accepted: false }
     var dup = queue.some(function (q) { return q.app.id === app.id && q.act === act })
     return dup ? { queue: queue, accepted: false } : { queue: queue.concat([{ app: app, act: act }]), accepted: true }
+}
+
+// Which of this app's source types are installed right now (same listings as installedIds).
+function installedSourceTypes(app, flatpakOut, pacmanOut, npmOut, pipxOut) {
+    var fp = parseLines(flatpakOut), pm = parseLines(pacmanOut)
+    var npm = parseLines(npmOut).map(function (l) { var i = l.indexOf("/node_modules/"); return i >= 0 ? l.slice(i + 14) : "" })
+    var pip = parseLines(pipxOut).map(function (l) { return l.split(/\s+/)[0] })
+    var out = []
+    app.sources.forEach(function (s) {
+        var on = (s.type === "flatpak" && fp.indexOf(s.ref) >= 0) || (s.type === "pacman" && pm.indexOf(s.ref) >= 0)
+              || (s.type === "npm" && npm.indexOf(s.ref) >= 0) || (s.type === "pip" && pip.indexOf(s.ref) >= 0)
+        if (on && out.indexOf(s.type) < 0) out.push(s.type)
+    })
+    return out
 }

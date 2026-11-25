@@ -63,3 +63,51 @@ function parseResults(text) {
         return { ok: false, apps: [], error: "The search service is not available." }
     }
 }
+
+function sourceLabel(src) {
+    return { pacman: "Arch repository", flatpak: "Flathub", npm: "npm", pip: "pip" }[src.type] || src.type
+}
+
+// `flatpak remote-info --show-metadata` prints the app's metadata as an INI file; we read its [Context] lists.
+// [A] The exact output was not checked against a real Flatpak here; the parser only reads key=a;b; lines.
+function parseFlatpakContext(text) {
+    var ctx = { shared: [], sockets: [], devices: [], filesystems: [] }
+    var inContext = false
+    String(text || "").split("\n").forEach(function (line) {
+        var l = line.trim()
+        if (/^\[.*\]$/.test(l)) { inContext = l === "[Context]"; return }
+        var m = inContext ? /^(shared|sockets|devices|filesystems)=(.*)$/.exec(l) : null
+        if (m) ctx[m[1]] = m[2].split(";").map(function (x) { return x.trim() }).filter(function (x) { return x.length > 0 })
+    })
+    return ctx
+}
+
+// Plain-language notes for the grants that matter. Does not claim the app is safe or unsafe.
+function permissionNotes(ctx) {
+    var out = []
+    var fs = ctx.filesystems.map(function (f) { return f.replace(/:(ro|rw|create)$/, "") })
+    if (fs.indexOf("host") >= 0 || fs.indexOf("host-os") >= 0) out.push({ level: "warn", text: "Can read and change all your files." })
+    else if (fs.indexOf("home") >= 0) out.push({ level: "warn", text: "Can read and change everything in your home folder." })
+    else if (fs.length > 0) out.push({ level: "info", text: "Can access some folders: " + fs.slice(0, 4).join(", ") + (fs.length > 4 ? " and more." : ".") })
+    if (ctx.devices.indexOf("all") >= 0) out.push({ level: "warn", text: "Can use all devices, such as cameras and drives." })
+    if (ctx.sockets.indexOf("session-bus") >= 0 || ctx.sockets.indexOf("system-bus") >= 0)
+        out.push({ level: "warn", text: "Can talk to other apps and services on your computer without limits." })
+    if (ctx.sockets.indexOf("x11") >= 0) out.push({ level: "info", text: "Uses the older X11 display system, which isolates apps less." })
+    if (ctx.shared.indexOf("network") >= 0) out.push({ level: "info", text: "Can use the network." })
+    return out
+}
+
+// Notes shown before installing from `src`. `installedTypes` are the source types already installed for this app.
+function sourceNotes(src, installedTypes) {
+    var notes = []
+    var already = (installedTypes || []).filter(function (t) { return t !== src.type })
+    if (already.length > 0)
+        notes.push({ level: "warn", text: "Already installed from " + already.map(function (t) { return sourceLabel({ type: t }) }).join(" and ") + ". Installing from here adds a second copy." })
+    if (src.type === "pacman")
+        notes.push({ level: "info", text: "This also upgrades the system. A snapshot is taken first, so you can roll back." })
+    if (src.trust === "unverified")
+        notes.push({ level: "warn", text: "Flathub has not verified who publishes this. Install it only if you trust the publisher." })
+    if (src.trust === "community")
+        notes.push({ level: "warn", text: "From a community repository. It is not checked by the Arch team." })
+    return notes
+}

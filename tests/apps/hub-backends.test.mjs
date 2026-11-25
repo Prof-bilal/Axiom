@@ -7,7 +7,7 @@ import { fileURLToPath } from "node:url";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const load = (f) => fs.readFileSync(path.join(here, "../../apps/hub", f), "utf8").replace(/^\.pragma library\s*$/m, "");
-const B = new Function(load("catalog.js") + load("backends.js") + "; return { CATALOG, flathubRemoteArgv, stepFromLine: (x) => stepFromLine(x), chooseSource, installArgv, removeArgv, updateArgv, parseProgress, stepFor, installedIds, STEPS, errorLine, exitMessage, enqueue };")();
+const B = new Function(load("catalog.js") + load("backends.js") + "; return { CATALOG, flathubRemoteArgv, stepFromLine: (x) => stepFromLine(x), chooseSource, installArgv, removeArgv, updateArgv, parseProgress, stepFor, installedIds, STEPS, errorLine, exitMessage, enqueue, installedSourceTypes };")();
 
 test("Flatpak installs are user-scope argv with the ref last", () => {
   assert.deepEqual(B.installArgv({ type: "flatpak", ref: "org.videolan.VLC" }, "/home/u"),
@@ -130,4 +130,21 @@ test("a request while busy is queued; the same request twice is ignored", () => 
   assert.equal(B.enqueue([], { id: "a", act: "install" }, a, "install").accepted, false, "already running");
   assert.equal(B.enqueue([], { id: "a", act: "install" }, a, "remove").accepted, true, "a different action is a different request");
   assert.equal(B.enqueue([], null, a, "install").accepted, true, "external job: nothing of ours is running");
+});
+
+test("the picked source wins when its backend exists; otherwise the first usable one", () => {
+  const app = { sources: [{ type: "pacman", ref: "firefox" }, { type: "flatpak", ref: "org.mozilla.firefox" }] };
+  assert.equal(B.chooseSource(app, ["pacman", "flatpak"], app.sources[1]).type, "flatpak");
+  assert.equal(B.chooseSource(app, ["pacman"], app.sources[1]).type, "pacman", "flatpak not installed here");
+  assert.equal(B.chooseSource(app, ["pacman", "flatpak"], { type: "flatpak", ref: "evil.injected" }).type, "pacman", "a source not on the app is never used");
+  assert.equal(B.chooseSource(app, ["pacman", "flatpak"]).type, "pacman");
+  assert.equal(B.chooseSource(app, [], null), null);
+});
+
+test("installed source types say which copy is installed", () => {
+  const app = { sources: [{ type: "pacman", ref: "firefox" }, { type: "flatpak", ref: "org.mozilla.firefox" }] };
+  assert.deepEqual(B.installedSourceTypes(app, "org.mozilla.firefox\n", "git\n"), ["flatpak"]);
+  assert.deepEqual(B.installedSourceTypes(app, "", "firefox\n").sort(), ["pacman"]);
+  assert.deepEqual(B.installedSourceTypes(app, "org.mozilla.firefox\n", "firefox\n").sort(), ["flatpak", "pacman"]);
+  assert.deepEqual(B.installedSourceTypes(app, "", ""), []);
 });

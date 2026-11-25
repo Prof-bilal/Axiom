@@ -2,6 +2,7 @@ import QtQuick
 import "hubstyle.js" as S
 import "rules.js" as R
 import "details.js" as D
+import "engine.js" as Eng
 import qs.src.shared
 
 // App details: header with the action, tabs, how it fits this machine, similar apps.
@@ -24,7 +25,15 @@ Flickable {
     boundsBehavior: Flickable.StopAtBounds
     // smooth wheel scrolling: animate contentY only when the user is not dragging or flicking
     Behavior on contentY { enabled: !moving && !flicking; SmoothedAnimation { velocity: 2400; easing.type: Easing.OutCubic } }
-    onAppChanged: tab = "Overview"
+    // Where to install from: the first source (official repo first) unless the user picks another.
+    property var chosen: null
+    property var perms: null
+    readonly property var notes: chosen ? Eng.sourceNotes(chosen, hub.be.installedTypes(app)).concat(perms ? Eng.permissionNotes(perms) : []) : []
+    onAppChanged: { tab = "Overview"; chosen = app && app.sources && app.sources.length > 0 ? app.sources[0] : null }
+    onChosenChanged: {
+        perms = null
+        if (chosen && chosen.type === "flatpak") hub.be.loadPermissions(chosen.ref, function (c) { if (page.chosen && page.chosen.ref === chosen.ref) page.perms = c })
+    }
 
     Column {
         id: col
@@ -45,7 +54,7 @@ Flickable {
                 spacing: 3
                 Text { text: page.app ? page.app.name : ""; color: Theme.textPrimary; font.family: S.font; font.pixelSize: 22; font.weight: Font.DemiBold }
                 Text { text: page.app ? page.app.summary : ""; color: Theme.textSecondary; font.family: S.font; font.pixelSize: 12; width: parent.width; elide: Text.ElideRight }
-                Text { text: page.app ? R.metaLine(page.app) + " · " + page.app.weight : ""; color: Theme.textSecondary; font.family: S.font; font.pixelSize: 11 }
+                Text { text: page.app ? R.metaLine(page.app) + (page.app.weight ? " · " + page.app.weight : "") : ""; color: Theme.textSecondary; font.family: S.font; font.pixelSize: 11 }
             }
             Row {
                 id: actions
@@ -53,7 +62,64 @@ Flickable {
                 spacing: 8
                 HubButton { visible: page.installed && page.app && hub.be.hasUpdate(page.app.id); text: "Update"; onClicked: hub.startInstall(page.app, "update") }
                 HubButton { visible: page.installed; primary: false; text: "Remove"; onClicked: hub.startInstall(page.app, "remove") }
-                HubButton { visible: !page.installed; text: "Install  ⤓"; onClicked: hub.startInstall(page.app, "install") }
+                HubButton { visible: !page.installed; text: "Install  ⤓"; onClicked: hub.startInstall(page.app, "install", page.chosen) }
+            }
+        }
+
+        // where to install from, and what to know first
+        Rectangle {
+            visible: page.app !== null && !page.installed && page.app.sources.length > 0
+            width: parent.width
+            height: srcCol.height + 24
+            radius: 10
+            color: Theme.cardFill
+            border.width: 1
+            border.color: Theme.border
+            Column {
+                id: srcCol
+                x: 14; y: 12
+                width: parent.width - 28
+                spacing: 8
+                Text { text: "Install from"; color: Theme.textSecondary; font.family: S.font; font.pixelSize: 12 }
+                Repeater {
+                    model: page.app ? page.app.sources : []
+                    delegate: Rectangle {
+                        required property var modelData
+                        readonly property bool on: page.chosen && page.chosen.type === modelData.type && page.chosen.ref === modelData.ref
+                        width: srcCol.width
+                        height: 44
+                        radius: 8
+                        color: "transparent"
+                        border.width: 1
+                        border.color: on ? Theme.accent : Theme.border
+                        Column {
+                            anchors.verticalCenter: parent.verticalCenter
+                            x: 12
+                            spacing: 2
+                            Text { text: Eng.sourceLabel(modelData) + (modelData.version ? "  ·  " + modelData.version : ""); color: Theme.textPrimary; font.family: S.font; font.pixelSize: 13; font.weight: Font.Medium }
+                            Text { text: modelData.type === "pacman" ? "Official repository, signed by the packager" : (modelData.trust === "verified" ? "Verified publisher on Flathub" : modelData.trust === "unverified" ? "Not verified on Flathub" : ""); color: Theme.textSecondary; font.family: S.font; font.pixelSize: 11 }
+                        }
+                        MouseArea { anchors.fill: parent; cursorShape: Qt.PointingHandCursor; onClicked: page.chosen = modelData }
+                    }
+                }
+                Repeater {
+                    model: page.notes
+                    delegate: Text {
+                        required property var modelData
+                        width: srcCol.width
+                        wrapMode: Text.WordWrap
+                        text: (modelData.level === "warn" ? "⚠  " : "•  ") + modelData.text
+                        color: modelData.level === "warn" ? S.warn : Theme.textSecondary
+                        font.family: S.font; font.pixelSize: 12
+                    }
+                }
+                Text {
+                    visible: page.chosen && page.chosen.type === "flatpak" && !page.perms
+                    width: srcCol.width
+                    wrapMode: Text.WordWrap
+                    text: "Flatpak apps run in a sandbox. Their permissions can be read once Flathub is added, which happens with the first Flatpak install."
+                    color: Theme.textSecondary; font.family: S.font; font.pixelSize: 11
+                }
             }
         }
 
