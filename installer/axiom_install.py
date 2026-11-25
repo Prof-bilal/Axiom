@@ -54,7 +54,7 @@ BASE_PACKAGES = [
     # polkit agent fallback, removable-media filesystems, and screen sharing on Hyprland.
     "grim", "wf-recorder", "wl-clipboard", "minisign", "bubblewrap", "flatpak", "distrobox", "podman",
     "polkit-gnome", "xdg-desktop-portal-hyprland", "rsync", "less", "man-db", "dosfstools", "exfatprogs",
-    "usbutils",
+    "usbutils", "archlinux-appstream-data",
 ]
 SERVICES = ["NetworkManager", "bluetooth", "power-profiles-daemon", "systemd-timesyncd", "qemu-guest-agent"]
 

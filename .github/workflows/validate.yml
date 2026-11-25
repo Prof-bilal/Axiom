@@ -34,7 +34,7 @@ jobs:
       - name: App, helper and shell tests (node)
         run: node --test tests/apps/*.test.mjs tests/shell/*.test.mjs
       - name: Installer, session and asset tests (pytest)
-        run: python3 -m pytest -q tests/installer tests/test_session_default.py tests/test_ui_assets.py
+        run: python3 -m pytest -q tests/installer tests/hub tests/test_session_default.py tests/test_ui_assets.py
 
 # The privileged archiso build job is intentionally NOT defined here. Building an
 # ISO needs root, KVM and package downloads; per docs/engineering/TESTING.md it must
