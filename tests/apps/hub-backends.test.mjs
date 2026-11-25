@@ -7,7 +7,7 @@ import { fileURLToPath } from "node:url";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const load = (f) => fs.readFileSync(path.join(here, "../../apps/hub", f), "utf8").replace(/^\.pragma library\s*$/m, "");
-const B = new Function(load("catalog.js") + load("backends.js") + "; return { CATALOG, flathubRemoteArgv, stepFromLine: (x) => stepFromLine(x), chooseSource, installArgv, removeArgv, updateArgv, parseProgress, stepFor, installedIds, STEPS, errorLine, exitMessage, enqueue, installedSourceTypes };")();
+const B = new Function(load("catalog.js") + load("backends.js") + "; return { CATALOG, flathubRemoteArgv, stepFromLine: (x) => stepFromLine(x), chooseSource, installArgv, removeArgv, updateArgv, parseProgress, stepFor, installedIds, STEPS, errorLine, exitMessage, enqueue, installedSourceTypes, updateIds, installedSource };")();
 
 test("Flatpak installs are user-scope argv with the ref last", () => {
   assert.deepEqual(B.installArgv({ type: "flatpak", ref: "org.videolan.VLC" }, "/home/u"),
@@ -147,4 +147,25 @@ test("installed source types say which copy is installed", () => {
   assert.deepEqual(B.installedSourceTypes(app, "", "firefox\n").sort(), ["pacman"]);
   assert.deepEqual(B.installedSourceTypes(app, "org.mozilla.firefox\n", "firefox\n").sort(), ["flatpak", "pacman"]);
   assert.deepEqual(B.installedSourceTypes(app, "", ""), []);
+});
+
+test("update ids come from flatpak ids and pacman -Qu lines", () => {
+  const apps = [
+    { id: "org.mozilla.firefox", sources: [{ type: "pacman", ref: "firefox" }, { type: "flatpak", ref: "org.mozilla.firefox" }] },
+    { id: "pacman:neovim", sources: [{ type: "pacman", ref: "neovim" }] },
+    { id: "org.gimp.GIMP", sources: [{ type: "flatpak", ref: "org.gimp.GIMP" }] },
+  ];
+  assert.deepEqual(B.updateIds(apps, "org.gimp.GIMP\n", "neovim 0.9-1 -> 0.10-1\nlinux 6.1-1 -> 6.2-1\n").sort(), ["org.gimp.GIMP", "pacman:neovim"]);
+  assert.deepEqual(B.updateIds(apps, "", ""), []);
+  assert.deepEqual(B.updateIds(apps, undefined, undefined), []);
+  assert.deepEqual(B.updateIds(apps, "", "firefox 1 -> 2\n"), ["org.mozilla.firefox"]);
+});
+
+test("remove and update act on the installed source, not the first one listed", () => {
+  const app = { sources: [{ type: "pacman", ref: "firefox" }, { type: "flatpak", ref: "org.mozilla.firefox" }] };
+  assert.equal(B.installedSource(app, ["flatpak"]).ref, "org.mozilla.firefox");
+  assert.equal(B.installedSource(app, ["pacman", "flatpak"]).ref, "firefox");
+  assert.equal(B.installedSource(app, []), null);
+  // and the chosen source is what the helper command is built from
+  assert.deepEqual(B.removeArgv(B.installedSource(app, ["flatpak"]), "/home/u").slice(0, 3), ["flatpak", "uninstall", "--user"]);
 });

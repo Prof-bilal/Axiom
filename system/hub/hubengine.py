@@ -118,13 +118,14 @@ def parse_flathub(fileobj):
 
 
 def parse_distro_catalog(fileobj):
-    """AppStream catalogue shipped by the distro: {pacman package name: AppStream id}."""
+    """AppStream catalogue shipped by the distro: {pacman package name: {"id": AppStream id, "kind": app|cli|package}}."""
     out = {}
     for _, el in ET.iterparse(fileobj):
         if el.tag == "component":
             cid, pkg = (el.findtext("id") or "").strip(), (el.findtext("pkgname") or "").strip()
+            kind = {"desktop-application": "app", "desktop": "app", "console-application": "cli"}.get(el.get("type"), "package")
             if cid and pkg:
-                out[pkg] = cid
+                out[pkg] = {"id": cid, "kind": kind}
             el.clear()
     return out
 
@@ -193,10 +194,12 @@ def build_index(db_path, flathub, pacman, distro_map, overrides=OVERRIDES):
     for p in pacman:
         if NOT_AN_APP.search(p["name"]):
             continue
-        cid = overrides.get(p["name"]) or distro_map.get(p["name"])
+        entry = distro_map.get(p["name"]) or {}
+        cid = overrides.get(p["name"]) or entry.get("id")
         cid = by_lower.get((cid or "").lower(), cid)
         key = cid if cid in apps else (cid or "pacman:" + p["name"])
-        a = apps.setdefault(key, {"name": p["name"], "summary": p["summary"], "kind": "package", "icon": "", "cats": [], "sources": []})
+        # A pacman-only app still counts as an app or a cli tool when the distro catalogue says so.
+        a = apps.setdefault(key, {"name": p["name"], "summary": p["summary"], "kind": entry.get("kind", "package"), "icon": "", "cats": [], "sources": []})
         if not a["summary"]:
             a["summary"] = p["summary"]
         official = p["repo"] in OFFICIAL_REPOS
@@ -262,6 +265,77 @@ def search(db_path, text, limit=30):
     return out[:limit]
 
 
+# ---- installed apps ----------------------------------------------------------------------------
+REF_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9@._+-]*$")
+
+
+def state_path():
+    base = os.environ.get("AXIOM_HUB_STATE") or os.path.join(
+        os.environ.get("XDG_STATE_HOME") or os.path.expanduser("~/.local/state"), "axiom-hub")
+    os.makedirs(base, exist_ok=True)
+    return os.path.join(base, "installed.json")
+
+
+def load_record(path):
+    try:
+        data = json.load(open(path))
+    except (OSError, ValueError):
+        return []
+    if not isinstance(data, list):
+        return []
+    # One bad entry is skipped, not the whole list.
+    return [r for r in data if isinstance(r, dict) and r.get("type") in ("pacman", "flatpak")
+            and isinstance(r.get("ref"), str) and REF_RE.match(r["ref"])]
+
+
+def record(action, kind, ref, path=None):
+    """Remember what the Hub installed, so a bare package it installed (no AppStream data) still shows as installed."""
+    if action not in ("install", "remove") or kind not in ("pacman", "flatpak") or not REF_RE.match(ref or ""):
+        raise ValueError("bad record request")
+    path = path or state_path()
+    items = [r for r in load_record(path) if not (r["type"] == kind and r["ref"] == ref)]
+    if action == "install":
+        items.append({"type": kind, "ref": ref})
+    tmp = path + ".part"
+    with open(tmp, "w") as fh:
+        json.dump(items, fh)
+    os.replace(tmp, path)
+    return len(items)
+
+
+def installed_apps(db_path, pacman_names, flatpak_ids, hub_refs):
+    """Apps with at least one installed source. Apps (kind app or cli) show whenever installed; a bare package
+    shows only if the Hub installed it, so base packages and dependencies do not fill the list."""
+    if not index_ok(db_path):
+        return []
+    pm, fp = set(pacman_names), set(flatpak_ids)
+    mine = {(r["type"], r["ref"]) for r in hub_refs}
+    db = sqlite3.connect(db_path)
+    rows = db.execute("select key, name, summary, kind, icon, cats, sources from apps").fetchall()
+    db.close()
+    out = []
+    for key, name, summary, kind, icon, cats, sources in rows:
+        srcs = json.loads(sources)
+        on = [s["type"] for s in srcs if (s["type"] == "pacman" and s["ref"] in pm) or (s["type"] == "flatpak" and s["ref"] in fp)]
+        hub_owned = any((s["type"], s["ref"]) in mine and s["type"] in on for s in srcs)
+        if on and (kind in ("app", "cli") or hub_owned):
+            srcs.sort(key=lambda s: TRUST_ORDER.get(s["trust"], 9))
+            out.append({"id": key, "name": name, "summary": summary, "kind": kind,
+                        "icon": FLATHUB_ICON + icon if icon else "", "categories": json.loads(cats),
+                        "sources": srcs, "installed": sorted(set(on))})
+    out.sort(key=lambda a: a["name"].lower())
+    return out
+
+
+def run_names(argv):
+    """Names printed one per line by a read-only listing command; a missing tool means none installed."""
+    try:
+        r = subprocess.run(argv, capture_output=True, text=True, timeout=60, env={**os.environ, "LC_ALL": "C"})
+    except (OSError, subprocess.SubprocessError):
+        return []
+    return [l.strip() for l in r.stdout.splitlines() if l.strip()] if r.returncode == 0 else []
+
+
 # ---- commands ----------------------------------------------------------------------------------
 def refresh(force=False, runner=run_pacman, opener=urllib.request.urlopen):
     base = cache_dir()
@@ -286,7 +360,22 @@ def main(argv):
             refresh()
         print(json.dumps({"results": search(db, " ".join(argv[2:]))}))
         return 0
-    print("usage: axiom-hub refresh [--force] | search <query>", file=sys.stderr)
+    if len(argv) >= 2 and argv[1] == "installed":
+        db = os.path.join(cache_dir(), "index.sqlite")
+        if not index_ok(db):
+            refresh()
+        apps = installed_apps(db, run_names(["pacman", "-Qq"]), run_names(["flatpak", "list", "--app", "--columns=application"]),
+                              load_record(state_path()))
+        print(json.dumps({"results": apps}))
+        return 0
+    if len(argv) == 5 and argv[1] == "record":
+        try:
+            print(json.dumps({"recorded": record(argv[2], argv[3], argv[4])}))
+            return 0
+        except ValueError as e:
+            print(str(e), file=sys.stderr)
+            return 2
+    print("usage: axiom-hub refresh [--force] | search <query> | installed | record <install|remove> <pacman|flatpak> <ref>", file=sys.stderr)
     return 2
 
 

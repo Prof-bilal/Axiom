@@ -39,6 +39,11 @@ The Hub is a static list of 97 curated apps. Search only filters that list, and 
 - `install` (pacman -U) now snapshots first on installed systems, like `sync` and `remove`.
 - The Hub queues a request that arrives while a job runs (the same request twice is ignored), shows the real error line instead of the last progress line, and follows a job started by another Hub window (`axiom-pkg-job` active) instead of starting a second one.
 
+## Installed apps, updates and the Software Center (Stage 5, implemented)
+- The Installed page is built from the system: `axiom-hub installed` matches `pacman -Qq` and `flatpak list` against the index. An app (AppStream kind app or cli, including pacman-only apps the distro catalogue knows) shows whenever installed. A bare package shows only if the Hub installed it (`~/.local/state/axiom-hub/installed.json`, written by `axiom-hub record`), so base packages and dependencies do not fill the list.
+- Updates: Flatpak `remote-ls --updates` plus `pacman -Qu` (as of the last package database sync). Remove and update act on the source that is actually installed.
+- Q2 (merge the Software Center) is only partly done. The Hub is now the place to find and install apps. `apps/software` stays for what the Hub does not have: whole-system updates and restore points (snapshots and rollback, ADR-033). Its package browser is still there and now duplicates the Hub; removing it is a follow-up because Phase 7 evidence was gathered on that screen.
+
 ## Not decided here
 AUR (own ADR, with PKGBUILD review), AI model store, AppImage, vendor packages, PackageKit licence (Q5), and the Flathub, Arch and Flatpak format checks (Q6 to Q8).
 

@@ -60,8 +60,8 @@ Flickable {
                 id: actions
                 anchors.verticalCenter: tile.verticalCenter
                 spacing: 8
-                HubButton { visible: page.installed && page.app && hub.be.hasUpdate(page.app.id); text: "Update"; onClicked: hub.startInstall(page.app, "update") }
-                HubButton { visible: page.installed; primary: false; text: "Remove"; onClicked: hub.startInstall(page.app, "remove") }
+                HubButton { visible: page.installed && page.app && hub.be.hasUpdate(page.app.id); text: "Update"; onClicked: hub.startInstall(page.app, "update", hub.be.installedSource(page.app)) }
+                HubButton { visible: page.installed; primary: false; text: "Remove"; onClicked: hub.startInstall(page.app, "remove", hub.be.installedSource(page.app)) }
                 HubButton { visible: !page.installed; text: "Install  ⤓"; onClicked: hub.startInstall(page.app, "install", page.chosen) }
             }
         }

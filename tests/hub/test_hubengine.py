@@ -1,6 +1,7 @@
 """Hub search engine (system/hub/hubengine.py): parsers, merge rules, search, safe refresh."""
 import gzip
 import io
+import json
 import os
 import sys
 import tempfile
@@ -87,7 +88,7 @@ class Parsers(unittest.TestCase):
 
     def test_distro_catalog_maps_pkgname_to_id(self):
         xml = b"<components><component><id>org.mozilla.firefox</id><pkgname>firefox</pkgname></component></components>"
-        self.assertEqual(h.parse_distro_catalog(io.BytesIO(xml)), {"firefox": "org.mozilla.firefox"})
+        self.assertEqual(h.parse_distro_catalog(io.BytesIO(xml)), {"firefox": {"id": "org.mozilla.firefox", "kind": "package"}})
 
 
 class Index(unittest.TestCase):
@@ -110,7 +111,7 @@ class Index(unittest.TestCase):
         self.assertEqual(r["sources"][0]["type"], "pacman")  # official repo first
 
     def test_distro_catalogue_merges_firefox(self):
-        self.build({"firefox": "org.mozilla.firefox"})
+        self.build({"firefox": {"id": "org.mozilla.firefox", "kind": "app"}})
         r = [x for x in h.search(self.db, "firefox") if x["id"] == "org.mozilla.firefox"][0]
         self.assertEqual([s["trust"] for s in r["sources"]], ["official", "verified"])
 
@@ -118,7 +119,7 @@ class Index(unittest.TestCase):
         a = {x["id"]: x for x in apps()}
         self.assertEqual(a["org.videolan.VLC"]["kind"], "app")
         self.pac += h.parse_pacman_search("extra/vlc 3.0-1\n    Media player\n")
-        self.build({"vlc": "org.videolan.vlc"})  # Arch lower-cases the id
+        self.build({"vlc": {"id": "org.videolan.vlc", "kind": "app"}})  # Arch lower-cases the id
         r = [x for x in h.search(self.db, "vlc") if x["id"] == "org.videolan.VLC"][0]
         self.assertEqual({s["type"] for s in r["sources"]}, {"pacman", "flatpak"})
 
@@ -135,7 +136,7 @@ class Index(unittest.TestCase):
         self.assertEqual(sk["sources"][0]["trust"], "unverified")
 
     def test_exact_match_ranks_first_and_packages_after_apps(self):
-        self.build({"firefox": "org.mozilla.firefox"})
+        self.build({"firefox": {"id": "org.mozilla.firefox", "kind": "app"}})
         first = h.search(self.db, "firefox")[0]
         self.assertEqual((first["id"], first["exact"]), ("org.mozilla.firefox", True))
         kinds = [r["kind"] for r in h.search(self.db, "e")]
@@ -179,6 +180,58 @@ class Index(unittest.TestCase):
 
     def test_search_without_an_index_is_empty_not_an_error(self):
         self.assertEqual(h.search(os.path.join(self.d, "none.sqlite"), "x"), [])
+
+
+class Installed(unittest.TestCase):
+    def setUp(self):
+        self.d = tempfile.mkdtemp()
+        self.db = os.path.join(self.d, "i.sqlite")
+        pac = h.parse_pacman_search(PACMAN_SS + "extra/base 3-1\n    Base\nextra/neovim 0.10-1\n    Editor\n")
+        h.build_index(self.db, apps(), pac, {"firefox": {"id": "org.mozilla.firefox", "kind": "app"}, "ripgrep": {"id": "rg.desktop", "kind": "cli"}})
+
+    def test_installed_apps_come_from_the_system_lists(self):
+        r = h.installed_apps(self.db, ["firefox", "zsh"], ["org.xfce.mousepad"], [])
+        by = {a["id"]: a for a in r}
+        self.assertEqual(by["org.mozilla.firefox"]["installed"], ["pacman"])
+        self.assertEqual(by["org.xfce.mousepad"]["installed"], ["flatpak"])
+
+    def test_bare_packages_only_show_if_the_hub_installed_them(self):
+        self.assertEqual([a["name"] for a in h.installed_apps(self.db, ["base", "neovim"], [], [])], [])
+        mine = [{"type": "pacman", "ref": "neovim"}]
+        names = [a["name"] for a in h.installed_apps(self.db, ["base", "neovim"], [], mine)]
+        self.assertEqual(names, ["neovim"])
+
+    def test_a_pacman_only_app_known_to_the_distro_catalogue_shows_as_installed(self):
+        r = h.installed_apps(self.db, ["ripgrep"], [], [])
+        self.assertEqual([(a["name"], a["kind"]) for a in r], [("ripgrep", "cli")])
+
+    def test_nothing_installed_gives_nothing(self):
+        self.assertEqual(h.installed_apps(self.db, [], [], []), [])
+        self.assertEqual(h.installed_apps(os.path.join(self.d, "none"), ["firefox"], [], []), [])
+
+    def test_record_install_and_remove_roundtrip_atomically(self):
+        p = os.path.join(self.d, "state", "installed.json")
+        os.makedirs(os.path.dirname(p))
+        self.assertEqual(h.record("install", "pacman", "neovim", p), 1)
+        self.assertEqual(h.record("install", "pacman", "neovim", p), 1, "twice is still one entry")
+        self.assertEqual(h.record("install", "flatpak", "org.a.B", p), 2)
+        self.assertEqual(h.record("remove", "pacman", "neovim", p), 1)
+        self.assertEqual(h.load_record(p), [{"type": "flatpak", "ref": "org.a.B"}])
+        self.assertFalse(os.path.exists(p + ".part"))
+
+    def test_record_rejects_bad_input(self):
+        p = os.path.join(self.d, "x.json")
+        for bad in [("install", "npm", "x"), ("nuke", "pacman", "x"), ("install", "pacman", "a;b"), ("install", "pacman", "-Syu"), ("install", "pacman", "")]:
+            with self.assertRaises(ValueError, msg=str(bad)):
+                h.record(*bad, path=p)
+        self.assertFalse(os.path.exists(p))
+
+    def test_a_damaged_state_file_reads_as_empty(self):
+        p = os.path.join(self.d, "bad.json")
+        open(p, "w").write("{not json")
+        self.assertEqual(h.load_record(p), [])
+        open(p, "w").write(json.dumps([{"type": "pacman", "ref": "ok"}, {"type": "pacman", "ref": "a;b"}, "junk", {"type": "npm", "ref": "x"}]))
+        self.assertEqual(h.load_record(p), [{"type": "pacman", "ref": "ok"}])
 
 
 class Fetch(unittest.TestCase):

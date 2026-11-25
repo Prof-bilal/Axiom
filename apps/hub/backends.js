@@ -126,6 +126,24 @@ function installedIds(catalog, flatpakOut, pacmanOut, npmOut, pipxOut) {
     }).map(function (a) { return a.id })
 }
 
+// The source that is actually installed (remove and update must act on it, not on the first source listed).
+function installedSource(app, types) {
+    for (var i = 0; i < app.sources.length; i++) if (types.indexOf(app.sources[i].type) >= 0) return app.sources[i]
+    return null
+}
+
+// Ids of installed apps that have an update. `flatpakUpdates` are application ids (one per line), `pacmanUpdates` is
+// `pacman -Qu` output ("name old -> new" per line); the latter reflects the last package database sync.
+function updateIds(apps, flatpakUpdates, pacmanUpdates) {
+    var fp = parseLines(flatpakUpdates)
+    var pm = parseLines(pacmanUpdates).map(function (l) { return l.split(/\s+/)[0] })
+    return apps.filter(function (a) {
+        return a.sources.some(function (s) {
+            return (s.type === "flatpak" && fp.indexOf(s.ref) >= 0) || (s.type === "pacman" && pm.indexOf(s.ref) >= 0)
+        })
+    }).map(function (a) { return a.id })
+}
+
 // The line to show as the error: the last line that says what went wrong, not a progress line.
 // Falls back to the last non-progress line, then to a generic message.
 function errorLine(log) {

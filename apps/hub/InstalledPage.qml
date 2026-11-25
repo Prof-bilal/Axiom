@@ -3,13 +3,13 @@ import "hubstyle.js" as S
 import "rules.js" as R
 import qs.src.shared
 
-// Installed apps from the catalog, with Update (when one exists) and Remove.
+// Installed apps from the system (the engine reads pacman and Flatpak), with Update (when one exists) and Remove.
 Flickable {
     id: page
 
     property var hub: null
     property bool updatesOnly: false
-    readonly property var rows: hub.be.catalog.filter(function (a) { return hub.isInstalled(a.id) && (!updatesOnly || hub.be.hasUpdate(a.id)) })
+    readonly property var rows: hub.be.installedApps.filter(function (a) { return !updatesOnly || hub.be.hasUpdate(a.id) })
 
     contentWidth: width
     contentHeight: col.height + 32
@@ -65,9 +65,9 @@ Flickable {
                     anchors.rightMargin: 12
                     anchors.verticalCenter: parent.verticalCenter
                     spacing: 8
-                    HubButton { visible: hub.be.hasUpdate(modelData.id); small: true; text: "Update"; onClicked: hub.startInstall(modelData, "update") }
+                    HubButton { visible: hub.be.hasUpdate(modelData.id); small: true; text: "Update"; onClicked: hub.startInstall(modelData, "update", hub.be.installedSource(modelData)) }
                     HubButton { small: true; primary: false; text: "Details"; onClicked: hub.showApp(modelData) }
-                    HubButton { small: true; primary: false; text: "Remove"; onClicked: hub.startInstall(modelData, "remove") }
+                    HubButton { small: true; primary: false; text: "Remove"; onClicked: hub.startInstall(modelData, "remove", hub.be.installedSource(modelData)) }
                 }
             }
         }

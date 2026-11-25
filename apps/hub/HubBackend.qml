@@ -16,6 +16,7 @@ Item {
     // Recommended apps (shown when there is no search term). Search results come from the engine.
     readonly property var catalog: Cat.CATALOG
     property var results: []
+    property var installedApps: []   // what is really installed on this system, from the engine (not just the recommended list)
     property bool searching: false
     property string searchError: ""
     property string query: ""
@@ -134,6 +135,14 @@ Item {
             lists.flatpak = fp.code === 0 ? fp.out : ""
             apply()
         })
+        runner.run([searchBin, "installed"], function (r) {
+            if (r.code !== 0) return
+            var parsed = Eng.parseResults(r.out)
+            if (!parsed.ok) return
+            installedApps = parsed.apps
+            var ids = parsed.apps.map(function (a) { return a.id })
+            installed = installed.filter(function (id) { return ids.indexOf(id) < 0 }).concat(ids)
+        })
         local.resolveHome(function () {
             var prefix = local.home + "/.local"
             runner.run(["npm", "ls", "-g", "--prefix", prefix, "--depth=0", "--parseable"], function (np) {
@@ -158,6 +167,8 @@ Item {
         return app ? B.installedSourceTypes(app, lastLists.flatpak, lastLists.pacman, lastLists.npm, lastLists.pipx) : []
     }
 
+    function installedSource(app) { return B.installedSource(app, installedTypes(app)) }
+
     // Flatpak permissions before installing. Only when Flathub is already added for this user: browsing must not
     // change the system. Calls back with the parsed context, or null when it cannot be read yet.
     property bool flathubReady: false
@@ -170,13 +181,14 @@ Item {
 
     function checkUpdates() {
         status = "Checking for updates..."
-        runner.run(["flatpak", "remote-ls", "--updates", "--columns=application"], function (r) {
-            var lines = r.code === 0 ? r.out.split("\n").map(function (l) { return l.trim() }) : []
-            updates = catalog.filter(function (a) {
-                return a.sources.some(function (s) { return s.type === "flatpak" && lines.indexOf(s.ref) >= 0 })
-            }).map(function (a) { return a.id })
+        var found = { flatpak: "", pacman: "" }
+        var apply = function () {
+            updates = B.updateIds(installedApps.concat(catalog), found.flatpak, found.pacman)
             status = updates.length > 0 ? updates.length + " update(s) available" : "System is up to date"
-        })
+        }
+        // A missing tool never calls back, so each list is applied as it arrives.
+        runner.run(["flatpak", "remote-ls", "--updates", "--columns=application"], function (r) { found.flatpak = r.code === 0 ? r.out : ""; apply() })
+        runner.run(["pacman", "-Qu"], function (r) { found.pacman = r.code === 0 ? r.out : ""; apply() })
     }
 
     function run(app, act, prefer) {
@@ -253,6 +265,9 @@ Item {
             percent = 100; step = 3
             status = (action === "remove" ? "Removed " : "Installed ") + current.name
         }
+        // Remember what the Hub changed, so a bare package it installed still shows up as installed.
+        if (code === 0 && !canceled && curSource && (curSource.type === "pacman" || curSource.type === "flatpak") && (action === "install" || action === "remove"))
+            runner.run([searchBin, "record", action, curSource.type, curSource.ref], function () { be.refreshInstalled() })
         refreshInstalled()
         finished(code === 0 && error === "")
         if (queue.length > 0) next.restart()
