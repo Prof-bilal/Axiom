@@ -98,7 +98,7 @@ Flow: Get -> review (trust, permissions, size, source) -> confirm -> job -> prog
 - **Snapshot first** on installed systems (snapper). Refuse without snapper. The current `install` verb (`pacman -U`) does not snapshot, so this must be added.
 - **Flatpak** installs stay in user scope. Add `flathub` only on first use. Use `flatpak repair --user` as the recovery path. `[V-s]`
 - **AppImage** (later): runs under bubblewrap (ADR-032). Desktop integration is ours. Updates through zsync info `[S]`.
-- **Jobs** run as systemd transient units. Cancel stops the whole unit (its cgroup), so no child process keeps running. `[A]` for the exact unit behaviour on this host.
+- **Jobs** run as systemd transient units, so they keep running when the Hub window closes (owner decision Q4). The Hub re-attaches by unit name and reads state and journal. Cancel stops the whole unit (its cgroup). `[A]` for re-attach and cancel behaviour on this host; a daemon is added only if re-attach fails.
 - **Cancel rule:** cancel is allowed during download only. After pacman starts the commit phase, the button is disabled. Killing pacman mid-commit can leave `/var/lib/pacman/db.lck` and a broken state. `[A]`
 - **Queue:** one pacman transaction at a time (`flock` in the helper, plus pacman's own lock). One Flatpak transaction per user. A busy request is queued and shown, not dropped.
 - **Idempotency:** a job key (source, ref, action) must be unique among running jobs, so a double click cannot start the same install twice.
@@ -224,6 +224,8 @@ Each stage is a separate branch and PR, merged only after CI and the QEMU eviden
 ## Open questions
 
 Decided by you (2026-11-24/25): MVP sources are Arch repos and Flathub; GitHub only verified; vendor via distrobox later. The old catalogue is removed. Default source is the official repo first. Store-style UI.
+
+Answered by the owner (2026-11-25): Q1 yes, keep a small "Recommended" list. Q2 yes, merge Software Center into the Hub. Q3 full upgrade after a snapshot, with a notice. Q4 installs must survive closing the window: jobs run as systemd transient units and the Hub re-attaches; no daemon unless re-attach fails.
 
 Still open:
 - **Q1 Featured list:** keep a small curated "Recommended" list after removing the catalogue, or show only search results?

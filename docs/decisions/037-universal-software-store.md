@@ -24,8 +24,14 @@ The Hub is a static list of 97 curated apps. Search only filters that list, and 
 - Flathub's public search API is not confirmed. The design uses the AppStream index instead.
 - New code adds an index, adapters and a job layer. Each needs unit tests and QEMU evidence before the stage is marked done.
 
+## Decisions from the owner (2026-11-25)
+- Q1: keep a small curated "Recommended" list on the Discover page, next to search results.
+- Q2: merge `apps/software` (pacman-only browser) into the Hub. One store.
+- Q3: single-app install runs a full upgrade (`-Syu`) after a snapshot, with a clear notice on the review page. Single-package installs are not refused.
+- Q4: installs must survive closing the Hub window. Each job runs as a systemd transient unit, which keeps running after the window closes. The Hub re-attaches by unit name and reads its state and journal. No new daemon is added unless re-attach fails in testing (AGENTS.md requires a justification for any daemon).
+
 ## Not decided here
-AUR (own ADR, with PKGBUILD review), AI model store, AppImage, vendor packages, featured list (Q1), Software Center merge (Q2), install policy (Q3), process lifetime (Q4), PackageKit licence (Q5).
+AUR (own ADR, with PKGBUILD review), AI model store, AppImage, vendor packages, PackageKit licence (Q5), and the Flathub, Arch and Flatpak format checks (Q6 to Q8).
 
 ## Verification
 Per stage: unit tests in CI (`tests/apps`, `tests/installer`), QEMU acceptance on a networked guest with retained evidence, and performance measurements before any claim.
