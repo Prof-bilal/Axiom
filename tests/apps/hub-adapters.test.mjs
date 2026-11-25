@@ -41,6 +41,11 @@ test("search output: repo, name, version, installed state and summary", () => {
   assert.equal(hits[1].repo, "community");
 });
 
+test("search output: a hit without a summary does not swallow the next hit", () => {
+  const hits = P.parseSearch("extra/a 1.0-1\ncommunity/b 2.0-1\n    desc b");
+  assert.deepEqual(hits.map((h) => [h.name, h.summary]), [["a", ""], ["b", "desc b"]]);
+});
+
 test("search output: empty and garbage input give no hits, never throw", () => {
   assert.deepEqual(P.parseSearch(""), []);
   assert.deepEqual(P.parseSearch(undefined), []);
@@ -67,6 +72,8 @@ test("info output without a name is rejected (null), so no card is shown", () =>
 test("sizes: units convert to MB and unknown text gives null", () => {
   assert.equal(P.sizeToMb("1.5 GiB"), 1536);
   assert.equal(P.sizeToMb("512 KiB"), 1);
+  assert.equal(P.sizeToMb("3 B"), 1, "tiny but non-zero must not show as 0");
+  assert.equal(P.sizeToMb("0 B"), 0);
   assert.equal(P.sizeToMb("nonsense"), null);
   assert.equal(P.sizeToMb(undefined), null);
 });

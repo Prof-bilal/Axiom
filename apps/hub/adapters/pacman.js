@@ -11,7 +11,8 @@ function sizeToMb(text) {
     if (!m) return null
     var n = parseFloat(m[1])
     var f = { B: 1 / 1048576, KiB: 1 / 1024, MiB: 1, GiB: 1024 }[m[2]]
-    return Math.round(n * f)
+    // A non-zero size never shows as 0 MB, which would read as "no download".
+    return n > 0 ? Math.max(1, Math.round(n * f)) : 0
 }
 
 // `pacman -Ss` prints two lines per hit:
@@ -23,11 +24,13 @@ function parseSearch(text) {
     for (var i = 0; i < lines.length; i++) {
         var head = /^(\S+)\/(\S+)\s+(\S+)(?:\s+\[installed(?:: ([^\]]+))?\])?/.exec(lines[i])
         if (!head) continue
-        var desc = (lines[i + 1] || "").replace(/^\s+/, "")
+        // The summary is the next line only when it is indented; a hit without one must not swallow the next hit.
+        var next = lines[i + 1] || ""
+        var described = /^\s+\S/.test(next)
         out.push({ repo: head[1], name: head[2], version: head[3],
                    installed: head[0].indexOf("[installed") >= 0,
-                   installedVersion: head[4] || null, summary: desc })
-        i++
+                   installedVersion: head[4] || null, summary: described ? next.trim() : "" })
+        if (described) i++
     }
     return out
 }
@@ -35,11 +38,10 @@ function parseSearch(text) {
 // `pacman -Si <pkg>`: "Key : value" lines. Keys are matched case-sensitively as pacman prints them.
 function parseInfo(text) {
     var f = {}
-    var last = null
     String(text || "").split(/\r?\n/).forEach(function (line) {
+        // Indented lines are continuations (Optional Deps etc.) and are ignored for the store card.
         var m = /^(\S[^:]*?)\s*:\s?(.*)$/.exec(line)
-        if (m && !/^\s/.test(line)) { last = m[1].trim(); f[last] = m[2].trim(); return }
-        // continuation lines (Optional Deps etc.) are indented; ignored for the store card.
+        if (m) f[m[1].trim()] = m[2].trim()
     })
     if (!f["Name"]) return null
     return {
